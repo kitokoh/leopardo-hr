@@ -3,18 +3,6 @@
 # Retirer une ligne quand le fichier passe a SearchPathGuard::run().
 api/app/Core/Auth/Infrastructure/Services/AuthService.php:698
 api/app/Core/Auth/Interfaces/Api/V1/Controllers/PasswordResetController.php:293
-api/app/Core/Tenant/TenantManager.php:200
-api/app/Core/Tenant/TenantManager.php:57
-api/app/Core/Tenant/TenantManager.php:73
-api/app/Http/Controllers/Web/PlatformCompanyController.php:107
-api/app/Http/Controllers/Web/PlatformCompanyController.php:237
-api/app/Http/Controllers/Web/PlatformCompanyController.php:258
-api/app/Http/Controllers/Web/PlatformCompanyController.php:33
-api/app/Http/Controllers/Web/PlatformCompanyController.php:487
-api/app/Http/Controllers/Web/PlatformCompanyController.php:491
-api/app/Http/Controllers/Web/PlatformCompanyController.php:500
-api/app/Http/Controllers/Web/PlatformCompanyController.php:508
-api/app/Http/Controllers/Web/PlatformCompanyController.php:98
 api/app/Modules/HR/Interfaces/Api/V1/Requests/StoreEmployeeRequest.php:193
 api/app/Modules/HR/Interfaces/Api/V1/Requests/StoreEmployeeRequest.php:198
 api/app/Modules/HR/Interfaces/Api/V1/Requests/UpdateEmployeeRequest.php:189

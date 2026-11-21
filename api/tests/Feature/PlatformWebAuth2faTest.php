@@ -160,10 +160,20 @@ class PlatformWebAuth2faTest extends TestCase
      */
     private function validTotp(string $secret): string
     {
-        $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+        // Issue #9705 : `$alphabet` doit etre un TABLEAU. Sur une chaine,
+        // `$alphabet['A']` est une erreur fatale en PHP 8 (« Cannot access
+        // offset of type string on string ») : un offset de chaine doit etre
+        // un entier. Le helper ne produisait donc jamais de code, et le test
+        // « logs in after valid code » n'a jamais teste ce qu'il annonce.
+        // On reprend exactement la resolution de TotpService::base32Decode().
+        $alphabet = array_flip(str_split('ABCDEFGHIJKLMNOPQRSTUVWXYZ234567'));
         $bits = '';
 
         foreach (str_split(strtoupper(rtrim($secret, '='))) as $char) {
+            if (! array_key_exists($char, $alphabet)) {
+                continue;
+            }
+
             $bits .= str_pad(decbin($alphabet[$char]), 5, '0', STR_PAD_LEFT);
         }
 

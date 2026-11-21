@@ -102,6 +102,62 @@
    "p95_ms": 200,
    "pagination": false,
    "notes": "Tournée du jour rider (DELIVERY-203) - scope propriété."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/restaurant/orders",
+   "max_queries": 15,
+   "p95_ms": 300,
+   "pagination": true,
+   "notes": "File de commandes POS (RESTO-4xx) — pagination obligatoire, index restaurant_orders_company_branch_status_idx."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/restaurant/reservations",
+   "max_queries": 15,
+   "p95_ms": 300,
+   "pagination": true,
+   "notes": "Planning des réservations (RESTO-6xx) — index restaurant_reservations_company_branch_reserved_at_idx."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/restaurant/reports/sales",
+   "max_queries": 20,
+   "p95_ms": 500,
+   "pagination": false,
+   "notes": "Rapport des ventes (RESTO-7xx) — agrégats SQL groupés, jamais de boucle applicative."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/restaurant/mobile/server/orders",
+   "max_queries": 15,
+   "p95_ms": 300,
+   "pagination": true,
+   "notes": "File de service mobile serveur (RESTO-801) — même requête que la file POS."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/restaurant/mobile/rider/deliveries",
+   "max_queries": 15,
+   "p95_ms": 300,
+   "pagination": true,
+   "notes": "Tournées assignées mobile livreur (RESTO-802)."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/restaurant/mobile/manager/kpis",
+   "max_queries": 25,
+   "p95_ms": 500,
+   "pagination": false,
+   "notes": "KPIs du jour mobile gérant (RESTO-803) — calculés côté serveur, jamais agrégés côté client."
+  },
+  {
+   "method": "GET",
+   "route": "/api/v1/public/restaurants/{slug}/orders/{ref}",
+   "max_queries": 10,
+   "p95_ms": 300,
+   "pagination": false,
+   "notes": "Suivi public de commande — N+1 verrouillé par RestaurantPublicPerformanceTest (#7985)."
   }
  ],
  "required_indexes": [
@@ -144,6 +200,26 @@
    "table": "delivery_routes",
    "index": "delivery_routes_company_date_idx",
    "notes": "Tournées du jour par tenant (DELIVERY-203)."
+  },
+  {
+   "table": "restaurant_orders",
+   "index": "restaurant_orders_company_branch_status_idx",
+   "notes": "File de commandes POS/mobile : tenant + branche + statut (RESTO-4xx)."
+  },
+  {
+   "table": "restaurant_order_items",
+   "index": "restaurant_order_items_company_order_idx",
+   "notes": "Lignes d'une commande — évite le N+1 sur le détail (RESTO-4xx)."
+  },
+  {
+   "table": "restaurant_reservations",
+   "index": "restaurant_reservations_company_branch_reserved_at_idx",
+   "notes": "Planning des réservations par branche et créneau (RESTO-6xx)."
+  },
+  {
+   "table": "restaurant_outbox_events",
+   "index": "restaurant_outbox_events_company_status_available_idx",
+   "notes": "Claim atomique du dispatcher outbox (RESTO-808)."
   }
  ]
 }

@@ -107,6 +107,12 @@ class RestaurantOrderBillTest extends TestCase
             'discount_type' => 'percent',
             'value_minor' => 1000,
             'is_active' => true,
+            // La factory tire `min_order_minor` au hasard (500–20000) : avec un
+            // sous-total de 2000, le test échouait ~9 fois sur 10 sur
+            // « Order does not reach the promotion minimum ». Le cas testé est
+            // la remise en pourcentage, pas le seuil minimum.
+            'min_order_minor' => null,
+            'max_uses' => null,
         ]));
 
         $this->getJson("/api/v1/restaurant/orders/{$order->id}/bill?promotion_code=MIDI10")

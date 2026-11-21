@@ -2,7 +2,14 @@
 
 > **Issue :** DEP-BC25 (#6276) — Deep maturity du contexte RestaurantManager (fondations RESTO-104).
 > **Contexte :** BC-25 — RestaurantManager (verticale restauration : établissements, tables, catalogue, POS/caisse, commandes, réservations, stock/COGS, achats, livraison, fidélité, rapports).
-> **Date de consolidation :** 2026-10-09 — **Statut :** **Pilote en préparation** — les lots 1xx→7xx sont livrés et présents sur `main` ; le mobile (8xx) et la clôture qualité/pilote (9xx) restent à livrer.
+> **Date de consolidation :** 2026-11-21 — **Statut :** **Pilote en préparation** — les lots 1xx→8xx sont livrés et présents sur `main` ; la clôture qualité/pilote (9xx) reste partielle (recette UAT non signée).
+>
+> **Révision 2026-11-21 (#9712).** Les lignes « mobile absent » et « endpoints d'avis inexistants »
+> étaient **périmées** : les écrans mobiles serveur/livreur/gérant/stock existent et sont routés
+> (`front/mobile_apps/leopardo_manager/lib/features/restaurant/`, routes `/restaurant/server|rider|manager|stock`
+> dans `app.dart`), la caisse tablette `leopardo_pos_restaurant` est livrée (12 fichiers, 4 490 lignes),
+> et les endpoints **publics** d'avis existent. Ce qui manque réellement est la **modération
+> back-office** des avis (#9713) — la dette est reformulée en conséquence.
 > **Spécification :** `docs/specifications/SOLUTION_RESTAURANT_MANAGER.md`
 >
 > **Note de consolidation (2026-10-09).** Ce document contenait auparavant **trois états
@@ -38,7 +45,7 @@
 | Rapports & exports (7xx) | RESTO-701..703 | ✅ Livré (PR #6313) |
 | UI admin (7xx) | RESTO-704..708 | ✅ Livré (PR #6328) + écran cuisine (RESTO-707, PR #6336) |
 | Onboarding vertical (nouveau) | RESTO-ONBOARDING | ✅ Livré (branche `feat/restaurant-onboarding-and-ux`) — checklist métier restaurant + remontée des échecs d'activation + UX front |
-| Mobile & extensions (8xx) | RESTO-801..808 | ⏳ **À livrer** — contrats API livrés et testés, aucune app Flutter |
+| Mobile & extensions (8xx) | RESTO-801..808 | ✅ **Livré** — contrats API testés (`RestaurantMobile*ApiTest`) + écrans Flutter serveur/livreur/gérant/stock dans `leopardo_manager` + caisse tablette `leopardo_pos_restaurant` (4 490 l.) |
 | Qualité, docs & pilote (9xx) | RESTO-901..906 | 🚧 Runbook/gates/audit/maturité livrés (PR #6333) ; golden journey E2E + recette signée à venir |
 
 ## 3. Scorecard des 12 dimensions (état `main`, 2026-10-09)
@@ -53,8 +60,8 @@
 | 6 | Transactions | ✅ | Création/paiement idempotents, verrou optimiste `version` (caisse, commandes), re-vérification sous transaction, stock `SELECT FOR UPDATE` |
 | 7 | Asynchronisme | 🟡 Partiel | Outbox `restaurant_outbox_events` + `restaurant:outbox-dispatch` (claim atomique, backoff, dead-letter) ; événements versionnés. **Manque :** alerting dead-letter (recommandation R2 de l'audit) |
 | 8 | Sécurité | ✅ | Callback HMAC idempotent, secrets en config, payloads outbox redigés, audit RESTO-904 sans finding bloquant |
-| 9 | Frontend | 🟡 Partiel | UI admin web livrée (référentiel/réservations/stock/livraison/rapports + écran cuisine + POS + online + team + payments). **Manque :** apps mobiles serveur/livreur/gérant (8xx) |
-| 10 | Performance | ⏳ | Gate `performance` **pending** (benchmarks POS/réservations non exécutés) |
+| 9 | Frontend | ✅ | UI admin web livrée (référentiel/réservations/stock/livraison/rapports + écran cuisine + POS + online + team + payments) **et** surfaces mobiles serveur/livreur/gérant/stock (`leopardo_manager`) + caisse tablette offline-first (`leopardo_pos_restaurant`). **Manque :** modération back-office des avis (#9713) |
+| 10 | Performance | 🟡 Partiel | Budgets et garde N+1 exécutés (`check-performance-budgets.sh`) ; barrières N+1 verrouillées par `RestaurantPublicPerformanceTest`. **Manque :** benchmarks p95 sur volumes réels POS/réservations |
 | 11 | Exploitation | 🟡 Partiel | Runbook pilote + recette UAT (RESTO-903) ; **manque :** alerting dead-letter branché |
 | 12 | Produit | 🟡 Partiel | GJ-RESTO-01 (RESTO-901) couvert par `RestaurantGoldenJourneyTest` en CI ; **manque :** recette UAT signée par le restaurateur pilote |
 
@@ -65,17 +72,17 @@ Le pilote `restaurantmanager` est enregistré dans `dev-hub/tools/pilot-gates.js
 
 | État | Gates |
 |---|---|
-| ✅ `validated` (4) | manifest, api_security, runbook, security_review |
-| ⏳ `pending` (5) | core_flow, performance, observability, golden_journey, recette |
+| ✅ `validated` (7) | manifest, core_flow, api_security, runbook, security_review, performance, golden_journey |
+| ⏳ `pending` (2) | observability, recette |
 
-`go_decision: pending` — le GO pilote exige la validation des 5 gates restants.
+`go_decision: pending` — le GO pilote exige la validation des 2 gates restants.
 
 ## 5. Dette identifiée (2026-10-09)
 
 | # | Point | Type | Référence |
 |---|---|---|---|
-| 1 | Aucune app mobile restaurant (serveur/livreur/gérant) | Mobile | RESTO-801..808 — `front/mobile_apps/` |
-| 2 | Modération des avis absente (endpoints `/restaurant/reviews*` inexistants) | Backend + Front | lot RESTO-902 |
+| 1 | ~~Aucune app mobile restaurant~~ — **résolu** : écrans serveur/livreur/gérant/stock livrés dans `leopardo_manager` + caisse `leopardo_pos_restaurant` | Mobile | RESTO-801..808 |
+| 2 | Modération **back-office** des avis absente (les endpoints publics `GET|POST /public/restaurants/{slug}/reviews` existent et sont testés) | Backend + Front | RESTO-902 — #9713 |
 | 3 | Recette UAT R2–R10 jamais exécutée, signature pilote vide | Qualité | `docs/ops/RECETTE_UAT_RESTAURANTMANAGER.md` |
 | 4 | Gates performance / observabilité / recette en attente | Pilote | `dev-hub/tools/pilot-gates.json` |
 | 5 | Pas d'API publique de profil établissement par slug | Backend | `docs/architecture/VERTICAL_RESTAURANT_AUDIT_2026-09-08.md` §1.3 |
@@ -83,7 +90,6 @@ Le pilote `restaurantmanager` est enregistré dans `dev-hub/tools/pilot-gates.js
 
 ## 6. Prochaine action
 
-1. Livrer le mobile/extensions (RESTO-801..808) — les contrats API sont prêts et testés.
-2. Livrer le lot RESTO-902 (modération des avis) et activer la section front correspondante.
-3. Exécuter la recette UAT R2–R10 et faire signer le restaurateur pilote.
-4. Valider les gates `performance` / `observability` / `recette` avant GO pilote.
+1. Livrer la modération back-office des avis (#9713) et activer la section front correspondante.
+2. Exécuter la recette UAT R2–R11 et faire signer le restaurateur pilote (#9711).
+3. Valider les gates `performance` (#9710) / `observability` / `recette` avant GO pilote.

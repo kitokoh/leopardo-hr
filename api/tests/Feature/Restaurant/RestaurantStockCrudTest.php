@@ -89,7 +89,7 @@ class RestaurantStockCrudTest extends TestCase
             'quantity' => 25,
             'alert_threshold' => 5,
         ])->assertStatus(201)
-            ->assertJsonFragment(['ingredient_id' => $ingredient->id, 'quantity' => '25.000']);
+            ->assertJsonFragment(['ingredient_id' => $ingredient->id, 'quantity' => 25]);
     }
 
     public function test_duplicate_stock_level_is_rejected_422(): void
@@ -159,10 +159,13 @@ class RestaurantStockCrudTest extends TestCase
                 'branch_id' => $branch->id,
                 'ingredient_id' => $ingredient->id,
                 'quantity_delta' => 5,
-                'reason_code' => StockMovementReason::RECEIVING->value,
+                // `receiving` est un motif SYSTEME (produit par POST /receivings,
+                // avec recalcul du cout moyen) : il n'est pas saisissable ici.
+                // Un ajustement manuel est le motif correct pour ce test.
+                'reason_code' => StockMovementReason::ADJUSTMENT->value,
                 'note_redacted' => 'Livraison matinale',
             ])->assertStatus(201)
-                ->assertJsonFragment(['reason_code' => StockMovementReason::RECEIVING->value, 'quantity_delta' => '5.000']);
+                ->assertJsonFragment(['reason_code' => StockMovementReason::ADJUSTMENT->value, 'quantity_delta' => '5.000']);
 
             return ['level' => $level, 'branch' => $branch, 'ingredient' => $ingredient];
         });
@@ -226,10 +229,10 @@ class RestaurantStockCrudTest extends TestCase
                 'branch_id' => $branch->id,
                 'ingredient_id' => $ingredient->id,
                 'quantity_delta' => 2,
-                'reason_code' => StockMovementReason::RECEIVING->value,
+                'reason_code' => StockMovementReason::ADJUSTMENT->value,
             ])->assertStatus(201);
 
-            $this->getJson('/api/v1/restaurant/inventory-movements?reason_code='.StockMovementReason::RECEIVING->value)
+            $this->getJson('/api/v1/restaurant/inventory-movements?reason_code='.StockMovementReason::ADJUSTMENT->value)
                 ->assertOk()
                 ->assertJsonCount(1, 'data');
         });

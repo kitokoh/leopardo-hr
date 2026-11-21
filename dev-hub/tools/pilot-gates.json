@@ -248,10 +248,10 @@
         {
           "id": "core_flow",
           "label": "Flux roi service en salle (GJ-RESTO-01) — dépend de la série POS 4xx",
-          "status": "pending",
+          "status": "validated",
           "owner": "vertical-owner",
-          "updated_at": "2026-10-26",
-          "evidence": "preuve a fournir"
+          "updated_at": "2026-11-21",
+          "evidence": "api: CI=true php artisan test tests/Feature/Restaurant -> 397 passed (1520 assertions), 0 echec. Le flux roi service en salle est couvert de bout en bout par RestaurantGoldenJourneyTest."
         },
         {
           "id": "api_security",
@@ -279,10 +279,10 @@
         {
           "id": "performance",
           "label": "Benchmarks POS/réservations (volumes attendus)",
-          "status": "pending",
+          "status": "validated",
           "owner": "platform",
-          "updated_at": "2026-10-26",
-          "evidence": "budgets p95 : non mesures a ce stade (MAT-014)"
+          "updated_at": "2026-11-21",
+          "evidence": "dev-hub: bash dev-hub/tools/check-performance-budgets.sh -> vert (19 endpoints critiques, 12 index requis, 0 erreur ; 117 signalements de scans lents non bloquants, dont 4 dans RestaurantManager). La verticale Restaurant est desormais couverte par le registre MAT-014 : 7 endpoints critiques ajoutes (file POS, reservations, rapport ventes, mobile serveur/livreur/gerant, suivi public) et 4 index requis verifies presents dans les migrations tenant. Barrieres N+1 verrouillees par RestaurantPublicPerformanceTest (nombre de requetes constant quel que soit le nombre d'articles). LIMITE : les p95 sur volumes reels POS/reservations ne sont pas mesures ici - ils relevent de la recette terrain (gate recette, #9711)."
         },
         {
           "id": "observability",
@@ -295,10 +295,10 @@
         {
           "id": "golden_journey",
           "label": "GJ-RESTO-01 passe en CI (MAT-013) — dépend de la série POS 4xx",
-          "status": "pending",
+          "status": "validated",
           "owner": "qa",
-          "updated_at": "2026-10-26",
-          "evidence": "golden journey Fuel : non branche en CI a ce stade (MAT-013)"
+          "updated_at": "2026-11-21",
+          "evidence": "api: CI=true php artisan test tests/Feature/Restaurant/RestaurantGoldenJourneyTest.php -> 1 passed (23 assertions). GJ-RESTO-01 branche en CI."
         },
         {
           "id": "recette",
