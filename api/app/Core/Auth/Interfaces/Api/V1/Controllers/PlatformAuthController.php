@@ -13,6 +13,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Throwable;
 
 class PlatformAuthController extends Controller
@@ -25,6 +27,15 @@ class PlatformAuthController extends Controller
     {
         try {
             return $this->attemptLogin($request);
+        } catch (ValidationException|HttpExceptionInterface $exception) {
+            // #9687 : `ValidationException` (et toute exception HTTP 4xx/5xx
+            // portée par Symfony) DOIT remonter au handler global, qui la
+            // convertit en 422/4xx avec le détail des champs. Sans ce
+            // `rethrow`, le `catch (Throwable)` ci-dessous l'absorbait et
+            // renvoyait 500 INTERNAL_ERROR : le client ne pouvait pas savoir
+            // quel champ corriger, et chaque saisie invalide polluait les
+            // logs d'erreur (faux 500 dans les alertes).
+            throw $exception;
         } catch (Throwable $exception) {
             // #6974 : le login super-admin a produit un 500 inexpliqué sur DEV
             // (persiste après la garde #6956 — la cause n'est donc pas un hash
