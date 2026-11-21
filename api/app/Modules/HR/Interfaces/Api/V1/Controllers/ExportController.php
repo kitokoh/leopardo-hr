@@ -8,18 +8,18 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\DataAccessAuditLogger;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Domain\Models\ExportHistory;
-use App\Support\CsvCellSanitizer;
+use App\Modules\HR\Infrastructure\Services\HrExportService;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
 class ExportController extends Controller
 {
-    public function __construct(private readonly DataAccessAuditLogger $auditLogger) {}
+    public function __construct(
+        private readonly DataAccessAuditLogger $auditLogger,
+        private readonly HrExportService $exports,
+    ) {}
 
     public function employees(Request $request): JsonResponse
     {
@@ -54,32 +54,13 @@ class ExportController extends Controller
         }
 
         $employees = $query->orderBy('last_name')->get();
-        $format = $validated['format'] ?? 'json';
 
-        if ($format === 'csv') {
-            $this->recordExport($request, $user, 'employees', 'csv', $employees->count(), 'employees_export_'.now()->format('Y-m-d').'.csv');
-
-            $csv = $this->toCsv($employees);
-
-            return response()->json([
-                'data' => [
-                    'format' => 'csv',
-                    'content' => $csv,
-                    'filename' => 'employees_export_'.now()->format('Y-m-d').'.csv',
-                    'count' => $employees->count(),
-                ],
-            ]);
-        }
-
-        $this->recordExport($request, $user, 'employees', 'json', $employees->count());
-
-        return response()->json([
-            'data' => [
-                'format' => 'json',
-                'records' => $employees,
-                'count' => $employees->count(),
-            ],
-        ]);
+        return $this->exports->exportWithFilename(
+            $request,
+            $employees,
+            'employees',
+            'employees_export_'.now()->format('Y-m-d').'.csv',
+        );
     }
 
     public function attendance(Request $request): JsonResponse
@@ -106,30 +87,12 @@ class ExportController extends Controller
             ->orderBy('check_in')
             ->get();
 
-        $format = $validated['format'] ?? 'json';
-
-        if ($format === 'csv') {
-            $this->recordExport($request, $user, 'attendance', 'csv', $logs->count(), 'attendance_export_'.$from.'_'.$to.'.csv');
-
-            return response()->json([
-                'data' => [
-                    'format' => 'csv',
-                    'content' => $this->toCsv($logs),
-                    'filename' => 'attendance_export_'.$from.'_'.$to.'.csv',
-                    'count' => $logs->count(),
-                ],
-            ]);
-        }
-
-        $this->recordExport($request, $user, 'attendance', 'json', $logs->count());
-
-        return response()->json([
-            'data' => [
-                'format' => 'json',
-                'records' => $logs,
-                'count' => $logs->count(),
-            ],
-        ]);
+        return $this->exports->exportWithFilename(
+            $request,
+            $logs,
+            'attendance',
+            'attendance_export_'.$from.'_'.$to.'.csv',
+        );
     }
 
     public function paySlips(Request $request): JsonResponse
@@ -140,7 +103,7 @@ class ExportController extends Controller
             abort(403);
         }
 
-        $records = $this->tableForCompany('pay_slips', $user->company_id, [
+        $records = $this->exports->tableForCompany('pay_slips', $user->company_id, [
             'id',
             'employee_id',
             'payroll_run_id',
@@ -152,7 +115,7 @@ class ExportController extends Controller
             'created_at',
         ]);
 
-        return $this->exportResponse($request, $records, 'pay_slips_export');
+        return $this->exports->exportResponse($request, $records, 'pay_slips_export');
     }
 
     public function absences(Request $request): JsonResponse
@@ -163,7 +126,7 @@ class ExportController extends Controller
             abort(403);
         }
 
-        $records = $this->tableForCompany('absences', $user->company_id, [
+        $records = $this->exports->tableForCompany('absences', $user->company_id, [
             'id',
             'employee_id',
             'absence_type_id',
@@ -174,7 +137,7 @@ class ExportController extends Controller
             'created_at',
         ]);
 
-        return $this->exportResponse($request, $records, 'absences_export');
+        return $this->exports->exportResponse($request, $records, 'absences_export');
     }
 
     public function training(Request $request): JsonResponse
@@ -185,7 +148,7 @@ class ExportController extends Controller
             abort(403);
         }
 
-        $records = $this->tableForCompany('training_enrollments', $user->company_id, [
+        $records = $this->exports->tableForCompany('training_enrollments', $user->company_id, [
             'id',
             'employee_id',
             'session_id',
@@ -195,7 +158,7 @@ class ExportController extends Controller
             'created_at',
         ]);
 
-        return $this->exportResponse($request, $records, 'training_export');
+        return $this->exports->exportResponse($request, $records, 'training_export');
     }
 
     public function contracts(Request $request): JsonResponse
@@ -206,7 +169,7 @@ class ExportController extends Controller
             abort(403);
         }
 
-        $records = $this->tableForCompany('contracts', $user->company_id, [
+        $records = $this->exports->tableForCompany('contracts', $user->company_id, [
             'id',
             'employee_id',
             'reference',
@@ -219,7 +182,7 @@ class ExportController extends Controller
             'created_at',
         ]);
 
-        return $this->exportResponse($request, $records, 'contracts_export');
+        return $this->exports->exportResponse($request, $records, 'contracts_export');
     }
 
     public function vehicles(Request $request): JsonResponse
@@ -230,7 +193,7 @@ class ExportController extends Controller
             abort(403);
         }
 
-        $records = $this->tableForCompany('vehicles', $user->company_id, [
+        $records = $this->exports->tableForCompany('vehicles', $user->company_id, [
             'id',
             'plate_number',
             'brand',
@@ -241,7 +204,7 @@ class ExportController extends Controller
             'created_at',
         ]);
 
-        return $this->exportResponse($request, $records, 'vehicles_export', 'vehicles');
+        return $this->exports->exportResponse($request, $records, 'vehicles_export', 'vehicles');
     }
 
     public function history(Request $request): JsonResponse
@@ -297,11 +260,11 @@ class ExportController extends Controller
 
         $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'payroll_journal']);
 
-        $records = $this->tableForCompany('pay_slips', $user->company_id, [
+        $records = $this->exports->tableForCompany('pay_slips', $user->company_id, [
             'id', 'employee_id', 'payroll_run_id', 'gross_salary', 'net_salary', 'status', 'period_start', 'period_end',
         ]);
 
-        return $this->exportResponse($request, $records, 'payroll_journal');
+        return $this->exports->exportResponse($request, $records, 'payroll_journal');
     }
 
     public function accountingLedger(Request $request): JsonResponse
@@ -315,22 +278,11 @@ class ExportController extends Controller
         $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'payroll_ledger']);
 
         // Summary representation for ledger
-        $records = $this->tableForCompany('pay_slips', $user->company_id, [
+        $records = $this->exports->tableForCompany('pay_slips', $user->company_id, [
             'payroll_run_id', 'gross_salary', 'net_salary',
         ]);
 
-        // Group by payroll_run_id for the ledger
-        $grouped = $records->groupBy('payroll_run_id')->map(function ($group, $runId): \stdClass {
-            $row = new \stdClass;
-            $row->payroll_run_id = $runId;
-            $row->total_gross = $group->sum('gross_salary');
-            $row->total_net = $group->sum('net_salary');
-            $row->total_deductions = $group->sum('gross_salary') - $group->sum('net_salary');
-
-            return $row;
-        })->values();
-
-        return $this->exportResponse($request, collect($grouped), 'payroll_ledger');
+        return $this->exports->exportResponse($request, $this->exports->ledgerRows($records), 'payroll_ledger');
     }
 
     public function accountingOD(Request $request): JsonResponse
@@ -343,179 +295,10 @@ class ExportController extends Controller
 
         $this->auditLogger->recordSensitive($request, $user, 'payroll.accounting_export', null, ['report' => 'accounting_od']);
 
-        $records = $this->tableForCompany('pay_slips', $user->company_id, [
+        $records = $this->exports->tableForCompany('pay_slips', $user->company_id, [
             'payroll_run_id', 'gross_salary', 'net_salary', 'period_end',
         ]);
 
-        $grouped = $records->groupBy('payroll_run_id');
-        $odEntries = collect();
-
-        foreach ($grouped as $runId => $group) {
-            $date = $group->first()->period_end ?? now()->toDateString();
-            $totalGross = $group->sum('gross_salary');
-            $totalNet = $group->sum('net_salary');
-            $totalSocial = $totalGross - $totalNet;
-
-            // 641 - Remuneration du personnel (Debit)
-            $odEntries->push((object) [
-                'date' => $date,
-                'account' => '641000',
-                'label' => 'Rémunérations',
-                'debit' => $totalGross,
-                'credit' => 0,
-            ]);
-
-            // 431 - Securite Sociale (Credit)
-            $odEntries->push((object) [
-                'date' => $date,
-                'account' => '431000',
-                'label' => 'Charges Sociales',
-                'debit' => 0,
-                'credit' => $totalSocial,
-            ]);
-
-            // 421 - Personnel remu dues (Credit)
-            $odEntries->push((object) [
-                'date' => $date,
-                'account' => '421000',
-                'label' => 'Rémunérations Dues',
-                'debit' => 0,
-                'credit' => $totalNet,
-            ]);
-        }
-
-        return $this->exportResponse($request, $odEntries, 'accounting_od');
-    }
-
-    /**
-     * @param  Collection<int, \stdClass>  $collection
-     */
-    private function toCsv(Collection $collection): string
-    {
-        if ($collection->isEmpty()) {
-            return '';
-        }
-
-        $headers = array_keys((array) $collection->first());
-        $csv = implode(',', $headers)."\n";
-
-        foreach ($collection as $row) {
-            $values = array_map(function ($v) {
-                if ($v === null) {
-                    return '';
-                }
-                // #4169 : neutralisation OWASP des préfixes de formule CSV —
-                // les valeurs numériques (montants négatifs compris) restent
-                // intactes (le sanitizer ne préfixe que les chaînes).
-                $str = CsvCellSanitizer::neutralize($v);
-
-                $escaped = str_replace('"', '""', $str);
-
-                return str_contains($escaped, ',') || str_contains($escaped, '"') || str_contains($escaped, "\n")
-                    ? '"'.$escaped.'"'
-                    : $escaped;
-            }, array_values((array) $row));
-            $csv .= implode(',', $values)."\n";
-        }
-
-        return $csv;
-    }
-
-    /**
-     * @param  list<string>  $columns
-     * @return Collection<int, \stdClass>
-     */
-    private function tableForCompany(string $table, string|int $companyId, array $columns): Collection
-    {
-        if (! Schema::hasTable($table)) {
-            return collect();
-        }
-
-        $availableColumns = array_values(array_filter(
-            $columns,
-            fn (string $column): bool => Schema::hasColumn($table, $column)
-        ));
-
-        if ($availableColumns === []) {
-            return collect();
-        }
-
-        $query = DB::table($table)->select($availableColumns);
-
-        if (Schema::hasColumn($table, 'company_id')) {
-            $query->where('company_id', $companyId);
-        }
-
-        return $query->orderByDesc(Schema::hasColumn($table, 'created_at') ? 'created_at' : $availableColumns[0])
-            ->limit(10000)
-            ->get();
-    }
-
-    /**
-     * @param  Collection<int, \stdClass>  $records
-     */
-    private function exportResponse(Request $request, Collection $records, string $filenamePrefix, ?string $type = null): JsonResponse
-    {
-        // Le type d'historisation (#2199) est distinct du préfixe de fichier :
-        // convention établie `employees` → `employees_export_*.csv` (#5034).
-        $type ??= $filenamePrefix;
-
-        $validated = $request->validate([
-            'format' => 'nullable|in:json,csv,xlsx',
-        ]);
-
-        /** @var Employee|null $user */
-        $user = $request->user();
-
-        $format = $validated['format'] ?? 'json';
-        if ($format === 'csv' || $format === 'xlsx') {
-            $filename = $filenamePrefix.'_'.now()->format('Y-m-d').'.csv';
-            $this->recordExport($request, $user, $type, 'csv', $records->count(), $filename);
-
-            return response()->json([
-                'data' => [
-                    'format' => 'csv',
-                    'content' => $this->toCsv($records),
-                    'filename' => $filename,
-                    'count' => $records->count(),
-                ],
-            ]);
-        }
-
-        $this->recordExport($request, $user, $type, 'json', $records->count());
-
-        return response()->json([
-            'data' => [
-                'format' => 'json',
-                'records' => $records,
-                'count' => $records->count(),
-            ],
-        ]);
-    }
-
-    /**
-     * Historise un export (issue #2199) — append-only, tenant-scopé.
-     * Un échec d'historisation ne doit JAMAIS faire échouer l'export.
-     */
-    private function recordExport(Request $request, ?Employee $user, string $type, string $format, int $count, ?string $filename = null): void
-    {
-        if ($user === null) {
-            return;
-        }
-
-        try {
-            ExportHistory::create([
-                // #7711 : company_id délégué au trait BelongsToCompany (tenant actif).
-                'employee_id' => $user->id,
-                'type' => $type,
-                'format' => $format,
-                'record_count' => $count,
-                'filename' => $filename,
-                'ip_address' => $request->ip(),
-                'user_agent' => Str::limit((string) $request->userAgent(), 500),
-            ]);
-        } catch (\Throwable) {
-            // L'export reste fonctionnel même si la table est indisponible.
-        }
+        return $this->exports->exportResponse($request, $this->exports->odEntries($records), 'accounting_od');
     }
 }

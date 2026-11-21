@@ -15,6 +15,7 @@ use App\Modules\Billing\Application\Actions\ActivateTrialDirectly;
 use App\Modules\Billing\Application\Actions\RequestTrialSignup;
 use App\Modules\Billing\Application\Actions\SetTrialPassword;
 use App\Modules\Billing\Application\Actions\VerifyTrialSignup;
+use App\Modules\Billing\Infrastructure\Services\TrialProvisioningRowService;
 use App\Rules\SupportedCountry;
 use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Database\QueryException;
@@ -47,6 +48,7 @@ class SelfServiceTrialController extends Controller
         private readonly SolutionCatalogue $solutionCatalogue,
         private readonly AuthService $authService,
         private readonly IdempotencyStore $idempotencyStore,
+        private readonly TrialProvisioningRowService $provisioningRows,
     ) {}
 
     /**
@@ -347,51 +349,32 @@ class SelfServiceTrialController extends Controller
         // chemin (sessionStorage + /api/forms/trial-status + /api/forms/trial-password).
         // La ligne est créée ici (status pending) puis passée à `ready` par
         // VerifyTrialSignup au moment du provisioning.
-        $provisioningToken = Str::random(64);
-
         try {
-            // `lock_timeout` BORNÉ : cette ligne est un CONFORT (suivi de statut
-            // + définition du mot de passe), jamais une condition de l'essai.
-            // Sans borne, un verrou résiduel sur l'index partiel unique
-            // `trial_provisionings_pending_email_unique` (transaction avortée
-            // laissée ouverte, migration en cours…) ferait ATTENDRE le signup
-            // — voire bloquer la requête indéfiniment. On préfère l'échec
-            // rapide (55P03) absorbé par le catch ci-dessous : le prospect
-            // reçoit son code OTP et poursuit.
-            DB::transaction(function () use ($email, $validated, $provisioningToken): void {
-                DB::statement("SET LOCAL lock_timeout = '3s'");
-
-                DB::table('trial_provisionings')->insert([
-                    'email' => $email,
-                    'company_name' => $validated['company'],
-                    'country' => strtoupper($validated['country']),
-                    'provisioning_token' => $provisioningToken,
-                    'status' => 'pending',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
-            });
+            $provisioningToken = $this->provisioningRows->createPending(
+                $email,
+                (string) $validated['company'],
+                (string) $validated['country'],
+                withLockTimeout: true,
+            );
         } catch (QueryException $e) {
             // Un POST concurrent a déjà créé la ligne pending pour cet email
             // (index partiel unique #3951) : on réutilise la ligne gagnante au
             // lieu de renvoyer un 500.
             if ($e->getCode() === '23505') {
-                $winner = DB::table('trial_provisionings')
-                    ->where('email', $email)
-                    ->where('status', 'pending')
-                    ->first();
+                $winnerToken = $this->provisioningRows->findPendingToken($email);
 
-                if ($winner !== null) {
-                    $provisioningToken = (string) $winner->provisioning_token;
-                } else {
+                if ($winnerToken === null) {
                     Log::warning('trial.self_service.provisioning_row_race_unresolved', ['email_hash' => $this->emailLogId($email)]);
                 }
+
+                $provisioningToken = $winnerToken ?? Str::random(64);
             } else {
                 // Jamais bloquant pour l'essai : l'OTP reste le chemin nominal.
                 Log::error('trial.self_service.provisioning_row_failed', [
                     'email_hash' => $this->emailLogId($email),
                     'error' => $e->getMessage(),
                 ]);
+                $provisioningToken = Str::random(64);
             }
         }
 
@@ -744,26 +727,15 @@ class SelfServiceTrialController extends Controller
 
         // Idempotence (#3951) : un double POST réutilise la ligne pending
         // existante au lieu de créer un second tenant.
-        $existingPending = DB::table('trial_provisionings')
-            ->where('email', $email)
-            ->where('status', 'pending')
-            ->first();
+        $provisioningToken = $this->provisioningRows->findPendingToken($email);
 
-        $provisioningToken = $existingPending !== null
-            ? (string) $existingPending->provisioning_token
-            : Str::random(64);
-
-        if ($existingPending === null) {
+        if ($provisioningToken === null) {
             try {
-                DB::table('trial_provisionings')->insert([
-                    'email' => $email,
-                    'company_name' => $validated['company'],
-                    'country' => strtoupper((string) $validated['country']),
-                    'provisioning_token' => $provisioningToken,
-                    'status' => 'pending',
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                $provisioningToken = $this->provisioningRows->createPending(
+                    $email,
+                    (string) $validated['company'],
+                    (string) $validated['country'],
+                );
             } catch (QueryException $e) {
                 // Course entre le check et l'insert (index partiel unique
                 // #3951) : on réutilise la ligne gagnante, jamais de 500.
@@ -776,16 +748,11 @@ class SelfServiceTrialController extends Controller
                     return $this->directActivationUnavailable();
                 }
 
-                $winner = DB::table('trial_provisionings')
-                    ->where('email', $email)
-                    ->where('status', 'pending')
-                    ->first();
+                $provisioningToken = $this->provisioningRows->findPendingToken($email);
 
-                if ($winner === null) {
+                if ($provisioningToken === null) {
                     return $this->directActivationUnavailable();
                 }
-
-                $provisioningToken = (string) $winner->provisioning_token;
             }
         }
 
@@ -888,12 +855,9 @@ class SelfServiceTrialController extends Controller
         // dupliqué) ne doit PAS créer 2 lignes pending + 2
         // ProvisionDemoTenantJob → 2 tenants sandbox. On réutilise la ligne
         // pending existante (même token, idempotent).
-        $existingPending = DB::table('trial_provisionings')
-            ->where('email', $email)
-            ->where('status', 'pending')
-            ->first();
+        $existingToken = $this->provisioningRows->findPendingToken($email);
 
-        if ($existingPending) {
+        if ($existingToken !== null) {
             Log::info('trial.signup_existing_pending_reused', ['email_hash' => $this->emailLogId($email)]);
 
             return new JsonResponse([
@@ -904,7 +868,7 @@ class SelfServiceTrialController extends Controller
                     'status' => 'provisioning_sandbox',
                     'workflow' => 'guided_trial',
                     'otp_sent' => false,
-                    'provisioning_token' => $existingPending->provisioning_token,
+                    'provisioning_token' => $existingToken,
                 ],
             ], 200);
         }
@@ -913,21 +877,15 @@ class SelfServiceTrialController extends Controller
         // (plus de fallback silencieux DZ — invariant 10 de la spec).
         // #2437 : un provisioning_token est créé pour permettre au prospect
         // de poller GET /trial/status sans exposer l'email brut.
-        $provisioningToken = Str::random(64);
-
         try {
-            DB::table('trial_provisionings')->insert([
-                'email' => $email,
-                // #9305 — parité avec le parcours vérifié : la ligne de suivi
-                // porte le nom et le pays déclarés, sinon l'écran de statut ne
-                // peut rien afficher d'utile au responsable.
-                'company_name' => $validated['company'],
-                'country' => strtoupper((string) $validated['country']),
-                'provisioning_token' => $provisioningToken,
-                'status' => 'pending',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            // #9305 — parité avec le parcours vérifié : la ligne de suivi
+            // porte le nom et le pays déclarés, sinon l'écran de statut ne
+            // peut rien afficher d'utile au responsable.
+            $provisioningToken = $this->provisioningRows->createPending(
+                $email,
+                (string) $validated['company'],
+                (string) $validated['country'],
+            );
         } catch (QueryException $e) {
             // Issue #3951 : course entre le check ci-dessus et l'insert —
             // un POST concurrent a gagné (index partiel unique
@@ -938,10 +896,11 @@ class SelfServiceTrialController extends Controller
             if ($e->getCode() === '23505') {
                 Log::warning('Trial provisioning race on email_hash '.$this->emailLogId($email).' — reusing winner row.');
 
-                $winner = DB::table('trial_provisionings')
-                    ->where('email', $email)
-                    ->where('status', 'pending')
-                    ->firstOrFail();
+                $winnerToken = $this->provisioningRows->findPendingToken($email);
+
+                if ($winnerToken === null) {
+                    throw $e;
+                }
 
                 return new JsonResponse([
                     'success' => true,
@@ -951,7 +910,7 @@ class SelfServiceTrialController extends Controller
                         'status' => 'provisioning_sandbox',
                         'workflow' => 'guided_trial',
                         'otp_sent' => false,
-                        'provisioning_token' => $winner->provisioning_token,
+                        'provisioning_token' => $winnerToken,
                     ],
                 ], 200);
             }
