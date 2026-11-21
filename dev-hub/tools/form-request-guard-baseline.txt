@@ -111,9 +111,6 @@ api/app/Modules/Billing/Interfaces/Api/V1/Controllers/CompanyRequestController.p
 api/app/Modules/Billing/Interfaces/Api/V1/Controllers/PlatformCompanySubscriptionController.php:30
 api/app/Modules/Billing/Interfaces/Api/V1/Controllers/PlatformPaymentGatewayController.php:74
 api/app/Modules/Billing/Interfaces/Api/V1/Controllers/PlatformPlanAdminController.php:208
-api/app/Modules/Billing/Interfaces/Api/V1/Controllers/SelfServiceTrialController.php:155
-api/app/Modules/Billing/Interfaces/Api/V1/Controllers/SelfServiceTrialController.php:494
-api/app/Modules/Billing/Interfaces/Api/V1/Controllers/SelfServiceTrialController.php:628
 api/app/Modules/Billing/Interfaces/Api/V1/Controllers/TenantPaymentProfileController.php:45
 api/app/Modules/Billing/Interfaces/Api/V1/Controllers/TenantPaymentProfileController.php:66
 api/app/Modules/Branding/Interfaces/Api/V1/Controllers/BrandController.php:100
