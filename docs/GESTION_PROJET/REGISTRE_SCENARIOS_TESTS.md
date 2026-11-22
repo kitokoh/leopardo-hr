@@ -22,6 +22,41 @@ Surface : `api/routes/modules/trade.php` (`GET|POST /v1/trade/products`, `GET|PU
 
 **Non couvert** — `php artisan test` (pas de `vendor/` ni de PostgreSQL dans le sandbox) : `TradeProductApiTest` (8 cas) est écrit et sera la mesure du run CI. Le rendu navigateur réel de la fiche n'a pas été ouvert.
 
+## 2026-11-22 — Outils vendeur : délégation comptable, pipeline CRM, partage de document (PR #9766, #9763 #9764 #9765)
+
+Surface : `api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/Concerns/ResolvesAccountingActor.php` (nouveau trait), `AccountingDocumentController.php`, `AccountingPaymentController.php`, `AccountingAuditController.php`, `ShareAccessController.php`, `Requests/ShareDocumentRequest.php` (nouveau), `api/routes/modules/accounting.php` (route `POST /accounting/documents/{document}/share`), `api/app/Modules/CRM/Application/Services/CrmDashboardReadModel.php`, `api/database/seeders/CrmPipelineStagesSeeder.php` (nouveau), `api/openapi.yaml`, `api/lang/{fr,ar,en,tr}/accounting.php`.
+
+**Pourquoi c'est un scénario de test** : trois défauts qui ne se voient ni dans un diff de route ni dans un test de contrat — un contrôle d'autorisation dupliqué qui annule une délégation, une jointure sur une colonne jamais écrite, et une fonctionnalité implémentée à moitié dont le point d'entrée manquait.
+
+1. **Délégation annulée.** `EnsureApiManagerMiddleware` (#7761) ouvre un module à un non-manager porteur d'un grant `employee_module_grants`, et le vérifie **avant** l'exigence manager. Quatre contrôleurs refaisaient `if (! $actor->isManager()) { abort(403); }` : le grant `crm` passait (200), le grant `accounting` était refusé (403). Le trait `ResolvesAccountingActor` applique la règle du middleware à un seul endroit.
+2. **Pipeline toujours à zéro.** `crm_opportunities` porte `stage` (varchar, écrit par `ConvertLeadAction`, lu par le kanban) **et** `stage_id` (bigint, jamais renseigné). Le read model joignait en **INTERNE** sur `s.id = o.stage_id` : aucune ligne, dashboard à 0 alors que le kanban affichait les opportunités. `crm_pipeline_stages` était en plus vide (0 ligne, aucun seeder).
+3. **Partage à moitié implémenté.** Modèle `AccountingDocumentShare`, `DocumentShareService::createShare()`, portail public et audit RGPD existaient ; **aucune route** ne créait le jeton (`POST …/share` → 404). Le vendeur ne pouvait jamais envoyer un devis à son client.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| un non-manager avec le grant `accounting` crée un devis (201) | le `isManager()` en dur renvoyait 403 |
+| le même crée une facture (201, numéro `FAC-…`) | idem |
+| le même lit `GET /accounting/audit-logs` (200) | idem |
+| un non-manager **sans** grant reçoit 403 | une correction trop large ouvrirait le module à tous |
+| un grant `crm` n'ouvre **pas** `accounting` (403) | confusion entre grants de modules |
+| `comptable` et `principal` conservent l'accès | régression sur les rôles historiques |
+| une opportunité avec `stage` seul (stage_id NULL) est comptée | la jointure interne la faisait disparaître |
+| `stage` seul et `stage_id` renseigné donnent le même total | les deux chemins divergeaient |
+| `won`/`lost` dérivés de `stage` quand `stage_id` est NULL | les totaux gagné/perdu restaient à 0 |
+| une étape d'un **autre** tenant ne qualifie jamais l'opportunité | jointure sans `company_id` = fuite cross-tenant |
+| dashboard et kanban affichent le même montant | c'était précisément la divergence signalée |
+| `POST …/share` renvoie 201 + jeton de 64 caractères + expiration | la route n'existait pas (404) |
+| le lien public sert le document **sans authentification** | le portail existait mais aucun jeton ne pouvait être créé |
+| `expires_in_days` borné 1..365 (0 et 366 → 422) | un partage immortel ou instantané |
+| un document d'un autre tenant → 404 | isolation tenant fail-closed |
+| un employé sans grant → 403 | le partage est une opération sensible |
+| un partage expiré n'est plus servi (404) | un lien périmé resterait actif |
+| `CrmPipelineStagesSeeder` rejoué ne duplique rien | 18 lignes (3 tenants × 6 étapes) avant comme après |
+
+**Couverture exécutée** — `AccountingModuleGrantDelegationTest` **8 passed** (4 échouent sans le correctif) ; `CrmDashboardStageFallbackTest` **5 passed** (5/5 échouent sans) ; `AccountingDocumentShareTest` **6 passed** (5/6 échouent sans la route) ; `CrmDashboardTest` **7 passed** ; suite comptable élargie **44 passed** ; `LangCatalogParityTest` vert ; PHPStan Strict **No errors** sur les fichiers touchés ; `check-layer-purity` **0 violation nouvelle** ; `check-form-request-guard.py` exit 0 (dette **434**, inchangée) ; `check-openapi-route-coverage.py` **0 nouvelle route non couverte**.
+
+**Non couvert** — `phpstan analyse` sur la totalité du dépôt (OOM killer dans le sandbox, 2 Go de RAM) et la suite Feature complète ; la mesure de référence est le run CI.
+
 ## 2026-11-21 — Dette backend : Audit, Platform, Support, Travel, doublons de listeners (PR #9750, #9741)
 
 Surface : `api/routes/modules/hr_extended.php` (redéclarations `GET /audit-logs` et `/audit-logs/{id}` supprimées), `api/app/Core/Auth/Interfaces/Api/V1/Controllers/AuditLogController.php` + `Requests/AuditLogIndexRequest.php` + `Requests/AuditLogExportRequest.php`, `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformCompanyFeatureController.php` + `Requests/UpdateCompanyFeaturesRequest.php`, `api/app/Modules/Platform/Infrastructure/Services/WebhookEventRegistry.php`, `api/app/Http/Middleware/Travel/TravelPartnerAuthMiddleware.php`, `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/TradeCompanyProfileController.php`, `api/app/Modules/CRM/Infrastructure/Services/CrmConsentGuard.php`, `api/app/Providers/EventServiceProvider.php`, `api/bootstrap/app.php`.
