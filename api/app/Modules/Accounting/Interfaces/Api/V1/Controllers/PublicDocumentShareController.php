@@ -10,6 +10,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
 use App\Modules\Accounting\Infrastructure\Jobs\GenerateDocumentPdf;
+use App\Modules\Accounting\Infrastructure\Services\DocumentPdfArchiveService;
 use App\Modules\Accounting\Infrastructure\Services\DocumentShareService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +27,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 final class PublicDocumentShareController
 {
-    public function __construct(private readonly DocumentShareService $shareService) {}
+    public function __construct(
+        private readonly DocumentShareService $shareService,
+        private readonly DocumentPdfArchiveService $pdfArchive,
+    ) {}
 
     public function info(string $token): JsonResponse
     {
@@ -83,7 +87,14 @@ final class PublicDocumentShareController
         $document = $share->document;
 
         if ($document->pdf_path === null || ! Storage::disk(GenerateDocumentPdf::DISK)->exists($document->pdf_path)) {
-            return $this->errorResponse('DOCUMENT_PDF_NOT_READY', 404);
+            // #9799 — repli paresseux : le PDF n'était généré que par l'envoi
+            // par e-mail, donc un partage créé puis téléchargé aussitôt
+            // renvoyait 404. On le produit ici à la demande (idempotent : le
+            // service ne rend rien si le fichier existe déjà). Un échec réel de
+            // rendu conserve le 404 localisé — jamais une 500 ni un fichier vide.
+            if (! $this->pdfArchive->ensure($document)) {
+                return $this->errorResponse('DOCUMENT_PDF_NOT_READY', 404);
+            }
         }
 
         $filename = $document->type.'-'.$document->number.'.pdf';
