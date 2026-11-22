@@ -7816,7 +7816,17 @@
     },
     "orders": {
       "title": "Commandes & expéditions",
-      "subtitle": "Commandes d'achat et de vente, expéditions et transitions."
+      "subtitle": "Commandes d'achat et de vente, expéditions et transitions.",
+      "status": {
+        "draft": "Brouillon",
+        "confirmed": "Confirmée",
+        "preparing": "En préparation",
+        "ready": "Prête",
+        "shipped": "Expédiée",
+        "delivered": "Livrée",
+        "closed": "Clôturée",
+        "cancelled": "Annulée"
+      }
     },
     "transport": {
       "title": "Transport",
@@ -7825,7 +7835,12 @@
     "costs": {
       "title": "Coûts & douane",
       "subtitle": "Coût total rendu par poste et préparation documentaire.",
-      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité."
+      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité.",
+      "status": {
+        "draft": "Brouillon",
+        "finalized": "Finalisé",
+        "archived": "Archivé"
+      }
     },
     "catalog": {
       "title": "Catalogue produits",
@@ -7929,6 +7944,27 @@
       "withdrawn": "Retirer",
       "refused": "Transition refusée : cet état ne le permet pas.",
       "failed": "La transition a échoué. Réessayez."
+    },
+    "rfqs": {
+      "status": {
+        "draft": "Brouillon",
+        "open": "Diffusée",
+        "closed": "Clôturée",
+        "awarded": "Attribuée",
+        "cancelled": "Annulée"
+      }
+    },
+    "quotes": {
+      "status": {
+        "draft": "Brouillon",
+        "submitted": "Soumise",
+        "under_review": "En revue",
+        "negotiating": "En négociation",
+        "accepted": "Acceptée",
+        "rejected": "Refusée",
+        "expired": "Expirée",
+        "withdrawn": "Retirée"
+      }
     }
   },
   "vtc": {

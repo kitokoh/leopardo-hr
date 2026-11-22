@@ -7816,7 +7816,17 @@
     },
     "orders": {
       "title": "Siparişler ve sevkiyatlar",
-      "subtitle": "Alım ve satım siparişleri, sevkiyatlar ve geçişler."
+      "subtitle": "Alım ve satım siparişleri, sevkiyatlar ve geçişler.",
+      "status": {
+        "draft": "Taslak",
+        "confirmed": "Onaylandi",
+        "preparing": "Hazirlaniyor",
+        "ready": "Hazir",
+        "shipped": "Sevk edildi",
+        "delivered": "Teslim edildi",
+        "closed": "Kapali",
+        "cancelled": "Iptal"
+      }
     },
     "transport": {
       "title": "Taşımacılık",
@@ -7825,7 +7835,12 @@
     "costs": {
       "title": "Maliyetler ve gümrük",
       "subtitle": "Kalem bazında teslim maliyeti ve belge hazırlığı.",
-      "disclaimer": "Gösterge niteliğinde tahmin — resmî gümrük beyanı veya uygunluk garantisi değildir."
+      "disclaimer": "Gösterge niteliğinde tahmin — resmî gümrük beyanı veya uygunluk garantisi değildir.",
+      "status": {
+        "draft": "Taslak",
+        "finalized": "Kesinlesti",
+        "archived": "Arsivlendi"
+      }
     },
     "catalog": {
       "title": "Ürün kataloğu",
@@ -7929,6 +7944,27 @@
       "withdrawn": "Geri cek",
       "refused": "Gecis reddedildi: bu durum buna izin vermiyor.",
       "failed": "Gecis basarisiz oldu. Tekrar deneyin."
+    },
+    "rfqs": {
+      "status": {
+        "draft": "Taslak",
+        "open": "Acik",
+        "closed": "Kapali",
+        "awarded": "Verildi",
+        "cancelled": "Iptal"
+      }
+    },
+    "quotes": {
+      "status": {
+        "draft": "Taslak",
+        "submitted": "Sunuldu",
+        "under_review": "Incelemede",
+        "negotiating": "Muzakerelerde",
+        "accepted": "Kabul",
+        "rejected": "Reddedildi",
+        "expired": "Suresi doldu",
+        "withdrawn": "Geri cekildi"
+      }
     }
   },
   "vtc": {
