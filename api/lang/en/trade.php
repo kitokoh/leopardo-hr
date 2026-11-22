@@ -16,4 +16,5 @@ return [
     'profile_required_before_publish' => 'Complete your trade profile before publishing it.',
     'public_slug_required' => 'A public slug and trade name are required to publish the company.',
     'public_slug_taken' => 'This public slug is already used by another company.',
+    'search_query_too_short' => 'The search must contain at least :min characters.',
 ];

@@ -34,11 +34,14 @@
 
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCompanyProfileController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCostEstimateController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCounterpartyController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeHealthController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeMetaController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeProductController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradePromotionKitController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeQuoteController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeRfqController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeSearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.trade'])
@@ -108,6 +111,38 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/products/{product}/archive', [TradeProductController::class, 'archive']);
         });
 
+        // ── Recherche transverse — #9781 ─────────────────────────────────────
+        // « Je ne sais plus où c'est » : un seul champ qui interroge les
+        // contreparties, le catalogue et les dossiers. Ouvert à tous les rôles
+        // métier — chercher n'est pas une opération commerciale.
+        Route::middleware('trade.role:purchase,sales,logistics,reports,admin')->group(function (): void {
+            Route::get('/search', [TradeSearchController::class, 'index']);
+        });
+
+        // ── Contreparties : clients, fournisseurs, transporteurs — #9780 ──────
+        // Sans ces routes, `trade_counterparties` (table, modèle, factory,
+        // enums depuis TRADE-003/#8478) restait INATTEIGNABLE : un tenant
+        // pouvait émettre des RFQ et des offres sans jamais créer un
+        // fournisseur ni un client, et `trade_deal.trade_counterparty_id`
+        // ne pouvait jamais être renseigné.
+        //
+        // Lecture : tous les rôles métier (acheteur, vendeur et logisticien
+        // travaillent sur le même répertoire partagé).
+        Route::middleware('trade.role:purchase,sales,logistics,admin')->group(function (): void {
+            Route::get('/counterparties', [TradeCounterpartyController::class, 'index']);
+            Route::get('/counterparties/{counterparty}', [TradeCounterpartyController::class, 'show']);
+            Route::post('/counterparties', [TradeCounterpartyController::class, 'store']);
+            Route::put('/counterparties/{counterparty}', [TradeCounterpartyController::class, 'update']);
+            Route::delete('/counterparties/{counterparty}', [TradeCounterpartyController::class, 'destroy']);
+        });
+
+        // Vérification : acte réservé à l'admin de la verticale. `verified`
+        // affirme « contrôlé par l'équipe » — ce n'est pas une opération
+        // commerciale ordinaire, et la route le reflète.
+        Route::middleware('trade.role:admin')->group(function (): void {
+            Route::post('/counterparties/{counterparty}/verify', [TradeCounterpartyController::class, 'verify']);
+        });
+
         // ── Profil commercial & publication vitrine (#9617) ────────────────
         // Sans ces routes, `trade_company_profiles.is_public` restait à `false`
         // pour tout le monde : `/entreprises` et `/entreprises/{slug}` ne
@@ -120,4 +155,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/profile', [TradeCompanyProfileController::class, 'update']);
         // Acte distinct : publier n'est pas enregistrer un champ commercial.
         Route::put('/profile/publication', [TradeCompanyProfileController::class, 'publish']);
+
+        // ── Kit de promotion (#9783) ─────────────────────────────────────────
+        // « Être capable de promouvoir son entreprise » : le kit liste ce qui
+        // manque à la fiche publique et propose un brouillon adossé aux données
+        // réelles. Il ne publie RIEN — la publication reste la route ci-dessus.
+        Route::middleware('trade.role:admin')->group(function (): void {
+            Route::get('/promotion-kit', [TradePromotionKitController::class, 'show']);
+        });
     });
