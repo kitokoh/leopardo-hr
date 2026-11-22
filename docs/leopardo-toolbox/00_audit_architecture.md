@@ -13,7 +13,7 @@
 | `front/` | 6 familles : `web` (Next.js 16, vitrine+dashboard), `web-offline` (PWA), `admin-dashboard` (Vue 3), `marketplace`, `travel-web`, `mobile_apps` (9 apps Flutter, melos), `zkteco-kiosk`. |
 | `shared/` | `i18n/` (locales fr/en/ar/tr JSON, sync vers web/backend/mobile), `mediaForMarketing/`. |
 | `dev-hub/` | Outils développeur, miroir OpenAPI, registres de gouvernance (`governance/bounded-context-registry.json`), outils de garde CI. |
-| `docs/` | Architecture, ADR (`docs/adr/`), décisions datées (`docs/DECISIONS/`), missions (business-os, leopardo), gouvernance (`docs/GOUVERNANCE/`), security, etc. |
+| `docs/` | Architecture, ADR (`docs/adr/`), décisions datées (`docs/decisions/`), missions (business-os, leopardo), gouvernance (`docs/GOUVERNANCE/`), security, etc. |
 | `.github/workflows/` | 72 pipelines CI/CD (README de cartographie), dont `web-marketing-ci.yml` (vitrine), `tests.yml`, `deploy-main.yml`, `vitrine-lock-guard.yml`. |
 | Déploiement | Render (`render*.yaml`), Vercel pour les fronts Next.js, GitHub Pages (`site/gh-pages/` + `pages-deploy.yml`). |
 

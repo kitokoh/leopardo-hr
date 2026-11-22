@@ -694,7 +694,7 @@ pour les résoudre au checkout.
 ### Bascules search_path PostgreSQL (BOS-019/#8204, ADR-0027)
 
 - Toute bascule `SET search_path` passe par `TenantManager::withinSearchPath()` (try/finally garanti, validation fail-closed de la chaîne), ou par `App\Support\SearchPathGuard::run()` quand on bascule en dehors du cycle de vie tenant (action web, commande, service plateforme) : le helper capture `SHOW search_path` et le restaure en `finally`, y compris sur exception. Jamais de `DB::statement('SET search_path …')` nu — la garde `dev-hub/tools/check-search-path-guard.py` (job requis `Module Structure Validator`, baseline ratchet) fait échouer toute occurrence nouvelle. Le middleware `EnsureKioskSearchPathReset` (#3368) reste un filet, pas une permission.
-- Le mode « un schéma par tenant » est MORT (garde `Company::booted()` conservée) : aucune nouvelle branche `tenancy_type === 'schema'` — inventaire borné des références legacy dans `docs/architecture/adr/0027-shared-schema-definitif.md`.
+- Le mode « un schéma par tenant » est MORT (garde `Company::booted()` conservée) : aucune nouvelle branche `tenancy_type === 'schema'` — inventaire borné des références legacy dans `docs/architecture/adr/0028-shared-schema-definitif.md`.
 
 ### Frontieres routes modules
 

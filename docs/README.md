@@ -19,6 +19,15 @@ Règles applicables à **tout nouveau** dossier ou fichier de `docs/` (les exist
 | **Cycle de vie** | Doc obsolète → `docs/archive/` (ou `docs/notes/archive/` si gouvernance historique), avec bandeau « ⚠️ Archivé » et lien vers le remplaçant. Ne jamais supprimer sans redirection. |
 | **1 dossier = 1 README** | Chaque dossier-famille a un `README.md` d'index expliquant son périmètre. |
 
+> **Ces règles sont vérifiées en CI** par `dev-hub/tools/check-docs-hygiene.sh`
+> (workflow `docs-hygiene-guard.yml`, issue #9772) : deux dossiers de `docs/` dont
+> les noms ne diffèrent que par la casse font échouer la garde, et tout fichier
+> **non déclaré** au premier niveau de `docs/` fait échouer la garde. Les 12
+> fichiers historiques encore à la racine sont une **dette déclarée** dans
+> `dev-hub/tools/docs-root-allowlist.txt` — ratchet : un fichier nouveau échoue,
+> et un fichier déplacé doit sortir de la liste. Leur déplacement relève des
+> phases 2-3 (§4), pas d'un correctif de propreté.
+
 ### Table de correspondance (noms actuels → cible kebab-case)
 
 Renommages **différés** (phases 2-3, voir §4 — beaucoup sont surveillés par des gardes CI) :
