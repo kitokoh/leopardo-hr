@@ -1,64 +1,71 @@
 # Architecture DDD — État des modules
 
-> Mis à jour le 2026-09-05 (audit vérité docs) | Phase 5 terminée — nettoyage legacy (PR #824)
+> **Document à sections mesurées.** Les sections 1, 3 et 5 sont **générées depuis le disque**
+> par `dev-hub/tools/generate-architecture-status.py` (issue #9801) : ne pas les éditer à la main,
+> la CI échoue si le fichier diverge du disque. Les sections 2 et 4 restent rédigées.
+>
+> Dernière régénération : 2026-11-22 (audit vérité docs — 41 modules mesurés).
 
-## 1. Tableau de l'état DDD — 41 modules actifs
+<!-- BEGIN GENERATED ARCHITECTURE STATUS S1 -->
 
-| Module          | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
-|-----------------|:------:|:---------:|:----------:|:-----------:|:----:|:-----:|:----------:|:---------:|:-----:|
-| **Paiements** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Absence** | — | — | — | — | — | — | ✅ | ✅ | ✅ |
+## 1. Tableau de l'etat DDD — 41 modules actifs
+
+| Module | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Absence** | ✅ | — | — | — | — | — | ✅ | ✅ | ⚠️ |
 | **Accounting** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | **Attendance** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Billing** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Billing** | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Branding** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **CRM** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Cabinet** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Cameras** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **Catalog** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
-| **Branding** | ✅ | — | — | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **Library** | ✅ | — | — | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **Communication** | ✅ | — | — | — | — | — | ✅ | ✅ | ✅ |
+| **Cabinet** | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Cameras** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Catalog** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Communication** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **Delivery** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **EdgeSync** | ✅ | — | — | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **EduManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **Expense** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **Fleet** | ✅ | — | ✅ | — | — | — | ✅ | ✅ | ⚠️ |
-| **FuelStation** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ✅ |
-| **Fundraising** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Geo** | ✅ | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ |
-| **HealthManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **HospitalityManager** | ✅ | — | ✅ | — | — | — | ✅ | ✅ | ✅ |
+| **FarmOs** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
+| **Fleet** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **FuelStation** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Fundraising** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Geo** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ✅ |
 | **HR** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **HealthManager** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **HospitalityManager** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
+| **Library** | ✅ | ✅ | — | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **Marketing** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Notification** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Onboarding** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Notification** | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Onboarding** | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Pages** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Paiements** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **Payroll** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **Pharmacy** | ✅ | — | ✅ | ✅ | — | — | ✅ | ✅ | ✅ |
-| **Planning** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
-| **Platform** | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Recruitment** | ✅ | ✅ | ✅ | — | — | ✅ | ✅ | ✅ | ⚠️ |
+| **Pharmacy** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Planning** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Platform** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Recruitment** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **Restaurant** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
 | **RestaurantManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
-| **Retail** | ✅ | — | — | — | — | — | ✅ | ✅ | ✅ |
-| **SearchIntelligence** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
-| **Showcase** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
-| **Pages** | ✅ | — | — | — | — | — | — | ✅ | ✅ |
+| **Retail** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **SearchIntelligence** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Showcase** | ✅ | — | — | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **Trade** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **TravelAgency** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **Vtc** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **FarmOs** | ✅ | — | ✅ | ✅ | — | — | ✅ | ✅ | ✅ |
+| **TravelAgency** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ⚠️ |
+| **Vtc** | ✅ | — | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
-> Tableau **régénéré depuis le disque** le 2026-09-05 (audit vérité — doublons CRM ×2, Restaurant ×3,
-> RestaurantManager ×3, Accounting ×3, Delivery/EduManager ×2 et titre dupliqué supprimés).
-> ✅ = au moins un fichier PHP dans la couche (ou dossier de tests dédié sous `api/tests/{Feature,Unit}/`) ;
-> — = couche absente/vide. ⚠️ = aucun dossier de tests dédié identifié pour ce module.
-> `EdgeSync` : structure spécialisée synchro/offline (pas de Contracts/Exceptions/DTOs — conforme).
-> Décisions 2026-09-06 (ADR-0020, #6899/#6901/#6896 — délégation fondateur) :
-> `Restaurant` = **fournisseur de contenu** (Solution/Survey consommés par RestaurantManager et `Core\Solutions`) —
-> Application/Infrastructure/Interfaces **N/A intentionnel** (fini « en cours ») ; `Fleet` = Application/Infrastructure
-> vides **conservées**, à peupler au fil des besoins fonctionnels (aucune Action factice) ; `Payroll` = Application en
-> construction par lots (cartographie `PAYROLL_APPLICATION_CARTOGRAPHIE.md`, #6896 reste ouverte).
-> Détails et dérogations : `api/ARCHITECTURE.md`.
+> Tableau **regenere depuis le disque** par `dev-hub/tools/generate-architecture-status.py` (issue #9801). Ne pas editer a la main : la CI echoue si le fichier diverge du disque.
+>
+> ✅ = au moins un fichier PHP dans la couche ; — = couche absente/vide ; ⚠️ = aucun dossier de tests dedie sous `api/tests/{Feature,Unit}/`.
+>
+> Chemins mesures : `Domain/`, `Domain/Contracts/`, `Domain/Exceptions/`, `Application/`, `Application/DTOs/`, `Infrastructure/`, `Interfaces/`, `Providers/`.
+>
+> Absences **decidees** (pas des retards) :
+> - `Absence` — facade HTTP assumee (PA2-ARCH-002, ADR-0031) — domaine propriete de Planning.
+> - `EdgeSync` — structure specialisee synchro/offline — pas de Contracts/Exceptions/DTOs.
+> - `Restaurant` — fournisseur de contenu (ADR-0020) — Application/Infra/Interfaces N/A intentionnel.
+
+<!-- END GENERATED ARCHITECTURE STATUS S1 -->
 
 ## 2. Routes — État de la migration
 
@@ -86,7 +93,26 @@
 
 ---
 
-## 3. Métriques — historique par phase (Phase 1→4, chantier clos 2026-07 ; 25 modules actifs aujourd'hui)
+<!-- BEGIN GENERATED ARCHITECTURE STATUS S3 -->
+
+## 3. Metriques — etat courant mesure
+
+| Indicateur | Valeur |
+|---|---|
+| Modules DDD actifs | **41** |
+| Fichiers de test sur disque | 1493 |
+| Modules sans dossier de tests dedie | 5 (`Absence`, `FarmOs`, `HospitalityManager`, `RestaurantManager`, `TravelAgency`) |
+| Modules sans couche `Application` | 3 (`Absence`, `Geo`, `Restaurant`) |
+
+> L'historique par phase (Phase 1→4, chantier clos 2026-07) est conserve ci-dessous a titre d'archive. Il ne decrit **pas** l'etat courant : le lire comme tel etait la source des trois comptages contradictoires releves par l'audit du 2026-11-22.
+
+<!-- END GENERATED ARCHITECTURE STATUS S3 -->
+
+### 3.1 Archive — historique par phase (Phase 1→4, chantier clos 2026-07)
+
+> ⚠️ **Ce tableau ne décrit PAS l'état courant.** Il est conservé comme trace du chantier de
+> migration. Les valeurs « 16 » et « 25 » qu'il contient ont été lues comme l'état courant et
+> sont la source des comptages contradictoires relevés par l'audit du 2026-11-22.
 
 | Indicateur | Phase 1 | Phase 2 | Phase 3 | Phase 4 |
 |------------|:-------:|:-------:|:-------:|:-------:|
@@ -95,16 +121,23 @@
 | Domain/Contracts | 2/12 | 12/12 | 13/13 | **16/16** |
 | Legacy imports routes/modules/* | 27 | 27 | 0 | **0** |
 | Legacy imports routes/api.php | 25 | 25 | 25 | **0** |
-| Coverage gate | 60% | 65% | 65% | **65% (required)** |
+| Coverage gate | 60% | 65% | 65% | **65%** |
 
 ---
 
 ## 4. CI/CD — Coverage Gate
 
-**Activé comme required check** sur `main` depuis Phase 4 :
+> ⚠️ **Corrigé le 2026-11-22 (issue #9801).** Cette section déclarait le check
+> `Backend Coverage (PHP 8.4 + PostgreSQL 16)` comme **required** et **strict: oui**.
+> C'est faux : la protection de branche réelle porte **4 contextes requis**, et
+> `Backend Coverage` n'en fait pas partie. La source de vérité est
+> `BRANCH_PROTECTION_REQUIRED.md` (doc canonique) — cette section y renvoie désormais
+> au lieu de dupliquer une valeur qui a dérivé.
+
 - Check : `Backend Coverage (PHP 8.4 + PostgreSQL 16)`
 - Seuil : 65% minimum
-- Strict : oui (la branche cible doit être à jour)
+- Statut : **non requis au merge** — voir `BRANCH_PROTECTION_REQUIRED.md` pour la liste
+  réelle des contextes requis.
 
 ---
 
@@ -114,22 +147,24 @@
 > comptables #5235) ; la CI n'exempte plus qu'`Absence` de l'exigence des couches (`FACADE_ONLY_MODULES="Absence"`,
 > `architecture-check.yml`). Voir `api/ARCHITECTURE.md`.
 
-## 5. Roadmap restante (Phase 5+)
+<!-- BEGIN GENERATED ARCHITECTURE STATUS S5 -->
 
-| Item | Priorité | Effort | Statut |
-|------|:--------:|:------:|:------:|
-| Supprimer `app/Models/` doublons (75 modèles) | P1 | Élevé | ✅ Fait — répertoire supprimé, 92 modèles migrés (voir `api/ARCHITECTURE.md`) |
-| Finaliser `app/DTOs/` racine (3 DTOs) | P1 | Faible | ✅ Fait — répertoire supprimé (DTOs dans les modules) |
+## 5. Roadmap restante — chaque ligne re-verifiee sur le disque
+
+| Item | Priorite | Effort | Statut |
+|---|:---:|:---:|---|
+| Supprimer `app/Models/` doublons | P1 | Eleve | ✅ Fait |
+| Finaliser `app/DTOs/` racine | P1 | Faible | ✅ Fait |
 | Peupler `app/Shared/` (Traits/Attributes/Enums) | P2 | Moyen | ✅ Fait |
-| Migrer `Core/Tenant/` (TenantManager) | P2 | Moyen | ✅ Fait — voir `api/ARCHITECTURE.md` «Nettoyage complet» et `api/app/Core/Tenant/README.md` |
-| Tests Feature pour Growth, Platform, Onboarding | P1 | Moyen | ✅ Fait — dossiers `api/tests/Feature/{Growth,Platform,Onboarding}` présents |
-| PHPStan niveau 5 via `phpstan-modules.neon` | P2 | Moyen | ✅ Fait — gate bloquant CI (niveau 5) |
-| OpenAPI canonique | P2 | Faible | ✅ Fait — `api/openapi.yaml` source de vérité, Redocly 0 erreur |
-| routes/web.php — Web controllers (hors scope ADR actuel) | P3 | Faible | ⏳ À faire |
-| Cloudflare Workers build (fix ou supprimer) | P3 | Faible | ⏳ À faire |
-| i18n backend via `lang/` | P3 | Moyen | ✅ Fait — `api/lang/{fr,en,ar,tr}` (voir `shared/i18n`) |
-| Event Sourcing Absence + Expense (CQRS) | P4 | Très élevé | ⏳ À faire |
-| PostgreSQL RLS (remplace filtres `company_id`) | P4 | Très élevé | ⏳ À faire |
+| Migrer `Core/Tenant/` (TenantManager) | P2 | Moyen | ✅ Fait |
+| Tests Feature pour Platform, Onboarding | P1 | Moyen | ✅ Fait |
+| PHPStan via `phpstan-modules.neon` | P2 | Moyen | ✅ Fait |
+| OpenAPI canonique | P2 | Faible | ✅ Fait |
+| i18n backend via `lang/` | P3 | Moyen | ✅ Fait |
+
+> Statuts **mesures** : `✅ Fait` signifie que le chemin attendu existe (ou a bien disparu, pour les suppressions). Une ligne « Fait » dont le chemin est absent est un faux positif — c'est ce que la garde empeche.
+
+<!-- END GENERATED ARCHITECTURE STATUS S5 -->
 
 ### Nettoyage legacy — bilan PR #824 (2026-07-01)
 
