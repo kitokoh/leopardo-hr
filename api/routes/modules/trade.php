@@ -34,6 +34,7 @@
 
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCompanyProfileController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCostEstimateController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCounterpartyController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeHealthController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeMetaController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeProductController;
@@ -106,6 +107,30 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::put('/products/{product}', [TradeProductController::class, 'update']);
             // Acte distinct : archiver n'est pas enregistrer un champ.
             Route::post('/products/{product}/archive', [TradeProductController::class, 'archive']);
+        });
+
+        // ── Contreparties : clients, fournisseurs, transporteurs — #9780 ──────
+        // Sans ces routes, `trade_counterparties` (table, modèle, factory,
+        // enums depuis TRADE-003/#8478) restait INATTEIGNABLE : un tenant
+        // pouvait émettre des RFQ et des offres sans jamais créer un
+        // fournisseur ni un client, et `trade_deal.trade_counterparty_id`
+        // ne pouvait jamais être renseigné.
+        //
+        // Lecture : tous les rôles métier (acheteur, vendeur et logisticien
+        // travaillent sur le même répertoire partagé).
+        Route::middleware('trade.role:purchase,sales,logistics,admin')->group(function (): void {
+            Route::get('/counterparties', [TradeCounterpartyController::class, 'index']);
+            Route::get('/counterparties/{counterparty}', [TradeCounterpartyController::class, 'show']);
+            Route::post('/counterparties', [TradeCounterpartyController::class, 'store']);
+            Route::put('/counterparties/{counterparty}', [TradeCounterpartyController::class, 'update']);
+            Route::delete('/counterparties/{counterparty}', [TradeCounterpartyController::class, 'destroy']);
+        });
+
+        // Vérification : acte réservé à l'admin de la verticale. `verified`
+        // affirme « contrôlé par l'équipe » — ce n'est pas une opération
+        // commerciale ordinaire, et la route le reflète.
+        Route::middleware('trade.role:admin')->group(function (): void {
+            Route::post('/counterparties/{counterparty}/verify', [TradeCounterpartyController::class, 'verify']);
         });
 
         // ── Profil commercial & publication vitrine (#9617) ────────────────
