@@ -36,6 +36,7 @@ use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCompanyProfileControlle
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCostEstimateController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeHealthController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeMetaController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeProductController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeQuoteController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeRfqController;
 use Illuminate\Support\Facades\Route;
@@ -89,6 +90,22 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::get('/cost-estimates/{costEstimate}', [TradeCostEstimateController::class, 'show']);
             // Checklist documentaire — toujours accompagnée du disclaimer.
             Route::get('/customs/checklist', [TradeCostEstimateController::class, 'customs']);
+        });
+
+        // ── Catalogue produits B2B — #9767 ───────────────────────────────────
+        // Lecture : tous les rôles métier (acheteur ET vendeur lisent le
+        // catalogue — c'est un référentiel partagé, comme les RFQ/offres).
+        Route::middleware('trade.role:purchase,sales,logistics,admin')->group(function (): void {
+            Route::get('/products', [TradeProductController::class, 'index']);
+            Route::get('/products/{product}', [TradeProductController::class, 'show']);
+        });
+
+        // Écriture : le catalogue est l'outil du VENDEUR (et de l'admin).
+        Route::middleware('trade.role:sales,admin')->group(function (): void {
+            Route::post('/products', [TradeProductController::class, 'store']);
+            Route::put('/products/{product}', [TradeProductController::class, 'update']);
+            // Acte distinct : archiver n'est pas enregistrer un champ.
+            Route::post('/products/{product}/archive', [TradeProductController::class, 'archive']);
         });
 
         // ── Profil commercial & publication vitrine (#9617) ────────────────

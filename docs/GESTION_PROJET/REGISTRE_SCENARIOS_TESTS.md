@@ -1,3 +1,62 @@
+## 2026-11-22 — Trade : catalogue produits B2B (API interne + catalogue public + UI vendeur) (PR #9769, #9767, #9768)
+
+Surface : `api/routes/modules/trade.php` (`GET|POST /v1/trade/products`, `GET|PUT /v1/trade/products/{product}`, `POST /v1/trade/products/{product}/archive`), `api/routes/modules/trade_public.php` (`GET /v1/public/trade/companies/{slug}/products`), `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/TradeProductController.php`, `TradePublicProfileController::products()`, `Requests/StoreTradeProductRequest.php`, `Requests/UpdateTradeProductRequest.php`, `Resources/TradeProductResource.php`, `Resources/PublicTradeProductResource.php`, `front/web/src/app/(dashboard)/trade-os/page.tsx` (onglet Catalogue), `front/web/src/app/entreprises/[slug]/page.tsx` (section Produits), `front/web/src/lib/trade-public-api.ts`.
+
+**Pourquoi c'est un scénario de test** : `TradeProduct`, sa table (`2026_10_14_000102_8477`) et sa factory existaient depuis TRADE-002/#8477, mais **aucune route ne les exposait** — un modèle orphelin. Un vendeur activé sur la verticale `trade` pouvait émettre des offres et répondre à des RFQ sans jamais pouvoir créer un produit, et les lignes de RFQ/offres acceptent un `trade_product_id` qui ne pouvait jamais être renseigné. Côté public, la fiche n'affichait que des **catégories** : un acheteur professionnel ne voyait jamais ce que le vendeur vend.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `POST /v1/trade/products` sans `hs_code` répond 201 avec `hs_code: null` | le système ne doit **jamais deviner** un classement douanier : une valeur inventée ferait croire à une conformité qui n'existe pas |
+| `hs_code: "090"` (3 chiffres) répond 422 | un code à 3 chiffres est un **chapitre**, pas un classement ; sans la règle 6–10, un code invalide entrait en base |
+| `PUT /v1/trade/products/{id}` avec `status: "archived"` laisse le produit `active` | archiver est un **acte distinct** ; un `PUT` ne doit pas pouvoir archiver par inadvertance |
+| `POST /v1/trade/products/{id}/archive` deux fois répond 200 les deux fois | l'archivage est idempotent : l'écran peut réessayer sans risque |
+| le produit d'un AUTRE tenant répond **404**, jamais 403 | l'API ne doit pas révéler l'existence d'une ressource d'un autre tenant |
+| `GET /v1/public/trade/companies/{slug}/products` ne sérialise jamais `hs_code` ni `status` | `hs_code` est une donnée de conformité interne, pas un argument de vente |
+| un produit `archived` est absent du catalogue public | un produit retiré du catalogue ne doit pas rester visible |
+| un profil non publié répond **404 uniforme** | impossible de distinguer « slug inexistant » de « dépublié » (anti-énumération) |
+| le catalogue public lit le schéma du tenant **propriétaire du slug** | `trade_products` est une table TENANT : sans bascule de `search_path`, la lecture renvoyait 0 ligne (ou les produits d'un autre tenant) |
+| `q=100%` ne ramène pas tout le catalogue | un `%` saisi était un joker `LIKE` non échappé |
+| la fiche `/entreprises/{slug}` n'affiche **aucun** bouton de commande | `TradeDiscoverableProvider::supportedActions()` ne déclare que `contact` |
+
+**Couverture exécutée** — `php -l` sur les 9 fichiers PHP (0 erreur) ; `check-openapi-route-coverage.py --strict-staleness` → **0 nouvelle route non couverte** ; `yaml.safe_load(api/openapi.yaml)` OK ; `tsc --noEmit` sur la fiche, le dashboard et le client API → 0 erreur ; `jest src/app/entreprises` → **10 passed** ; `validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `check-i18n-catalog-parity.sh` → parité OK ; gardes `search_path` (dette 0), `form-request` (434 figées), `without-global-scope` (253) → exit 0.
+
+**Non couvert** — `php artisan test` (pas de `vendor/` ni de PostgreSQL dans le sandbox) : `TradeProductApiTest` (8 cas) est écrit et sera la mesure du run CI. Le rendu navigateur réel de la fiche n'a pas été ouvert.
+
+## 2026-11-22 — Outils vendeur : délégation comptable, pipeline CRM, partage de document (PR #9766, #9763 #9764 #9765)
+
+Surface : `api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/Concerns/ResolvesAccountingActor.php` (nouveau trait), `AccountingDocumentController.php`, `AccountingPaymentController.php`, `AccountingAuditController.php`, `ShareAccessController.php`, `Requests/ShareDocumentRequest.php` (nouveau), `api/routes/modules/accounting.php` (route `POST /accounting/documents/{document}/share`), `api/app/Modules/CRM/Application/Services/CrmDashboardReadModel.php`, `api/database/seeders/CrmPipelineStagesSeeder.php` (nouveau), `api/openapi.yaml`, `api/lang/{fr,ar,en,tr}/accounting.php`.
+
+**Pourquoi c'est un scénario de test** : trois défauts qui ne se voient ni dans un diff de route ni dans un test de contrat — un contrôle d'autorisation dupliqué qui annule une délégation, une jointure sur une colonne jamais écrite, et une fonctionnalité implémentée à moitié dont le point d'entrée manquait.
+
+1. **Délégation annulée.** `EnsureApiManagerMiddleware` (#7761) ouvre un module à un non-manager porteur d'un grant `employee_module_grants`, et le vérifie **avant** l'exigence manager. Quatre contrôleurs refaisaient `if (! $actor->isManager()) { abort(403); }` : le grant `crm` passait (200), le grant `accounting` était refusé (403). Le trait `ResolvesAccountingActor` applique la règle du middleware à un seul endroit.
+2. **Pipeline toujours à zéro.** `crm_opportunities` porte `stage` (varchar, écrit par `ConvertLeadAction`, lu par le kanban) **et** `stage_id` (bigint, jamais renseigné). Le read model joignait en **INTERNE** sur `s.id = o.stage_id` : aucune ligne, dashboard à 0 alors que le kanban affichait les opportunités. `crm_pipeline_stages` était en plus vide (0 ligne, aucun seeder).
+3. **Partage à moitié implémenté.** Modèle `AccountingDocumentShare`, `DocumentShareService::createShare()`, portail public et audit RGPD existaient ; **aucune route** ne créait le jeton (`POST …/share` → 404). Le vendeur ne pouvait jamais envoyer un devis à son client.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| un non-manager avec le grant `accounting` crée un devis (201) | le `isManager()` en dur renvoyait 403 |
+| le même crée une facture (201, numéro `FAC-…`) | idem |
+| le même lit `GET /accounting/audit-logs` (200) | idem |
+| un non-manager **sans** grant reçoit 403 | une correction trop large ouvrirait le module à tous |
+| un grant `crm` n'ouvre **pas** `accounting` (403) | confusion entre grants de modules |
+| `comptable` et `principal` conservent l'accès | régression sur les rôles historiques |
+| une opportunité avec `stage` seul (stage_id NULL) est comptée | la jointure interne la faisait disparaître |
+| `stage` seul et `stage_id` renseigné donnent le même total | les deux chemins divergeaient |
+| `won`/`lost` dérivés de `stage` quand `stage_id` est NULL | les totaux gagné/perdu restaient à 0 |
+| une étape d'un **autre** tenant ne qualifie jamais l'opportunité | jointure sans `company_id` = fuite cross-tenant |
+| dashboard et kanban affichent le même montant | c'était précisément la divergence signalée |
+| `POST …/share` renvoie 201 + jeton de 64 caractères + expiration | la route n'existait pas (404) |
+| le lien public sert le document **sans authentification** | le portail existait mais aucun jeton ne pouvait être créé |
+| `expires_in_days` borné 1..365 (0 et 366 → 422) | un partage immortel ou instantané |
+| un document d'un autre tenant → 404 | isolation tenant fail-closed |
+| un employé sans grant → 403 | le partage est une opération sensible |
+| un partage expiré n'est plus servi (404) | un lien périmé resterait actif |
+| `CrmPipelineStagesSeeder` rejoué ne duplique rien | 18 lignes (3 tenants × 6 étapes) avant comme après |
+
+**Couverture exécutée** — `AccountingModuleGrantDelegationTest` **8 passed** (4 échouent sans le correctif) ; `CrmDashboardStageFallbackTest` **5 passed** (5/5 échouent sans) ; `AccountingDocumentShareTest` **6 passed** (5/6 échouent sans la route) ; `CrmDashboardTest` **7 passed** ; suite comptable élargie **44 passed** ; `LangCatalogParityTest` vert ; PHPStan Strict **No errors** sur les fichiers touchés ; `check-layer-purity` **0 violation nouvelle** ; `check-form-request-guard.py` exit 0 (dette **434**, inchangée) ; `check-openapi-route-coverage.py` **0 nouvelle route non couverte**.
+
+**Non couvert** — `phpstan analyse` sur la totalité du dépôt (OOM killer dans le sandbox, 2 Go de RAM) et la suite Feature complète ; la mesure de référence est le run CI.
+
 ## 2026-11-21 — Fixture de promotion déterministe : une garde fige le contrat de la factory (issue #9744)
 
 Surface : `api/database/factories/RestaurantPromotionFactory.php` (correctif livré en parallèle par #9761 — cette tranche en apporte la **garde**) et `api/tests/Feature/Restaurant/RestaurantPromotionTest.php`. Aucune route, aucune migration, aucun contrat d'API modifié.
@@ -17,6 +76,7 @@ Surface : `api/database/factories/RestaurantPromotionFactory.php` (correctif liv
 | un test qui veut un seuil, un plafond ou une fenêtre le déclare explicitement | un test de refus (expirée, épuisée, sous le minimum) qui s'appuierait sur un tirage aléatoire ne testerait pas le cas qu'il annonce |
 
 **Couverture exécutée** — `php -l` sur les fichiers touchés. **Non couvert** — exécution locale de PHPUnit (pas de PostgreSQL dans l'espace de travail, `api/vendor` symlinké) : la mesure est le run CI.
+
 ## 2026-11-21 — Dette backend : Audit, Platform, Support, Travel, doublons de listeners (PR #9750, #9741)
 
 Surface : `api/routes/modules/hr_extended.php` (redéclarations `GET /audit-logs` et `/audit-logs/{id}` supprimées), `api/app/Core/Auth/Interfaces/Api/V1/Controllers/AuditLogController.php` + `Requests/AuditLogIndexRequest.php` + `Requests/AuditLogExportRequest.php`, `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformCompanyFeatureController.php` + `Requests/UpdateCompanyFeaturesRequest.php`, `api/app/Modules/Platform/Infrastructure/Services/WebhookEventRegistry.php`, `api/app/Http/Middleware/Travel/TravelPartnerAuthMiddleware.php`, `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/TradeCompanyProfileController.php`, `api/app/Modules/CRM/Infrastructure/Services/CrmConsentGuard.php`, `api/app/Providers/EventServiceProvider.php`, `api/bootstrap/app.php`.
@@ -44,6 +104,27 @@ Surface : `api/routes/modules/hr_extended.php` (redéclarations `GET /audit-logs
 **Couverture exécutée** — `tests/Feature/Audit` **29 passed (82 assertions)** ; `AuditLogExportTest` + `PlatformCompanyFeatureApiTest` **10 passed (46 assertions)** ; `tests/Feature/Travel` **772 passed** ; `TradeCompanyProfileTest` **11 passed** ; `PaymentWebhookControllerTest` + `QueuedListenersTest` **17 passed** ; `TenantIsolationTest`, `LeavePendingReservationTest`, `CrmChannelAdapterTest`, `MarketingOsPlatformTest` verts ; PHPStan Strict sur les fichiers touchés **0 erreur** ; `check-form-request-guard.py` exit 0 (baseline 437 → 434) ; `check-without-global-scope.sh` exit 0.
 
 **Non couvert** — suite Feature complète (dépasse la mémoire du sandbox) ; la mesure de référence est le run CI. Restent en échec, hors périmètre de cette passe : `HealthEndpointTest` (APP_KEY retirée en cours de test), `HealthReadyCriticalDepsTest`, `AuthGoogleSignInTest`, `SSOOidcFlowTest` (RS384), `WebhookRetryAndDeactivationTest` (DNS), `ProvisionDemoTenantJobTest`, `ApiFrLiteralsCatalogedTest`, `CrmMigrationsTest`, `MigrationSchemaPlacementTest`.
+
+## 2026-11-21 — MCP : verticales Travel/Restaurant, test stdio, outils d'action avec confirmation (PR #9754, #9751–#9753)
+
+Surface : `dev-hub/tools/generate-mcp-openapi-tools.py`, `dev-hub/mcp-server/manifest/openapi-tools.json`, `dev-hub/mcp-server/src/` (`manifest.ts`, `tools/execute.ts`, tests), `api/routes/ai.php` (1 route), `api/app/AI/Interfaces/Api/V1/Controllers/AIActionProposalController.php`, `api/app/AI/Interfaces/Api/V1/Requests/ProposeAIActionRequest.php`, `api/app/Modules/Payroll/Domain/Support/PayrollReadToolCatalog.php`, `api/openapi.yaml`.
+
+**Pourquoi c'est un scénario de test** : trois propriétés de sécurité du pont MCP ne sont visibles dans aucun test de contrat REST — elles portent sur ce que le serveur MCP *refuse* de faire.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `tools/call` sur un outil d'action appelle `/ai/actions/propose` et **jamais** l'endpoint métier | un agent déclencherait une approbation de congé sans confirmation humaine |
+| une proposition refusée par le RBAC ne crée **aucun** pending | un pending fantôme serait confirmable plus tard, hors du contrôle de rôle |
+| proposer un outil de lecture renvoie 422 | la proposition n'a de sens que pour write/send ; un 201 sur une lecture trompe l'appelant |
+| proposer un outil sans handler de confirmation renvoie 422 | l'utilisateur confirmerait une action qui ne peut pas s'exécuter |
+| un pending créé est invisible depuis un autre tenant | fuite inter-tenant à la confirmation |
+| `tools/list` expose des schémas JSON valides pour **tous** les outils | `payroll_current_status` déclarait `"properties": []` : un client MCP strict rejetait l'intégralité de `tools/list` |
+| le transport stdio répond à un vrai client SDK (handshake, tools/list, resources/read) | le transport des IDE n'était couvert par aucun test d'intégration |
+| la génération OpenAPI est déterministe et la garde CI compare avec `--include-actions` | une dérive permanente rendrait la garde inutile |
+
+**Couverture exécutée** — `tsc --noEmit` 0 erreur ; **55 tests vitest verts** (dont 10 d'intégration stdio sur le vrai binaire compilé et 5 sur les outils d'action) ; génération déterministe (md5 identique sur deux runs) ; garde `check-mcp-openapi-tools-drift.sh` verte (278 outils) ; test stdio **vu mordant** (transport non connecté → 10 échecs) ; `php -l` sur les 7 fichiers PHP ; `check-form-request-guard.py` OK (dette figée 437).
+
+**Non couvert** — tests Feature PHP (pas de `vendor/` dans le sandbox) ; transport contre une API Laravel réelle (serveur HTTP local de test).
 
 ## 2026-11-21 — Marketing découpé par ressource, sondes Health extraites, garde FormRequest (PR #9731, #9732)
 

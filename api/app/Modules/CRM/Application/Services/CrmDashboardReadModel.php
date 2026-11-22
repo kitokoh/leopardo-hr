@@ -18,8 +18,22 @@ use Illuminate\Support\Facades\Schema;
  *  - `crm_activities(company_id, account_id, occurred_at)` pour la stagnation ;
  *  - `crm_tasks(company_id, status)`, `(company_id, due_at)`.
  *
- * Statut dérivé du stage (pas de colonne status sur crm_opportunities) :
- * open = stage !is_won ET !is_lost ; won = stage.is_won ; lost = stage.is_lost.
+ * #9764 — RÉSOLUTION DE L'ÉTAPE. Deux schémas coexistent dans
+ * `crm_opportunities` : `stage` (varchar, écrit par `ConvertLeadAction` et lu
+ * par le kanban) et `stage_id` (bigint, ajouté par #7452 mais JAMAIS renseigné
+ * par le code applicatif). Le read model joignait en INTERNE sur
+ * `s.id = o.stage_id` : la jointure ne ramenait donc aucune ligne et le
+ * dashboard affichait toujours zéro, alors que le kanban affichait les
+ * opportunités réelles.
+ *
+ * L'étape effective est désormais résolue par `effectiveStage()` :
+ *  - `stage_id` renseigné ET pointant une étape du MÊME tenant → cette étape
+ *    (nom, position, is_won/is_lost) ;
+ *  - sinon → la valeur `stage` (whitelist `CrmOpportunityStage`), avec
+ *    `won`/`lost` comme états terminaux et la position de l'énumération.
+ *
+ * La jointure est un LEFT JOIN : une opportunité sans `stage_id` reste
+ * comptée. C'est ce qui rend le dashboard et le kanban cohérents.
  *
  * P95 / latence : agrégats SQL uniques par surface (2 requêtes pipeline,
  * 2 requêtes qualité), pas de boucle N+1 — coût proportionnel aux index
@@ -33,46 +47,41 @@ class CrmDashboardReadModel
     public function pipeline(string $companyId): array
     {
         // Valeur et volume par stage (opportunités OUVERTES uniquement).
-        $stageAggregates = DB::table('crm_opportunities as o')
-            ->join('crm_pipeline_stages as s', 's.id', '=', 'o.stage_id')
-            ->where('o.company_id', $companyId)
-            ->where('s.is_won', false)
-            ->where('s.is_lost', false)
+        $stageAggregates = $this->effectiveStage($companyId)
+            ->where('eff.is_won', false)
+            ->where('eff.is_lost', false)
             ->select(
-                's.id as stage_id',
-                's.name as stage_name',
+                'eff.stage_id',
+                'eff.stage_name',
                 DB::raw('COUNT(*) as count'),
-                DB::raw('COALESCE(SUM(o.amount), 0) as value')
+                DB::raw('COALESCE(SUM(eff.amount), 0) as value')
             )
-            ->groupBy('s.id', 's.name')
-            ->orderBy('s.position')
+            ->groupBy('eff.stage_id', 'eff.stage_name', 'eff.stage_position')
+            ->orderBy('eff.stage_position')
+            ->orderBy('eff.stage_name')
             ->get();
 
         // Totaux par statut dérivé (open/won/lost).
-        $totals = DB::table('crm_opportunities as o')
-            ->join('crm_pipeline_stages as s', 's.id', '=', 'o.stage_id')
-            ->where('o.company_id', $companyId)
+        $totals = $this->effectiveStage($companyId)
             ->select(
-                DB::raw('COUNT(*) FILTER (WHERE NOT s.is_won AND NOT s.is_lost) as open_count'),
-                DB::raw('COALESCE(SUM(o.amount) FILTER (WHERE NOT s.is_won AND NOT s.is_lost), 0) as open_value'),
-                DB::raw('COUNT(*) FILTER (WHERE s.is_won) as won_count'),
-                DB::raw('COUNT(*) FILTER (WHERE s.is_lost) as lost_count')
+                DB::raw('COUNT(*) FILTER (WHERE NOT eff.is_won AND NOT eff.is_lost) as open_count'),
+                DB::raw('COALESCE(SUM(eff.amount) FILTER (WHERE NOT eff.is_won AND NOT eff.is_lost), 0) as open_value'),
+                DB::raw('COUNT(*) FILTER (WHERE eff.is_won) as won_count'),
+                DB::raw('COUNT(*) FILTER (WHERE eff.is_lost) as lost_count')
             )
             ->first();
 
         // Stagnation : opportunités ouvertes dont le compte n'a eu aucune
         // activité depuis 30 jours (crm_activities.occurred_at).
-        $stagnant = DB::table('crm_opportunities as o')
-            ->join('crm_pipeline_stages as s', 's.id', '=', 'o.stage_id')
+        $stagnant = $this->effectiveStage($companyId)
             ->leftJoin(
                 DB::raw('(SELECT account_id, MAX(occurred_at) AS last_activity FROM crm_activities WHERE company_id = '.DB::getPdo()->quote($companyId).' GROUP BY account_id) a'),
                 'a.account_id',
                 '=',
-                'o.account_id'
+                'eff.account_id'
             )
-            ->where('o.company_id', $companyId)
-            ->where('s.is_won', false)
-            ->where('s.is_lost', false)
+            ->where('eff.is_won', false)
+            ->where('eff.is_lost', false)
             ->whereRaw('(a.last_activity IS NULL OR a.last_activity < NOW() - INTERVAL \'30 days\')')
             ->count();
 
@@ -84,14 +93,12 @@ class CrmDashboardReadModel
             ->unique()
             ->values();
 
-        $ownersWithOpen = DB::table('crm_opportunities as o')
-            ->join('crm_pipeline_stages as s', 's.id', '=', 'o.stage_id')
-            ->where('o.company_id', $companyId)
-            ->where('s.is_won', false)
-            ->where('s.is_lost', false)
-            ->whereNotNull('o.owner_id')
+        $ownersWithOpen = $this->effectiveStage($companyId)
+            ->where('eff.is_won', false)
+            ->where('eff.is_lost', false)
+            ->whereNotNull('eff.owner_id')
             ->distinct()
-            ->pluck('o.owner_id')
+            ->pluck('eff.owner_id')
             ->map(fn ($id) => (int) $id)
             ->unique();
 
@@ -117,7 +124,7 @@ class CrmDashboardReadModel
                 'lost_count' => (int) ($totals->lost_count ?? 0),
             ],
             'by_stage' => $stageAggregates->map(fn ($row) => [
-                'stage_id' => (int) $row->stage_id,
+                'stage_id' => $row->stage_id === null ? null : (int) $row->stage_id,
                 'stage_name' => (string) $row->stage_name,
                 'count' => (int) $row->count,
                 'value' => (float) $row->value,
@@ -126,6 +133,84 @@ class CrmDashboardReadModel
             'owners_without_open_opportunities' => $ownersWithoutOpportunities,
             'overdue_tasks' => (int) $overdueTasks,
         ];
+    }
+
+    /**
+     * #9764 — Vue « étape effective » des opportunités du tenant, exposée sous
+     * l'alias `eff` (sous-requête : les colonnes calculées ne sont pas
+     * référençables directement dans le FROM).
+     */
+    private function effectiveStage(string $companyId): \Illuminate\Database\Query\Builder
+    {
+        return DB::query()->fromSub($this->effectiveStageSubquery($companyId), 'eff');
+    }
+
+    /**
+     * #9764 — Sous-requête « étape effective ».
+     *
+     * LEFT JOIN sur `crm_pipeline_stages` (jamais INNER : une opportunité sans
+     * `stage_id` doit rester comptée) + repli sur la colonne `stage`.
+     *
+     * Colonnes exposées : `id`, `amount`, `owner_id`, `account_id`,
+     * `stage_id`, `stage_name`, `stage_position`, `is_won`, `is_lost`.
+     */
+    private function effectiveStageSubquery(string $companyId): \Illuminate\Database\Query\Builder
+    {
+        $hasStageId = Schema::hasColumn('crm_opportunities', 'stage_id');
+
+        $query = DB::table('crm_opportunities as o')
+            ->where('o.company_id', $companyId)
+            ->whereNull('o.deleted_at');
+
+        if (! $hasStageId) {
+            // Base antérieure à #7452 : la colonne n'existe pas, tout passe
+            // par `stage`. On garde le même contrat de colonnes.
+            return $query->select([
+                'o.id',
+                'o.amount',
+                'o.owner_id',
+                'o.account_id',
+                DB::raw('NULL::bigint as stage_id'),
+                DB::raw('COALESCE(o.stage, \'prospecting\') as stage_name'),
+                DB::raw($this->fallbackPositionSql('o.stage').' as stage_position'),
+                DB::raw('(o.stage = \'won\') as is_won'),
+                DB::raw('(o.stage = \'lost\') as is_lost'),
+            ]);
+        }
+
+        return $query
+            ->leftJoin('crm_pipeline_stages as s', function ($join): void {
+                $join->on('s.id', '=', 'o.stage_id')
+                    // Anti-cross-tenant : une étape d'un autre tenant ne peut
+                    // jamais qualifier l'opportunité.
+                    ->on('s.company_id', '=', 'o.company_id');
+            })
+            ->select([
+                'o.id',
+                'o.amount',
+                'o.owner_id',
+                'o.account_id',
+                's.id as stage_id',
+                DB::raw('COALESCE(s.name, COALESCE(o.stage, \'prospecting\')) as stage_name'),
+                DB::raw('COALESCE(s.position, '.$this->fallbackPositionSql('o.stage').') as stage_position'),
+                DB::raw('CASE WHEN s.id IS NOT NULL THEN s.is_won ELSE (o.stage = \'won\') END as is_won'),
+                DB::raw('CASE WHEN s.id IS NOT NULL THEN s.is_lost ELSE (o.stage = \'lost\') END as is_lost'),
+            ]);
+    }
+
+    /**
+     * Position de repli d'une étape, dérivée de l'ordre de l'énumération
+     * `CrmOpportunityStage` (prospecting → lost).
+     */
+    private function fallbackPositionSql(string $column): string
+    {
+        $cases = [];
+
+        foreach (\App\Modules\CRM\Domain\Enums\CrmOpportunityStage::cases() as $index => $case) {
+            $cases[] = sprintf("WHEN '%s' THEN %d", $case->value, $index);
+        }
+
+        return 'CASE '.$column.' '.implode(' ', $cases).' ELSE 99 END';
     }
 
     /**

@@ -68,6 +68,10 @@ return [
         'bank_reference_required' => 'La référence d\'import est requise.',
         'bank_payment_required' => 'Le paiement à rapprocher est requis.',
         'bank_payment_exists' => 'Le paiement sélectionné n\'existe pas.',
+        // Partage de document (#9765)
+        'share_email_invalid' => 'L\'adresse e-mail du destinataire est invalide.',
+        'share_expiry_min' => 'Le partage doit être valable au moins 1 jour.',
+        'share_expiry_max' => 'Le partage ne peut pas dépasser 365 jours.',
         // Rapprochement / profondeur (issue #5422)
         'year_required' => 'L\'année est obligatoire.',
         'year_integer' => 'L\'année doit être un nombre entier.',

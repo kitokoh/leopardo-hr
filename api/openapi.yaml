@@ -811,6 +811,59 @@ paths:
             `trade` inactive (404 uniforme, jamais 403)
         '429':
           $ref: '#/components/responses/Error429'
+  /public/trade/companies/{slug}/products:
+    get:
+      operationId: api_get_public_trade_company_products
+      tags:
+      - Trade
+      summary: Catalogue produits public d'une entreprise de commerce (#9768)
+      description: >-
+        Produits ACTIFS du profil publie, pagines. Avant #9768, la fiche
+        publique n'exposait que des CATEGORIES (`product_categories`, des
+        chaines saisies dans le profil) : un acheteur professionnel ne voyait
+        donc jamais ce que le vendeur vend.
+
+        Meme perimetre opt-in FAIL-CLOSED que la fiche (`is_public`,
+        `public_slug` unique global, `public_name` non vide, societe non
+        suspendue/expiree, feature `trade` active). Un profil non publiable
+        produit le MEME 404 uniforme : impossible de distinguer « slug
+        inexistant » de « depublie ».
+
+        Champs exposes STRICTEMENT limites : jamais `hs_code` (donnee de
+        conformite interne), jamais `status`, jamais d'identifiant tenant. Le
+        prix est INDICATIF — le catalogue n'est pas une offre ferme.
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+          pattern: '^[a-z0-9][a-z0-9\-]{0,159}$'
+      - name: page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          default: 1
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 24
+      responses:
+        '200':
+          description: >-
+            Produits actifs du profil publie (name, description, category,
+            origin_country, unit, moq_quantity, indicative_unit_price_minor,
+            currency, specs)
+        '404':
+          description: >-
+            Entreprise inconnue, depubliee, societe suspendue/expiree ou feature
+            `trade` inactive (404 uniforme, jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
   /v1/pharmacy/public-profile:
     get:
       operationId: api_get_pharmacy_public_profile
@@ -1066,6 +1119,236 @@ paths:
           description: >-
             Profil commercial inexistant, publication sans slug ou sans nom,
             slug deja utilise par une autre entreprise
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/products:
+    get:
+      operationId: api_get_trade_products
+      tags:
+      - Trade
+      summary: Lister le catalogue produits B2B du tenant (#9767)
+      description: >-
+        Catalogue produits de l'entreprise (BC-36 TRADE). `TradeProduct`
+        existait depuis TRADE-002/#8477 mais AUCUNE route ne l'exposait : un
+        vendeur active sur la verticale `trade` pouvait emettre des offres sans
+        jamais pouvoir gerer un seul produit.
+
+        Filtres : `status`, `category`, `q` (nom). Isolation tenant appliquee
+        par `BelongsToCompany` — un produit d'une autre entreprise est
+        introuvable (404), jamais 403.
+      parameters:
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [active, archived]
+      - name: category
+        in: query
+        schema:
+          type: string
+          maxLength: 120
+      - name: q
+        in: query
+        schema:
+          type: string
+          maxLength: 200
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginee des produits du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier de lecture
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      operationId: api_post_trade_products
+      tags:
+      - Trade
+      summary: Creer un produit du catalogue B2B (#9767)
+      description: >-
+        `hs_code` est NULLABLE et JAMAIS devine : une valeur inventee ferait
+        croire a une conformite douaniere qui n'existe pas. S'il est fourni, il
+        est valide sur 6 a 10 chiffres (un code a 3 chiffres est un chapitre,
+        pas un classement).
+
+        `indicative_unit_price_minor` est un entier en minor units — aucun
+        flottant ne traverse l'API pour representer de l'argent.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                description:
+                  type: string
+                  maxLength: 5000
+                category:
+                  type: string
+                  maxLength: 120
+                hs_code:
+                  type: string
+                  pattern: '^[0-9]{6,10}$'
+                origin_country:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                unit:
+                  type: string
+                  maxLength: 20
+                moq_quantity:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: true
+                indicative_unit_price_minor:
+                  type: integer
+                  minimum: 0
+                currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                specs:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '201':
+          description: Produit cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role sales/admin
+        '422':
+          description: Payload invalide (dont `hs_code` hors format 6-10 chiffres)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/products/{product}:
+    get:
+      operationId: api_get_trade_product
+      tags:
+      - Trade
+      summary: Detail d'un produit du catalogue B2B (#9767)
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit du tenant courant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier de lecture
+        '404':
+          description: Produit inexistant OU appartenant a une autre entreprise (jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
+    put:
+      operationId: api_put_trade_product
+      tags:
+      - Trade
+      summary: Mettre a jour un produit du catalogue B2B (#9767)
+      description: >-
+        `status` n'est PAS modifiable ici : archiver est un acte distinct
+        (`POST /v1/trade/products/{product}/archive`). Un `PUT` ne doit pas
+        pouvoir archiver un produit par inadvertance.
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                description:
+                  type: string
+                  maxLength: 5000
+                category:
+                  type: string
+                  maxLength: 120
+                hs_code:
+                  type: string
+                  pattern: '^[0-9]{6,10}$'
+                origin_country:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                unit:
+                  type: string
+                  maxLength: 20
+                moq_quantity:
+                  type: number
+                  minimum: 0
+                  exclusiveMinimum: true
+                indicative_unit_price_minor:
+                  type: integer
+                  minimum: 0
+                currency:
+                  type: string
+                  minLength: 3
+                  maxLength: 3
+                specs:
+                  type: object
+                  additionalProperties: true
+      responses:
+        '200':
+          description: Produit mis a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role sales/admin
+        '404':
+          description: Produit inexistant OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          description: Payload invalide
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/products/{product}/archive:
+    post:
+      operationId: api_post_trade_product_archive
+      tags:
+      - Trade
+      summary: Archiver un produit du catalogue B2B (#9767)
+      description: >-
+        Archivage LOGIQUE (`status = archived`) : aucune suppression dure. Les
+        RFQ et offres passees referencent le produit — un `DELETE` casserait
+        leur historique. Idempotent : re-archiver renvoie 200 sans erreur.
+      parameters:
+      - name: product
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Produit archive (ou deja archive)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role sales/admin
+        '404':
+          description: Produit inexistant OU appartenant a une autre entreprise (jamais 403)
         '429':
           $ref: '#/components/responses/Error429'
   /public/vtc/marketplace/estimate:
@@ -28893,6 +29176,77 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /accounting/documents/{document}/share:
+    post:
+      operationId: api_post_accounting_documents_by_document_share
+      tags:
+      - Accounting
+      summary: Creer un partage tokenise du document (#9765)
+      description: |
+        Genere un jeton de partage pour un devis ou une facture et renvoie
+        l'URL du portail client. Le jeton n'est expose qu'ici (creation) ;
+        l'audit des acces ne le revele jamais. Expiration par defaut 14 jours,
+        bornee entre 1 et 365 jours.
+      parameters:
+      - name: document
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                  description: Adresse du destinataire (facultative).
+                expires_in_days:
+                  type: integer
+                  minimum: 1
+                  maximum: 365
+                  description: Duree de validite en jours (defaut 14).
+      responses:
+        '201':
+          description: Partage cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      document_id:
+                        type: integer
+                      share_token:
+                        type: string
+                        description: Jeton de 64 caracteres.
+                      shared_with_email:
+                        type: string
+                        nullable: true
+                      expires_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      portal_url:
+                        type: string
+                      download_url:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /accounting/documents/{document}/credit-note:
     post:
       operationId: api_post_accounting_documents_by_document_credit_note
@@ -33590,6 +33944,94 @@ paths:
           description: Requête invalide
         '200':
           description: Liste des paiements partenaires
+  /ai/actions/propose:
+    post:
+      operationId: api_post_ai_actions_propose
+      tags:
+      - AI
+      summary: Proposer une action IA sensible (client MCP externe)
+      description: >-
+        Crée une action en attente (`PendingAction`) sans l'exécuter. Endpoint
+        destiné aux clients MCP externes, qui n'ont aucun accès base : c'est ce
+        qui garantit que Laravel reste le seul point d'autorisation.
+
+        Applique le RBAC (`ToolPermissionPolicy`), refuse un outil de lecture
+        (une lecture s'exécute directement), refuse un outil sans handler de
+        confirmation, puis délègue à `PendingActionStore`. Aucun effet métier
+        tant qu'un humain n'a pas appelé `/ai/actions/{pendingActionId}/confirm`.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - tool
+              properties:
+                tool:
+                  type: string
+                  maxLength: 64
+                  example: absence_decision
+                arguments:
+                  type: object
+                  description: Arguments de l'outil, transmis tels quels (revalidés à la confirmation)
+      responses:
+        '201':
+          description: Proposition créée — confirmation humaine requise
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - data
+                properties:
+                  data:
+                    type: object
+                    required:
+                    - status
+                    - pending_action_id
+                    - tool
+                    - sensitivity
+                    properties:
+                      status:
+                        type: string
+                        enum:
+                        - confirmation_required
+                      pending_action_id:
+                        type: string
+                        format: uuid
+                      tool:
+                        type: string
+                      sensitivity:
+                        type: string
+                        enum:
+                        - write
+                        - send
+                      arguments:
+                        type: object
+                      confirm_endpoint:
+                        type: string
+                      reject_endpoint:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Rôle non habilité pour cet outil (`AI_TOOL_PERMISSION_DENIED`) ou feature IA non active
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '422':
+          description: >-
+            Outil inconnu (`AI_TOOL_UNKNOWN`), outil de lecture
+            (`AI_ACTION_NOT_SENSITIVE`), outil sans handler de confirmation
+            (`AI_ACTION_NOT_CONFIRMABLE`) ou paramètres invalides
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
   /ai/actions/{pendingActionId}/confirm:
     post:
       operationId: api_post_ai_actions_by_pendingActionId_confirm

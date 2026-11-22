@@ -28,11 +28,14 @@ if [[ ! -f "${GENERATOR}" ]]; then
 fi
 
 echo "→ Vérification de la parité manifeste MCP OpenAPI ↔ api/openapi.yaml…"
-if ! python3 "${GENERATOR}" --check; then
+# Issue #9753 — le manifeste versionné inclut les outils d'action
+# (`--include-actions`) : la garde doit comparer avec la MÊME option, sinon
+# elle signalerait une dérive permanente.
+if ! python3 "${GENERATOR}" --include-actions --check; then
   echo "" >&2
   echo "ERREUR : les outils MCP générés sont désynchronisés de api/openapi.yaml (issue #9746)." >&2
   echo "Régénérer puis committer :" >&2
-  echo "  python3 dev-hub/tools/generate-mcp-openapi-tools.py" >&2
+  echo "  python3 dev-hub/tools/generate-mcp-openapi-tools.py --include-actions" >&2
   exit 1
 fi
 

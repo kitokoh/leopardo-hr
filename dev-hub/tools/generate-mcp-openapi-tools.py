@@ -20,8 +20,10 @@ Périmètre volontairement étroit :
     sont exposés (pas les 1 950 opérations : un client MCP n'a pas à voir la
     surface Fuel/Travel/Restaurant) ;
   - **verbe CRUD uniquement** : les endpoints d'ACTION (`/approve`, `/lock`,
-    `/confirm`, `/publish`…) sont EXCLUS — ils passent par le flux
-    `PendingAction` de Laravel, jamais par une exécution directe ;
+    `/confirm`, `/publish`…) sont EXCLUS par défaut — ils passent par le flux
+    `PendingAction` de Laravel, jamais par une exécution directe. L'option
+    `--include-actions` (issue #9753) les génère comme outils de PROPOSITION :
+    `tools/call` crée alors une action en attente au lieu d'exécuter ;
   - **`/public/*` et `/webhooks/*` exclus** : pas d'authentification tenant,
     donc hors du modèle d'autorisation du serveur MCP.
 
@@ -34,6 +36,7 @@ Usage :
   python3 dev-hub/tools/generate-mcp-openapi-tools.py            # écrit le fichier
   python3 dev-hub/tools/generate-mcp-openapi-tools.py --check    # garde CI (exit 1 si dérive)
   python3 dev-hub/tools/generate-mcp-openapi-tools.py --stdout   # affiche sans écrire
+  python3 dev-hub/tools/generate-mcp-openapi-tools.py --include-actions  # + outils d'action (#9753)
 """
 
 from __future__ import annotations
@@ -62,6 +65,14 @@ API_PREFIX = "/api/v1"
 
 # Tags exposés. Volontairement restreint : la surface MCP est un sous-ensemble
 # stable et relisible, pas un miroir des 1 950 opérations.
+#
+# Issue #9751 — ajout des verticales Travel et Restaurant. Ce n'est pas un
+# élargissement « pour être complet » : ce sont deux verticales métier réelles
+# (agence de voyage, restaurateur pilote) qui portent des cas d'usage concrets
+# pour un client MCP externe. Les autres verticales (FuelStation, Retail,
+# HealthManager, Pharmacy…) restent hors périmètre tant qu'aucun consommateur
+# externe ne les demande — exposer 1 950 opérations rendrait `tools/list`
+# illisible pour un agent et saturerait son contexte.
 ALLOWED_TAGS = {
     "Employees",
     "Tasks",
@@ -73,6 +84,9 @@ ALLOWED_TAGS = {
     "Me",
     "Notifications",
     "HR Referentials",
+    # Issue #9751 — verticales Travel et Restaurant.
+    "Travel",
+    "Restaurant",
 }
 
 # Dernier segment d'un chemin qui dénote une ACTION métier (et non du CRUD).
@@ -248,7 +262,14 @@ def sanitize_name(operation_id: str, method: str, path: str) -> str:
     return candidate
 
 
-def build_tool(spec: dict[str, Any], method: str, path: str, operation: dict[str, Any], path_item: dict[str, Any]) -> dict[str, Any]:
+def build_tool(
+    spec: dict[str, Any],
+    method: str,
+    path: str,
+    operation: dict[str, Any],
+    path_item: dict[str, Any],
+    is_action: bool = False,
+) -> dict[str, Any]:
     operation_id = operation.get("operationId") or f"{method}_{path}"
     name = sanitize_name(str(operation_id), method, path)
     full_path = normalize_path(path)
@@ -299,7 +320,17 @@ def build_tool(spec: dict[str, Any], method: str, path: str, operation: dict[str
 
     summary = str(operation.get("summary") or operation_id).strip()
     sensitivity = "read" if method == "get" else "write"
-    verb = "Lecture" if sensitivity == "read" else "Écriture (confirmation requise)"
+
+    if is_action:
+        # Issue #9753 — endpoint d'ACTION : jamais exécuté directement. Le
+        # serveur MCP crée une proposition (`POST /api/v1/ai/actions/propose`)
+        # et un humain confirme. La sensibilité reste `write` : une action
+        # n'est jamais une lecture, même quand le verbe HTTP est GET
+        # (`/departure`, `/preview`).
+        sensitivity = "write"
+        verb = "Action métier — PROPOSITION uniquement, confirmation humaine requise"
+    else:
+        verb = "Lecture" if sensitivity == "read" else "Écriture (confirmation requise)"
 
     description = (
         f"{summary} — {method.upper()} {full_path}. "
@@ -307,6 +338,16 @@ def build_tool(spec: dict[str, Any], method: str, path: str, operation: dict[str
         f"ne pas éditer à la main, régénérer avec "
         f"`python3 dev-hub/tools/generate-mcp-openapi-tools.py`."
     )
+
+    route: dict[str, Any] = {
+        "method": method.upper(),
+        "path": full_path,
+        "pathParams": sorted(path_params),
+        "queryParams": sorted(query_params),
+        "hasBody": has_body,
+    }
+    if is_action:
+        route["action"] = True
 
     return {
         "name": name,
@@ -317,17 +358,11 @@ def build_tool(spec: dict[str, Any], method: str, path: str, operation: dict[str
         "sensitivity": sensitivity,
         "bc": "BC-23",
         "version": 1,
-        "route": {
-            "method": method.upper(),
-            "path": full_path,
-            "pathParams": sorted(path_params),
-            "queryParams": sorted(query_params),
-            "hasBody": has_body,
-        },
+        "route": route,
     }
 
 
-def generate(spec: dict[str, Any]) -> dict[str, Any]:
+def generate(spec: dict[str, Any], include_actions: bool = False) -> dict[str, Any]:
     tools: list[dict[str, Any]] = []
     seen_names: set[str] = set()
 
@@ -336,7 +371,9 @@ def generate(spec: dict[str, Any]) -> dict[str, Any]:
             continue
         if is_excluded_path(path):
             continue
-        if is_action_path(path):
+
+        action = is_action_path(path)
+        if action and not include_actions:
             continue
 
         for method in HTTP_METHODS:
@@ -348,7 +385,7 @@ def generate(spec: dict[str, Any]) -> dict[str, Any]:
             if not isinstance(tags, list) or not (set(tags) & ALLOWED_TAGS):
                 continue
 
-            tool = build_tool(spec, method, path, operation, path_item)
+            tool = build_tool(spec, method, path, operation, path_item, is_action=action)
             if tool["name"] in seen_names:
                 raise ValueError(f"Collision de nom d'outil : {tool['name']} ({method.upper()} {path})")
             seen_names.add(tool["name"])
@@ -363,6 +400,7 @@ def generate(spec: dict[str, Any]) -> dict[str, Any]:
         "source": "api/openapi.yaml",
         "source_version": str(info.get("version") or "unknown"),
         "allowed_tags": sorted(ALLOWED_TAGS),
+        "include_actions": include_actions,
         "tools": tools,
     }
 
@@ -377,6 +415,11 @@ def main() -> int:
     parser.add_argument("--stdout", action="store_true", help="affiche le manifeste sans écrire")
     parser.add_argument("--spec", default=str(SPEC_PATH), help="chemin de la spec OpenAPI")
     parser.add_argument("--output", default=str(OUTPUT_PATH), help="chemin du manifeste généré")
+    parser.add_argument(
+        "--include-actions",
+        action="store_true",
+        help="inclut les endpoints d'action comme outils de PROPOSITION (issue #9753)",
+    )
     args = parser.parse_args()
 
     spec_path = Path(args.spec)
@@ -391,7 +434,7 @@ def main() -> int:
         sys.stderr.write("Spec OpenAPI illisible (racine non-objet).\n")
         return 2
 
-    manifest = generate(spec)
+    manifest = generate(spec, include_actions=bool(args.include_actions))
     rendered = render(manifest)
     output_path = Path(args.output)
 

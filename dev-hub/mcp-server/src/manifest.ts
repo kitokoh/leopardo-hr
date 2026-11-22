@@ -27,6 +27,15 @@ export const ToolRouteSchema = z.object({
   pathParams: z.array(z.string()).default([]),
   queryParams: z.array(z.string()).default([]),
   hasBody: z.boolean().default(false),
+  /**
+   * Endpoint d'ACTION métier (`/approve`, `/publish`, `/rotate`…) — issue #9753.
+   *
+   * Un outil d'action n'est JAMAIS exécuté directement : `tools/call` crée une
+   * action en attente (`POST /api/v1/ai/actions/propose`) et renvoie au client
+   * l'identifiant à confirmer par un humain. Le drapeau est porté par le
+   * manifeste (donc par le générateur), jamais deviné à l'exécution.
+   */
+  action: z.boolean().default(false),
 });
 
 export const ToolDefinitionSchema = z.object({

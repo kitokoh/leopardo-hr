@@ -80,6 +80,10 @@ return [
         'bank_reference_required' => 'مرجع الاستيراد مطلوب.',
         'bank_payment_required' => 'الدفعة المراد مطابقتها مطلوبة.',
         'bank_payment_exists' => 'الدفعة المحددة غير موجودة.',
+        // Partage de document (#9765)
+        'share_email_invalid' => 'عنوان البريد الإلكتروني للمستلم غير صالح.',
+        'share_expiry_min' => 'يجب أن تكون المشاركة صالحة ليوم واحد على الأقل.',
+        'share_expiry_max' => 'لا يمكن أن تتجاوز المشاركة 365 يوماً.',
     ],
 
     // تسميات أنواع اليوميات (#9370)

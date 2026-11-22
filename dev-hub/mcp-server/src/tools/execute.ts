@@ -96,6 +96,14 @@ export async function executeTool(
     );
   }
 
+  // Endpoint d'ACTION métier (issue #9753) : jamais exécuté directement, même
+  // quand le manifeste le marque `write`. On crée une PROPOSITION côté API et
+  // on renvoie l'identifiant à confirmer par un humain. Le serveur MCP n'a pas
+  // d'accès base : il ne peut pas écrire lui-même dans `ai_pending_actions`.
+  if (tool.route?.action === true) {
+    return proposeAction(tool, args, api);
+  }
+
   if (tool.sensitivity !== "read") {
     return errorResult(
       `Outil '${tool.name}' de sensibilité '${tool.sensitivity}' : exécution directe interdite. ` +
@@ -117,6 +125,41 @@ export async function executeTool(
       return errorResult(`Refus ou erreur API (${error.status}) : ${JSON.stringify(error.body)}`);
     }
     return errorResult(`Erreur d'exécution : ${(error as Error).message}`);
+  }
+}
+
+/**
+ * Crée une proposition d'action sensible (issue #9753).
+ *
+ * L'appel part vers `POST /api/v1/ai/actions/propose` — JAMAIS vers l'endpoint
+ * métier de l'outil. Laravel y applique le RBAC, vérifie que l'outil a un
+ * handler de confirmation, puis stocke l'action en attente. L'effet métier
+ * n'aura lieu qu'après confirmation humaine.
+ *
+ * Les arguments sont transmis TELS QUELS (pas de substitution de chemin) : la
+ * proposition est une intention, pas une requête HTTP. C'est Laravel qui
+ * revalidera les arguments contre le schéma au moment de la confirmation.
+ */
+async function proposeAction(
+  tool: ToolDefinition,
+  args: Record<string, unknown>,
+  api: ApiClient,
+): Promise<CallToolResult> {
+  try {
+    const payload = await api.request({
+      method: "POST",
+      path: "/api/v1/ai/actions/propose",
+      body: { tool: tool.name, arguments: args },
+    });
+
+    return { content: [{ type: "text", text: JSON.stringify(payload) }] };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return errorResult(
+        `Proposition refusée par l'API (${error.status}) : ${JSON.stringify(error.body)}`,
+      );
+    }
+    return errorResult(`Erreur de proposition : ${(error as Error).message}`);
   }
 }
 
