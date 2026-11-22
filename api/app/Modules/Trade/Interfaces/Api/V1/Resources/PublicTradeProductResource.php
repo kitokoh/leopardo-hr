@@ -21,25 +21,11 @@ namespace App\Modules\Trade\Interfaces\Api\V1\Resources;
  *
  * Le prix est présenté comme **indicatif** : le catalogue n'est pas une offre
  * ferme. Un prix ferme n'existe que dans une offre (`TradeQuote`), négociée.
- *
- * @param array{
- *   id: int|string,
- *   name: string,
- *   description?: string|null,
- *   category?: string|null,
- *   origin_country?: string|null,
- *   unit?: string|null,
- *   moq_quantity?: string|float|null,
- *   indicative_unit_price_minor?: int|null,
- *   currency?: string|null,
- *   specs?: array<string, mixed>|null
- * } $product
  */
 final class PublicTradeProductResource
 {
     /**
-     * @param array<string, mixed> $product
-     *
+     * @param  array<string, mixed>  $product
      * @return array<string, mixed>
      */
     public static function make(array $product): array
