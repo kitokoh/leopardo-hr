@@ -188,11 +188,20 @@ ModuleRoutes::tenantModule('', function (): void {
     Route::get('/edu-manager/fee-charges/{charge}', [EduFeeChargeController::class, 'show'])->whereNumber('charge');
     Route::post('/edu-manager/fee-charges', [EduFeeChargeController::class, 'store']);
     Route::post('/edu-manager/fee-charges/{charge}/payments', [EduFeeChargeController::class, 'payment'])->whereNumber('charge');
+    // #9791 — encaissement EN LOT : une classe règle le même jour, le caissier
+    // ne doit pas rouvrir la modale trente fois. Validation intégrale avant
+    // écriture, puis transaction unique (tout ou rien).
+    Route::post('/edu-manager/fee-charges/batch-payments', [EduFeeChargeController::class, 'batchPayment']);
     Route::post('/edu-manager/fee-charges/{charge}/waive', [EduFeeChargeController::class, 'waive'])->whereNumber('charge');
     // #9790 — journal des encaissements (guichet) : les paiements n'étaient
     // lisibles qu'en détail d'une charge, jamais en travers du guichet.
     Route::get('/edu-manager/fee-payments', [EduFeePaymentController::class, 'index']);
+    // #9791 — export CSV du journal (mêmes filtres, sans pagination) : état de
+    // caisse remis à la comptabilité, contrôle d'un dépôt bancaire.
+    Route::get('/edu-manager/fee-payments/export.csv', [EduFeePaymentController::class, 'export']);
     Route::get('/edu-manager/fee-accounting-entries', [EduAccountingEntryController::class, 'index']);
+    // #9791 — export CSV du rapprochement, avec totaux et écart débit − crédit.
+    Route::get('/edu-manager/fee-accounting-entries/export.csv', [EduAccountingEntryController::class, 'export']);
 
     Route::post('/edu-manager/fees', [EduFeeController::class, 'store']);
     Route::get('/edu-manager/fees/{fee}', [EduFeeController::class, 'show'])->whereNumber('fee');

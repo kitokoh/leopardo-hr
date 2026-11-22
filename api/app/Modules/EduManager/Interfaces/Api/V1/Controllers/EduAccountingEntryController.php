@@ -8,9 +8,11 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduAccountingEntry;
+use App\Modules\EduManager\Infrastructure\Exports\FeeAccountingEntriesCsvExporter;
 use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Écritures comptables du flux « frais scolaires » — Issue #5832 (EDU-016).
@@ -28,6 +30,10 @@ class EduAccountingEntryController extends Controller
 {
     use ChecksEduSolution;
 
+    public function __construct(
+        private readonly FeeAccountingEntriesCsvExporter $exporter,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         $this->assertSolutionActive();
@@ -36,18 +42,8 @@ class EduAccountingEntryController extends Controller
         $actor = $request->user();
         abort_unless(EduAccess::isAdmin($actor), 403, 'EDU_FEE_ADMIN_ONLY');
 
-        $query = EduAccountingEntry::query()
-            ->where('company_id', $actor->company_id);
-
-        if ($request->filled('source_type')) {
-            $query->where('source_type', (string) $request->input('source_type'));
-        }
-
-        if ($request->filled('source_id')) {
-            $query->where('source_id', (int) $request->input('source_id'));
-        }
-
-        $entries = $query->orderByDesc('entry_date')
+        $entries = $this->filteredQuery($request, $actor)
+            ->orderByDesc('entry_date')
             ->orderByDesc('id')
             ->paginate((int) ($request->input('per_page') ?? 15));
 
@@ -69,6 +65,55 @@ class EduAccountingEntryController extends Controller
                 'total' => $entries->total(),
             ],
         ]);
+    }
+
+    /**
+     * GET /edu-manager/fee-accounting-entries/export.csv (#9791).
+     *
+     * L'écran de rapprochement affichait un contrôle d'équilibre, mais rien ne
+     * sortait du produit : l'expert-comptable ne pouvait pas récupérer les
+     * lignes. Le fichier porte ses propres totaux ET l'écart débit − crédit,
+     * pour que le contrôle survive à l'export.
+     */
+    public function export(Request $request): StreamedResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless(EduAccess::isAdmin($actor), 403, 'EDU_FEE_ADMIN_ONLY');
+
+        $query = $this->filteredQuery($request, $actor)
+            ->orderBy('entry_date')
+            ->orderBy('id');
+
+        return response()->streamDownload(
+            $this->exporter->generateCsvClosure($query),
+            'rapprochement-frais.csv',
+            ['Content-Type' => 'text/csv; charset=UTF-8'],
+        );
+    }
+
+    /**
+     * Requête filtrée partagée par la liste et l'export — un seul périmètre,
+     * donc aucune divergence entre l'écran et le fichier.
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<EduAccountingEntry>
+     */
+    private function filteredQuery(Request $request, Employee $actor): \Illuminate\Database\Eloquent\Builder
+    {
+        $query = EduAccountingEntry::query()
+            ->where('company_id', $actor->company_id);
+
+        if ($request->filled('source_type')) {
+            $query->where('source_type', (string) $request->input('source_type'));
+        }
+
+        if ($request->filled('source_id')) {
+            $query->where('source_id', (int) $request->input('source_id'));
+        }
+
+        return $query;
     }
 
     private function numeric(mixed $raw): int|float|null

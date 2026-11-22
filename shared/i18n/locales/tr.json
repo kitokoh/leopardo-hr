@@ -5308,7 +5308,12 @@
       "errors": {
         "EDU_FEE_OVERPAYMENT": "Tutar, faturanın kalan bakiyesini aşıyor.",
         "EDU_FEE_TERMINAL": "Bu fatura kapatıldı veya vazgeçildi: başka ödeme alınamaz.",
-        "EDU_FEE_CURRENCY_MISMATCH": "Ödeme para birimi faturanın para birimiyle uyuşmuyor."
+        "EDU_FEE_CURRENCY_MISMATCH": "Ödeme para birimi faturanın para birimiyle uyuşmuyor.",
+        "EDU_FEE_BATCH_INVALID": "Parti geçersiz satırlar içeriyor.",
+        "EDU_FEE_BATCH_DUPLICATE": "Bu fatura partide iki kez görünüyor.",
+        "EDU_FEE_BATCH_EMPTY": "Parti en az bir satır içermelidir.",
+        "EDU_FEE_BATCH_TOO_LARGE": "Bir parti 200 satırı aşamaz.",
+        "EDU_FEE_CHARGE_NOT_FOUND": "Bu fatura bulunamadı."
       },
       "statuses": {
         "pending": "Beklemede",
@@ -5316,7 +5321,25 @@
         "paid": "Kapatıldı",
         "waived": "Vazgeçildi",
         "cancelled": "İptal"
-      }
+      },
+      "batch": "Toplu tahsilat",
+      "batchTitle": "Birden fazla öğrenci için tahsilat",
+      "batchSubtitle": "Bir sınıf aynı gün ödüyor: öğrenci başına bir satır girin, hepsi tek seferde kaydedilir.",
+      "batchOpen": "Toplu tahsilat",
+      "batchAddLine": "Satır ekle",
+      "batchRemoveLine": "Kaldır",
+      "batchLines": "Parti satırları",
+      "batchEmpty": "Henüz satır yok. En az bir öğrenci ekleyin.",
+      "batchTotal": "Parti toplamı",
+      "batchSubmit": "Partiyi tahsil et",
+      "batchSuccess": "Parti tahsil edildi: {total} tutarında {count} ödeme.",
+      "batchInvalid": "Parti kaydedilmedi: işaretli satırları düzeltin.",
+      "batchLineError": "Satır {line}",
+      "batchSelectCharge": "Fatura",
+      "batchDuplicate": "Bu fatura partide zaten var.",
+      "batchTooLarge": "Bir parti 200 satırı aşamaz.",
+      "exportCsv": "CSV olarak dışa aktar",
+      "exportError": "Dışa aktarma başarısız oldu. Tekrar deneyin."
     },
     "fees": {
       "title": "Okul ücretleri",
@@ -5361,7 +5384,9 @@
       "balanceSubtitle": "Toplam borç, toplam alacağa eşit olmalıdır.",
       "state": "Durum",
       "balanced": "Dengeli",
-      "unbalanced": "Dengesiz"
+      "unbalanced": "Dengesiz",
+      "exportCsv": "CSV olarak dışa aktar",
+      "exportError": "Dışa aktarma başarısız oldu. Tekrar deneyin."
     }
   },
   "travel": {

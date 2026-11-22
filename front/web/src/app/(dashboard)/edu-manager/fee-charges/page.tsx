@@ -22,7 +22,8 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Banknote, HandCoins, Plus, Receipt, Undo2 } from 'lucide-react';
+import Link from 'next/link';
+import { Banknote, Download, HandCoins, Layers, Plus, Receipt, Undo2 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
@@ -262,6 +263,32 @@ export default function FeeChargesPage() {
     }
   };
 
+  /**
+   * #9791 — export CSV du journal des encaissements.
+   *
+   * Le guichet remet un état de caisse à la comptabilité et contrôle un dépôt
+   * bancaire contre la liste réelle. Le fichier reprend le filtre de statut
+   * courant pour couvrir exactement ce que l'écran affiche.
+   */
+  const exportPayments = async () => {
+    try {
+      const res = await apiFetch('/edu-manager/fee-payments/export.csv');
+      if (!res.ok) {
+        setPaymentsError(t(locale, 'edu.feeCharges.exportError'));
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'encaissements.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setPaymentsError(t(locale, 'edu.feeCharges.exportError'));
+    }
+  };
+
   const waive = async (row: Row) => {
     if (!window.confirm(t(locale, 'edu.feeCharges.waiveConfirm'))) {
       return;
@@ -439,10 +466,19 @@ export default function FeeChargesPage() {
               ))}
             </SelectInput>
           </div>
-          <Button onClick={() => void openCreate()}>
-            <Plus className="h-4 w-4" aria-hidden="true" />
-            {t(locale, 'edu.feeCharges.create')}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/edu-manager/fee-charges/batch"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-700 hover:bg-emerald-100"
+            >
+              <Layers className="h-4 w-4" aria-hidden="true" />
+              {t(locale, 'edu.feeCharges.batchOpen')}
+            </Link>
+            <Button onClick={() => void openCreate()}>
+              <Plus className="h-4 w-4" aria-hidden="true" />
+              {t(locale, 'edu.feeCharges.create')}
+            </Button>
+          </div>
         </div>
 
         <DataTable
@@ -456,10 +492,16 @@ export default function FeeChargesPage() {
         />
 
         <Card>
-          <SectionTitle
-            title={t(locale, 'edu.feeCharges.journal')}
-            subtitle={t(locale, 'edu.feeCharges.journalSubtitle')}
-          />
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <SectionTitle
+              title={t(locale, 'edu.feeCharges.journal')}
+              subtitle={t(locale, 'edu.feeCharges.journalSubtitle')}
+            />
+            <Button variant="ghost" onClick={() => void exportPayments()}>
+              <Download className="h-4 w-4" aria-hidden="true" />
+              {t(locale, 'edu.feeCharges.exportCsv')}
+            </Button>
+          </div>
           <DataTable
             columns={paymentColumns}
             rows={payments}

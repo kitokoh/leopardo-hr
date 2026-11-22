@@ -8,9 +8,11 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduFeePayment;
+use App\Modules\EduManager\Infrastructure\Exports\FeePaymentsCsvExporter;
 use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Journal des encaissements scolaires — Issue #9790.
@@ -28,6 +30,10 @@ class EduFeePaymentController extends Controller
 {
     use ChecksEduSolution;
 
+    public function __construct(
+        private readonly FeePaymentsCsvExporter $exporter,
+    ) {}
+
     public function index(Request $request): JsonResponse
     {
         $this->assertSolutionActive();
@@ -36,6 +42,63 @@ class EduFeePaymentController extends Controller
         $actor = $request->user();
         abort_unless(EduAccess::isAdmin($actor), 403, 'EDU_FEE_ADMIN_ONLY');
 
+        $payments = $this->filteredQuery($request, $actor)
+            ->orderByDesc('paid_at')
+            ->orderByDesc('id')
+            ->paginate((int) ($request->input('per_page') ?? 15));
+
+        return response()->json([
+            'data' => collect($payments->items())
+                ->map(fn (EduFeePayment $payment): array => $this->payload($payment))
+                ->values(),
+            'meta' => [
+                'current_page' => $payments->currentPage(),
+                'per_page' => $payments->perPage(),
+                'total' => $payments->total(),
+            ],
+        ]);
+    }
+
+    /**
+     * GET /edu-manager/fee-payments/export.csv (#9791).
+     *
+     * Mêmes filtres que `index`, sans pagination : le guichet remet un état de
+     * caisse à la comptabilité et vérifie un dépôt bancaire contre la liste
+     * réelle des encaissements. Le périmètre est construit par
+     * `filteredQuery()` — donc borné au tenant, jamais élargi par l'export.
+     */
+    public function export(Request $request): StreamedResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        abort_unless(EduAccess::isAdmin($actor), 403, 'EDU_FEE_ADMIN_ONLY');
+
+        $query = $this->filteredQuery($request, $actor)
+            ->orderBy('paid_at')
+            ->orderBy('id');
+
+        $suffix = $request->filled('from') || $request->filled('to')
+            ? '-'.($request->input('from') ?? 'debut').'_'.($request->input('to') ?? 'fin')
+            : '';
+
+        return response()->streamDownload(
+            $this->exporter->generateCsvClosure($query),
+            'encaissements'.$suffix.'.csv',
+            ['Content-Type' => 'text/csv; charset=UTF-8'],
+        );
+    }
+
+    /**
+     * Requête filtrée partagée par la liste et l'export : une seule définition
+     * du périmètre, donc aucune divergence entre ce qu'on voit et ce qu'on
+     * exporte (et aucune fuite cross-tenant possible par l'export).
+     *
+     * @return \Illuminate\Database\Eloquent\Builder<EduFeePayment>
+     */
+    private function filteredQuery(Request $request, Employee $actor): \Illuminate\Database\Eloquent\Builder
+    {
         $query = EduFeePayment::query()
             ->where('company_id', $actor->company_id)
             ->with('charge:id,student_id,fee_type_id,currency,status');
@@ -63,20 +126,7 @@ class EduFeePaymentController extends Controller
             $query->whereHas('charge', fn ($charge) => $charge->where('student_id', $studentId));
         }
 
-        $payments = $query->orderByDesc('paid_at')
-            ->orderByDesc('id')
-            ->paginate((int) ($request->input('per_page') ?? 15));
-
-        return response()->json([
-            'data' => collect($payments->items())
-                ->map(fn (EduFeePayment $payment): array => $this->payload($payment))
-                ->values(),
-            'meta' => [
-                'current_page' => $payments->currentPage(),
-                'per_page' => $payments->perPage(),
-                'total' => $payments->total(),
-            ],
-        ]);
+        return $query;
     }
 
     /**

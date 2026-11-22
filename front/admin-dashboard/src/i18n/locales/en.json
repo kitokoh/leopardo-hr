@@ -5841,7 +5841,12 @@
       "errors": {
         "EDU_FEE_OVERPAYMENT": "The amount exceeds the outstanding balance of this charge.",
         "EDU_FEE_TERMINAL": "This charge is settled or waived: no further payment is possible.",
-        "EDU_FEE_CURRENCY_MISMATCH": "The payment currency does not match the charge currency."
+        "EDU_FEE_CURRENCY_MISMATCH": "The payment currency does not match the charge currency.",
+        "EDU_FEE_BATCH_INVALID": "The batch contains invalid lines.",
+        "EDU_FEE_BATCH_DUPLICATE": "This charge appears twice in the batch.",
+        "EDU_FEE_BATCH_EMPTY": "The batch must contain at least one line.",
+        "EDU_FEE_BATCH_TOO_LARGE": "A batch cannot exceed 200 lines.",
+        "EDU_FEE_CHARGE_NOT_FOUND": "This charge could not be found."
       },
       "statuses": {
         "pending": "Pending",
@@ -5849,7 +5854,25 @@
         "paid": "Settled",
         "waived": "Waived",
         "cancelled": "Cancelled"
-      }
+      },
+      "batch": "Batch collection",
+      "batchTitle": "Collect for several students",
+      "batchSubtitle": "A whole class pays on the same day: enter one line per student, everything is recorded at once.",
+      "batchOpen": "Collect in batch",
+      "batchAddLine": "Add a line",
+      "batchRemoveLine": "Remove",
+      "batchLines": "Batch lines",
+      "batchEmpty": "No lines yet. Add at least one student to collect from.",
+      "batchTotal": "Batch total",
+      "batchSubmit": "Collect batch",
+      "batchSuccess": "Batch collected: {count} payment(s) for {total}.",
+      "batchInvalid": "The batch was not saved: fix the flagged lines.",
+      "batchLineError": "Line {line}",
+      "batchSelectCharge": "Charge",
+      "batchDuplicate": "This charge is already in the batch.",
+      "batchTooLarge": "A batch cannot exceed 200 lines.",
+      "exportCsv": "Export as CSV",
+      "exportError": "The export failed. Please try again."
     },
     "fees": {
       "title": "School fees",
@@ -5894,7 +5917,9 @@
       "balanceSubtitle": "Total debits must equal total credits.",
       "state": "State",
       "balanced": "Balanced",
-      "unbalanced": "Unbalanced"
+      "unbalanced": "Unbalanced",
+      "exportCsv": "Export as CSV",
+      "exportError": "The export failed. Please try again."
     }
   },
   "travel": {

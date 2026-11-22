@@ -15,12 +15,12 @@
  */
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Scale } from 'lucide-react';
+import { Download, Scale } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 import { ModulePageShell } from '@/components/module-page-shell';
-import { Card, DataTable, SectionTitle, SelectInput, type Column } from '../_components/edu-ui';
+import { Button, Card, DataTable, SectionTitle, SelectInput, type Column } from '../_components/edu-ui';
 
 type Row = Record<string, unknown>;
 
@@ -59,6 +59,34 @@ export default function AccountingEntriesPage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  /**
+   * #9791 — export CSV du rapprochement.
+   *
+   * Le fichier porte ses propres totaux ET l'écart débit − crédit : le
+   * contrôle d'équilibre survit à l'export, l'expert-comptable n'a pas à le
+   * recalculer. Le filtre courant est transmis pour que le fichier couvre
+   * exactement ce que l'écran affiche.
+   */
+  const exportCsv = async () => {
+    try {
+      const query = sourceFilter ? `?source_type=${encodeURIComponent(sourceFilter)}` : '';
+      const res = await apiFetch(`/edu-manager/fee-accounting-entries/export.csv${query}`);
+      if (!res.ok) {
+        setError(t(locale, 'edu.accountingEntries.exportError'));
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'rapprochement-frais.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      setError(t(locale, 'edu.accountingEntries.exportError'));
+    }
+  };
 
   const totals = useMemo(() => {
     const debit = rows.reduce((sum, row) => sum + Number(row.debit ?? 0), 0);
@@ -162,7 +190,7 @@ export default function AccountingEntriesPage() {
           </div>
         </Card>
 
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <SelectInput
             value={sourceFilter}
             onChange={(event) => setSourceFilter(event.target.value)}
@@ -175,6 +203,10 @@ export default function AccountingEntriesPage() {
               </option>
             ))}
           </SelectInput>
+          <Button variant="ghost" onClick={() => void exportCsv()}>
+            <Download className="h-4 w-4" aria-hidden="true" />
+            {t(locale, 'edu.accountingEntries.exportCsv')}
+          </Button>
         </div>
 
         <DataTable

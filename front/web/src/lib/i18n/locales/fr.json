@@ -5308,7 +5308,12 @@
       "errors": {
         "EDU_FEE_OVERPAYMENT": "Le montant dépasse le solde restant de la facturation.",
         "EDU_FEE_TERMINAL": "Cette facturation est soldée ou abandonnée : plus aucun encaissement n'est possible.",
-        "EDU_FEE_CURRENCY_MISMATCH": "La devise de l'encaissement ne correspond pas à celle de la facturation."
+        "EDU_FEE_CURRENCY_MISMATCH": "La devise de l'encaissement ne correspond pas à celle de la facturation.",
+        "EDU_FEE_BATCH_INVALID": "Le lot contient des lignes invalides.",
+        "EDU_FEE_BATCH_DUPLICATE": "Cette facturation apparaît deux fois dans le lot.",
+        "EDU_FEE_BATCH_EMPTY": "Le lot doit contenir au moins une ligne.",
+        "EDU_FEE_BATCH_TOO_LARGE": "Un lot ne peut pas dépasser 200 lignes.",
+        "EDU_FEE_CHARGE_NOT_FOUND": "Cette facturation est introuvable."
       },
       "statuses": {
         "pending": "En attente",
@@ -5316,7 +5321,25 @@
         "paid": "Soldé",
         "waived": "Abandonné",
         "cancelled": "Annulé"
-      }
+      },
+      "batch": "Encaissement en lot",
+      "batchTitle": "Encaisser plusieurs élèves",
+      "batchSubtitle": "Une classe règle le même jour : saisissez une ligne par élève, tout est enregistré d'un coup.",
+      "batchOpen": "Encaisser en lot",
+      "batchAddLine": "Ajouter une ligne",
+      "batchRemoveLine": "Retirer",
+      "batchLines": "Lignes du lot",
+      "batchEmpty": "Aucune ligne. Ajoutez au moins un élève à encaisser.",
+      "batchTotal": "Total du lot",
+      "batchSubmit": "Encaisser le lot",
+      "batchSuccess": "Lot encaissé : {count} règlement(s) pour {total}.",
+      "batchInvalid": "Le lot n'a pas été enregistré : corrigez les lignes signalées.",
+      "batchLineError": "Ligne {line}",
+      "batchSelectCharge": "Facturation",
+      "batchDuplicate": "Cette facturation est déjà présente dans le lot.",
+      "batchTooLarge": "Un lot ne peut pas dépasser 200 lignes.",
+      "exportCsv": "Exporter en CSV",
+      "exportError": "L'export a échoué. Réessayez."
     },
     "fees": {
       "title": "Frais scolaires",
@@ -5361,7 +5384,9 @@
       "balanceSubtitle": "Le total des débits doit égaler le total des crédits.",
       "state": "État",
       "balanced": "Équilibré",
-      "unbalanced": "Déséquilibré"
+      "unbalanced": "Déséquilibré",
+      "exportCsv": "Exporter en CSV",
+      "exportError": "L'export a échoué. Réessayez."
     }
   },
   "travel": {

@@ -7,11 +7,13 @@ namespace App\Modules\EduManager\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\EduManager\Application\Actions\CreateEduFeeChargeAction;
+use App\Modules\EduManager\Application\Actions\RecordEduFeeBatchPaymentsAction;
 use App\Modules\EduManager\Application\Actions\RecordEduFeePaymentAction;
 use App\Modules\EduManager\Application\Actions\WaiveEduFeeChargeAction;
 use App\Modules\EduManager\Domain\Access\EduAccess;
 use App\Modules\EduManager\Domain\Models\EduFeeCharge;
 use App\Modules\EduManager\Domain\Models\EduFeePayment;
+use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeBatchPaymentRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeChargeRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeePaymentRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Traits\ChecksEduSolution;
@@ -49,6 +51,7 @@ class EduFeeChargeController extends Controller
     public function __construct(
         private readonly CreateEduFeeChargeAction $createCharge,
         private readonly RecordEduFeePaymentAction $recordPayment,
+        private readonly RecordEduFeeBatchPaymentsAction $recordBatch,
         private readonly WaiveEduFeeChargeAction $waiveCharge,
     ) {}
 
@@ -165,6 +168,42 @@ class EduFeeChargeController extends Controller
                 'payment' => $this->paymentPayload($payment),
                 'charge' => $this->chargePayload($updated),
             ],
+        ], 201);
+    }
+
+    /**
+     * Encaissement EN LOT au guichet (#9791).
+     *
+     * Une classe entière règle le même jour : le caissier saisissait une charge
+     * à la fois. Le lot porte le contexte commun (moyen, référence de
+     * bordereau, date) et une ligne par charge.
+     *
+     * Réponse 201 quand tout est écrit ; 422 avec `errors[]` indexées quand au
+     * moins une ligne est invalide — et dans ce cas RIEN n'est écrit (validation
+     * intégrale avant la transaction, cf. RecordEduFeeBatchPaymentsAction).
+     */
+    public function batchPayment(StoreEduFeeBatchPaymentRequest $request): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->assertAdmin($actor);
+
+        $result = $this->recordBatch->execute($actor, $request->validated());
+
+        if (! $result['ok']) {
+            return response()->json([
+                'error' => 'EDU_FEE_BATCH_INVALID',
+                'message' => 'EDU_FEE_BATCH_INVALID',
+                'errors' => $result['errors'],
+                'summary' => $result['summary'],
+            ], 422);
+        }
+
+        return response()->json([
+            'data' => $result['results'],
+            'summary' => $result['summary'],
         ], 201);
     }
 

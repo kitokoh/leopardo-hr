@@ -5308,7 +5308,12 @@
       "errors": {
         "EDU_FEE_OVERPAYMENT": "المبلغ يتجاوز الرصيد المتبقي للفاتورة.",
         "EDU_FEE_TERMINAL": "هذه الفاتورة مسددة أو مسقطة: لا يمكن تحصيل أي دفعة أخرى.",
-        "EDU_FEE_CURRENCY_MISMATCH": "عملة الدفعة لا تطابق عملة الفاتورة."
+        "EDU_FEE_CURRENCY_MISMATCH": "عملة الدفعة لا تطابق عملة الفاتورة.",
+        "EDU_FEE_BATCH_INVALID": "تحتوي الدفعة على أسطر غير صالحة.",
+        "EDU_FEE_BATCH_DUPLICATE": "تظهر هذه الفاتورة مرتين في الدفعة.",
+        "EDU_FEE_BATCH_EMPTY": "يجب أن تحتوي الدفعة على سطر واحد على الأقل.",
+        "EDU_FEE_BATCH_TOO_LARGE": "لا يمكن أن تتجاوز الدفعة 200 سطر.",
+        "EDU_FEE_CHARGE_NOT_FOUND": "تعذّر العثور على هذه الفاتورة."
       },
       "statuses": {
         "pending": "قيد الانتظار",
@@ -5316,7 +5321,25 @@
         "paid": "مسدد",
         "waived": "مسقط",
         "cancelled": "ملغى"
-      }
+      },
+      "batch": "تحصيل بالجملة",
+      "batchTitle": "تحصيل لعدة تلاميذ",
+      "batchSubtitle": "قسم كامل يدفع في اليوم نفسه: أدخل سطراً لكل تلميذ، ويُسجَّل الكل دفعة واحدة.",
+      "batchOpen": "تحصيل بالجملة",
+      "batchAddLine": "إضافة سطر",
+      "batchRemoveLine": "إزالة",
+      "batchLines": "أسطر الدفعة",
+      "batchEmpty": "لا توجد أسطر. أضف تلميذاً واحداً على الأقل.",
+      "batchTotal": "مجموع الدفعة",
+      "batchSubmit": "تحصيل الدفعة",
+      "batchSuccess": "تم تحصيل الدفعة: {count} دفعة بقيمة {total}.",
+      "batchInvalid": "لم تُسجَّل الدفعة: صحّح الأسطر المشار إليها.",
+      "batchLineError": "السطر {line}",
+      "batchSelectCharge": "الفاتورة",
+      "batchDuplicate": "هذه الفاتورة موجودة مسبقاً في الدفعة.",
+      "batchTooLarge": "لا يمكن أن تتجاوز الدفعة 200 سطر.",
+      "exportCsv": "تصدير بصيغة CSV",
+      "exportError": "فشل التصدير. أعد المحاولة."
     },
     "fees": {
       "title": "الرسوم الدراسية",
@@ -5361,7 +5384,9 @@
       "balanceSubtitle": "يجب أن يساوي مجموع المدين مجموع الدائن.",
       "state": "الحالة",
       "balanced": "متوازن",
-      "unbalanced": "غير متوازن"
+      "unbalanced": "غير متوازن",
+      "exportCsv": "تصدير بصيغة CSV",
+      "exportError": "فشل التصدير. أعد المحاولة."
     }
   },
   "travel": {
