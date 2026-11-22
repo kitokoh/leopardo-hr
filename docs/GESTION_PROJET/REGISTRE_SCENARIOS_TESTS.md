@@ -19,6 +19,28 @@ Surface : `front/web/src/app/(dashboard)/trade-os/components/CounterpartyList.ts
 
 **Non couvert** — le rendu navigateur réel des deux boutons : la mesure est le run CI.
 
+## 2026-11-22 — Plateforme : bannissement de compte exposé en API (issue #9815)
+
+Surface : `api/routes/api.php` (groupe `platform` : `POST|DELETE|GET /v1/platform/accounts/{type}/{id}/ban`), `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformAccountBanController.php` (nouveau), `api/app/Modules/Platform/Interfaces/Api/V1/Requests/BanAccountRequest.php` (nouveau), `api/app/Core/Auth/Infrastructure/Services/TokenRevocationService.php` (constantes), `api/openapi.yaml`, `api/tests/Feature/Security/PlatformAccountBanApiTest.php` (nouveau), `dev-hub/tools/check-platform-mfa-coverage.py`.
+
+**Pourquoi c'est un scénario de test** : le bannissement existait depuis #9808 mais **uniquement** via `php artisan auth:ban-account`. Le docblock de cette commande annonçait déjà un `PlatformAccountBanController` qui n'existait pas — la documentation décrivait une surface absente. Un opérateur plateforme ne pouvait donc couper un accès compromis qu'en ouvrant un shell sur le serveur, ce qui exclut toute réponse à incident depuis la console.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `POST …/ban` avec `hours: 24` puis `GET …/ban` → `banned: true`, `until` renseigné | un bannissement temporaire non daté est indistinguable d'un permanent |
+| `POST …/ban` sans `hours` → permanent (`until: null`) | la durée par défaut doit être explicite, pas un défaut implicite de 24 h |
+| le jeton du compte banni est refusé à la requête **suivante** | le bannissement doit couper l'accès, pas seulement s'afficher |
+| `DELETE …/ban` → l'accès revient à la requête suivante | un bannissement irréversible obligerait à recréer le compte |
+| `DELETE …/ban` sur un compte non banni → **200** (idempotent) | un 404 forcerait l'appelant à interroger l'état avant un geste déjà sans effet |
+| `GET …/ban` ne sérialise **ni nom ni e-mail** | l'endpoint de sécurité ne doit pas devenir un annuaire de comptes |
+| `type` inconnu (`typo`) → **422 sans clé fantôme** | une clé `auth:banned:typo:42` ne serait jamais relue par `AccountStatusGuard` : bannissement silencieusement sans effet |
+| un rôle sans `accounts.ban` (`finance`) → 403 | bannir est un geste de sécurité distinct de `users.manage` |
+| `support` et `ops` peuvent bannir | la réponse à incident ne doit pas exiger le rôle `super_admin` |
+
+**Couverture exécutée** — `php -l` sur les 5 fichiers PHP (0 erreur) ; `check-openapi-route-coverage.py` → exit 0 (les 3 routes documentées) ; `yaml.safe_load(api/openapi.yaml)` OK ; `check-platform-mfa-coverage.py --self-test` → 6/6 ; `check-form-request-guard.py` → exit 0 (dette figée 434) ; `check-routes-tenant-platform.sh` → 2 544 routes, aucune fuite R1/R2/R3 ; `check-unrouted-controllers.sh` → 0 orphelin ; `check-phpunit-file-paths.py` → 2 659 entrées, 0 orpheline ; shards régénérés (le test est listé) ; `check-i18n-catalog-parity.sh` → OK (4 langues).
+
+**Non couvert** — exécution locale de PHPUnit (pas de `vendor/` ni de PostgreSQL dans l'espace de travail) : `PlatformAccountBanApiTest` (9 cas) est la mesure du run CI.
+
 ## 2026-11-22 — Facturation des abonnements : deux tables `invoices` divergentes (issue #9806)
 
 Surface : `api/database/migrations/public/2026_11_22_000100_9806_align_public_invoices_with_billing_schema.php`, `api/tests/Feature/Billing/PublicInvoicesSchemaParityTest.php`. Aucun changement de route, de contrat d'API ni de comportement produit hors correction.

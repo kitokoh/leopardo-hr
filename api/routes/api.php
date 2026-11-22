@@ -49,6 +49,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\EstablishmentsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\HealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAccountBanController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAcquisitionFunnelController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardController;
@@ -284,7 +285,7 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/public/travel/marketplace/account/login', [TravelCustomerAccountController::class, 'login']);
     });
 
-    Route::middleware(['throttle:shop-public', 'auth:travel_customer'])->group(function (): void {
+    Route::middleware(['throttle:shop-public', 'auth:travel_customer', 'account.active'])->group(function (): void {
         Route::post('/public/travel/marketplace/account/logout', [TravelCustomerAccountController::class, 'logout']);
         Route::get('/public/travel/marketplace/account/me', [TravelCustomerAccountController::class, 'me']);
         Route::get('/public/travel/marketplace/account/bookings', [TravelCustomerAccountController::class, 'bookings']);
@@ -707,6 +708,16 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/companies', [PlatformCompanyController::class, 'index'])->middleware('platform.permission:companies.view');
         Route::post('/companies', [PlatformCompanyController::class, 'store'])->middleware('platform.permission:companies.provision');
         Route::get('/companies/health', [PlatformCompanyHealthController::class, 'index'])->middleware('platform.permission:companies.view');
+        // #9815 — bannissement de compte exposé côté API. #9808 avait livré le
+        // service et la commande `auth:ban-account`, mais aucun chemin HTTP :
+        // la console ne pouvait pas couper l'accès d'un compte compromis.
+        // Permission DÉDIÉE `accounts.ban` (et non `users.manage`) : bannir est
+        // un geste de sécurité, distinct de la suspension métier.
+        Route::prefix('accounts/{type}/{id}/ban')->whereNumber('id')->group(function (): void {
+            Route::post('/', [PlatformAccountBanController::class, 'ban'])->middleware('platform.permission:accounts.ban');
+            Route::delete('/', [PlatformAccountBanController::class, 'unban'])->middleware('platform.permission:accounts.ban');
+            Route::get('/', [PlatformAccountBanController::class, 'show'])->middleware('platform.permission:accounts.ban');
+        });
         // #8626/#8627 (Lot 6) — console de PROVISIONNEMENT : étapes franchies,
         // échecs et blocages, tenants sans établissement, catalogue des
         // verticales avec leur maturité réelle. Faits de provisionnement

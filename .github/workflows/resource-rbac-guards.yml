@@ -10,19 +10,29 @@ name: Resource RBAC Guards
 # R3 (#7600) : `hasManagerRole()` n'accepte que des valeurs réellement
 # assignables de `manager_role` — le motif mort (valeurs hors enum,
 # conditions toujours fausses) ne doit plus revenir.
+#
+# #9812 : la policy qui garde le MODELE d'une ressource declaree dans
+# `config/resource_types.php` doit appliquer le niveau view/operate/manage
+# (concern `ChecksResourceScopedAccess` ou lecture directe de
+# `EmployeeResourceAssignment`). Sans cette garde, une policy peut comparer
+# `company_id` a la main, passer tous les tests, et ignorer le niveau :
+# `EduCampusPolicy` et `SitePolicy` etaient exactement dans ce cas.
 
 on:
   pull_request:
     branches: [main]
     paths:
       - "api/app/**"
+      - "api/config/resource_types.php"
       - "dev-hub/tools/check-vertical-controller-policies.sh"
       - "dev-hub/tools/check-manager-role-enum.sh"
+      - "dev-hub/tools/check-resource-scoped-policies.py"
       - ".github/workflows/resource-rbac-guards.yml"
   push:
     branches: [main]
     paths:
       - "api/app/**"
+      - "api/config/resource_types.php"
 
 permissions:
   contents: read
@@ -47,3 +57,9 @@ jobs:
 
       - name: hasManagerRole only accepts enum values (#7600)
         run: bash dev-hub/tools/check-manager-role-enum.sh
+
+      - name: Autotest de la garde ressource-scopee (#9812)
+        run: python3 dev-hub/tools/check-resource-scoped-policies.py --self-test
+
+      - name: Resource policies apply view/operate/manage (#9812)
+        run: python3 dev-hub/tools/check-resource-scoped-policies.py --verbose
