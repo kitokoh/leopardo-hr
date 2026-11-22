@@ -49,8 +49,7 @@ final class TransitionOpportunityStageAction
 {
     public function __construct(
         private readonly DatabaseManager $db,
-    ) {
-    }
+    ) {}
 
     /**
      * @param  array{stage: string, lost_reason?: string|null, amount?: mixed, expected_close_date?: string|null, notes?: string|null}  $data
