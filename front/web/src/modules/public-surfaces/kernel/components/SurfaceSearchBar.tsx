@@ -57,13 +57,15 @@ export function SurfaceSearchBar({
   const showCity = Boolean(labels.cityLabel && labels.cityPlaceholder);
 
   const fieldStyle = {
-    padding: '0.6rem 0.8rem',
-    borderRadius: '0.6rem',
-    border: `1px solid ${palette.muted}55`,
+    padding: '0.65rem 0.95rem',
+    borderRadius: '0.75rem',
+    border: `1px solid ${palette.muted}44`,
     background: '#FFFFFF',
     color: palette.onSurface,
     fontSize: '0.9rem',
     minWidth: 0,
+    boxShadow: '0 1px 2px rgba(15, 23, 42, 0.04)',
+    outline: 'none',
   } as const;
 
   const hasFilter = Boolean(defaultQuery || defaultCity);
@@ -78,12 +80,12 @@ export function SurfaceSearchBar({
         display: 'flex',
         flexWrap: 'wrap',
         alignItems: 'flex-end',
-        gap: '0.75rem',
-        margin: '0 0 1.75rem',
+        gap: '0.85rem',
+        margin: '0 0 2rem',
       }}
     >
-      <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: '2 1 14rem' }}>
-        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: palette.muted }}>
+      <label style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: '2 1 14rem' }}>
+        <span style={{ fontSize: '0.75rem', fontWeight: 700, color: palette.muted, letterSpacing: '0.02em' }}>
           {labels.searchLabel}
         </span>
         <input
@@ -96,8 +98,8 @@ export function SurfaceSearchBar({
       </label>
 
       {showCity ? (
-        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', flex: '1 1 10rem' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: palette.muted }}>
+        <label style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem', flex: '1 1 10rem' }}>
+          <span style={{ fontSize: '0.75rem', fontWeight: 700, color: palette.muted, letterSpacing: '0.02em' }}>
             {labels.cityLabel}
           </span>
           <input
@@ -113,8 +115,8 @@ export function SurfaceSearchBar({
       <button
         type="submit"
         style={{
-          padding: '0.6rem 1.1rem',
-          borderRadius: '0.6rem',
+          padding: '0.65rem 1.3rem',
+          borderRadius: '0.75rem',
           border: 'none',
           background: palette.primary,
           color: palette.onPrimary,
@@ -122,6 +124,7 @@ export function SurfaceSearchBar({
           fontSize: '0.9rem',
           cursor: 'pointer',
           minHeight: '44px',
+          boxShadow: '0 1px 3px rgba(15, 23, 42, 0.08)',
         }}
       >
         {labels.searchSubmit}
@@ -133,9 +136,10 @@ export function SurfaceSearchBar({
         <a
           href={basePath}
           style={{
-            padding: '0.6rem 0.9rem',
-            borderRadius: '0.6rem',
-            border: `1px solid ${palette.muted}55`,
+            padding: '0.65rem 1rem',
+            borderRadius: '0.75rem',
+            border: `1px solid ${palette.muted}44`,
+            background: '#FFFFFF',
             color: palette.muted,
             fontWeight: 600,
             fontSize: '0.9rem',
@@ -143,6 +147,7 @@ export function SurfaceSearchBar({
             minHeight: '44px',
             display: 'inline-flex',
             alignItems: 'center',
+            boxShadow: '0 1px 2px rgba(15, 23, 42, 0.04)',
           }}
         >
           {labels.searchReset}

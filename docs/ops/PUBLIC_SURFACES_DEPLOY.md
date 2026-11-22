@@ -80,6 +80,34 @@ Ajouter une verticale à cette liste est un acte explicite : une verticale
 oubliée ferait échouer `push main` faute de secrets, ce qui est visible — c'est
 le comportement voulu par #7994 §4.
 
+## Verticales en attente de provisionnement Vercel (#9384)
+
+Entre les deux extrêmes — « projet Vercel dédié, secrets posés » et « jamais de
+projet, servie par `front/web` » — il y a un état réel : la vitrine **aura** son
+projet Vercel, mais les secrets ne sont pas encore posés. C'est une action
+propriétaire en cours, pas un choix d'architecture.
+
+Ces verticales sont déclarées dans `PENDING_VERCEL_SURFACES` de
+`dev-hub/tools/detect-changed-surfaces.sh`. Elles restent dans `surfaces` (le
+diff est bien signalé) mais sortent de `deployable` : **aucun job n'est lancé**,
+donc `main` ne reste pas rouge en permanence.
+
+Pourquoi ne pas les laisser échouer : la règle #7994 §4 rend `main` rouge dès
+qu'un push touche une vitrine non déployable. Un `main` rouge en permanence ne
+rend plus visible la régression qu'il devait signaler — le signal se noie. Le
+retard reste néanmoins **visible** : le job `detect` émet un `::warning::` et une
+entrée de step summary qui nomme les verticales concernées.
+
+| Vitrine | Verticale | Issue de provisionnement |
+|---|---|---|
+| B2B | `trade` | #9384 |
+
+**Anti-pourrissement.** `check-public-surfaces-deploy-parity.sh` (job requis)
+échoue si une entrée de `PENDING_VERCEL_SURFACES` n'est pas une verticale connue
+du détecteur, ou si elle n'est pas documentée dans ce tableau. Quand les secrets
+d'une verticale sont posés, il faut la **retirer** de cette liste : sinon elle ne
+serait plus jamais déployée, silencieusement.
+
 ## Ajouter une septième vitrine
 
 1. Créer `front/web/src/modules/public-surfaces/<vertical>/` (domain,

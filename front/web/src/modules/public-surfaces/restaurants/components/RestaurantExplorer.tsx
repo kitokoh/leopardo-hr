@@ -296,55 +296,66 @@ export default function RestaurantExplorer({
               <li key={restaurant.slug}>
                 <Link
                   href={`/restaurants/${restaurant.slug}`}
-                  className="flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/70 bg-white/90 shadow-sm backdrop-blur-xl transition-shadow hover:shadow-md"
+                  className="group flex h-full flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-amber-300 hover:shadow-xl"
                 >
-                  {restaurant.cover_image_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element -- URL publique fournie par l'API, dimensions inconnues
-                    <img
-                      src={restaurant.cover_image_url}
-                      alt={restaurant.name}
-                      className="h-36 w-full object-cover"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="flex h-36 w-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-100">
-                      <Store className="h-10 w-10 text-amber-500" aria-hidden="true" />
-                    </div>
-                  )}
+                  <div className="relative h-40 w-full overflow-hidden bg-slate-100">
+                    {restaurant.cover_image_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- URL publique fournie par l'API, dimensions inconnues
+                      <img
+                        src={restaurant.cover_image_url}
+                        alt={restaurant.name}
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-amber-100 to-orange-100">
+                        <Store className="h-10 w-10 text-amber-500" aria-hidden="true" />
+                      </div>
+                    )}
+                    {typeLabel ? (
+                      <span className="absolute left-2.5 top-2.5 inline-flex items-center rounded-full bg-white/95 px-2.5 py-0.5 text-xs font-bold text-amber-800 shadow-sm backdrop-blur-md">
+                        {typeLabel}
+                      </span>
+                    ) : null}
+                  </div>
                   <div className="flex flex-1 flex-col gap-1.5 p-4">
-                    <p className="font-black tracking-tight text-slate-950">{restaurant.name}</p>
+                    <p className="font-black tracking-tight text-slate-950 transition-colors group-hover:text-amber-700">{restaurant.name}</p>
                     <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-slate-500">
-                      {typeLabel ? <span className="font-bold text-amber-700">{typeLabel}</span> : null}
                       {restaurant.city ? (
-                        <span className="inline-flex items-center gap-0.5">
-                          <MapPin className="h-3 w-3" aria-hidden="true" />
+                        <span className="inline-flex items-center gap-1 font-medium text-slate-600">
+                          <MapPin className="h-3 w-3 text-slate-400" aria-hidden="true" />
                           {restaurant.city}
                         </span>
                       ) : null}
                       {typeof restaurant.distance_km === 'number' ? (
-                        <span className="font-bold text-emerald-700">
+                        <span className="rounded-md border border-emerald-200/50 bg-emerald-50 px-2 py-0.5 font-bold text-emerald-700">
                           {distanceText(restaurant.distance_km)}
                         </span>
                       ) : null}
                     </p>
                     {restaurant.description ? (
-                      <p className="line-clamp-2 text-xs text-slate-500">{restaurant.description}</p>
+                      <p className="line-clamp-2 text-xs leading-relaxed text-slate-500">{restaurant.description}</p>
                     ) : null}
-                    <p className="mt-auto flex items-center gap-1.5 pt-1 text-xs">
+                    <div className="mt-auto flex items-center justify-between border-t border-slate-100 pt-2 text-xs">
                       {rating ? (
-                        <>
-                          <Star className="h-3.5 w-3.5 text-amber-500" aria-hidden="true" />
-                          <span className="font-black text-slate-800">{rating}</span>
-                          <span className="text-slate-500">
+                        <span className="inline-flex items-center gap-1.5">
+                          <span className="inline-flex items-center gap-1 rounded-md border border-amber-200/60 bg-amber-50 px-2 py-0.5 font-black text-amber-700">
+                            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-500" aria-hidden="true" />
+                            {rating}
+                          </span>
+                          <span className="text-slate-400">
                             ({restaurant.reviews_count} {t(locale, 'restaurant.public.reviewsSuffix')})
                           </span>
-                        </>
+                        </span>
                       ) : (
-                        <span className="font-bold text-amber-700">
-                          {t(locale, 'restaurant.public.viewMenu')} →
+                        <span className="text-xs text-slate-400">
+                          {t(locale, 'restaurant.public.noReviews')}
                         </span>
                       )}
-                    </p>
+                      <span className="font-bold text-amber-700 transition-transform group-hover:translate-x-0.5">
+                        {t(locale, 'restaurant.public.viewMenu')} →
+                      </span>
+                    </div>
                   </div>
                 </Link>
               </li>

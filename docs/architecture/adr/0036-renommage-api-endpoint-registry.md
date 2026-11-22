@@ -1,4 +1,9 @@
-# ADR 0028 — Renommage du registre mobile : `FeatureRegistry` → `ApiEndpointRegistry` (BOS-015)
+# ADR 0036 — Renommage du registre mobile : `FeatureRegistry` → `ApiEndpointRegistry` (BOS-015)
+
+> **Renumerotee depuis ADR-0028 le 2026-11-22 (issue #9770)** : deux ADR portaient
+> l'identifiant `0028` (celle-ci et `0028-shared-schema-definitif.md`, citee comme
+> « ADR-0028 » par ~15 fichiers de code). L'ADR de tenancy garde le numero ; celle-ci
+> prend le premier numero libre, `0036`.
 
 ## Statut
 

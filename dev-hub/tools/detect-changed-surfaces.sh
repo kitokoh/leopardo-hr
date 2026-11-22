@@ -87,6 +87,28 @@ NO_VERCEL_SURFACES=(
   $'careers'
 )
 
+# --- Verticales EN ATTENTE de provisionnement Vercel --------------------------
+# Une verticale qui AURA son projet Vercel mais dont les secrets ne sont pas
+# encore posés. Différence avec `NO_VERCEL_SURFACES` : là-bas le projet
+# n'existera JAMAIS (la vitrine est servie par `front/web`) ; ici il existera,
+# c'est une action propriétaire en cours.
+#
+# Pourquoi cette liste existe : la règle #7994 §4 (« un push main qui touche une
+# vitrine sans déploiement possible doit être visible ») rendait `main` ROUGE en
+# permanence dès qu'une vitrine non provisionnée était touchée — et un `main`
+# rouge en permanence ne rend plus visible la régression qu'il devait signaler.
+# Ces verticales sortent donc de `deployable` (pas de job qui échoue) mais
+# restent dans `surfaces`, et le workflow émet un `::warning::` + une entrée de
+# step summary qui nomme l'issue de provisionnement.
+#
+# Anti-pourrissement : `check-public-surfaces-deploy-parity.sh` échoue si une
+# verticale listée ici a en réalité ses trois secrets posés (il faut alors la
+# retirer de cette liste), et si l'issue référencée n'est pas un nombre.
+PENDING_VERCEL_SURFACES=(
+  # #9384 — provisionnement des projets Vercel des vitrines verticales.
+  $'trade'
+)
+
 if [[ "${FROM_STDIN}" -eq 1 ]]; then
   CHANGED="$(cat)"
 else
@@ -149,6 +171,7 @@ fi
 # `deployable` = celles qui ont réellement un projet Vercel à déployer (#9638).
 LIST=""
 DEPLOYABLE=""
+PENDING=""
 for entry in "${SURFACES[@]}"; do
   vertical="${entry%%$'\t'*}"
   if [[ -n "${HIT[${vertical}]:-}" ]]; then
@@ -158,6 +181,16 @@ for entry in "${SURFACES[@]}"; do
     for no_vercel in "${NO_VERCEL_SURFACES[@]}"; do
       if [[ "${no_vercel}" == "${vertical}" ]]; then
         skip=1
+        break
+      fi
+    done
+
+    # En attente de provisionnement : pas de job (il échouerait à chaque push),
+    # mais signalé explicitement pour que le retard reste visible.
+    for pending in "${PENDING_VERCEL_SURFACES[@]}"; do
+      if [[ "${pending}" == "${vertical}" ]]; then
+        skip=1
+        PENDING="${PENDING:+${PENDING},}\"${vertical}\""
         break
       fi
     done
@@ -173,6 +206,7 @@ if [[ "${SHARED}" -eq 1 ]]; then
   ALL="true"
 fi
 
-printf '{"surfaces":[%s],"deployable":[%s],"shared":%s,"all":%s}\n' "${LIST}" \
+printf '{"surfaces":[%s],"deployable":[%s],"pending":[%s],"shared":%s,"all":%s}\n' "${LIST}" \
   "${DEPLOYABLE}" \
+  "${PENDING}" \
   "$([[ "${SHARED}" -eq 1 ]] && echo true || echo false)" "${ALL}"

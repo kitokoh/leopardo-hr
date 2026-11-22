@@ -214,7 +214,15 @@ class CrmMigrationsTest extends TestCase
         Schema::dropIfExists('crm_tasks');
         Schema::dropIfExists('crm_contacts');
         Schema::dropIfExists('crm_accounts');
-        DB::table('migrations')->where('migration', 'like', '%5708%')->delete();
+        // #9741 — `8866` doit être retirée AUSSI : elle est dans la chaîne
+        // rejouée, et une ligne `migrations` résiduelle la faisait SAUTER par
+        // le migrateur. Le test passait seul (base fraîche) mais échouait en
+        // série : `crm_contacts.phone` restait en `character varying` au lieu
+        // de `text`, et le test suivant retombait en SQLSTATE[22001].
+        DB::table('migrations')
+            ->where('migration', 'like', '%5708%')
+            ->orWhere('migration', 'like', '%8866%')
+            ->delete();
 
         $migrationsDir = base_path('database/migrations/tenant');
         $tmpDir = sys_get_temp_dir().'/crm_migrations_'.uniqid('', false);
