@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, ClipboardList, Globe2, Handshake, Package, RefreshCw, ShoppingCart, Store, Truck, Users } from 'lucide-react';
+import { AlertTriangle, ClipboardList, FileText, Globe2, Handshake, Megaphone, Package, RefreshCw, ShoppingCart, Store, Truck, Users } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
@@ -34,7 +34,19 @@ import type { TradeCounterparty } from './components/types';
  * INDISPONIBLE. Aucune donnée n'est simulée pour combler un adaptateur absent.
  */
 
-type TradeTab = 'overview' | 'sourcing' | 'sales' | 'catalog' | 'orders' | 'counterparties' | 'costs';
+type TradeTab =
+  | 'overview'
+  | 'sourcing'
+  | 'sales'
+  | 'catalog'
+  | 'orders'
+  | 'counterparties'
+  | 'costs'
+  // Les trois surfaces du "PROMOUVOIR" (#9831 #9832 #9833) : le backend les
+  // servait deja, aucun ecran ne les appelait.
+  | 'profile'
+  | 'documents'
+  | 'promotion';
 
 /**
  * Commande B2B (#9779).
@@ -133,6 +145,93 @@ type TradeIntegration = {
   reason?: string | null;
 };
 
+/**
+ * Profil commercial du tenant (#9831).
+ *
+ * `is_public` est un etat SERVEUR : on ne le deduit jamais de la presence d'un
+ * slug. Un profil peut avoir un slug et rester depublie — c'est exactement ce
+ * que `PUT /trade/profile/publication` distingue.
+ */
+type TradeProfile = {
+  import_enabled: boolean;
+  export_enabled: boolean;
+  domestic_scope: boolean;
+  hq_country?: string | null;
+  markets_served?: string[] | null;
+  product_categories?: string[] | null;
+  default_currency?: string | null;
+  default_incoterm?: string | null;
+  notes?: string | null;
+  is_public: boolean;
+  public_slug?: string | null;
+  public_name?: string | null;
+  public_description?: string | null;
+  public_city?: string | null;
+};
+
+/** Brouillon du formulaire de profil — tout est texte, converti a l'envoi. */
+type ProfileDraft = {
+  importEnabled: boolean;
+  exportEnabled: boolean;
+  domesticScope: boolean;
+  hqCountry: string;
+  marketsServed: string;
+  productCategories: string;
+  defaultCurrency: string;
+  defaultIncoterm: string;
+  notes: string;
+  publicSlug: string;
+  publicName: string;
+  publicDescription: string;
+  publicCity: string;
+};
+
+const EMPTY_PROFILE_DRAFT: ProfileDraft = {
+  importEnabled: false,
+  exportEnabled: false,
+  domesticScope: false,
+  hqCountry: '',
+  marketsServed: '',
+  productCategories: '',
+  defaultCurrency: '',
+  defaultIncoterm: '',
+  notes: '',
+  publicSlug: '',
+  publicName: '',
+  publicDescription: '',
+  publicCity: '',
+};
+
+/**
+ * Document commercial (#9832).
+ *
+ * `download_url` est une ROUTE autorisee, jamais une URL de stockage : la
+ * ressource serveur ne sort ni `disk` ni `path`. On l'utilise telle quelle.
+ */
+type TradeDocumentRow = {
+  id: number | string;
+  type: string;
+  type_label?: string | null;
+  title?: string | null;
+  original_name?: string | null;
+  mime_type?: string | null;
+  size_bytes?: number | null;
+  status?: string | null;
+  trade_order_id?: number | null;
+  trade_quote_id?: number | null;
+  trade_rfq_id?: number | null;
+  download_url?: string | null;
+  created_at?: string | null;
+};
+
+/** Kit de promotion (#9833) — lecture seule, il ne publie rien. */
+type PromotionKit = {
+  publication: { is_public: boolean; slug: string | null; url: string | null };
+  checklist: { key: string; done: boolean; hint: string }[];
+  draft: { headline: string | null; summary: string | null; highlights: string[] };
+  disclaimer: string;
+};
+
 const TABS: { key: TradeTab; labelKey: string; icon: typeof Globe2 }[] = [
   { key: 'overview', labelKey: 'trade.overview.title', icon: Globe2 },
   { key: 'sourcing', labelKey: 'trade.sourcing.title', icon: ShoppingCart },
@@ -149,6 +248,16 @@ const TABS: { key: TradeTab; labelKey: string; icon: typeof Globe2 }[] = [
   { key: 'orders', labelKey: 'trade.orders.title', icon: ClipboardList },
   { key: 'counterparties', labelKey: 'trade.counterparties.title', icon: Handshake },
   { key: 'costs', labelKey: 'trade.costs.title', icon: Truck },
+  // ── PROMOUVOIR (#9831 #9832 #9833) ────────────────────────────────────────
+  // `GET|PUT /trade/profile`, `PUT /trade/profile/publication`,
+  // `GET|POST|DELETE /trade/documents` et `GET /trade/promotion-kit`
+  // existaient cote serveur sans AUCUN point d'entree : le vendeur B2B ne
+  // pouvait ni se decrire, ni publier sa vitrine, ni deposer la facture que la
+  // checklist douaniere lui demande. Une route sans interface n'est pas un
+  // outil, c'est une capacite latente.
+  { key: 'profile', labelKey: 'trade.profile.title', icon: Store },
+  { key: 'documents', labelKey: 'trade.documents.title', icon: FileText },
+  { key: 'promotion', labelKey: 'trade.promotion.title', icon: Megaphone },
 ];
 
 /**
@@ -223,6 +332,32 @@ export default function TradeDashboardPage() {
   const [counterpartyError, setCounterpartyError] = useState<string | null>(null);
   const [counterpartyNotice, setCounterpartyNotice] = useState<string | null>(null);
 
+  // ── Profil commercial & publication (#9831) ───────────────────────────────
+  const [profile, setProfile] = useState<TradeProfile | null>(null);
+  const [profileDraft, setProfileDraft] = useState<ProfileDraft>(EMPTY_PROFILE_DRAFT);
+  const [profileSaving, setProfileSaving] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileNotice, setProfileNotice] = useState<string | null>(null);
+  const [publishing, setPublishing] = useState(false);
+
+  // ── Documents commerciaux (#9832) ─────────────────────────────────────────
+  const [documents, setDocuments] = useState<TradeDocumentRow[]>([]);
+  const [documentError, setDocumentError] = useState<string | null>(null);
+  const [documentNotice, setDocumentNotice] = useState<string | null>(null);
+  const [documentFormOpen, setDocumentFormOpen] = useState(false);
+  const [documentSaving, setDocumentSaving] = useState(false);
+  const [documentDraft, setDocumentDraft] = useState({
+    type: 'commercial_invoice',
+    title: '',
+    linkKind: 'order' as 'order' | 'quote' | 'rfq',
+    linkId: '',
+  });
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
+
+  // ── Kit de promotion (#9833) ──────────────────────────────────────────────
+  const [promotionKit, setPromotionKit] = useState<PromotionKit | null>(null);
+  const [promotionError, setPromotionError] = useState<string | null>(null);
+
   const load = useCallback(async () => {
     setError(null);
     setLoading(true);
@@ -231,7 +366,7 @@ export default function TradeDashboardPage() {
       // Chaque appel est indépendant : un module partiellement déployé ne doit
       // pas vider tout l'écran. On tolère l'absence d'une source (404/403) et
       // on affiche « aucune donnée » plutôt qu'une erreur globale.
-      const [rfqRes, quoteRes, costRes, metaRes, productRes, orderRes, counterpartyRes] = await Promise.allSettled([
+      const [rfqRes, quoteRes, costRes, metaRes, productRes, orderRes, counterpartyRes, profileRes, documentRes, promotionRes] = await Promise.allSettled([
         apiFetch('/trade/rfqs'),
         apiFetch('/trade/quotes'),
         apiFetch('/trade/cost-estimates'),
@@ -241,6 +376,13 @@ export default function TradeDashboardPage() {
         // l'une ne doit pas vider les autres onglets.
         apiFetch('/trade/orders'),
         apiFetch('/trade/counterparties?per_page=100'),
+        // #9831 #9832 #9833 : les trois surfaces du « promouvoir ». Elles sont
+        // chargees ici pour que l'onglet s'ouvre deja rempli, mais chacune
+        // reste INDEPENDANTE : un 403 sur le kit de promotion (reserve a
+        // l'admin de la verticale) ne doit pas vider le catalogue.
+        apiFetch('/trade/profile'),
+        apiFetch('/trade/documents'),
+        apiFetch('/trade/promotion-kit'),
       ]);
 
       const firstRejection = [rfqRes, quoteRes, costRes, metaRes].find(
@@ -315,6 +457,70 @@ export default function TradeDashboardPage() {
         } catch {
           setIntegrations([]);
         }
+      }
+
+      // ── Profil commercial (#9831) ─────────────────────────────────────────
+      // `data` vaut `null` quand le tenant n'a jamais cree de profil : ce n'est
+      // PAS une erreur, c'est l'etat initial. On garde `profile = null` et le
+      // formulaire reste vide, pret a la creation.
+      if (profileRes.status === 'fulfilled') {
+        try {
+          const payload = await profileRes.value.json();
+          const data = (payload?.data ?? null) as TradeProfile | null;
+          setProfile(data);
+          setProfileDraft(
+            data
+              ? {
+                  importEnabled: Boolean(data.import_enabled),
+                  exportEnabled: Boolean(data.export_enabled),
+                  domesticScope: Boolean(data.domestic_scope),
+                  hqCountry: data.hq_country ?? '',
+                  marketsServed: (data.markets_served ?? []).join(', '),
+                  productCategories: (data.product_categories ?? []).join(', '),
+                  defaultCurrency: data.default_currency ?? '',
+                  defaultIncoterm: data.default_incoterm ?? '',
+                  notes: data.notes ?? '',
+                  publicSlug: data.public_slug ?? '',
+                  publicName: data.public_name ?? '',
+                  publicDescription: data.public_description ?? '',
+                  publicCity: data.public_city ?? '',
+                }
+              : EMPTY_PROFILE_DRAFT,
+          );
+        } catch {
+          setProfile(null);
+        }
+      } else {
+        setProfileError(t(locale, 'trade.profile.error'));
+      }
+
+      // ── Documents commerciaux (#9832) ─────────────────────────────────────
+      if (documentRes.status === 'fulfilled') {
+        try {
+          const payload = await documentRes.value.json();
+          setDocuments(Array.isArray(payload?.data) ? (payload.data as TradeDocumentRow[]) : []);
+        } catch {
+          setDocuments([]);
+        }
+      } else {
+        setDocuments([]);
+        setDocumentError(t(locale, 'trade.documents.error'));
+      }
+
+      // ── Kit de promotion (#9833) ──────────────────────────────────────────
+      // Reserve au role `admin` de la verticale : un 403 est un etat ATTENDU
+      // pour un membre en lecture seule, pas une panne. On affiche un message
+      // propre a l'onglet plutot qu'une erreur globale.
+      if (promotionRes.status === 'fulfilled') {
+        try {
+          const payload = await promotionRes.value.json();
+          setPromotionKit((payload?.data ?? null) as PromotionKit | null);
+        } catch {
+          setPromotionKit(null);
+        }
+      } else {
+        setPromotionKit(null);
+        setPromotionError(t(locale, 'trade.promotion.loadError'));
       }
     } catch (err) {
       if (err instanceof ApiError && err.status === 403) {
@@ -697,6 +903,182 @@ export default function TradeDashboardPage() {
         <span className="sr-only">{emptyKey}</span>
       </div>
     );
+  };
+
+  /**
+   * Enregistre le profil commercial (#9831).
+   *
+   * `PUT /trade/profile` est un create-or-update cote serveur : on ne decide
+   * pas ici s'il faut creer ou modifier, le serveur le sait mieux que nous.
+   *
+   * Les listes sont envoyees en TABLEAU, pas en chaine : le serveur normalise
+   * (`normalizeList`) et dedoublonne. Envoyer `"a, b"` produirait une seule
+   * categorie nommee « a, b » — un filtre de vitrine qui ne matcherait jamais.
+   */
+  const saveProfile = async () => {
+    setProfileSaving(true);
+    setProfileError(null);
+    setProfileNotice(null);
+
+    const toList = (value: string): string[] =>
+      value
+        .split(',')
+        .map((part) => part.trim())
+        .filter((part) => part !== '');
+
+    try {
+      const response = await apiFetch('/trade/profile', {
+        method: 'PUT',
+        body: JSON.stringify({
+          import_enabled: profileDraft.importEnabled,
+          export_enabled: profileDraft.exportEnabled,
+          domestic_scope: profileDraft.domesticScope,
+          hq_country: profileDraft.hqCountry || null,
+          markets_served: toList(profileDraft.marketsServed),
+          product_categories: toList(profileDraft.productCategories),
+          default_currency: profileDraft.defaultCurrency || null,
+          default_incoterm: profileDraft.defaultIncoterm || null,
+          notes: profileDraft.notes || null,
+        }),
+      });
+
+      const payload = await response.json();
+      setProfile((payload?.data ?? null) as TradeProfile | null);
+      setProfileNotice(t(locale, 'trade.profile.saved'));
+    } catch (err) {
+      // 422 = le serveur refuse (aucune direction activee). On affiche SA
+      // raison plutot qu'un message generique : c'est une regle metier, pas
+      // une panne, et le vendeur doit savoir quoi corriger.
+      if (err instanceof ApiError && err.status === 422) {
+        setProfileError(t(locale, 'trade.profile.directionRequired'));
+      } else {
+        setProfileError(t(locale, 'trade.profile.error'));
+      }
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
+  /**
+   * Publie ou depublie la vitrine (#9831).
+   *
+   * Acte DISTINCT de l'enregistrement du profil : `PUT /trade/profile` ne
+   * touche jamais `is_public`. Un enregistrement de champ commercial ne doit
+   * pas faire apparaitre l'entreprise dans l'annuaire par inadvertance.
+   *
+   * On envoie l'etat CIBLE, pas un « toggle » : deux clics rapides sur un
+   * toggle produiraient un etat dependant de l'ordre d'arrivee des reponses.
+   */
+  const setPublication = async (publish: boolean) => {
+    setPublishing(true);
+    setProfileError(null);
+    setProfileNotice(null);
+
+    try {
+      const response = await apiFetch('/trade/profile/publication', {
+        method: 'PUT',
+        body: JSON.stringify({
+          is_public: publish,
+          public_slug: profileDraft.publicSlug || null,
+          public_name: profileDraft.publicName || null,
+          public_description: profileDraft.publicDescription || null,
+          public_city: profileDraft.publicCity || null,
+        }),
+      });
+
+      const payload = await response.json();
+      setProfile((payload?.data ?? null) as TradeProfile | null);
+      setProfileNotice(
+        t(locale, publish ? 'trade.profile.published' : 'trade.profile.unpublished'),
+      );
+      // Le kit de promotion lit `is_public` : on le recharge pour que l'etat
+      // affiche dans l'onglet Promotion ne mente pas apres une publication.
+      try {
+        const kitRes = await apiFetch('/trade/promotion-kit');
+        const kitPayload = await kitRes.json();
+        setPromotionKit((kitPayload?.data ?? null) as PromotionKit | null);
+      } catch {
+        // Le kit est reserve a l'admin : un echec ici ne remet pas en cause la
+        // publication, qui a deja reussi.
+      }
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 422) {
+        setProfileError(t(locale, 'trade.profile.slugRequired'));
+      } else {
+        setProfileError(t(locale, 'trade.profile.publishError'));
+      }
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  /**
+   * Depose un document commercial (#9832).
+   *
+   * Multipart : `apiFetch` ne pose PAS de `Content-Type` sur un `FormData`,
+   * c'est `fetch` qui genere la frontiere. La poser a la main casserait
+   * l'upload.
+   *
+   * Le rattachement est OBLIGATOIRE cote serveur : un document orphelin serait
+   * introuvable dans l'ecran du vendeur, donc inutile.
+   */
+  const uploadDocument = async () => {
+    if (!documentFile) {
+      setDocumentError(t(locale, 'trade.documents.fileRequired'));
+      return;
+    }
+    if (!documentDraft.title.trim()) {
+      setDocumentError(t(locale, 'trade.documents.titleRequired'));
+      return;
+    }
+    if (!documentDraft.linkId.trim()) {
+      setDocumentError(t(locale, 'trade.documents.linkRequired'));
+      return;
+    }
+
+    setDocumentSaving(true);
+    setDocumentError(null);
+    setDocumentNotice(null);
+
+    const form = new FormData();
+    form.append('file', documentFile);
+    form.append('type', documentDraft.type);
+    form.append('title', documentDraft.title.trim());
+    form.append(
+      documentDraft.linkKind === 'order'
+        ? 'trade_order_id'
+        : documentDraft.linkKind === 'quote'
+          ? 'trade_quote_id'
+          : 'trade_rfq_id',
+      documentDraft.linkId.trim(),
+    );
+
+    try {
+      await apiFetch('/trade/documents', { method: 'POST', body: form });
+      setDocumentNotice(t(locale, 'trade.documents.saved'));
+      setDocumentFormOpen(false);
+      setDocumentDraft({ type: 'commercial_invoice', title: '', linkKind: 'order', linkId: '' });
+      setDocumentFile(null);
+      await load();
+    } catch {
+      setDocumentError(t(locale, 'trade.documents.error'));
+    } finally {
+      setDocumentSaving(false);
+    }
+  };
+
+  /** Supprime un document (#9832). */
+  const deleteDocument = async (id: number | string) => {
+    setDocumentError(null);
+    setDocumentNotice(null);
+
+    try {
+      await apiFetch(`/trade/documents/${id}`, { method: 'DELETE' });
+      setDocumentNotice(t(locale, 'trade.documents.deleted'));
+      await load();
+    } catch {
+      setDocumentError(t(locale, 'trade.documents.error'));
+    }
   };
 
   if (moduleDisabled) {
@@ -1282,6 +1664,555 @@ export default function TradeDashboardPage() {
                   })}
                 </ul>
               )}
+            </div>
+          ) : null}
+
+          {tab === 'profile' ? (
+            <div className="space-y-4">
+              <div className="rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-slate-200">
+                <h2 className="text-sm font-semibold text-slate-900">
+                  {t(locale, 'trade.profile.title')}
+                </h2>
+                <p className="mt-1 text-xs text-slate-500">
+                  {t(locale, 'trade.profile.subtitle')}
+                </p>
+
+                {profileNotice ? (
+                  <p className="mt-3 rounded-xl bg-emerald-50 px-4 py-2 text-xs text-emerald-800">
+                    {profileNotice}
+                  </p>
+                ) : null}
+
+                {profileError ? (
+                  <p className="mt-3 rounded-xl bg-rose-50 px-4 py-2 text-xs text-rose-700" role="alert">
+                    {profileError}
+                  </p>
+                ) : null}
+
+                {!profile ? (
+                  <p className="mt-3 rounded-xl bg-slate-50 px-4 py-2 text-xs text-slate-600">
+                    {t(locale, 'trade.profile.empty')}
+                  </p>
+                ) : null}
+
+                <form
+                  className="mt-4 grid gap-3 sm:grid-cols-2"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void saveProfile();
+                  }}
+                >
+                  {/* Directions : le serveur refuse un profil sans aucune
+                      direction — on le dit a l'ecran plutot que de laisser
+                      l'utilisateur decouvrir le 422. */}
+                  <fieldset className="sm:col-span-2">
+                    <legend className="text-xs font-medium text-slate-700">
+                      {t(locale, 'trade.profile.directionRequired')}
+                    </legend>
+                    <div className="mt-2 flex flex-wrap gap-4">
+                      {(
+                        [
+                          ['importEnabled', 'trade.profile.importEnabled'],
+                          ['exportEnabled', 'trade.profile.exportEnabled'],
+                          ['domesticScope', 'trade.profile.domesticScope'],
+                        ] as const
+                      ).map(([field, labelKey]) => (
+                        <label key={field} className="flex items-center gap-2 text-sm text-slate-700">
+                          <input
+                            type="checkbox"
+                            checked={profileDraft[field]}
+                            onChange={(e) =>
+                              setProfileDraft({ ...profileDraft, [field]: e.target.checked })
+                            }
+                            className="h-4 w-4 rounded border-slate-300"
+                          />
+                          {t(locale, labelKey)}
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.profile.hqCountry')}
+                    <input
+                      maxLength={2}
+                      value={profileDraft.hqCountry}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, hqCountry: e.target.value })}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm uppercase"
+                    />
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.profile.defaultCurrency')}
+                    <input
+                      maxLength={3}
+                      value={profileDraft.defaultCurrency}
+                      onChange={(e) =>
+                        setProfileDraft({ ...profileDraft, defaultCurrency: e.target.value })
+                      }
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm uppercase"
+                    />
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.profile.defaultIncoterm')}
+                    <input
+                      maxLength={3}
+                      value={profileDraft.defaultIncoterm}
+                      onChange={(e) =>
+                        setProfileDraft({ ...profileDraft, defaultIncoterm: e.target.value })
+                      }
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm uppercase"
+                    />
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.profile.marketsServed')}
+                    <input
+                      value={profileDraft.marketsServed}
+                      onChange={(e) =>
+                        setProfileDraft({ ...profileDraft, marketsServed: e.target.value })
+                      }
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                    <span className="mt-1 block text-[11px] font-normal text-slate-500">
+                      {t(locale, 'trade.profile.listHint')}
+                    </span>
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.profile.productCategories')}
+                    <input
+                      value={profileDraft.productCategories}
+                      onChange={(e) =>
+                        setProfileDraft({ ...profileDraft, productCategories: e.target.value })
+                      }
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                    <span className="mt-1 block text-[11px] font-normal text-slate-500">
+                      {t(locale, 'trade.profile.listHint')}
+                    </span>
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700 sm:col-span-2">
+                    {t(locale, 'trade.profile.notes')}
+                    <textarea
+                      rows={2}
+                      value={profileDraft.notes}
+                      onChange={(e) => setProfileDraft({ ...profileDraft, notes: e.target.value })}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                  </label>
+
+                  <div className="sm:col-span-2">
+                    <Button type="submit" size="sm" disabled={profileSaving}>
+                      {t(locale, 'trade.profile.save')}
+                    </Button>
+                  </div>
+                </form>
+              </div>
+
+              {/* ── Publication : acte DISTINCT de l'enregistrement ────────── */}
+              <div className="rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-slate-200">
+                <h2 className="text-sm font-semibold text-slate-900">
+                  {t(locale, 'trade.profile.publicationTitle')}
+                </h2>
+                <p className="mt-1 text-xs text-slate-500">
+                  {t(locale, 'trade.profile.publicationSubtitle')}
+                </p>
+
+                <p className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+                  <span
+                    className={`rounded-full px-2 py-0.5 font-medium ${
+                      profile?.is_public
+                        ? 'bg-emerald-100 text-emerald-800'
+                        : 'bg-slate-200 text-slate-700'
+                    }`}
+                  >
+                    {profile?.is_public
+                      ? t(locale, 'trade.profile.published')
+                      : t(locale, 'trade.profile.notPublished')}
+                  </span>
+                  {/* Le lien n'est rendu QUE si le serveur dit la fiche
+                      joignable : un lien vers une fiche depubliee repondrait
+                      404 et passerait pour une reussite. */}
+                  {profile?.is_public && profile.public_slug ? (
+                    <a
+                      href={`/entreprises/${profile.public_slug}`}
+                      className="font-medium text-sky-700 underline"
+                    >
+                      {t(locale, 'trade.profile.publicUrl')}
+                    </a>
+                  ) : null}
+                </p>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.profile.publicSlug')}
+                    <input
+                      value={profileDraft.publicSlug}
+                      onChange={(e) =>
+                        setProfileDraft({ ...profileDraft, publicSlug: e.target.value })
+                      }
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                    <span className="mt-1 block text-[11px] font-normal text-slate-500">
+                      {t(locale, 'trade.profile.slugHint')}
+                    </span>
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.profile.publicName')}
+                    <input
+                      value={profileDraft.publicName}
+                      onChange={(e) =>
+                        setProfileDraft({ ...profileDraft, publicName: e.target.value })
+                      }
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.profile.publicCity')}
+                    <input
+                      value={profileDraft.publicCity}
+                      onChange={(e) =>
+                        setProfileDraft({ ...profileDraft, publicCity: e.target.value })
+                      }
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700 sm:col-span-2">
+                    {t(locale, 'trade.profile.publicDescription')}
+                    <textarea
+                      rows={3}
+                      value={profileDraft.publicDescription}
+                      onChange={(e) =>
+                        setProfileDraft({ ...profileDraft, publicDescription: e.target.value })
+                      }
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                  </label>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <Button
+                    size="sm"
+                    disabled={publishing || !profile}
+                    onClick={() => void setPublication(true)}
+                  >
+                    {t(locale, 'trade.profile.publish')}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={publishing || !profile?.is_public}
+                    onClick={() => void setPublication(false)}
+                  >
+                    {t(locale, 'trade.profile.unpublish')}
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+
+          {tab === 'documents' ? (
+            <div className="rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-slate-200">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-sm font-semibold text-slate-900">
+                    {t(locale, 'trade.documents.title')}
+                  </h2>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {t(locale, 'trade.documents.subtitle')}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setDocumentFormOpen((open) => !open);
+                    setDocumentError(null);
+                    setDocumentNotice(null);
+                  }}
+                >
+                  <FileText className="h-4 w-4" />
+                  {t(locale, 'trade.documents.new')}
+                </Button>
+              </div>
+
+              {documentNotice ? (
+                <p className="mt-3 rounded-xl bg-emerald-50 px-4 py-2 text-xs text-emerald-800">
+                  {documentNotice}
+                </p>
+              ) : null}
+
+              {documentError ? (
+                <p className="mt-3 rounded-xl bg-rose-50 px-4 py-2 text-xs text-rose-700" role="alert">
+                  {documentError}
+                </p>
+              ) : null}
+
+              {documentFormOpen ? (
+                <form
+                  className="mt-4 grid gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void uploadDocument();
+                  }}
+                >
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.documents.type')}
+                    <select
+                      value={documentDraft.type}
+                      onChange={(e) => setDocumentDraft({ ...documentDraft, type: e.target.value })}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    >
+                      {[
+                        'proforma_invoice',
+                        'commercial_invoice',
+                        'packing_list',
+                        'bill_of_lading',
+                        'airway_bill',
+                        'certificate_of_origin',
+                        'certificate_of_conformity',
+                        'insurance_certificate',
+                        'customs_declaration',
+                        'contract',
+                        'other',
+                      ].map((type) => (
+                        <option key={type} value={type}>
+                          {t(locale, `trade.documents.types.${type}`, type)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.documents.titleField')}
+                    <input
+                      required
+                      value={documentDraft.title}
+                      onChange={(e) => setDocumentDraft({ ...documentDraft, title: e.target.value })}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                  </label>
+
+                  {/* Rattachement OBLIGATOIRE : un document orphelin serait
+                      introuvable dans l'ecran du vendeur. */}
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.documents.linkTo')}
+                    <div className="mt-1 flex gap-2">
+                      <select
+                        value={documentDraft.linkKind}
+                        onChange={(e) =>
+                          setDocumentDraft({
+                            ...documentDraft,
+                            linkKind: e.target.value as 'order' | 'quote' | 'rfq',
+                          })
+                        }
+                        className="rounded-lg border border-slate-300 px-2 py-2 text-sm"
+                      >
+                        <option value="order">{t(locale, 'trade.orders.title')}</option>
+                        <option value="quote">{t(locale, 'trade.sales.title')}</option>
+                        <option value="rfq">{t(locale, 'trade.sourcing.title')}</option>
+                      </select>
+                      <input
+                        required
+                        inputMode="numeric"
+                        value={documentDraft.linkId}
+                        onChange={(e) =>
+                          setDocumentDraft({ ...documentDraft, linkId: e.target.value })
+                        }
+                        className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                      />
+                    </div>
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.documents.file')}
+                    <input
+                      type="file"
+                      onChange={(e) => setDocumentFile(e.target.files?.[0] ?? null)}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                    <span className="mt-1 block text-[11px] font-normal text-slate-500">
+                      {t(locale, 'trade.documents.maxSize')}
+                    </span>
+                  </label>
+
+                  <div className="flex items-end gap-2 sm:col-span-2">
+                    <Button type="submit" size="sm" disabled={documentSaving}>
+                      {t(locale, 'trade.documents.upload')}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setDocumentFormOpen(false);
+                        setDocumentFile(null);
+                        setDocumentError(null);
+                      }}
+                    >
+                      {t(locale, 'trade.documents.cancel')}
+                    </Button>
+                  </div>
+                </form>
+              ) : null}
+
+              {documents.length === 0 ? (
+                <p className="px-1 py-6 text-sm text-slate-500">
+                  {t(locale, 'trade.documents.empty')}
+                </p>
+              ) : (
+                <ul className="mt-4 space-y-2">
+                  {documents.map((document) => (
+                    <li
+                      key={String(document.id)}
+                      className="flex flex-wrap items-start justify-between gap-3 border-t border-slate-100 pt-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium text-slate-900">
+                          {document.title ?? document.original_name ?? '—'}
+                        </p>
+                        <p className="mt-1 text-xs text-slate-500">
+                          {/* Le libelle vient de l'enum serveur : un document ne
+                              peut pas s'auto-nommer « Facture commerciale ». */}
+                          {document.type_label ?? t(locale, `trade.documents.types.${document.type}`, document.type)}
+                          {document.size_bytes
+                            ? ` · ${Math.round(document.size_bytes / 1024)} Ko`
+                            : ''}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {document.download_url ? (
+                          <a
+                            href={document.download_url}
+                            className="rounded-lg border border-slate-200 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                          >
+                            {t(locale, 'trade.documents.download')}
+                          </a>
+                        ) : null}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.confirm(t(locale, 'trade.documents.deleteConfirm'))) {
+                              void deleteDocument(document.id);
+                            }
+                          }}
+                          className="rounded-lg border border-rose-200 px-2 py-1 text-xs font-medium text-rose-700 hover:bg-rose-50"
+                        >
+                          {t(locale, 'trade.documents.delete')}
+                        </button>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ) : null}
+
+          {tab === 'promotion' ? (
+            <div className="space-y-4">
+              {promotionError ? (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800">
+                  <p className="flex items-center gap-2 font-medium">
+                    <AlertTriangle className="h-4 w-4" />
+                    {promotionError}
+                  </p>
+                </div>
+              ) : null}
+
+              {!promotionKit && !promotionError ? (
+                <p className="rounded-2xl bg-white/70 px-5 py-6 text-sm text-slate-500 ring-1 ring-slate-200">
+                  {t(locale, 'trade.promotion.empty')}
+                </p>
+              ) : null}
+
+              {promotionKit ? (
+                <>
+                  <div className="rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-slate-200">
+                    <h2 className="text-sm font-semibold text-slate-900">
+                      {t(locale, 'trade.promotion.publication')}
+                    </h2>
+                    <p className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                      <span
+                        className={`rounded-full px-2 py-0.5 font-medium ${
+                          promotionKit.publication.is_public
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-slate-200 text-slate-700'
+                        }`}
+                      >
+                        {promotionKit.publication.is_public
+                          ? t(locale, 'trade.promotion.published')
+                          : t(locale, 'trade.promotion.notPublished')}
+                      </span>
+                      {/* `url` vaut `null` quand la fiche n'est pas joignable :
+                          le serveur ne rend jamais un lien qui mene a un 404. */}
+                      {promotionKit.publication.url ? (
+                        <a
+                          href={promotionKit.publication.url}
+                          className="font-medium text-sky-700 underline"
+                        >
+                          {t(locale, 'trade.promotion.openPublicPage')}
+                        </a>
+                      ) : null}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-slate-200">
+                    <h2 className="text-sm font-semibold text-slate-900">
+                      {t(locale, 'trade.promotion.checklist')}
+                    </h2>
+                    <ul className="mt-3 space-y-2">
+                      {promotionKit.checklist.map((item) => (
+                        <li key={item.key} className="flex items-start gap-2 text-sm">
+                          <span
+                            className={`mt-0.5 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                              item.done
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-amber-100 text-amber-800'
+                            }`}
+                          >
+                            {item.done
+                              ? t(locale, 'trade.promotion.done')
+                              : t(locale, 'trade.promotion.todo')}
+                          </span>
+                          <span className="text-slate-700">{item.hint}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-slate-200">
+                    <h2 className="text-sm font-semibold text-slate-900">
+                      {t(locale, 'trade.promotion.draft')}
+                    </h2>
+                    {promotionKit.draft.headline ? (
+                      <p className="mt-3 text-sm font-medium text-slate-900">
+                        {promotionKit.draft.headline}
+                      </p>
+                    ) : null}
+                    {promotionKit.draft.summary ? (
+                      <p className="mt-2 text-sm text-slate-700">{promotionKit.draft.summary}</p>
+                    ) : null}
+                    {promotionKit.draft.highlights.length ? (
+                      <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-700">
+                        {promotionKit.draft.highlights.map((highlight) => (
+                          <li key={highlight}>{highlight}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    {/* Le kit ne publie RIEN : on le dit a l'ecran, pas
+                        seulement dans le code. */}
+                    <p className="mt-4 rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-600">
+                      {promotionKit.disclaimer || t(locale, 'trade.promotion.disclaimer')}
+                    </p>
+                  </div>
+                </>
+              ) : null}
             </div>
           ) : null}
 
