@@ -92,12 +92,33 @@ export function PropertyDirectorySurface({
             {result.cards.map(({ entry, meta }) => (
               <SurfaceCard key={entry.slug} as="li" interactive identity={identity}>
                 <Link href={`${identity.basePath}/${entry.slug}`} data-surface-card-link="">
-                  <strong style={{ fontSize: '1.1rem', lineHeight: 1.25 }}>{entry.name}</strong>
+                  <strong
+                    style={{
+                      fontSize: '1.15rem',
+                      lineHeight: 1.25,
+                      letterSpacing: '-0.01em',
+                      fontWeight: 700,
+                      display: 'block',
+                    }}
+                  >
+                    {entry.name}
+                  </strong>
 
                   <SurfaceMeta identity={identity}>{meta ?? shared.property}</SurfaceMeta>
 
                   {entry.description ? (
-                    <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.5 }}>
+                    <p
+                      style={{
+                        margin: '0.4rem 0 0',
+                        fontSize: '0.9rem',
+                        lineHeight: 1.55,
+                        color: identity.palette.muted,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
                       {entry.description}
                     </p>
                   ) : null}
