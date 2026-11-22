@@ -95,6 +95,26 @@ Surface : `api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/Concerns/Res
 
 **Non couvert** — `phpstan analyse` sur la totalité du dépôt (OOM killer dans le sandbox, 2 Go de RAM) et la suite Feature complète ; la mesure de référence est le run CI.
 
+## 2026-11-21 — Fixture de promotion déterministe : une garde fige le contrat de la factory (issue #9744)
+
+Surface : `api/database/factories/RestaurantPromotionFactory.php` (correctif livré en parallèle par #9761 — cette tranche en apporte la **garde**) et `api/tests/Feature/Restaurant/RestaurantPromotionTest.php`. Aucune route, aucune migration, aucun contrat d'API modifié.
+
+**Ce que la garde empêche** : que le correctif se défasse. `RestaurantPromotionFactory` ne doit tirer aucune contrainte métier au hasard ; réintroduire un `optional()` sur `min_order_minor`, `max_uses`, `starts_at` ou `ends_at` rend `test_factory_imposes_no_business_constraint` rouge immédiatement, au lieu de laisser le flake revenir dans un test sans rapport avec la fixture.
+
+**Pourquoi c'est un scénario de test** : l'instabilité était dans la **fixture**, pas dans le produit — et elle frappait un test qui n'avait jamais fixé le seuil qu'il subissait.
+
+1. `RestaurantPromotionCrudTest::test_valid_promotion_applies_and_increments_usage` échouait sur `main` en **422 au lieu de 200** (run `44897018984`, `c02e29f96`) et passait sur un autre commit voisin (run `44915609227`, `94add907c`).
+2. Cause : `RestaurantPromotionFactory` tirait `min_order_minor` avec `optional()->numberBetween(500, 20000)` ; la commande du test vaut 10 000 → `BillCalculator::resolvePromotion()` refuse en 422 « Order does not reach the promotion minimum. » dans ~24 % des exécutions.
+3. #9714 avait corrigé le cas `RestaurantOrderBillTest` **dans le test**, laissant la factory tirer les quatre contraintes métier au hasard : la dette restait armée pour tout nouveau test.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| une promotion créée par la factory est applicable sans contrainte (seuil, plafond, fenêtre à `null`) | la moitié des fixtures héritent d'un seuil tiré entre 500 et 20 000 : tout test qui ne le fixe pas échoue en 422 de façon intermittente (~1 fois sur 4), et un rouge de fixture se lit comme une régression produit |
+| elle est **active** par défaut | même famille pour `is_active` : la factory tirait `boolean(80)` avant #8660, ~1 échec sur 5, sans qu'aucun code n'ait changé |
+| un test qui veut un seuil, un plafond ou une fenêtre le déclare explicitement | un test de refus (expirée, épuisée, sous le minimum) qui s'appuierait sur un tirage aléatoire ne testerait pas le cas qu'il annonce |
+
+**Couverture exécutée** — `php -l` sur les fichiers touchés. **Non couvert** — exécution locale de PHPUnit (pas de PostgreSQL dans l'espace de travail, `api/vendor` symlinké) : la mesure est le run CI.
+
 ## 2026-11-21 — Dette backend : Audit, Platform, Support, Travel, doublons de listeners (PR #9750, #9741)
 
 Surface : `api/routes/modules/hr_extended.php` (redéclarations `GET /audit-logs` et `/audit-logs/{id}` supprimées), `api/app/Core/Auth/Interfaces/Api/V1/Controllers/AuditLogController.php` + `Requests/AuditLogIndexRequest.php` + `Requests/AuditLogExportRequest.php`, `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformCompanyFeatureController.php` + `Requests/UpdateCompanyFeaturesRequest.php`, `api/app/Modules/Platform/Infrastructure/Services/WebhookEventRegistry.php`, `api/app/Http/Middleware/Travel/TravelPartnerAuthMiddleware.php`, `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/TradeCompanyProfileController.php`, `api/app/Modules/CRM/Infrastructure/Services/CrmConsentGuard.php`, `api/app/Providers/EventServiceProvider.php`, `api/bootstrap/app.php`.
