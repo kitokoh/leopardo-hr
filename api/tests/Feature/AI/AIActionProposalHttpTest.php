@@ -70,6 +70,7 @@ class AIActionProposalHttpTest extends TestCase
 
     /**
      * @param  array<string, mixed>  $arguments
+     * @return \Illuminate\Testing\TestResponse<\Illuminate\Http\JsonResponse>
      */
     private function propose(Employee $actor, string $tool, array $arguments): \Illuminate\Testing\TestResponse
     {
