@@ -7,10 +7,10 @@ namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Infrastructure\Services\TokenRevocationService;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
+use App\Modules\Platform\Interfaces\Api\V1\Requests\BanPlatformAccountRequest;
 use Carbon\CarbonImmutable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * #9815 — bannissement de compte exposé côté API plateforme.
@@ -72,15 +72,12 @@ class PlatformAccountBanController extends Controller
      * `hours` absent (ou `null`) = bannissement permanent. `hours` présent =
      * bannissement temporaire qui expire tout seul, sans intervention.
      */
-    public function ban(Request $request, string $type, string $id): JsonResponse
+    public function ban(BanPlatformAccountRequest $request, string $type, string $id): JsonResponse
     {
         $this->assertType($type);
         $accountId = $this->accountId($id);
 
-        $validated = $request->validate([
-            'hours' => ['nullable', 'integer', 'min:1', 'max:8760'],
-            'reason' => ['nullable', 'string', 'max:500'],
-        ]);
+        $validated = $request->validated();
 
         $hours = $validated['hours'] ?? null;
         $until = is_int($hours) ? CarbonImmutable::now()->addHours($hours) : null;
