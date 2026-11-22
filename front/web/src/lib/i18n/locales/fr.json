@@ -7815,25 +7815,8 @@
       "subtitle": "Offres émises, versions, statuts et contreparties clients."
     },
     "orders": {
-      "title": "Commandes",
-      "subtitle": "Commandes nées d'une offre acceptée. Faites-les avancer : préparation, expédition, livraison.",
-      "empty": "Aucune commande. Une commande est créée quand vous acceptez une offre (la vôtre pour vendre, celle d'un fournisseur pour acheter).",
-      "direction": "Flux",
-      "purchase": "Achat",
-      "sale": "Vente",
-      "total": "Montant",
-      "loadError": "Impossible de charger les commandes. L'onglet ne reflète pas l'état réel.",
-      "cancel_reason_required": "Indiquez le motif de l'annulation : sans lui, la commande reste inexplicable plus tard.",
-      "status": {
-        "draft": "Brouillon",
-        "confirmed": "Confirmée",
-        "preparing": "En préparation",
-        "ready": "Prête à expédier",
-        "shipped": "Expédiée",
-        "delivered": "Livrée",
-        "closed": "Clôturée",
-        "cancelled": "Annulée"
-      }
+      "title": "Commandes & expéditions",
+      "subtitle": "Commandes d'achat et de vente, expéditions et transitions."
     },
     "transport": {
       "title": "Transport",
@@ -7842,12 +7825,7 @@
     "costs": {
       "title": "Coûts & douane",
       "subtitle": "Coût total rendu par poste et préparation documentaire.",
-      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité.",
-      "status": {
-        "draft": "Brouillon",
-        "incomplete": "Incomplet",
-        "complete": "Complet"
-      }
+      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité."
     },
     "catalog": {
       "title": "Catalogue produits",
@@ -7890,19 +7868,50 @@
     },
     "counterparties": {
       "title": "Contreparties",
-      "subtitle": "Clients, fournisseurs, transporteurs et transitaires avec qui vous traitez. Indispensables pour diffuser une demande de prix.",
-      "empty": "Aucune contrepartie. Ajoutez vos interlocuteurs avant de diffuser une demande de prix.",
-      "name": "Nom",
-      "roles": "Rôles",
-      "country": "Pays",
-      "verification": "Vérification",
-      "verifiedByTeam": "Vérifié par l'équipe",
-      "notVerified": "Non vérifié",
-      "loadError": "Impossible de charger l'annuaire. L'onglet ne reflète pas l'état réel.",
-      "roles_required": "Déclarez au moins un rôle : on ne peut pas acheter ni vendre à quelqu'un sans savoir dans quel sens.",
-      "verification_not_self_assertable": "La vérification est faite par un membre de votre équipe, elle ne peut pas être déclarée ici.",
+      "subtitle": "Clients, fournisseurs, transporteurs, transitaires et courtiers en douane.",
+      "new": "Nouvelle contrepartie",
+      "empty": "Aucune contrepartie. Ajoutez votre premier client ou fournisseur pour l'inviter sur une demande de prix.",
+      "noMatch": "Aucune contrepartie ne correspond à ce filtre.",
+      "search": "Rechercher un nom, un email, une ville…",
+      "filterRole": "Filtrer par rôle",
+      "allRoles": "Tous les rôles",
+      "name": "Nom de la contrepartie",
+      "roles": "Rôles métier",
+      "country": "Pays (ISO 2)",
+      "city": "Ville",
+      "email": "Email",
+      "phone": "Téléphone",
+      "website": "Site web",
+      "notes": "Notes internes",
+      "crmAccount": "Compte CRM lié (facultatif)",
+      "crmHint": "Identifiant du compte CRM. Laissez vide si le module CRM n'est pas utilisé.",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "deleteConfirm": "Retirer cette contrepartie ? Elle disparaîtra du répertoire mais restera dans l’historique des dossiers et offres.",
+      "verify": "Vérifier",
+      "verifyPrompt": "Motif de la vérification (obligatoire, tracé avec votre identité et la date) :",
+      "verifyNoteRequired": "Un motif est obligatoire pour vérifier une contrepartie.",
+      "verifiedBy": "Vérifié par l’équipe le",
+      "saved": "Contrepartie enregistrée.",
+      "deleted": "Contrepartie retirée du répertoire.",
+      "verified": "Contrepartie vérifiée.",
+      "error": "Opération impossible. Vérifiez les champs et réessayez.",
+      "nameRequired": "Le nom de la contrepartie est obligatoire.",
+      "roleRequired": "Sélectionnez au moins un rôle métier.",
+      "emailInvalid": "Adresse email invalide.",
+      "countryInvalid": "Le pays doit être un code ISO à 2 lettres.",
+      "crmInvalid": "Le compte CRM doit être un identifiant numérique.",
+      "roleRemovalWarning": "Rôles retirés à l'enregistrement :",
+      "roleRemovalConfirm": "Confirmer le retrait de ces rôles :",
+      "status": {
+        "none": "Non vérifiée",
+        "pending": "En cours",
+        "verified": "Vérifiée par l’équipe",
+        "rejected": "Refusée"
+      },
       "role": {
-        "buyer": "Acheteur",
+        "buyer": "Client",
         "supplier": "Fournisseur",
         "manufacturer": "Fabricant",
         "wholesaler": "Grossiste",
@@ -7910,27 +7919,6 @@
         "forwarder": "Transitaire",
         "customs_broker": "Courtier en douane",
         "inspector": "Inspecteur"
-      }
-    },
-    "rfqs": {
-      "status": {
-        "draft": "Brouillon",
-        "open": "Ouverte",
-        "closed": "Clôturée",
-        "awarded": "Attribuée",
-        "cancelled": "Annulée"
-      }
-    },
-    "quotes": {
-      "status": {
-        "draft": "Brouillon",
-        "submitted": "Soumise",
-        "under_review": "En cours d'examen",
-        "negotiating": "En négociation",
-        "accepted": "Acceptée",
-        "rejected": "Refusée",
-        "expired": "Expirée",
-        "withdrawn": "Retirée"
       }
     },
     "transition": {

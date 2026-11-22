@@ -1,12 +1,15 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Globe2, Handshake, Package, RefreshCw, ShoppingCart, Store, Truck, ClipboardList } from 'lucide-react';
+import { AlertTriangle, ClipboardList, Globe2, Handshake, Package, RefreshCw, ShoppingCart, Store, Truck, Users } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { Button } from '@/components/ui/Button';
+import { CounterpartyForm } from './components/CounterpartyForm';
+import { CounterpartyList } from './components/CounterpartyList';
+import type { TradeCounterparty } from './components/types';
 
 /**
  * BC-36 TRADE (TRADE-009/#8484) — dashboard `/trade` de la verticale
@@ -134,6 +137,9 @@ const TABS: { key: TradeTab; labelKey: string; icon: typeof Globe2 }[] = [
   { key: 'overview', labelKey: 'trade.overview.title', icon: Globe2 },
   { key: 'sourcing', labelKey: 'trade.sourcing.title', icon: ShoppingCart },
   { key: 'sales', labelKey: 'trade.sales.title', icon: Store },
+  // Le répertoire des contreparties est l'outil du VENDEUR (et de l'acheteur) :
+  // sans lui, une offre ne peut désigner ni client ni fournisseur (#9780).
+  { key: 'counterparties', labelKey: 'trade.counterparties.title', icon: Users },
   // Le catalogue est l'outil du VENDEUR : sans lui, il ne peut pas alimenter
   // les lignes de ses offres (`trade_product_id` restait vide).
   { key: 'catalog', labelKey: 'trade.catalog.title', icon: Package },
@@ -144,6 +150,31 @@ const TABS: { key: TradeTab; labelKey: string; icon: typeof Globe2 }[] = [
   { key: 'counterparties', labelKey: 'trade.counterparties.title', icon: Handshake },
   { key: 'costs', labelKey: 'trade.costs.title', icon: Truck },
 ];
+
+/**
+ * Champs qu'un client n'envoie JAMAIS pour une contrepartie (#9780).
+ *
+ * - `verification_status` / `verified_at` / `verified_by_employee_id` : la
+ *   vérification est un acte distinct et tracé (`POST .../verify`). Les
+ *   accepter ici permettrait de s'auto-déclarer « vérifié » en une requête.
+ * - `company_id` : posé par le serveur depuis le contexte tenant (anti-spoof
+ *   #7646) — un client ne choisit pas le tenant d'écriture.
+ *
+ * Le formulaire ne produit déjà aucun de ces champs ; ce filtre est une
+ * seconde barrière, appliquée en création comme en édition.
+ */
+const FORBIDDEN_COUNTERPARTY_FIELDS = [
+  'verification_status',
+  'verified_at',
+  'verified_by_employee_id',
+  'company_id',
+] as const;
+
+function sanitizeCounterpartyPayload(payload: Record<string, unknown>): Record<string, unknown> {
+  const forbidden = new Set<string>(FORBIDDEN_COUNTERPARTY_FIELDS);
+
+  return Object.fromEntries(Object.entries(payload).filter(([key]) => !forbidden.has(key)));
+}
 
 export default function TradeDashboardPage() {
   const locale = getPreferredLocale();
@@ -168,10 +199,11 @@ export default function TradeDashboardPage() {
   const [transitioning, setTransitioning] = useState<string | null>(null);
   const [transitionError, setTransitionError] = useState<string | null>(null);
 
-  // ── Commandes & contreparties (#9779) ──────────────────────────────────
+  // ── Commandes (#9779) ──────────────────────────────────────────────────
+  //
+  // Les contreparties viennent de #9780 (bloc plus bas) : on ne garde ici que
+  // les commandes, pour ne pas dupliquer un etat qui a deja son ecran complet.
   const [orders, setOrders] = useState<TradeOrderRow[]>([]);
-  const [counterparties, setCounterparties] = useState<TradeCounterpartyRow[]>([]);
-  const [counterpartyError, setCounterpartyError] = useState<string | null>(null);
   const [orderError, setOrderError] = useState<string | null>(null);
 
   // ── Catalogue produits (#9767) ───────────────────────────────────────────
@@ -181,6 +213,15 @@ export default function TradeDashboardPage() {
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+
+  // ── Contreparties (#9780) ────────────────────────────────────────────────
+  const [counterparties, setCounterparties] = useState<TradeCounterparty[]>([]);
+  const [counterpartyFormOpen, setCounterpartyFormOpen] = useState(false);
+  // Contrepartie en cours d'édition : `null` = le formulaire est en création.
+  const [counterpartyEditing, setCounterpartyEditing] = useState<TradeCounterparty | null>(null);
+  const [counterpartySaving, setCounterpartySaving] = useState(false);
+  const [counterpartyError, setCounterpartyError] = useState<string | null>(null);
+  const [counterpartyNotice, setCounterpartyNotice] = useState<string | null>(null);
 
   const load = useCallback(async () => {
     setError(null);
@@ -199,7 +240,7 @@ export default function TradeDashboardPage() {
         // #9779 : deux sources de plus, elles aussi INDEPENDANTES — un 403 sur
         // l'une ne doit pas vider les autres onglets.
         apiFetch('/trade/orders'),
-        apiFetch('/trade/counterparties'),
+        apiFetch('/trade/counterparties?per_page=100'),
       ]);
 
       const firstRejection = [rfqRes, quoteRes, costRes, metaRes].find(
@@ -228,16 +269,12 @@ export default function TradeDashboardPage() {
       setQuotes(await readList(quoteRes));
       setCostEstimates(await readList(costRes));
       setOrders((await readList(orderRes)) as unknown as TradeOrderRow[]);
-      setCounterparties((await readList(counterpartyRes)) as unknown as TradeCounterpartyRow[]);
 
-      // #9779 — une erreur PROPRE a ces deux sources est affichee dans son
-      // onglet : l'ecran ne doit pas laisser croire que le vendeur n'a aucune
-      // contrepartie alors que c'est la lecture qui a echoue.
+      // #9779 — une erreur PROPRE aux commandes est affichee dans son onglet :
+      // l'ecran ne doit pas laisser croire que le vendeur n'a aucune commande
+      // alors que c'est la lecture qui a echoue.
       if (orderRes.status === 'rejected') {
         setOrderError(t(locale, 'trade.orders.loadError'));
-      }
-      if (counterpartyRes.status === 'rejected') {
-        setCounterpartyError(t(locale, 'trade.counterparties.loadError'));
       }
 
       // Le catalogue est une source INDÉPENDANTE : un 403/404 sur les autres
@@ -251,6 +288,22 @@ export default function TradeDashboardPage() {
         }
       } else {
         setProducts([]);
+      }
+
+      // Les contreparties sont une source INDÉPENDANTE, comme le catalogue :
+      // un 403 sur les RFQ ne doit pas vider le répertoire.
+      if (counterpartyRes.status === 'fulfilled') {
+        try {
+          const payload = await counterpartyRes.value.json();
+          setCounterparties(
+            Array.isArray(payload?.data) ? (payload.data as TradeCounterparty[]) : [],
+          );
+        } catch {
+          setCounterparties([]);
+        }
+      } else {
+        setCounterparties([]);
+        setCounterpartyError(t(locale, 'trade.counterparties.loadError'));
       }
 
       if (metaRes.status === 'fulfilled') {
@@ -368,6 +421,135 @@ export default function TradeDashboardPage() {
       );
     } catch {
       setFormError(t(locale, 'trade.catalog.error'));
+    }
+  };
+
+  /**
+   * Création (#9780) ou mise à jour (#9780, édition) d'une contrepartie.
+   *
+   * Le payload vient du formulaire, qui n'envoie **jamais**
+   * `verification_status` ni `company_id` : le premier est un acte distinct
+   * (`POST .../verify`), le second est posé par le serveur depuis le contexte
+   * tenant. Les envoyer ici serait au mieux ignoré, au pire une faille —
+   * `sanitizeCounterpartyPayload` les retire de toute façon, en création comme
+   * en édition.
+   *
+   * En édition, la liste est mise à jour **en place** (remplacement de
+   * l'élément) plutôt que rechargée : un `GET` complet ferait perdre le filtre
+   * et la recherche en cours, et afficherait un état intermédiaire.
+   */
+  const submitCounterparty = async (payload: Record<string, unknown>) => {
+    setCounterpartyError(null);
+    setCounterpartyNotice(null);
+    setCounterpartySaving(true);
+
+    const editing = counterpartyEditing;
+    const body = sanitizeCounterpartyPayload(payload);
+
+    try {
+      const response = await apiFetch(
+        editing ? `/trade/counterparties/${editing.id}` : '/trade/counterparties',
+        {
+          method: editing ? 'PUT' : 'POST',
+          body: JSON.stringify(body),
+        },
+      );
+
+      const parsed = await response.json().catch(() => null);
+      const saved = parsed?.data as TradeCounterparty | undefined;
+
+      // `data` peut être un tableau vide (réponse inattendue) : on n'insère
+      // dans la liste qu'un objet réellement identifié. Sans ce garde, une
+      // réponse vide insérait `[]` dans la liste et faisait planter le rendu.
+      if (saved && saved.id !== undefined && saved.id !== null) {
+        setCounterparties((current) =>
+          editing
+            ? current.map((item) => (item.id === editing.id ? saved : item))
+            : [saved, ...current],
+        );
+      }
+
+      setCounterpartyFormOpen(false);
+      setCounterpartyEditing(null);
+      setCounterpartyNotice(t(locale, 'trade.counterparties.saved'));
+    } catch {
+      // Le formulaire reste ouvert et garde la saisie : une erreur réseau ne
+      // doit pas faire perdre ce que l'utilisateur vient de taper.
+      setCounterpartyError(t(locale, 'trade.counterparties.error'));
+    } finally {
+      setCounterpartySaving(false);
+    }
+  };
+
+  /**
+   * Ouvre le formulaire en mode édition sur une contrepartie existante.
+   *
+   * On ne modifie pas l'objet de la liste : le formulaire travaille sur un
+   * brouillon, et la liste n'est remplacée qu'après un `PUT` réussi.
+   */
+  const startEditCounterparty = (counterparty: TradeCounterparty) => {
+    setCounterpartyEditing(counterparty);
+    setCounterpartyFormOpen(true);
+    setCounterpartyError(null);
+    setCounterpartyNotice(null);
+  };
+
+  /**
+   * Suppression douce — le serveur pose `deleted_at`.
+   *
+   * Aucune suppression physique : les dossiers, RFQ et offres passés
+   * référencent la contrepartie, un `DELETE` dur casserait leur historique.
+   */
+  const deleteCounterparty = async (counterparty: TradeCounterparty) => {
+    setCounterpartyError(null);
+    setCounterpartyNotice(null);
+
+    try {
+      await apiFetch(`/trade/counterparties/${counterparty.id}`, { method: 'DELETE' });
+      setCounterparties((current) => current.filter((item) => item.id !== counterparty.id));
+      setCounterpartyNotice(t(locale, 'trade.counterparties.deleted'));
+    } catch {
+      setCounterpartyError(t(locale, 'trade.counterparties.error'));
+    }
+  };
+
+  /**
+   * Vérification — acte réservé à l'admin de la verticale.
+   *
+   * Le motif est OBLIGATOIRE côté serveur pour `verified`/`rejected` : on le
+   * demande ici plutôt que de laisser l'API refuser après coup. Un refus
+   * silencieux (annulation du prompt) n'envoie rien.
+   */
+  const verifyCounterparty = async (counterparty: TradeCounterparty) => {
+    setCounterpartyError(null);
+    setCounterpartyNotice(null);
+
+    const note = window.prompt(t(locale, 'trade.counterparties.verifyPrompt'));
+    if (note === null) return;
+
+    const trimmed = note.trim();
+    if (!trimmed) {
+      setCounterpartyError(t(locale, 'trade.counterparties.verifyNoteRequired'));
+      return;
+    }
+
+    try {
+      const response = await apiFetch(`/trade/counterparties/${counterparty.id}/verify`, {
+        method: 'POST',
+        body: JSON.stringify({ status: 'verified', note: trimmed }),
+      });
+
+      const body = await response.json().catch(() => null);
+      const updated = body?.data as TradeCounterparty | undefined;
+
+      if (updated) {
+        setCounterparties((current) =>
+          current.map((item) => (item.id === counterparty.id ? updated : item)),
+        );
+      }
+      setCounterpartyNotice(t(locale, 'trade.counterparties.verified'));
+    } catch {
+      setCounterpartyError(t(locale, 'trade.counterparties.error'));
     }
   };
 
@@ -815,6 +997,85 @@ export default function TradeDashboardPage() {
                   </table>
                 </div>
               )}
+            </div>
+          ) : null}
+
+          {tab === 'counterparties' ? (
+            <div className="rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-slate-200">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-sm font-semibold text-slate-900">
+                    {t(locale, 'trade.counterparties.title')}
+                  </h2>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {t(locale, 'trade.counterparties.subtitle')}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    // « Nouvelle contrepartie » repasse TOUJOURS en création :
+                    // sans cette remise à zéro, ouvrir le formulaire après une
+                    // édition aurait envoyé un `PUT` sur la fiche précédente.
+                    setCounterpartyEditing(null);
+                    setCounterpartyFormOpen(true);
+                    setCounterpartyError(null);
+                    setCounterpartyNotice(null);
+                  }}
+                >
+                  <Users className="h-4 w-4" />
+                  {t(locale, 'trade.counterparties.new')}
+                </Button>
+              </div>
+
+              {counterpartyNotice ? (
+                <p className="mt-3 rounded-xl bg-emerald-50 px-4 py-2 text-xs text-emerald-800">
+                  {counterpartyNotice}
+                </p>
+              ) : null}
+
+              {counterpartyError ? (
+                <p className="mt-3 rounded-xl bg-rose-50 px-4 py-2 text-xs text-rose-700">
+                  {counterpartyError}
+                </p>
+              ) : null}
+
+              {counterpartyFormOpen ? (
+                <CounterpartyForm
+                  // La clé force un remontage quand on passe de la création à
+                  // une édition (ou d'une fiche à une autre) : le brouillon
+                  // repart des valeurs de la fiche visée, jamais des restes de
+                  // la précédente.
+                  key={counterpartyEditing ? `edit-${counterpartyEditing.id}` : 'create'}
+                  locale={locale}
+                  initial={counterpartyEditing}
+                  saving={counterpartySaving}
+                  error={null}
+                  onSubmit={(payload) => void submitCounterparty(payload)}
+                  onCancel={() => {
+                    setCounterpartyFormOpen(false);
+                    setCounterpartyEditing(null);
+                    setCounterpartyError(null);
+                  }}
+                />
+              ) : null}
+
+              <div className="mt-4">
+                <CounterpartyList
+                  locale={locale}
+                  counterparties={counterparties}
+                  loading={false}
+                  onDelete={(item) => void deleteCounterparty(item)}
+                  onVerify={(item) => void verifyCounterparty(item)}
+                  onEdit={startEditCounterparty}
+                  // La vérification est réservée à l'admin de la verticale
+                  // (`trade.role:admin`). On n'affiche pas un bouton qui
+                  // renverrait 403 : le serveur reste l'autorité, l'UI ne
+                  // promet pas une action qu'elle ne peut pas tenir.
+                  canVerify={false}
+                />
+              </div>
             </div>
           ) : null}
 
