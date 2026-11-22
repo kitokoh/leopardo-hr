@@ -6,7 +6,7 @@ import { normalizeLocale } from '@/lib/i18n';
 import { catalogDirection, t } from '@/lib/i18n/locale-catalog';
 import { SITE_URL } from '@/lib/site-url';
 import { JsonLd } from '@/components/JsonLd';
-import { getPublicTradeCompany, type PublicTradeCompanyProfile } from '@/lib/trade-public-api';
+import { getPublicTradeCompany, getPublicTradeCompanyProducts, type PublicTradeCompanyProfile, type PublicTradeProduct } from '@/lib/trade-public-api';
 import PublicContactCta from '@/app/decouvrir/public-contact-cta';
 import {
   TRADE_SURFACE,
@@ -109,6 +109,11 @@ export default async function CompanyPage({ params, searchParams }: CompanyPageP
     notFound();
   }
 
+  // #9768 — le catalogue réel du vendeur. `null` = API indisponible ou profil
+  // non publiable : on affiche « aucun produit » plutôt qu'une erreur, mais on
+  // ne fabrique jamais de produit.
+  const products = (await getPublicTradeCompanyProducts(slug)) ?? [];
+
   const query = (search.q ?? '').slice(0, 120) || undefined;
   const pageNumber = Number.parseInt(search.page ?? '', 10);
   const categories = paginateList(
@@ -184,6 +189,61 @@ export default async function CompanyPage({ params, searchParams }: CompanyPageP
             />
           </div>
         </header>
+
+        {/* #9768 — catalogue réel du vendeur. C'est ce qu'un acheteur
+            professionnel vient chercher : quoi, combien, à partir de quel
+            volume, à quel prix indicatif. Sans lui, la fiche n'affichait que
+            des catégories — elle qualifiait l'offre sans la montrer. */}
+        <section className="rounded-3xl border border-white/40 bg-white/80 p-6 shadow-sm backdrop-blur-xl">
+          <h2 className="mb-3 text-lg font-black tracking-tight text-slate-950">
+            {t(locale, 'discovery.companyProductsTitle')}
+          </h2>
+
+          {products.length === 0 ? (
+            <SurfaceNotice identity={TRADE_SURFACE}>
+              {t(locale, 'discovery.companyProductsEmpty')}
+            </SurfaceNotice>
+          ) : (
+            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              {products.map((product: PublicTradeProduct) => {
+                const meta = [
+                  product.category,
+                  product.origin_country
+                    ? `${t(locale, 'discovery.companyProductOrigin')}: ${product.origin_country}`
+                    : null,
+                  product.moq_quantity
+                    ? `${t(locale, 'discovery.companyProductMoq')}: ${product.moq_quantity}${product.unit ? ` ${product.unit}` : ''}`
+                    : null,
+                ].filter((part): part is string => typeof part === 'string' && part !== '');
+
+                const price =
+                  product.indicative_unit_price_minor !== null && product.currency
+                    ? `${(product.indicative_unit_price_minor / 100).toLocaleString(locale)} ${product.currency}`
+                    : null;
+
+                return (
+                  <li
+                    key={product.name}
+                    className="rounded-2xl border border-slate-200 bg-white p-4"
+                  >
+                    <p className="text-sm font-bold text-slate-900">{product.name}</p>
+                    {product.description ? (
+                      <p className="mt-1 text-xs text-slate-600">{product.description}</p>
+                    ) : null}
+                    {meta.length > 0 ? (
+                      <p className="mt-2 text-xs text-slate-500">{meta.join(' · ')}</p>
+                    ) : null}
+                    <p className="mt-2 text-xs font-semibold text-sky-700">
+                      {price
+                        ? `${t(locale, 'discovery.companyProductPriceIndicative')} — ${price}`
+                        : t(locale, 'discovery.companyProductPriceOnRequest')}
+                    </p>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
 
         {company.product_categories.length > 0 ? (
           <section className="rounded-3xl border border-white/40 bg-white/80 p-6 shadow-sm backdrop-blur-xl">

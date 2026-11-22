@@ -9638,7 +9638,13 @@
     "conversationStart": "بدء محادثة",
     "conversationStarted": "تم إرسال رسالتك إلى المهني.",
     "conversationStartBody": "مرحبًا، أرغب في التواصل معكم.",
-    "offlineCacheNotice": "لا يوجد اتصال — هذه نتائج بحثك الأخير. قد تكون النتائج قديمة."
+    "offlineCacheNotice": "لا يوجد اتصال — هذه نتائج بحثك الأخير. قد تكون النتائج قديمة.",
+    "companyProductsTitle": "المنتجات",
+    "companyProductsEmpty": "لا يوجد منتج منشور بعد.",
+    "companyProductMoq": "الحد الأدنى للطلب",
+    "companyProductOrigin": "المنشأ",
+    "companyProductPriceIndicative": "سعر إرشادي",
+    "companyProductPriceOnRequest": "السعر عند الطلب"
   },
   "publicInbox": {
     "pageTitle": "الطلبات العامة",

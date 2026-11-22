@@ -9638,7 +9638,13 @@
     "conversationStart": "Konuşma başlat",
     "conversationStarted": "Mesajınız profesyonel gönderildi.",
     "conversationStartBody": "Merhaba, sizinle iletişime geçmek istiyorum.",
-    "offlineCacheNotice": "Ağ bağlantısı yok — son aramanız gösteriliyor. Sonuçlar eski olabilir."
+    "offlineCacheNotice": "Ağ bağlantısı yok — son aramanız gösteriliyor. Sonuçlar eski olabilir.",
+    "companyProductsTitle": "Ürünler",
+    "companyProductsEmpty": "Henüz yayınlanmış ürün yok.",
+    "companyProductMoq": "MOQ",
+    "companyProductOrigin": "Menşe",
+    "companyProductPriceIndicative": "Gösterge fiyat",
+    "companyProductPriceOnRequest": "Fiyat talep üzerine"
   },
   "publicInbox": {
     "pageTitle": "Genel talepler",

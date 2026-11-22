@@ -9638,7 +9638,13 @@
     "conversationStart": "Démarrer une conversation",
     "conversationStarted": "Votre message a été envoyé au professionnel.",
     "conversationStartBody": "Bonjour, je souhaite vous contacter.",
-    "offlineCacheNotice": "Réseau indisponible — voici votre dernière recherche. Les résultats peuvent être périmés."
+    "offlineCacheNotice": "Réseau indisponible — voici votre dernière recherche. Les résultats peuvent être périmés.",
+    "companyProductsTitle": "Produits",
+    "companyProductsEmpty": "Aucun produit publié pour le moment.",
+    "companyProductMoq": "MOQ",
+    "companyProductOrigin": "Origine",
+    "companyProductPriceIndicative": "Prix indicatif",
+    "companyProductPriceOnRequest": "Prix sur demande"
   },
   "publicInbox": {
     "pageTitle": "Demandes publiques",

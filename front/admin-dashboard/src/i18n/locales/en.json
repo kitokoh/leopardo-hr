@@ -9638,7 +9638,13 @@
     "conversationStart": "Start a conversation",
     "conversationStarted": "Your message was sent to the professional.",
     "conversationStartBody": "Hello, I would like to get in touch.",
-    "offlineCacheNotice": "No network — showing your last search. Results may be out of date."
+    "offlineCacheNotice": "No network — showing your last search. Results may be out of date.",
+    "companyProductsTitle": "Products",
+    "companyProductsEmpty": "No product published yet.",
+    "companyProductMoq": "MOQ",
+    "companyProductOrigin": "Origin",
+    "companyProductPriceIndicative": "Indicative price",
+    "companyProductPriceOnRequest": "Price on request"
   },
   "publicInbox": {
     "pageTitle": "Public requests",
