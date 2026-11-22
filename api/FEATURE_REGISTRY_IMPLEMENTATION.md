@@ -17,4 +17,4 @@ Le système **ApiEndpointRegistry** maintient l'inventaire des endpoints API dé
 3. **API REST** :
    - `FeatureManifestController` : endpoints `/api/v1/features/manifest`, `compatible/{version}`, etc.
 4. **ADR** :
-   - `docs/architecture/adr/0028-renommage-api-endpoint-registry.md`
+   - `docs/architecture/adr/0036-renommage-api-endpoint-registry.md`

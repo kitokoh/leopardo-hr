@@ -38,4 +38,5 @@ return [
         'title_required' => 'Belgeye bir baslik verin.',
         'link_required' => 'Belgeyi bir siparise, teklife, talebe veya isleme baglayin.',
     ],
+    'search_query_too_short' => 'Arama en az :min karakter icermelidir.',
 ];

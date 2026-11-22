@@ -6,182 +6,46 @@ namespace Tests\Feature\Trade;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Trade\Domain\Enums\TradeCounterpartyRole;
+use App\Modules\Trade\Domain\Enums\TradeVerificationStatus;
+use App\Modules\Trade\Domain\Models\TradeCounterparty;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * Contreparties du vendeur B2B — #9779.
+ * Contreparties Trade — BC-36 TRADE, #9780.
  *
- * ## Le defaut que ce test protege
+ * ## Ce que ce test protège
  *
- * `trade_counterparties` avait table, modele et factory depuis #8478, mais
- * AUCUNE route. Et `POST /trade/rfqs/{rfq}/send` exige `counterparty_ids`
- * (`min:1`) : sans contrepartie creable, la diffusion d'une demande de prix
- * etait impossible pour un tenant reel. Ce test verifie que le chemin existe
- * ET qu'il ne peut pas etre detourne.
+ * `trade_counterparties` + son modèle + sa factory existaient depuis
+ * TRADE-003/#8478, mais **aucune route ne les exposait** : le répertoire
+ * clients/fournisseurs était un modèle orphelin, et
+ * `trade_deal.trade_counterparty_id` ne pouvait jamais être renseigné.
  *
- * ## Deux invariants de plus
+ * Les invariants verrouillés ici sont ceux qui casseraient silencieusement si
+ * quelqu'un « simplifiait » le contrôleur plus tard :
  *
- * - `verification_status` n'est PAS auto-declarable : `verified` doit etre
- *   refuse a la creation. Une contrepartie s'auto-verifiee ferait passer une
- *   declaration pour un controle qui n'a pas eu lieu.
- * - Une contrepartie d'une autre entreprise est INTROUVABLE (404), jamais 403.
+ *  - **isolation tenant** : la contrepartie d'une autre entreprise est 404,
+ *    jamais 403 (l'API ne révèle pas son existence) ;
+ *  - **vérification = acte tracé** : on ne se déclare pas `verified` en
+ *    créant sa fiche, et une décision exige un motif ;
+ *  - **rôles fermés** : un rôle hors registre est refusé, jamais ignoré ;
+ *  - **suppression douce** : `DELETE` pose `deleted_at`, l'historique survit ;
+ *  - **RBAC** : un rôle de lecture seule ne peut pas écrire.
  */
 class TradeCounterpartyApiTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    public function test_a_counterparty_with_a_role_can_be_created(): void
-    {
-        $company = $this->createCompany();
-        $this->actingAsEmployee($company);
-
-        $response = $this->postJson('/api/v1/trade/counterparties', [
-            'name' => 'Sahel Trading SARL',
-            'country' => 'ML',
-            'city' => 'Bamako',
-            'email' => 'contact@sahel.example',
-            'roles' => ['supplier', 'wholesaler'],
-        ])->assertStatus(201);
-
-        $response->assertJsonPath('data.name', 'Sahel Trading SARL')
-            ->assertJsonPath('data.verification_status', 'none')
-            ->assertJsonPath('data.roles', ['supplier', 'wholesaler']);
-
-        // `company_id` n'est jamais expose dans la charge utile.
-        self::assertArrayNotHasKey('company_id', $response->json('data'));
-    }
-
-    public function test_a_counterparty_without_a_role_is_refused(): void
-    {
-        $company = $this->createCompany();
-        $this->actingAsEmployee($company);
-
-        // Sans role, on ne sait pas dans quel sens on traite avec ce tiers :
-        // la contrepartie ne peut servir a aucune operation.
-        $this->postJson('/api/v1/trade/counterparties', [
-            'name' => 'Sans role',
-            'roles' => [],
-        ])
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['roles']);
-    }
-
-    public function test_an_unknown_role_is_refused(): void
-    {
-        $company = $this->createCompany();
-        $this->actingAsEmployee($company);
-
-        $this->postJson('/api/v1/trade/counterparties', [
-            'name' => 'Role invente',
-            'roles' => ['god_mode'],
-        ])
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['roles.0']);
-    }
-
-    public function test_a_client_cannot_self_assert_verification(): void
-    {
-        $company = $this->createCompany();
-        $this->actingAsEmployee($company);
-
-        // « verified » signifie « verifie par un membre de l'equipe ». Le
-        // laisser passer a la creation reviendrait a laisser un tiers se
-        // declerer verifie — exactement ce qu'un annuaire ne doit pas tolerer.
-        $this->postJson('/api/v1/trade/counterparties', [
-            'name' => 'Auto-verifie',
-            'roles' => ['buyer'],
-            'verification_status' => 'verified',
-        ])
-            ->assertStatus(422)
-            ->assertJsonValidationErrors(['verification_status']);
-
-        // `pending` est en revanche une demande legitime.
-        $this->postJson('/api/v1/trade/counterparties', [
-            'name' => 'Demande de verification',
-            'roles' => ['buyer'],
-            'verification_status' => 'pending',
-        ])->assertStatus(201)->assertJsonPath('data.verification_status', 'pending');
-    }
-
-    public function test_listing_filters_by_role_and_hides_other_tenants(): void
-    {
-        $companyA = $this->createCompany();
-        $this->actingAsEmployee($companyA);
-
-        $this->postJson('/api/v1/trade/counterparties', [
-            'name' => 'Fournisseur A',
-            'roles' => ['supplier'],
-        ])->assertStatus(201);
-
-        $this->postJson('/api/v1/trade/counterparties', [
-            'name' => 'Client A',
-            'roles' => ['buyer'],
-        ])->assertStatus(201);
-
-        $this->getJson('/api/v1/trade/counterparties?role=supplier')
-            ->assertStatus(200)
-            ->assertJsonCount(1, 'data')
-            ->assertJsonPath('data.0.name', 'Fournisseur A');
-
-        // Second tenant : l'annuaire de A doit rester invisible.
-        $companyB = $this->createCompany();
-        $this->actingAsEmployee($companyB);
-
-        $this->getJson('/api/v1/trade/counterparties')
-            ->assertStatus(200)
-            ->assertJsonCount(0, 'data');
-    }
-
-    public function test_another_tenants_counterparty_is_not_found(): void
-    {
-        $companyA = $this->createCompany();
-        $this->actingAsEmployee($companyA);
-
-        $id = $this->postJson('/api/v1/trade/counterparties', [
-            'name' => 'Chez A',
-            'roles' => ['supplier'],
-        ])->json('data.id');
-
-        $companyB = $this->createCompany();
-        $this->actingAsEmployee($companyB);
-
-        // 404, jamais 403 : l'API ne revele pas l'existence de l'objet.
-        $this->getJson("/api/v1/trade/counterparties/{$id}")->assertStatus(404);
-        $this->putJson("/api/v1/trade/counterparties/{$id}", ['name' => 'Pirate'])->assertStatus(404);
-        $this->deleteJson("/api/v1/trade/counterparties/{$id}")->assertStatus(404);
-    }
-
-    public function test_delete_is_logical_so_history_survives(): void
-    {
-        $company = $this->createCompany();
-        $this->actingAsEmployee($company);
-
-        $id = $this->postJson('/api/v1/trade/counterparties', [
-            'name' => 'Va etre archive',
-            'roles' => ['supplier'],
-        ])->json('data.id');
-
-        $this->deleteJson("/api/v1/trade/counterparties/{$id}")
-            ->assertStatus(200)
-            ->assertJsonPath('data.deleted', true);
-
-        // La ligne EXISTE toujours : les RFQ/offres passees la citent.
-        $this->assertDatabaseHas('trade_counterparties', ['id' => $id]);
-        $this->assertSoftDeleted('trade_counterparties', ['id' => $id]);
-
-        // Et elle sort du perimetre de lecture.
-        $this->getJson("/api/v1/trade/counterparties/{$id}")->assertStatus(404);
-    }
-
-    // ── Fixtures ──────────────────────────────────────────────────────────
-
-    private function createCompany(): Company
+    private function createCompany(bool $enableTrade = true): Company
     {
         /** @var Company $company */
         $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
-        $company->setFeature('trade', true);
-        $company->save();
+
+        if ($enableTrade) {
+            $company->setFeature('trade', true);
+            $company->save();
+        }
 
         app()->instance('current_company', $company);
 
@@ -200,5 +64,223 @@ class TradeCounterpartyApiTest extends TestCase
         $this->actingAs($employee, 'sanctum');
 
         return $employee;
+    }
+
+    public function test_endpoints_require_authentication(): void
+    {
+        $this->getJson('/api/v1/trade/counterparties')->assertStatus(401);
+        $this->postJson('/api/v1/trade/counterparties', [])->assertStatus(401);
+    }
+
+    public function test_endpoints_are_gated_by_the_trade_feature(): void
+    {
+        $company = $this->createCompany(enableTrade: false);
+        $this->actingAsEmployee($company);
+
+        $this->getJson('/api/v1/trade/counterparties')->assertStatus(403);
+    }
+
+    public function test_manager_can_create_and_list_a_counterparty(): void
+    {
+        $company = $this->createCompany();
+        $this->actingAsEmployee($company);
+
+        $response = $this->postJson('/api/v1/trade/counterparties', [
+            'name' => 'Acier Nord SARL',
+            'country' => 'FR',
+            'city' => 'Lille',
+            'email' => 'contact@acier-nord.example',
+            'roles' => [TradeCounterpartyRole::Supplier->value, TradeCounterpartyRole::Manufacturer->value],
+            'notes' => 'Fournisseur historique, délai 3 semaines.',
+        ]);
+
+        $response->assertStatus(201)
+            ->assertJsonPath('data.name', 'Acier Nord SARL')
+            ->assertJsonPath('data.country', 'FR')
+            // Une fiche neuve n'est JAMAIS vérifiée : on ne se déclare pas
+            // contrôlé en créant sa propre fiche.
+            ->assertJsonPath('data.verification_status', TradeVerificationStatus::None->value)
+            ->assertJsonPath('data.verified_at', null);
+
+        $this->assertCount(2, $response->json('data.roles'));
+
+        $this->getJson('/api/v1/trade/counterparties')
+            ->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Acier Nord SARL');
+    }
+
+    public function test_roles_are_required_and_closed(): void
+    {
+        $company = $this->createCompany();
+        $this->actingAsEmployee($company);
+
+        // Aucun rôle : une contrepartie sans rôle ne peut être ni invitée à une
+        // RFQ, ni destinataire d'une offre, ni sollicitée pour un transport.
+        $this->postJson('/api/v1/trade/counterparties', [
+            'name' => 'Sans rôle',
+            'roles' => [],
+        ])->assertStatus(422)->assertJsonValidationErrors('roles');
+
+        // Rôle hors registre : refusé, jamais ignoré silencieusement.
+        $this->postJson('/api/v1/trade/counterparties', [
+            'name' => 'Rôle inventé',
+            'roles' => ['pirate'],
+        ])->assertStatus(422)->assertJsonValidationErrors('roles.0');
+    }
+
+    public function test_duplicate_roles_are_deduplicated(): void
+    {
+        $company = $this->createCompany();
+        $this->actingAsEmployee($company);
+
+        $response = $this->postJson('/api/v1/trade/counterparties', [
+            'name' => 'Doublon SARL',
+            'roles' => ['supplier', 'supplier', 'buyer'],
+        ]);
+
+        $response->assertStatus(201);
+
+        /** @var list<string> $roles */
+        $roles = $response->json('data.roles');
+        $this->assertSame(['supplier', 'buyer'], $roles);
+    }
+
+    public function test_counterparty_of_another_tenant_is_not_found(): void
+    {
+        $company = $this->createCompany();
+        $this->actingAsEmployee($company);
+
+        /** @var Company $otherCompany */
+        $otherCompany = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+
+        // ⚠️ La contrepartie étrangère doit être créée HORS du contexte tenant
+        // actif : le hook `creating` de `BelongsToCompany` réécrit `company_id`
+        // vers le tenant courant (#7646), donc la créer ici la placerait dans
+        // NOTRE tenant et le test ne prouverait rien.
+        app()->forgetInstance('current_company');
+
+        /** @var TradeCounterparty $foreign */
+        $foreign = TradeCounterparty::factory()->create(['company_id' => $otherCompany->id]);
+
+        // On rétablit notre tenant pour la requête.
+        app()->instance('current_company', $company);
+
+        $this->assertSame($otherCompany->id, $foreign->company_id);
+
+        // 404, jamais 403 : l'API ne révèle pas l'existence de la ressource.
+        $this->getJson("/api/v1/trade/counterparties/{$foreign->id}")->assertStatus(404);
+        $this->putJson("/api/v1/trade/counterparties/{$foreign->id}", ['name' => 'Piraté'])->assertStatus(404);
+        $this->deleteJson("/api/v1/trade/counterparties/{$foreign->id}")->assertStatus(404);
+    }
+
+    public function test_verification_is_a_traced_act_requiring_a_reason(): void
+    {
+        $company = $this->createCompany();
+        $employee = $this->actingAsEmployee($company);
+
+        /** @var TradeCounterparty $counterparty */
+        $counterparty = TradeCounterparty::factory()->create(['company_id' => $company->id]);
+
+        // Une décision sans motif n'est pas une vérification, c'est une case cochée.
+        $this->postJson("/api/v1/trade/counterparties/{$counterparty->id}/verify", [
+            'status' => 'verified',
+        ])->assertStatus(422)->assertJsonValidationErrors('note');
+
+        $response = $this->postJson("/api/v1/trade/counterparties/{$counterparty->id}/verify", [
+            'status' => 'verified',
+            'note' => 'Kbis et attestation fiscale contrôlés le 2026-11-20.',
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJsonPath('data.verification_status', 'verified')
+            ->assertJsonPath('data.verified_by_employee_id', $employee->id);
+
+        $this->assertNotNull($response->json('data.verified_at'));
+
+        // Retour à l'instruction : la trace de la décision précédente est effacée.
+        $this->postJson("/api/v1/trade/counterparties/{$counterparty->id}/verify", [
+            'status' => 'pending',
+        ])->assertStatus(200)
+            ->assertJsonPath('data.verification_status', 'pending')
+            ->assertJsonPath('data.verified_at', null)
+            ->assertJsonPath('data.verified_by_employee_id', null);
+    }
+
+    public function test_verification_is_reserved_to_the_trade_admin(): void
+    {
+        $company = $this->createCompany();
+        // `comptable` n'obtient que le rôle `reports` : aucune opération d'écriture.
+        $this->actingAsEmployee($company, 'comptable');
+
+        /** @var TradeCounterparty $counterparty */
+        $counterparty = TradeCounterparty::factory()->create(['company_id' => $company->id]);
+
+        $this->postJson("/api/v1/trade/counterparties/{$counterparty->id}/verify", [
+            'status' => 'verified',
+            'note' => 'Auto-vérification tentée.',
+        ])->assertStatus(403);
+    }
+
+    public function test_search_filter_escapes_sql_wildcards(): void
+    {
+        $company = $this->createCompany();
+        $this->actingAsEmployee($company);
+
+        TradeCounterparty::factory()->create(['company_id' => $company->id, 'name' => 'Alpha SARL']);
+        TradeCounterparty::factory()->create(['company_id' => $company->id, 'name' => 'Beta SARL']);
+
+        // Un `%` saisi est un CARACTÈRE, pas un joker : sans échappement, cette
+        // recherche ramènerait tout le répertoire.
+        $this->getJson('/api/v1/trade/counterparties?q=%25')
+            ->assertStatus(200)
+            ->assertJsonCount(0, 'data');
+
+        $this->getJson('/api/v1/trade/counterparties?q=Alpha')
+            ->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Alpha SARL');
+    }
+
+    public function test_filter_by_role_matches_multi_role_counterparties(): void
+    {
+        $company = $this->createCompany();
+        $this->actingAsEmployee($company);
+
+        TradeCounterparty::factory()->create([
+            'company_id' => $company->id,
+            'name' => 'Fabricant Fournisseur',
+            'roles' => ['manufacturer', 'supplier'],
+        ]);
+        TradeCounterparty::factory()->create([
+            'company_id' => $company->id,
+            'name' => 'Client Seul',
+            'roles' => ['buyer'],
+        ]);
+
+        // Une contrepartie multi-rôles doit ressortir dans CHAQUE filtre.
+        $this->getJson('/api/v1/trade/counterparties?role=supplier')
+            ->assertStatus(200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.name', 'Fabricant Fournisseur');
+
+        $this->getJson('/api/v1/trade/counterparties?role=manufacturer')
+            ->assertStatus(200)
+            ->assertJsonCount(1, 'data');
+    }
+
+    public function test_delete_is_soft_and_preserves_history(): void
+    {
+        $company = $this->createCompany();
+        $this->actingAsEmployee($company);
+
+        /** @var TradeCounterparty $counterparty */
+        $counterparty = TradeCounterparty::factory()->create(['company_id' => $company->id]);
+
+        $this->deleteJson("/api/v1/trade/counterparties/{$counterparty->id}")->assertStatus(204);
+
+        // La ligne survit : les dossiers et offres passés la référencent.
+        $this->assertSoftDeleted('trade_counterparties', ['id' => $counterparty->id]);
+        $this->getJson("/api/v1/trade/counterparties/{$counterparty->id}")->assertStatus(404);
     }
 }

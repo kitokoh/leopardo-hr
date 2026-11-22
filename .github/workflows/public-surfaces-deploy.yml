@@ -162,6 +162,7 @@ jobs:
           # `VERCEL_SURFACE_<V>_*` et ne doit pas faire échouer `push main`.
           SURFACES="$(python3 -c 'import json,sys; print(json.dumps(json.loads(sys.argv[1])["surfaces"]))' "${RESULT}")"
           DEPLOYABLE="$(python3 -c 'import json,sys; print(json.dumps(json.loads(sys.argv[1]).get("deployable", json.loads(sys.argv[1])["surfaces"])))' "${RESULT}")"
+          PENDING="$(python3 -c 'import json,sys; print(json.dumps(json.loads(sys.argv[1]).get("pending", [])))' "${RESULT}")"
           SHARED="$(python3 -c 'import json,sys; print(str(json.loads(sys.argv[1])["shared"]).lower())' "${RESULT}")"
           COUNT="$(python3 -c 'import json,sys; print(len(json.loads(sys.argv[1]).get("deployable", json.loads(sys.argv[1])["surfaces"])))' "${RESULT}")"
 
@@ -169,6 +170,7 @@ jobs:
             echo "matrix={\"surface\":${DEPLOYABLE}}"
             echo "count=${COUNT}"
             echo "shared=${SHARED}"
+            echo "pending=${PENDING}"
           } >> "$GITHUB_OUTPUT"
 
           {
@@ -179,6 +181,22 @@ jobs:
             echo "- Noyau partagé modifié : \`${SHARED}\`"
             echo "- Déploiements à lancer : **${COUNT}**"
           } >> "$GITHUB_STEP_SUMMARY"
+
+          # #9384 — une verticale touchée dont le projet Vercel n'est pas encore
+          # provisionné ne lance AUCUN job (il échouerait à chaque push et
+          # rendrait `main` rouge en permanence, ce qui masque les vraies
+          # régressions). Le retard reste visible : warning + step summary.
+          if [[ "${PENDING}" != "[]" ]]; then
+            echo "::warning::vitrines touchées SANS projet Vercel provisionné : ${PENDING} — aucun déploiement possible tant que les secrets VERCEL_SURFACE_<V>_* ne sont pas posés (#9384)."
+            {
+              echo ""
+              echo "### ⚠️ Vitrines en attente de provisionnement Vercel"
+              echo ""
+              echo "Touchées par ce diff mais **non déployables** : \`${PENDING}\`."
+              echo "Les secrets \`VERCEL_SURFACE_<V>_TOKEN/_ORG_ID/_PROJECT_ID\` ne sont pas posés"
+              echo "(action propriétaire, #9384). Aucun job n'est lancé pour ces verticales."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
 
   # ───────────────────────────────────────────────────────────────────────────
   # DÉPLOIEMENT — une instance par vitrine touchée, jamais les autres.

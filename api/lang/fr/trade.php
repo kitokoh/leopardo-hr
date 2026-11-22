@@ -38,4 +38,5 @@ return [
         'title_required' => 'Donnez un titre au document.',
         'link_required' => 'Rattachez le document à une commande, une offre, une demande ou une transaction.',
     ],
+    'search_query_too_short' => 'La recherche doit contenir au moins :min caractères.',
 ];

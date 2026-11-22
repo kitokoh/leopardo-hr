@@ -77,7 +77,7 @@ export function TravelSurface({
               margin: 0,
               padding: 0,
               display: 'grid',
-              gap: '0.75rem',
+              gap: '0.85rem',
             }}
           >
             {cards.map(({ trip, priceLabel, seats, bookable }) => (
@@ -86,13 +86,20 @@ export function TravelSurface({
                   style={{
                     display: 'flex',
                     flexWrap: 'wrap',
-                    gap: '0.75rem',
+                    gap: '1rem',
                     alignItems: 'center',
                     justifyContent: 'space-between',
                   }}
                 >
                   <div style={{ minWidth: '12rem' }}>
-                    <strong style={{ display: 'block', fontSize: '1rem' }}>
+                    <strong
+                      style={{
+                        display: 'block',
+                        fontSize: '1.05rem',
+                        letterSpacing: '-0.01em',
+                        fontWeight: 700,
+                      }}
+                    >
                       {hasRoute(trip) ? tripRoute(trip) : shared.trip}
                     </strong>
                     <SurfaceMeta identity={identity}>
@@ -105,11 +112,18 @@ export function TravelSurface({
                     style={{
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '0.75rem',
+                      gap: '0.85rem',
                       marginLeft: 'auto',
                     }}
                   >
-                    <strong style={{ fontSize: '1.05rem' }}>
+                    <strong
+                      style={{
+                        fontSize: '1.1rem',
+                        fontWeight: 800,
+                        letterSpacing: '-0.01em',
+                        color: identity.palette.primary,
+                      }}
+                    >
                       {priceLabel ?? shared.priceOnRequest}
                     </strong>
 

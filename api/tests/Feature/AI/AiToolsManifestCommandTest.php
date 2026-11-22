@@ -54,9 +54,21 @@ class AiToolsManifestCommandTest extends TestCase
 
         /** @var list<string> $names */
         $names = array_column($tools, 'name');
+
+        // Le manifeste est TRIÉ par nom (déterminisme de `--check`, cf.
+        // `AiToolsManifestCommand::render()`), alors que le registre expose
+        // l'ordre de déclaration des BC. Comparer les deux listes brutes
+        // faisait échouer l'assertion dès qu'un BC était chargé dans un ordre
+        // différent (ordre de résolution des providers) : on compare donc des
+        // ENSEMBLES, ce que l'assertion veut réellement dire.
+        $expected = array_keys(AIToolDefinitionRegistry::all());
+        $actual = array_values(array_intersect($names, $expected));
+        sort($expected);
+        sort($actual);
+
         $this->assertSame(
-            array_keys(AIToolDefinitionRegistry::all()),
-            array_values(array_intersect($names, array_keys(AIToolDefinitionRegistry::all()))),
+            $expected,
+            $actual,
             'le manifeste doit contenir exactement les outils du registre'
         );
 

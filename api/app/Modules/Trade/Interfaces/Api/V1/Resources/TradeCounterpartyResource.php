@@ -9,18 +9,22 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * Contrepartie Trade — BC-36 TRADE, #9779.
+ * Contrepartie Trade (client, fournisseur, transporteur…) — BC-36 TRADE, #9780.
  *
- * ## Ce que la ressource expose, et ce qu'elle cache
+ * ## Ce que cette ressource ne fait pas
  *
- * `verification_status` est renvoye TEL QUEL, y compris `verified` : c'est un
- * etat interne que l'espace vendeur doit afficher. L'interface a la charge de
- * le presenter comme « verifie par un membre de l'equipe » — jamais comme le
- * resultat d'un controle automatise, puisqu'aucun service de verification
- * d'entreprise n'est souscrit (cf. docblock de `TradeVerificationStatus`).
+ * Elle n'expose **aucune donnée interne du CRM**. `crm_account_id` est rendu
+ * comme un simple identifiant de liaison (ou `null` quand le module CRM n'est
+ * pas actif) : la timeline, les consentements et les contacts CRM restent la
+ * propriété du module CRM, qui a ses propres policies.
  *
- * `deleted_at` n'est jamais expose : le perimetre de suppression est une
- * affaire serveur.
+ * ## `verification_status` : une vérification HUMAINE
+ *
+ * `verified` signifie « vérifié par un membre de l'équipe », jamais « vérifié
+ * automatiquement ». La ressource expose donc `verified_by_employee_id` et
+ * `verified_at` : l'interface peut dire QUI a vérifié et QUAND, ce qui est la
+ * seule formulation honnête tant qu'aucun service de vérification externe
+ * n'est souscrit.
  *
  * @mixin TradeCounterparty
  */
@@ -40,16 +44,13 @@ final class TradeCounterpartyResource extends JsonResource
             'phone' => $this->phone,
             'website' => $this->website,
             'roles' => $this->roles ?? [],
-            // Le cast du modele garantit l'enum : le test `instanceof` etait
-            // toujours vrai et ne protegeait rien.
             'verification_status' => $this->verification_status->value,
-            // Uniquement la DATE de verification, jamais l'identifiant de
-            // l'employe qui l'a faite : l'audit interne n'a pas a circuler
-            // dans une charge utile de liste.
+            'verified_by_employee_id' => $this->verified_by_employee_id,
             'verified_at' => $this->verified_at?->toIso8601String(),
             'verification_note' => $this->verification_note,
             'capabilities' => $this->capabilities ?? [],
             'notes' => $this->notes,
+            // Liaison CRM optionnelle : un identifiant, jamais le contenu du compte.
             'crm_account_id' => $this->crm_account_id,
             'created_at' => $this->created_at?->toIso8601String(),
             'updated_at' => $this->updated_at?->toIso8601String(),

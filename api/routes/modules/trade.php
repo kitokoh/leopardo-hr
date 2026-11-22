@@ -40,8 +40,10 @@ use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeHealthController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeMetaController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeOrderController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeProductController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradePromotionKitController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeQuoteController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeRfqController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeSearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.trade'])
@@ -111,27 +113,36 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/products/{product}/archive', [TradeProductController::class, 'archive']);
         });
 
-        // ── Contreparties (annuaire clients/fournisseurs) — #9779 ────────────
-        // `trade_counterparties` avait un modele, une table et une factory mais
-        // AUCUNE route. Or `POST /rfqs/{rfq}/send` exige des `counterparty_ids`
-        // (`min:1`) : sans ces routes, un tenant reel ne pouvait pas diffuser
-        // une demande de prix — le seul moyen d'avoir une contrepartie etait le
-        // factory de test.
+        // ── Recherche transverse — #9781 ─────────────────────────────────────
+        // « Je ne sais plus où c'est » : un seul champ qui interroge les
+        // contreparties, le catalogue et les dossiers. Ouvert à tous les rôles
+        // métier — chercher n'est pas une opération commerciale.
+        Route::middleware('trade.role:purchase,sales,logistics,reports,admin')->group(function (): void {
+            Route::get('/search', [TradeSearchController::class, 'index']);
+        });
+
+        // ── Contreparties : clients, fournisseurs, transporteurs — #9780 ──────
+        // Sans ces routes, `trade_counterparties` (table, modèle, factory,
+        // enums depuis TRADE-003/#8478) restait INATTEIGNABLE : un tenant
+        // pouvait émettre des RFQ et des offres sans jamais créer un
+        // fournisseur ni un client, et `trade_deal.trade_counterparty_id`
+        // ne pouvait jamais être renseigné.
         //
-        // Lecture : les deux espaces (vendeur ET acheteur gerent leur annuaire).
-        // Ecriture : `sales` et `purchase` — chacun gere ses interlocuteurs ;
-        // `admin` en plus. `logistics` lit seulement.
+        // Lecture : tous les rôles métier (acheteur, vendeur et logisticien
+        // travaillent sur le même répertoire partagé).
         Route::middleware('trade.role:purchase,sales,logistics,admin')->group(function (): void {
             Route::get('/counterparties', [TradeCounterpartyController::class, 'index']);
             Route::get('/counterparties/{counterparty}', [TradeCounterpartyController::class, 'show']);
-        });
-
-        Route::middleware('trade.role:purchase,sales,admin')->group(function (): void {
             Route::post('/counterparties', [TradeCounterpartyController::class, 'store']);
             Route::put('/counterparties/{counterparty}', [TradeCounterpartyController::class, 'update']);
-            // Suppression LOGIQUE : les RFQ/offres passees citent la
-            // contrepartie, une suppression dure casserait l'historique.
             Route::delete('/counterparties/{counterparty}', [TradeCounterpartyController::class, 'destroy']);
+        });
+
+        // Vérification : acte réservé à l'admin de la verticale. `verified`
+        // affirme « contrôlé par l'équipe » — ce n'est pas une opération
+        // commerciale ordinaire, et la route le reflète.
+        Route::middleware('trade.role:admin')->group(function (): void {
+            Route::post('/counterparties/{counterparty}/verify', [TradeCounterpartyController::class, 'verify']);
         });
 
         // ── Commandes — #9779 ───────────────────────────────────────────────
@@ -178,4 +189,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/profile', [TradeCompanyProfileController::class, 'update']);
         // Acte distinct : publier n'est pas enregistrer un champ commercial.
         Route::put('/profile/publication', [TradeCompanyProfileController::class, 'publish']);
+
+        // ── Kit de promotion (#9783) ─────────────────────────────────────────
+        // « Être capable de promouvoir son entreprise » : le kit liste ce qui
+        // manque à la fiche publique et propose un brouillon adossé aux données
+        // réelles. Il ne publie RIEN — la publication reste la route ci-dessus.
+        Route::middleware('trade.role:admin')->group(function (): void {
+            Route::get('/promotion-kit', [TradePromotionKitController::class, 'show']);
+        });
     });

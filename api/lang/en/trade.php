@@ -38,4 +38,5 @@ return [
         'title_required' => 'Give the document a title.',
         'link_required' => 'Attach the document to an order, quote, request or deal.',
     ],
+    'search_query_too_short' => 'The search must contain at least :min characters.',
 ];

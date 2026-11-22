@@ -119,12 +119,12 @@ describe('garde-fou — détection d’un catalogue buggé', () => {
     buggy.refs = Object.fromEntries(
       Object.entries(buggy.refs).map(([key, value]) => [`toolbox.ref.${key}`, value]),
     );
-    // 4 références déclarées × 4 locales = 16 non résolues.
+    // 6 références déclarées × 4 locales = 24 non résolues.
     const total = LOCALES.reduce(
       (sum, locale) => sum + countUnresolvedReferences({ ...getToolboxCopy(locale), refs: buggy.refs }),
       0,
     );
-    expect(total).toBe(16);
+    expect(total).toBe(24);
   });
 });
 

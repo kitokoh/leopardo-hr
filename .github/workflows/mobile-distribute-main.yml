@@ -99,6 +99,20 @@ jobs:
             version_prefix: accounting
             firebase_secret: FIREBASE_ACCOUNTING_ANDROID_APP_ID
             android_package: com.leopardo.accounting
+            # #9492 — l'app Android `com.leopardo.accounting` n'est PAS encore
+            # enregistrée dans le projet Firebase qui sert les quatre autres
+            # apps : le `google-services.json` restauré depuis le secret
+            # `GOOGLE_SERVICES_JSON` ne contient aucun client pour ce package.
+            # Ce n'est pas un défaut de code (l'`applicationId` et le package
+            # attendu concordent) mais une action propriétaire côté console
+            # Firebase + rotation du secret. Tant qu'elle n'est pas faite, le
+            # canal est déclaré ABSENT : le job sort en skip explicite et
+            # visible (step summary + ::warning::), au lieu d'échouer à chaque
+            # push sur `main` et de masquer une vraie régression des quatre
+            # autres canaux. Le catalogue « Mon Logiciel » requalifie déjà
+            # l'app en `not_distributed` (mobile-distribution-status.ts), donc
+            # aucune fiche n'annonce un build inexistant (#6697).
+            firebase_channel: false
 
     steps:
       - name: Guard DEV_API_BASE_URL (#4524)
@@ -134,9 +148,30 @@ jobs:
           APP_NAME: ${{ matrix.app.name }}
           ANDROID_PACKAGE: ${{ matrix.app.android_package }}
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+          # #9492 — `false` quand la vitrine n'a pas (encore) de client Firebase
+          # enregistré : le canal est alors ABSENT, pas en échec. Les entrées de
+          # matrice qui ne déclarent pas la clé rendent une chaîne vide (et non
+          # `null`) : on ne compare donc JAMAIS à un booléen dans l'expression
+          # GitHub (`null == false` y vaut `true`), seulement en bash.
+          FIREBASE_CHANNEL: ${{ matrix.app.firebase_channel }}
         run: |
           set -euo pipefail
           READY=true
+          if [[ "${FIREBASE_CHANNEL}" == "false" ]]; then
+            echo "::warning::Canal Firebase ABSENT pour ${APP_NAME} (${ANDROID_PACKAGE}) — app non enregistrée dans le projet Firebase (#9492). Distribution sautée, ce n'est pas un échec."
+            {
+              echo "### Firebase — ${APP_NAME} : canal ABSENT (#9492)"
+              echo ""
+              echo "L'app Android \`${ANDROID_PACKAGE}\` n'est pas enregistrée dans le projet Firebase"
+              echo "qui sert les autres apps : le \`google-services.json\` restauré ne contient"
+              echo "aucun client pour ce package. Action propriétaire requise (console Firebase"
+              echo "+ rotation du secret \`GOOGLE_SERVICES_JSON\`), voir #9492."
+              echo ""
+              echo "Le catalogue « Mon Logiciel » requalifie déjà l'app en \`not_distributed\`."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "MOBILE_DISTRIBUTE_READY=false" >> "$GITHUB_ENV"
+            exit 0
+          fi
           if [[ -z "${FIREBASE_APP_ID}" ]]; then
             echo "Missing GitHub secret: ${FIREBASE_APP_ID_SECRET_NAME}. Skipping ${{ matrix.app.name }} Firebase distribution."
             READY=false

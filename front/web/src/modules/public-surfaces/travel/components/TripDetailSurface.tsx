@@ -49,11 +49,14 @@ export function TripDetailSurface({
         <Link
           href="/billets"
           style={{
-            display: 'inline-block',
-            marginBottom: '1.25rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            marginBottom: '1.5rem',
             fontSize: '0.85rem',
             color: identity.palette.muted,
             textDecoration: 'none',
+            transition: 'color 0.15s ease',
           }}
         >
           ← {shared.allDestinations}
@@ -64,21 +67,37 @@ export function TripDetailSurface({
             style={{
               display: 'flex',
               flexWrap: 'wrap',
-              gap: '1rem',
+              gap: '1.25rem',
               alignItems: 'baseline',
               justifyContent: 'space-between',
             }}
           >
             <div>
-              <h1 style={{ margin: 0, fontSize: 'clamp(1.3rem, 3vw, 1.8rem)' }}>{route}</h1>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: 'clamp(1.3rem, 3vw, 1.8rem)',
+                  letterSpacing: '-0.02em',
+                  fontWeight: 800,
+                }}
+              >
+                {route}
+              </h1>
               <SurfaceMeta identity={identity}>
                 {[trip.departureAt, trip.arrivalAt].filter(Boolean).join(' → ') ||
                   shared.scheduleTbc}
               </SurfaceMeta>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-              <strong style={{ fontSize: '1.3rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+              <strong
+                style={{
+                  fontSize: '1.4rem',
+                  fontWeight: 800,
+                  letterSpacing: '-0.01em',
+                  color: identity.palette.primary,
+                }}
+              >
                 {priceLabel ?? shared.priceOnRequest}
               </strong>
               <SurfaceBadge identity={identity} tone={bookable ? 'accent' : 'neutral'}>
@@ -108,11 +127,12 @@ export function TripDetailSurface({
             <div
               style={{
                 display: 'grid',
-                gap: '0.4rem',
-                padding: '1rem',
-                borderRadius: '0.9rem',
-                border: `1px solid ${identity.palette.muted}33`,
-                background: '#FFFFFF',
+                gap: '0.45rem',
+                padding: '1.25rem',
+                borderRadius: '1rem',
+                border: `1px solid ${identity.palette.muted}25`,
+                background: `${identity.palette.primary}03`,
+                boxShadow: `0 1px 3px ${identity.palette.muted}10`,
               }}
             >
               {seatMap.rows.map((row) => (
@@ -151,20 +171,21 @@ export function TripDetailSurface({
                           display: 'inline-flex',
                           alignItems: 'center',
                           justifyContent: 'center',
-                          width: '1.9rem',
-                          height: '1.9rem',
-                          borderRadius: '0.4rem',
-                          fontSize: '0.7rem',
+                          width: '2rem',
+                          height: '2rem',
+                          borderRadius: '0.45rem',
+                          fontSize: '0.72rem',
                           fontWeight: 700,
-                          border: `1px solid ${identity.palette.muted}44`,
+                          border: `1px solid ${identity.palette.muted}35`,
                           background:
                             cell.status === 'free'
                               ? `${identity.palette.accent}18`
-                              : `${identity.palette.muted}14`,
+                              : `${identity.palette.muted}10`,
                           color:
                             cell.status === 'free'
                               ? identity.palette.primary
                               : identity.palette.muted,
+                          transition: 'transform 0.1s ease',
                         }}
                       >
                         {cell.seatNumber}

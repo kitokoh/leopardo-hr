@@ -1,7 +1,7 @@
 # Multi-brand mobile — brancher la feature `brand`
 
 > **BC-41 BRANDING** — issue #9581.
-> Spécification complète : [`docs/architecture/MULTIBRAND_PUBLIC_SURFACES.md`](../../../../docs/architecture/MULTIBRAND_PUBLIC_SURFACES.md) §8.
+> Spécification complète : [`docs/architecture/MULTIBRAND_PUBLIC_SURFACES.md`](../../../../../../docs/architecture/MULTIBRAND_PUBLIC_SURFACES.md) §8.
 
 ## Ce que cette feature fait
 
