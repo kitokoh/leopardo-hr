@@ -1,7 +1,7 @@
 <?php
 
-use App\AI\Interfaces\Api\V1\Controllers\AIActionProposalController;
 use App\AI\Interfaces\Api\V1\Controllers\AgentController;
+use App\AI\Interfaces\Api\V1\Controllers\AIActionProposalController;
 use App\AI\Interfaces\Api\V1\Controllers\AIAnalyticsController;
 use App\AI\Interfaces\Api\V1\Controllers\AIGatewayController;
 use App\AI\Interfaces\Api\V1\Controllers\ConversationExportController;
