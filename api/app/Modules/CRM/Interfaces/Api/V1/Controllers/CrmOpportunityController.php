@@ -51,7 +51,12 @@ class CrmOpportunityController extends Controller
         // Defense en profondeur : le model binding filtre deja par tenant ;
         // on le re-affirme ici parce qu'une ecriture ne doit pas dependre
         // d'un seul mecanisme.
-        $this->assertTenantScope($opportunity);
+        $companyId = app()->bound('current_company') ? (int) app('current_company')->id : null;
+
+        if ($companyId !== null && (int) $opportunity->company_id !== $companyId) {
+            // 404 et non 403 : l'API ne revele pas l'existence de l'objet.
+            abort(404);
+        }
 
         /** @var Employee $actor */
         $actor = $request->user();
