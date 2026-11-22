@@ -489,6 +489,7 @@
             <file>tests/Feature/CRM/CrmHardeningNegativeTest.php</file>
             <file>tests/Feature/CRM/CrmImportFlowTest.php</file>
             <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
+            <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
             <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
             <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>
@@ -1993,6 +1994,7 @@
             <file>tests/Feature/CRM/CrmHardeningNegativeTest.php</file>
             <file>tests/Feature/CRM/CrmImportFlowTest.php</file>
             <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
+            <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
             <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
             <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>

@@ -25,6 +25,7 @@ use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDirectoryController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmDirectoryWriteController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailWebhookController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmOpportunityController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmExportController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmImportController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmLeadController;
@@ -132,6 +133,17 @@ ModuleRoutes::tenantModule('crm', function (): void {
         Route::get('/contacts/{contact}', [CrmDirectoryWriteController::class, 'showContact'])->whereNumber('contact');
 
         Route::get('/opportunities', [CrmDirectoryController::class, 'opportunities']);
+
+        // #9780 — LE chemin d'ecriture qui manquait. `GET /opportunities`
+        // existait (kanban par stage) mais AUCUNE route ne changeait `stage` :
+        // le pipeline etait en lecture seule, une affaire convertie restait
+        // figee et rien ne pouvait etre marque gagne ou perdu.
+        //
+        // Meme RBAC que la lecture plus la marque `marketing` (deja autorisee
+        // sur consents/segments/campagnes) : deplacer une affaire est un acte
+        // commercial, pas une operation d'administration.
+        Route::patch('/opportunities/{opportunity}/stage', [CrmOpportunityController::class, 'transitionStage'])
+            ->whereNumber('opportunity');
     });
 
     // ── Consentements et préférences de communication (#5722) ───────────────

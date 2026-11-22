@@ -39,4 +39,10 @@ return [
         'process_sends_summary' => 'crm:process-campaign-sends — due: :due, running: :running, dispatched: :dispatched, failures: :failed.',
     ],
 
+    'opportunities' => [
+        'stage_invalid' => 'This stage does not exist in the pipeline.',
+        'stage_terminal' => 'A won or lost deal is final. Create a new opportunity to start again.',
+        'lost_reason_required' => 'Say why the deal was lost: without a reason the quarterly review is unexplainable.',
+        'activity_stage_changed' => 'Stage changed',
+    ],
 ];

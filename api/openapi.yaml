@@ -1897,6 +1897,73 @@ paths:
         '429':
           $ref: '#/components/responses/Error429'
 
+  /v1/crm/opportunities/{opportunity}/stage:
+    patch:
+      operationId: api_patch_crm_opportunity_stage
+      tags:
+      - CRM
+      summary: Deplacer une opportunite dans le pipeline (#9780)
+      description: >-
+        `GET /v1/crm/opportunities` existait et alimentait le kanban par
+        `stage`, mais AUCUNE route ne changeait `stage` : le pipeline etait en
+        lecture seule. Une affaire convertie restait figee et rien ne pouvait
+        etre marque gagne ou perdu.
+
+        `status` est DERIVE de `stage` (`won`/`lost` -> `closed`, sinon
+        `open`) : la requete ne l'accepte pas, pour qu'une ligne ne porte
+        jamais deux verites contradictoires.
+
+        `won` et `lost` sont TERMINAUX : en sortir renvoie 422. Rouvrir une
+        affaire gagnee reecrirait l'historique commercial (un CA deja compte
+        redeviendrait « en cours ») ; pour repartir, on cree une nouvelle
+        opportunite. Un retour en arriere dans le parcours OUVERT
+        (`prospecting` -> `qualification` -> `proposal` -> `negotiation`) est
+        en revanche permis : un client peut revenir a l'etape precedente.
+
+        `lost_reason` est EXIGE pour `lost` : une affaire perdue sans motif
+        rend le bilan trimestriel inexplicable.
+      parameters:
+      - name: opportunity
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [stage]
+              properties:
+                stage:
+                  type: string
+                  enum: [prospecting, qualification, proposal, negotiation, won, lost]
+                lost_reason:
+                  type: string
+                  maxLength: 500
+                  description: Exige quand `stage` vaut `lost`
+                amount:
+                  type: number
+                  minimum: 0
+                expected_close_date:
+                  type: string
+                  format: date
+                notes:
+                  type: string
+                  maxLength: 5000
+      responses:
+        '200':
+          description: Opportunite a sa nouvelle etape
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+
   /public/vtc/marketplace/estimate:
     post:
       operationId: api_post_public_vtc_marketplace_estimate

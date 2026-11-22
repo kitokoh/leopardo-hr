@@ -39,4 +39,10 @@ return [
         'process_sends_summary' => 'crm:process-campaign-sends — dues: :due, running: :running, dispatchés: :dispatched, échecs: :failed.',
     ],
 
+    'opportunities' => [
+        'stage_invalid' => "Cette étape n'existe pas dans le pipeline.",
+        'stage_terminal' => "Une affaire gagnée ou perdue est définitive. Créez une nouvelle opportunité pour repartir.",
+        'lost_reason_required' => "Indiquez pourquoi l'affaire est perdue : sans motif, le bilan trimestriel est inexplicable.",
+        'activity_stage_changed' => "Étape modifiée",
+    ],
 ];
