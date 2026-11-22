@@ -5345,7 +5345,16 @@
       "methodTransfer": "Banka havalesi",
       "methodCard": "Kredi kartı",
       "methodMobileMoney": "Mobil ödeme",
-      "methodOther": "Diğer"
+      "methodOther": "Diğer",
+      "batchFromClass": "Bu sınıf için toplu tahsilat",
+      "batchClassBanner": "Sınıf {class} — {students} öğrenci, {charges} tahsil edilecek borç.",
+      "batchClearClass": "Tüm borçlara dön",
+      "batchFilters": "Filtreler",
+      "batchFiltersHint": "Toplu işlemi oluşturmadan önce önerilen borçları daraltın.",
+      "dueFrom": "Vade başlangıcı",
+      "dueTo": "Vade bitişi",
+      "paidWithMethod": "Önceden ödenen yöntem",
+      "allMethods": "Tüm yöntemler"
     },
     "fees": {
       "title": "Okul ücretleri",

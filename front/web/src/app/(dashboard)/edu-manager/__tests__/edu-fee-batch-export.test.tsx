@@ -125,8 +125,12 @@ describe('Encaissement en lot (#9791)', () => {
     await screen.findByText(/Lina Benali/);
 
     const selects = screen.getAllByRole('combobox');
-    // selects[0] = moyen de paiement, selects[1] = première ligne du lot.
-    await userEvent.selectOptions(selects[1], '11');
+    // #9792 — la page porte désormais des filtres (période, moyen déjà utilisé)
+    // AVANT le contexte du lot : indexer les combobox par position cassait au
+    // premier champ ajouté. On cible le champ par son libellé.
+    const lineSelect = screen.getAllByLabelText('Facturation')[0];
+    expect(selects.length).toBeGreaterThan(0);
+    await userEvent.selectOptions(lineSelect, '11');
 
     // Le montant est pré-rempli au solde restant : pas de surdébit par défaut.
     const amountInputs = screen.getAllByLabelText('Montant');
@@ -179,7 +183,8 @@ describe('Encaissement en lot (#9791)', () => {
     await screen.findByText(/Lina Benali/);
 
     const selects = screen.getAllByRole('combobox');
-    await userEvent.selectOptions(selects[1], '11');
+    expect(selects.length).toBeGreaterThan(0);
+    await userEvent.selectOptions(screen.getAllByLabelText('Facturation')[0], '11');
 
     mockedApiFetch.mockResolvedValueOnce(
       jsonResponse(

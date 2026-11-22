@@ -5878,7 +5878,16 @@
       "methodTransfer": "تحويل بنكي",
       "methodCard": "بطاقة بنكية",
       "methodMobileMoney": "دفع عبر الهاتف",
-      "methodOther": "أخرى"
+      "methodOther": "أخرى",
+      "batchFromClass": "تحصيل جماعي لهذا القسم",
+      "batchClassBanner": "القسم {class} — {students} تلميذًا، {charges} فاتورة للتحصيل.",
+      "batchClearClass": "العودة إلى كل الفواتير",
+      "batchFilters": "عوامل التصفية",
+      "batchFiltersHint": "تضييق الفواتير المقترحة قبل تكوين الدفعة.",
+      "dueFrom": "الاستحقاق من",
+      "dueTo": "الاستحقاق حتى",
+      "paidWithMethod": "دُفع مسبقًا بـ",
+      "allMethods": "كل الوسائل"
     },
     "fees": {
       "title": "الرسوم الدراسية",

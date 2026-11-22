@@ -94,6 +94,27 @@ export default function FeeBatchPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // #9792 — encaissement en lot DEPUIS UNE CLASSE : `?class_id=` pré-sélectionne
+  // l'effectif et ses charges. Lu depuis `window.location` plutôt que
+  // `useSearchParams` : la page est un composant client rendu statiquement, et
+  // `useSearchParams` y exigerait une frontière Suspense supplémentaire.
+  const [classId, setClassId] = useState('');
+  const [className, setClassName] = useState('');
+  const [students, setStudents] = useState<Row[]>([]);
+
+  // #9792 — `?class_id=` est lu AVANT le premier chargement. Sans ce verrou, la
+  // page chargeait la liste GLOBALE des charges puis rechargeait l'effectif :
+  // une requête gaspillée et un flash de la mauvaise liste (constaté par le
+  // test de pré-sélection, qui ne recevait qu'une réponse).
+  const [queryResolved, setQueryResolved] = useState(false);
+
+  // #9792 — filtres de la liste sélectionnable : période d'échéance et moyen de
+  // paiement déjà utilisé sur la charge (le caissier retrouve « ce qui a déjà
+  // été réglé en espèces » avant de compléter le reste).
+  const [dueFrom, setDueFrom] = useState('');
+  const [dueTo, setDueTo] = useState('');
+  const [methodFilter, setMethodFilter] = useState('');
+
   const [method, setMethod] = useState('cash');
   const [reference, setReference] = useState('');
   const [paidAt, setPaidAt] = useState('');
@@ -108,11 +129,60 @@ export default function FeeBatchPage() {
     setLoading(true);
     setError(null);
     try {
+      const params = new URLSearchParams({ per_page: '200' });
+      if (dueFrom !== '') params.set('due_from', dueFrom);
+      if (dueTo !== '') params.set('due_to', dueTo);
+      if (methodFilter !== '') params.set('paid_with_method', methodFilter);
+
+      if (classId !== '') {
+        // Effectif de la classe : chaque élève avec ses charges encaissables.
+        const res = await apiFetch(
+          `/edu-manager/classes/${classId}/fee-charges?${params.toString()}`,
+          { _cacheBust: true },
+        );
+        const json = (await res.json()) as {
+          data?: { class?: Row; students?: Row[] };
+        };
+        const roster = Array.isArray(json.data?.students) ? json.data.students : [];
+        setStudents(roster);
+        setClassName(String(json.data?.class?.name ?? ''));
+
+        const flat: Row[] = [];
+        for (const student of roster) {
+          const list = Array.isArray(student.charges) ? (student.charges as Row[]) : [];
+          for (const charge of list) {
+            flat.push({ ...charge, student });
+          }
+        }
+        setCharges(flat);
+
+        // Pré-sélection : une ligne par charge, montant au solde restant. On ne
+        // remplace pas une saisie déjà commencée (l'utilisateur peut avoir
+        // ajouté des lignes à la main avant de changer de filtre).
+        setLines((prev) => {
+          if (prev.some((line) => line.chargeId !== '')) {
+            return prev;
+          }
+          const auto = flat.slice(0, 200).map((charge) => ({
+            key: `auto-${String(charge.id)}`,
+            chargeId: String(charge.id),
+            amount: String(charge.remaining_amount ?? ''),
+          }));
+          return auto.length > 0 ? auto : [newLine()];
+        });
+
+        return;
+      }
+
       // Seules les charges encore encaissables ont un sens dans un lot :
       // une charge soldée/abandonnée/annulée serait refusée par le serveur.
-      const res = await apiFetch('/edu-manager/fee-charges?per_page=200', { _cacheBust: true });
+      const res = await apiFetch(`/edu-manager/fee-charges?${params.toString()}`, {
+        _cacheBust: true,
+      });
       const json = (await res.json()) as { data?: Row[] };
       const rows = Array.isArray(json.data) ? json.data : [];
+      setStudents([]);
+      setClassName('');
       setCharges(
         rows.filter((row) => {
           const status = String(row.status ?? '');
@@ -124,11 +194,22 @@ export default function FeeBatchPage() {
     } finally {
       setLoading(false);
     }
-  }, [locale]);
+  }, [locale, classId, dueFrom, dueTo, methodFilter]);
 
   useEffect(() => {
+    const fromQuery = new URLSearchParams(window.location.search).get('class_id');
+    if (fromQuery !== null && fromQuery !== '') {
+      setClassId(fromQuery);
+    }
+    setQueryResolved(true);
+  }, []);
+
+  useEffect(() => {
+    if (!queryResolved) {
+      return;
+    }
     void load();
-  }, [load]);
+  }, [load, queryResolved]);
 
   const chargeById = useMemo(() => {
     const map = new Map<string, Row>();
@@ -287,6 +368,59 @@ export default function FeeBatchPage() {
         {error ? (
           <p className="rounded-xl bg-rose-50 px-3 py-2 text-sm font-medium text-rose-600">{error}</p>
         ) : null}
+
+        {classId !== '' ? (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-3">
+            <p className="text-sm font-bold text-emerald-800">
+              {t(locale, 'edu.feeCharges.batchClassBanner')
+                .replace('{class}', className || `#${classId}`)
+                .replace('{students}', String(students.length))
+                .replace('{charges}', String(charges.length))}
+            </p>
+            <Button variant="ghost" onClick={() => setClassId('')}>
+              {t(locale, 'edu.feeCharges.batchClearClass')}
+            </Button>
+          </div>
+        ) : null}
+
+        {/* #9792 — filtres de la liste sélectionnable. Le guichet encaisse par
+            campagne (« les frais de septembre ») et doit pouvoir retrouver ce
+            qui a déjà été réglé par un moyen donné. */}
+        <Card>
+          <SectionTitle
+            title={t(locale, 'edu.feeCharges.batchFilters')}
+            subtitle={t(locale, 'edu.feeCharges.batchFiltersHint')}
+          />
+          <div className="mt-4 grid gap-4 sm:grid-cols-3">
+            <Field label={t(locale, 'edu.feeCharges.dueFrom')}>
+              <TextInput
+                type="date"
+                value={dueFrom}
+                onChange={(event) => setDueFrom(event.target.value)}
+              />
+            </Field>
+            <Field label={t(locale, 'edu.feeCharges.dueTo')}>
+              <TextInput
+                type="date"
+                value={dueTo}
+                onChange={(event) => setDueTo(event.target.value)}
+              />
+            </Field>
+            <Field label={t(locale, 'edu.feeCharges.paidWithMethod')}>
+              <SelectInput
+                value={methodFilter}
+                onChange={(event) => setMethodFilter(event.target.value)}
+              >
+                <option value="">{t(locale, 'edu.feeCharges.allMethods')}</option>
+                {PAYMENT_METHODS.map((option) => (
+                  <option key={option} value={option}>
+                    {methodLabel(locale, option)}
+                  </option>
+                ))}
+              </SelectInput>
+            </Field>
+          </div>
+        </Card>
 
         <Card>
           <SectionTitle

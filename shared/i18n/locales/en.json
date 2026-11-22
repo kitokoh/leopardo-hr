@@ -5345,7 +5345,16 @@
       "methodTransfer": "Bank transfer",
       "methodCard": "Card",
       "methodMobileMoney": "Mobile money",
-      "methodOther": "Other"
+      "methodOther": "Other",
+      "batchFromClass": "Collect in batch for this class",
+      "batchClassBanner": "Class {class} — {students} student(s), {charges} charge(s) to collect.",
+      "batchClearClass": "Back to all charges",
+      "batchFilters": "Filters",
+      "batchFiltersHint": "Narrow the charges offered before building the batch.",
+      "dueFrom": "Due from",
+      "dueTo": "Due until",
+      "paidWithMethod": "Already paid by",
+      "allMethods": "All methods"
     },
     "fees": {
       "title": "School fees",

@@ -145,6 +145,10 @@ ModuleRoutes::tenantModule('', function (): void {
 
     // EDU-011 (#5827) — inscriptions d'élèves dans les classes (idempotentes).
     Route::get('/edu-manager/classes/{class}/enrollments', [EduClassEnrollmentController::class, 'index'])->whereNumber('class');
+    // #9792 — encaissement en lot DEPUIS LA FICHE D'UNE CLASSE : l'effectif
+    // actif avec, par élève, ses charges encore encaissables et leur solde.
+    // Le guichet part de la classe, pas d'une liste de charges à filtrer.
+    Route::get('/edu-manager/classes/{class}/fee-charges', [EduFeeChargeController::class, 'forClass'])->whereNumber('class');
     Route::post('/edu-manager/classes/{class}/enrollments', [EduClassEnrollmentController::class, 'store'])->whereNumber('class');
     Route::delete('/edu-manager/class-enrollments/{enrollment}', [EduClassEnrollmentController::class, 'destroy'])->whereNumber('enrollment');
 

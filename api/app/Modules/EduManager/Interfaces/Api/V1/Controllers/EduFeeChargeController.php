@@ -11,8 +11,11 @@ use App\Modules\EduManager\Application\Actions\RecordEduFeeBatchPaymentsAction;
 use App\Modules\EduManager\Application\Actions\RecordEduFeePaymentAction;
 use App\Modules\EduManager\Application\Actions\WaiveEduFeeChargeAction;
 use App\Modules\EduManager\Domain\Access\EduAccess;
+use App\Modules\EduManager\Domain\Models\EduClass;
+use App\Modules\EduManager\Domain\Models\EduClassEnrollment;
 use App\Modules\EduManager\Domain\Models\EduFeeCharge;
 use App\Modules\EduManager\Domain\Models\EduFeePayment;
+use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeBatchPaymentRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeeChargeRequest;
 use App\Modules\EduManager\Interfaces\Api\V1\Requests\StoreEduFeePaymentRequest;
@@ -86,6 +89,26 @@ class EduFeeChargeController extends Controller
             $query->where('academic_year_id', (int) $request->input('academic_year_id'));
         }
 
+        // #9792 — filtre par PÉRIODE d'échéance. Le guichet encaisse par
+        // campagne (« les frais de septembre ») : sans borne de période, il
+        // devait trier à l'œil dans la liste complète de l'année.
+        if ($request->filled('due_from')) {
+            $query->whereDate('due_date', '>=', (string) $request->input('due_from'));
+        }
+
+        if ($request->filled('due_to')) {
+            $query->whereDate('due_date', '<=', (string) $request->input('due_to'));
+        }
+
+        // #9792 — filtre par MOYEN DE PAIEMENT déjà utilisé sur la charge.
+        // Le caissier retrouve « ce qui a déjà été réglé en espèces » (ou par
+        // virement) avant de compléter le reste ; `whereHas` reste borné au
+        // tenant par la contrainte de la relation.
+        if ($request->filled('paid_with_method')) {
+            $method = (string) $request->input('paid_with_method');
+            $query->whereHas('payments', fn ($payments) => $payments->where('method', $method));
+        }
+
         // Solde restant calculé en base : `withSum` évite d'hydrater les
         // paiements (une charge peut en porter des dizaines) tout en restant
         // exact — la somme est faite par PostgreSQL, pas en PHP.
@@ -131,6 +154,108 @@ class EduFeeChargeController extends Controller
 
         return response()->json([
             'data' => array_merge($this->chargePayload($model), ['payments' => $payments]),
+        ]);
+    }
+
+    /**
+     * GET /edu-manager/classes/{class}/fee-charges (#9792).
+     *
+     * Encaissement en lot DEPUIS LA FICHE D'UNE CLASSE : le caissier part de
+     * l'effectif, pas d'une liste de charges à filtrer à la main. On rend donc
+     * l'effectif actif de la classe, chaque élève avec ses charges encore
+     * encaissables et son solde restant — l'écran n'a plus qu'à cocher.
+     *
+     * Un élève SANS charge reste dans la réponse (`charges: []`) : c'est une
+     * information utile au guichet (« cet élève n'a rien à payer »), et la
+     * masquer ferait croire à un effectif incomplet.
+     *
+     * Le solde est calculé en SQL (`withSum`) comme dans `index` : une seule
+     * définition du solde, donc aucun risque de divergence entre les deux
+     * écrans.
+     */
+    public function forClass(Request $request, EduClass $class): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->assertSameTenant($class, $actor->company_id);
+        $this->assertAdmin($actor);
+
+        $studentIds = EduClassEnrollment::query()
+            ->where('company_id', $actor->company_id)
+            ->where('class_id', $class->getAttribute('id'))
+            ->where('status', EduClassEnrollment::STATUS_ACTIVE)
+            ->pluck('student_id')
+            ->map(static fn ($id): int => (int) $id)
+            ->all();
+
+        $query = EduFeeCharge::query()
+            ->where('company_id', $actor->company_id)
+            ->whereIn('student_id', $studentIds)
+            ->with([
+                'student:id,student_number,display_name',
+                'feeType:id,code,label',
+            ])
+            ->withSum('payments as paid_amount', 'amount');
+
+        // Par défaut, seules les charges encore encaissables : une charge
+        // soldée/abandonnée/annulée serait refusée par le lot.
+        if (! $request->boolean('include_terminal')) {
+            $query->whereNotIn('status', [
+                EduFeeCharge::STATUS_PAID,
+                EduFeeCharge::STATUS_WAIVED,
+                EduFeeCharge::STATUS_CANCELLED,
+            ]);
+        }
+
+        if ($request->filled('due_from')) {
+            $query->whereDate('due_date', '>=', (string) $request->input('due_from'));
+        }
+
+        if ($request->filled('due_to')) {
+            $query->whereDate('due_date', '<=', (string) $request->input('due_to'));
+        }
+
+        if ($request->filled('paid_with_method')) {
+            $method = (string) $request->input('paid_with_method');
+            $query->whereHas('payments', fn ($payments) => $payments->where('method', $method));
+        }
+
+        $charges = $query->orderBy('student_id')->orderBy('due_date')->orderBy('id')->get();
+
+        /** @var array<int, list<array<string, mixed>>> $byStudent */
+        $byStudent = [];
+        foreach ($charges as $charge) {
+            $byStudent[(int) $charge->student_id][] = $this->chargePayload($charge);
+        }
+
+        $students = EduStudent::query()
+            ->where('company_id', $actor->company_id)
+            ->whereIn('id', $studentIds)
+            ->orderBy('display_name')
+            ->get()
+            ->map(static fn (EduStudent $student): array => [
+                'id' => (int) $student->getAttribute('id'),
+                'student_number' => $student->student_number,
+                'display_name' => $student->display_name,
+                'charges' => $byStudent[(int) $student->getAttribute('id')] ?? [],
+            ])
+            ->values();
+
+        return response()->json([
+            'data' => [
+                'class' => [
+                    'id' => (int) $class->getAttribute('id'),
+                    'code' => $class->code,
+                    'name' => $class->name,
+                ],
+                'students' => $students,
+            ],
+            'meta' => [
+                'students' => $students->count(),
+                'charges' => $charges->count(),
+            ],
         ]);
     }
 
