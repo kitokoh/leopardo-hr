@@ -191,11 +191,19 @@ export default function CrudPage({ resource }: { resource: CrudResource }) {
         ...column,
         header: t(locale, column.header),
       })),
-      {
-        key: 'status',
-        header: t(locale, 'edu.campuses.status'),
-        render: (row) => statusBadge(row, resource.statusField),
-      },
+      // #9789 — la colonne « Statut » n'a de sens que si la ressource expose
+      // un champ de statut : sans `statusField`, `statusBadge` renvoie `null`
+      // et l'en-tête restait affiché au-dessus d'une colonne entièrement vide
+      // (constaté sur /edu-manager/fee-types, qui n'a pas de statut).
+      ...(resource.statusField
+        ? [
+            {
+              key: 'status',
+              header: t(locale, 'edu.campuses.status'),
+              render: (row: Record<string, unknown>) => statusBadge(row, resource.statusField),
+            },
+          ]
+        : []),
       {
         key: '__actions',
         header: t(locale, 'edu.common.actions'),
