@@ -49,6 +49,7 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\EstablishmentsController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\HealthController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\LaunchReadinessController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\MetricsController;
+use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAccountBanController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAcquisitionFunnelController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminAiConversationController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminDashboardController;
@@ -57,7 +58,6 @@ use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminTrainingCont
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAdminWebhookController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAiMonitoringController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAiSettingsController;
-use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAccountBanController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformAnnouncementController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyDeletionController;
 use App\Modules\Platform\Interfaces\Api\V1\Controllers\PlatformCompanyFeatureController;

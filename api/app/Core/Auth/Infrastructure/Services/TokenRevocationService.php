@@ -64,8 +64,11 @@ final class TokenRevocationService
     public const BAN_KEY_PREFIX = 'auth:banned:';
 
     public const TYPE_EMPLOYEE = 'employee';
+
     public const TYPE_USER = 'user';
+
     public const TYPE_TRAVEL_CUSTOMER = 'travel_customer';
+
     public const TYPE_SUPER_ADMIN = 'super_admin';
 
     public function __construct(
