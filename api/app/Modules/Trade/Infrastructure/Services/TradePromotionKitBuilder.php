@@ -177,7 +177,7 @@ final class TradePromotionKitBuilder
         }
 
         $categories = is_array($profile?->product_categories) ? $profile->product_categories : [];
-        $categories = array_values(array_filter($categories, static fn ($value): bool => is_string($value) && $value !== ''));
+        $categories = array_values(array_filter($categories, static fn ($value): bool => $value !== ''));
 
         // Accroche : construite UNIQUEMENT si le nom existe. Sinon `null` — une
         // accroche sans nom serait une phrase creuse.

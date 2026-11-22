@@ -57,7 +57,7 @@ final class VerifyTradeCounterpartyRequest extends FormRequest
                 'string',
                 'max:2000',
                 Rule::requiredIf(static fn (): bool => in_array(
-                    (string) request()->input('status'),
+                    request()->input('status'),
                     [TradeVerificationStatus::Verified->value, TradeVerificationStatus::Rejected->value],
                     true,
                 )),

@@ -44,7 +44,7 @@ final class TradeCounterpartyResource extends JsonResource
             'phone' => $this->phone,
             'website' => $this->website,
             'roles' => $this->roles ?? [],
-            'verification_status' => $this->verification_status?->value,
+            'verification_status' => $this->verification_status->value,
             'verified_by_employee_id' => $this->verified_by_employee_id,
             'verified_at' => $this->verified_at?->toIso8601String(),
             'verification_note' => $this->verification_note,

@@ -49,11 +49,7 @@ final class TradeSearchService
      *
      * @return array{
      *     query: string,
-     *     groups: array{
-     *         counterparties: list<array<string, mixed>>,
-     *         products: list<array<string, mixed>>,
-     *         deals: list<array<string, mixed>>
-     *     },
+     *     groups: array<string, array<int, array<string, mixed>>>,
      *     total: int
      * }
      */
@@ -78,8 +74,9 @@ final class TradeSearchService
                 'roles' => $counterparty->roles ?? [],
                 'country' => $counterparty->country,
                 'city' => $counterparty->city,
-                'verification_status' => $counterparty->verification_status?->value,
+                'verification_status' => $counterparty->verification_status->value,
             ])
+            ->values()
             ->all();
 
         $products = TradeProduct::query()
@@ -97,6 +94,7 @@ final class TradeSearchService
                 'origin_country' => $product->origin_country,
                 'status' => $product->status,
             ])
+            ->values()
             ->all();
 
         $deals = TradeDeal::query()
@@ -111,9 +109,10 @@ final class TradeSearchService
                 'id' => $deal->id,
                 'reference' => $deal->reference,
                 'title' => $deal->title,
-                'direction' => $deal->direction?->value,
-                'status' => $deal->status?->value,
+                'direction' => $deal->direction->value,
+                'status' => $deal->status->value,
             ])
+            ->values()
             ->all();
 
         return [
