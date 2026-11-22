@@ -25,7 +25,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Banknote, Download, HandCoins, Layers, Plus, Receipt, Undo2 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
-import { getPreferredLocale } from '@/lib/i18n';
+import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 import { ModulePageShell } from '@/components/module-page-shell';
 import {
@@ -44,7 +44,22 @@ import {
 type Row = Record<string, unknown>;
 type Option = { value: string; label: string };
 
-const PAYMENT_METHODS = ['cash', 'transfer', 'card', 'mobile_money', 'other'];
+const PAYMENT_METHODS = ['cash', 'transfer', 'card', 'mobile_money', 'other'] as const;
+
+/**
+ * Libellé humain d'un moyen de paiement.
+ *
+ * Le sélecteur affichait `cash`, `transfer`, `mobile_money` — des codes
+ * techniques en minuscules, illisibles pour un caissier. Une seule table de
+ * correspondance, partagée par la page de facturation et la page de lot.
+ */
+function methodLabel(locale: AppLocale, method: string): string {
+  const key = `edu.feeCharges.method${method
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('')}`;
+  return t(locale, key) || method;
+}
 
 const CHARGE_STATUSES = ['pending', 'partial', 'paid', 'waived', 'cancelled'];
 
@@ -425,7 +440,9 @@ export default function FeeChargesPage() {
       {
         key: 'method',
         header: t(locale, 'edu.feeCharges.method'),
-        render: (row) => <span className="text-slate-600">{String(row.method ?? '—')}</span>,
+        render: (row) => (
+          <span className="text-slate-600">{methodLabel(locale, String(row.method ?? ''))}</span>
+        ),
       },
       {
         key: 'reference',
@@ -664,7 +681,7 @@ export default function FeeChargesPage() {
             >
               {PAYMENT_METHODS.map((method) => (
                 <option key={method} value={method}>
-                  {method}
+                  {methodLabel(locale, method)}
                 </option>
               ))}
             </SelectInput>

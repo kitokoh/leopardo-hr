@@ -5872,7 +5872,13 @@
       "batchDuplicate": "Cette facturation est déjà présente dans le lot.",
       "batchTooLarge": "Un lot ne peut pas dépasser 200 lignes.",
       "exportCsv": "Exporter en CSV",
-      "exportError": "L'export a échoué. Réessayez."
+      "exportError": "L'export a échoué. Réessayez.",
+      "batchSectionTitle": "Contexte du lot",
+      "methodCash": "Espèces",
+      "methodTransfer": "Virement",
+      "methodCard": "Carte bancaire",
+      "methodMobileMoney": "Paiement mobile",
+      "methodOther": "Autre"
     },
     "fees": {
       "title": "Frais scolaires",

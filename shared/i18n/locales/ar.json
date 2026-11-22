@@ -5339,7 +5339,13 @@
       "batchDuplicate": "هذه الفاتورة موجودة مسبقاً في الدفعة.",
       "batchTooLarge": "لا يمكن أن تتجاوز الدفعة 200 سطر.",
       "exportCsv": "تصدير بصيغة CSV",
-      "exportError": "فشل التصدير. أعد المحاولة."
+      "exportError": "فشل التصدير. أعد المحاولة.",
+      "batchSectionTitle": "بيانات الدفعة",
+      "methodCash": "نقداً",
+      "methodTransfer": "تحويل بنكي",
+      "methodCard": "بطاقة بنكية",
+      "methodMobileMoney": "دفع عبر الهاتف",
+      "methodOther": "أخرى"
     },
     "fees": {
       "title": "الرسوم الدراسية",

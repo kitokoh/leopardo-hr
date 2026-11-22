@@ -5872,7 +5872,13 @@
       "batchDuplicate": "Bu fatura partide zaten var.",
       "batchTooLarge": "Bir parti 200 satırı aşamaz.",
       "exportCsv": "CSV olarak dışa aktar",
-      "exportError": "Dışa aktarma başarısız oldu. Tekrar deneyin."
+      "exportError": "Dışa aktarma başarısız oldu. Tekrar deneyin.",
+      "batchSectionTitle": "Parti bilgileri",
+      "methodCash": "Nakit",
+      "methodTransfer": "Banka havalesi",
+      "methodCard": "Kredi kartı",
+      "methodMobileMoney": "Mobil ödeme",
+      "methodOther": "Diğer"
     },
     "fees": {
       "title": "Okul ücretleri",

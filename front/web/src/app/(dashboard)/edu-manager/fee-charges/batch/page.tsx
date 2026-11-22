@@ -23,7 +23,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle2, Layers, Plus, Trash2 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
-import { getPreferredLocale } from '@/lib/i18n';
+import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
 import { ModulePageShell } from '@/components/module-page-shell';
 import {
@@ -37,7 +37,16 @@ import {
 
 type Row = Record<string, unknown>;
 
-const PAYMENT_METHODS = ['cash', 'transfer', 'card', 'mobile_money', 'other'];
+const PAYMENT_METHODS = ['cash', 'transfer', 'card', 'mobile_money', 'other'] as const;
+
+/** Libellé humain d'un moyen de paiement (cf. page de facturation). */
+function methodLabel(locale: AppLocale, method: string): string {
+  const key = `edu.feeCharges.method${method
+    .split('_')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('')}`;
+  return t(locale, key) || method;
+}
 
 type Line = {
   key: string;
@@ -281,7 +290,7 @@ export default function FeeBatchPage() {
 
         <Card>
           <SectionTitle
-            title={t(locale, 'edu.feeCharges.collectTitle')}
+            title={t(locale, 'edu.feeCharges.batchSectionTitle')}
             subtitle={t(locale, 'edu.feeCharges.batchSubtitle')}
           />
 
@@ -290,7 +299,7 @@ export default function FeeBatchPage() {
               <SelectInput value={method} onChange={(event) => setMethod(event.target.value)}>
                 {PAYMENT_METHODS.map((option) => (
                   <option key={option} value={option}>
-                    {option}
+                    {methodLabel(locale, option)}
                   </option>
                 ))}
               </SelectInput>
