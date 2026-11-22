@@ -1364,7 +1364,6 @@
             <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
             <file>tests/Feature/Trade/TradeOrderApiTest.php</file>
             <file>tests/Feature/Trade/TradeLifecycleTransitionApiTest.php</file>
-            <file>tests/Feature/Trade/TradePublicInquiryApiTest.php</file>
             <file>tests/Feature/Trade/TradeDocumentApiTest.php</file>
             <file>tests/Feature/Trade/TradeQuoteApiTest.php</file>
             <file>tests/Feature/Trade/TradeRfqApiTest.php</file>
@@ -2751,7 +2750,6 @@
             <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
             <file>tests/Feature/Trade/TradeOrderApiTest.php</file>
             <file>tests/Feature/Trade/TradeLifecycleTransitionApiTest.php</file>
-            <file>tests/Feature/Trade/TradePublicInquiryApiTest.php</file>
             <file>tests/Feature/Trade/TradeDocumentApiTest.php</file>
             <file>tests/Feature/Trade/TradeQuoteApiTest.php</file>
             <file>tests/Feature/Trade/TradeRfqApiTest.php</file>
