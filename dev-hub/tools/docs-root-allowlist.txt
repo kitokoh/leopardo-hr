@@ -1,0 +1,31 @@
+# docs-root-allowlist.txt — fichiers autorisés à la racine de `docs/` (issue #9772)
+#
+# Règle : docs/README.md §1 — « Fichiers en vrac INTERDITS au premier niveau de
+# docs/ : tout fichier vit dans un dossier-famille. Seules exceptions à la
+# racine : README.md et QUICKSTART.md ».
+#
+# Ce fichier est un RATCHET, pas une permission :
+#   - un fichier NON listé à la racine de docs/ fait échouer la garde ;
+#   - un fichier DÉPLACÉ dans un dossier-famille doit être RETIRÉ d'ici dans le
+#     même commit (la liste ne doit que rétrécir).
+#
+# Les 12 entrées « historique » ci-dessous sont la dette constatée le 2026-11-22 :
+# elles sont référencées par des gardes, workflows ou documents, donc leur
+# déplacement relève des phases 2-3 du plan de migration (docs/README.md §4) et
+# non d'un correctif de propreté.
+#
+README.md
+QUICKSTART.md
+# --- dette historique (à déplacer par phases, puis à supprimer de cette liste) ---
+ARCHITECTURE_STATUS.md
+AUDIT_LEOPARDO_SUPERAPP_2026-10.md
+CI_CD_SECRETS.md
+CONTRIBUTING_DDD.md
+DEMO_ACCOUNTS.md
+DEMO_KIT_DZ.md
+DEPLOYMENT_PRODUCTION.md
+DEPLOYMENT_STAGING.md
+JOURNAL_RACINE.md
+MISSION_LEOPARDO_AUDIT.md
+MISSION_LEOPARDO_RAPPORT.md
+RGPD_REGISTRE_TRAITEMENTS.md

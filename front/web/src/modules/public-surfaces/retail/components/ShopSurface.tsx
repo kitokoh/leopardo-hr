@@ -79,8 +79,17 @@ export function ShopSurface({
       />
 
       <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.6rem' }}>
-          <h2 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '-0.01em' }}>{shop.name}</h2>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.75rem' }}>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: 'clamp(1.3rem, 3vw, 1.6rem)',
+              letterSpacing: '-0.02em',
+              fontWeight: 800,
+            }}
+          >
+            {shop.name}
+          </h2>
 
           {rating !== null ? (
             <SurfaceBadge identity={identity} tone="accent">
@@ -94,7 +103,16 @@ export function ShopSurface({
         <SurfaceMeta identity={identity}>{catalogLabel}</SurfaceMeta>
 
         {shop.description ? (
-          <p style={{ marginTop: '0.9rem', maxWidth: '46rem' }}>{shop.description}</p>
+          <p
+            style={{
+              marginTop: '0.9rem',
+              maxWidth: '46rem',
+              lineHeight: 1.6,
+              color: identity.palette.muted,
+            }}
+          >
+            {shop.description}
+          </p>
         ) : null}
 
         {shop.categories.length > 0 ? (
@@ -121,9 +139,24 @@ export function ShopSurface({
               <SurfaceGrid min="14rem">
                 {categories.items.map((category) => (
                   <SurfaceCard key={category.name} as="li" identity={identity}>
-                    <strong style={{ fontSize: '0.95rem' }}>{category.name}</strong>
+                    <strong
+                      style={{
+                        fontSize: '0.95rem',
+                        letterSpacing: '-0.01em',
+                        display: 'block',
+                      }}
+                    >
+                      {category.name}
+                    </strong>
                     <SurfaceMeta identity={identity}>
-                      {category.productsCount}{' '}
+                      <span
+                        style={{
+                          fontWeight: 600,
+                          color: identity.palette.primary,
+                        }}
+                      >
+                        {category.productsCount}
+                      </span>{' '}
                       {category.productsCount > 1 ? shared.products : shared.product}
                     </SurfaceMeta>
                   </SurfaceCard>

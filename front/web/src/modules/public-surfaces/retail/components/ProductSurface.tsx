@@ -42,20 +42,31 @@ export function ProductSurface({
         <Link
           href="/produits"
           style={{
-            display: 'inline-block',
-            marginBottom: '1.25rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            marginBottom: '1.5rem',
             fontSize: '0.85rem',
             color: identity.palette.muted,
             textDecoration: 'none',
+            transition: 'color 0.15s ease',
           }}
         >
           ← {shared.allShops}
         </Link>
 
         <SurfaceCard identity={identity}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
             <div style={{ flex: '1 1 18rem', minWidth: '14rem' }}>
-              <h1 style={{ margin: 0, fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', lineHeight: 1.2 }}>
+              <h1
+                style={{
+                  margin: 0,
+                  fontSize: 'clamp(1.4rem, 3vw, 1.9rem)',
+                  lineHeight: 1.2,
+                  letterSpacing: '-0.02em',
+                  fontWeight: 800,
+                }}
+              >
                 {product.name}
               </h1>
 
@@ -65,8 +76,15 @@ export function ProductSurface({
               </SurfaceMeta>
 
               {rating !== null ? (
-                <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: identity.palette.muted }}>
-                  {rating} / 5 · {product.ratingCount} {shared.reviews}
+                <p
+                  style={{
+                    margin: '0.6rem 0 0',
+                    fontSize: '0.85rem',
+                    color: identity.palette.accent,
+                    fontWeight: 600,
+                  }}
+                >
+                  ★ {rating} / 5 · {product.ratingCount} {shared.reviews}
                 </p>
               ) : (
                 <p style={{ margin: '0.5rem 0 0', fontSize: '0.85rem', color: identity.palette.muted }}>
@@ -75,7 +93,14 @@ export function ProductSurface({
               )}
 
               {product.description ? (
-                <p style={{ margin: '1rem 0 0', lineHeight: 1.6, fontSize: '0.95rem' }}>
+                <p
+                  style={{
+                    margin: '1.25rem 0 0',
+                    lineHeight: 1.65,
+                    fontSize: '0.95rem',
+                    color: identity.palette.muted,
+                  }}
+                >
                   {product.description}
                 </p>
               ) : null}
@@ -86,11 +111,21 @@ export function ProductSurface({
                 flex: '0 0 16rem',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '0.75rem',
+                gap: '0.85rem',
                 justifyContent: 'flex-start',
+                padding: '1.5rem',
+                borderRadius: '0.75rem',
+                background: `${identity.palette.primary}06`,
+                border: `1px solid ${identity.palette.muted}15`,
               }}
             >
-              <strong style={{ fontSize: '1.6rem' }}>
+              <strong
+                style={{
+                  fontSize: 'clamp(1.4rem, 3vw, 1.8rem)',
+                  letterSpacing: '-0.02em',
+                  fontWeight: 800,
+                }}
+              >
                 {priceLabel ?? shared.priceOnRequest}
               </strong>
 

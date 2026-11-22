@@ -1,7 +1,7 @@
 # Leopardo - Scripts commerciaux
 
 > ✅ **Décision propriétaire TRANCHÉE (2026-10-26, #7982) : transparence assumée.** Ce document
-> reste publié volontairement dans ce dépôt public — voir [`docs/README.md` §3](../README.md).
+> reste publié volontairement dans ce dépôt public — voir [`docs/README.md` §3](../../README.md).
 > Règle inchangée et vérifiée en CI : aucune coordonnée personnelle, aucune ligne
 > nominative non marquée fictive (`dev-hub/tools/check-public-docs-no-pii.sh`).
 

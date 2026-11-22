@@ -1,0 +1,66 @@
+name: Docs Hygiene Guard
+
+# Issue #9772 — la documentation dérivait en silence. Constat du 2026-11-22 :
+#
+#   - `docs/architecture/adr/README.md` portait DEUX identifiants `0028` (dont un
+#     référencé comme « ADR-0028 » par ~15 fichiers de code), une ligne de tableau
+#     tronquée, et 5 ADR présentes sur le disque mais non enregistrées (#9770) ;
+#   - la racine du dépôt avait accumulé 3 fichiers parasites alors que
+#     `dev-hub/tools/check-root-hygiene.sh` les refusait — mais cette garde
+#     n'était câblée dans AUCUN workflow, donc rien ne l'a signalé (#9771) ;
+#   - `docs/decisions/` et `docs/DECISIONS/` coexistaient (collision de casse).
+#
+# Cette garde rend la documentation **vérifiable** : registre ADR cohérent dans
+# les deux sens, pas de collision de casse, pas de fichier en vrac non déclaré à
+# la racine de `docs/`, racine du dépôt propre. Elle exécute son auto-test
+# (rouge→vert) AVANT de rendre un verdict, pour qu'une garde cassée ne puisse pas
+# passer pour un vert.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'dev-hub/tools/check-docs-hygiene.sh'
+      - 'dev-hub/tools/docs-root-allowlist.txt'
+      - 'dev-hub/tools/check-root-hygiene.sh'
+      - 'dev-hub/tools/tests/check-docs-hygiene.test.sh'
+      - '.github/workflows/docs-hygiene-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - 'dev-hub/tools/check-docs-hygiene.sh'
+      - 'dev-hub/tools/docs-root-allowlist.txt'
+      - 'dev-hub/tools/tests/check-docs-hygiene.test.sh'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: docs-hygiene-guard-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: Proprete documentaire (ADR + docs/) — issue #9772
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 1
+
+      - name: Auto-test de la garde (rouge -> vert)
+        shell: bash
+        run: bash dev-hub/tools/tests/check-docs-hygiene.test.sh
+
+      - name: Proprete documentaire (registre ADR, docs/, racine du depot)
+        shell: bash
+        run: bash dev-hub/tools/check-docs-hygiene.sh
