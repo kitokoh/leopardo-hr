@@ -45,24 +45,31 @@ export type MobileChannelState = 'ok' | 'failed' | 'unknown';
  * concernées (critère d'acceptation #8628).
  */
 export const MOBILE_DISTRIBUTION_STATUS: Record<string, MobileChannelState> = {
-  // Observation du run `42762379168` (2026-11-10T05:28) : les quatre canaux
-  // `Distribute <app> to Firebase` sont EN ÉCHEC. La table déclarait encore
-  // « tout vert » sur la base du run `40677191254` (2026-10-28) — c'est cette
-  // déclaration qui était devenue fausse, pas le canal.
+  // Observation du run `44523068667` (2026-11-19T12:21) : `employee`,
+  // `manager`, `platform_admin` et `hr` sont VERTS ; seul `accounting` est en
+  // échec, à l'étape « Resolve Firebase distribution readiness » — le
+  // `google-services.json` restauré ne déclare aucun client Android pour
+  // `com.leopardo.accounting` (#9492). La table déclarait encore les quatre
+  // canaux verts comme `failed` sur la base du run `42762379168`
+  // (2026-11-10) : c'est cette déclaration qui était devenue fausse, pas les
+  // canaux — la garde `mobile-distribution-status-guard.yml` le signalait.
   //
-  // Conséquence assumée : `isDistributionHealthy()` rend `false` pour ces
-  // quatre apps, donc le catalogue les requalifie en `not_distributed` et
-  // n'affiche plus de bouton d'installation vers un build inexistant
-  // (règle d'honnêteté #6697). C'est exactement le comportement voulu par
-  // #8628 : une fiche ne doit jamais annoncer une app non distribuable.
-  employee: 'failed',
-  manager: 'failed',
-  'platform-admin': 'failed',
-  'hr-mobile': 'failed',
+  // Conséquence assumée : `isDistributionHealthy()` rend `false` pour
+  // `accounting-mobile` uniquement, donc le catalogue le requalifie en
+  // `not_distributed` et n'affiche plus de bouton d'installation vers un
+  // build inexistant (règle d'honnêteté #6697). Les quatre autres canaux
+  // étant réellement verts, leurs fiches peuvent de nouveau annoncer l'app.
+  //
+  // `unknown` et non `failed` : le canal n'est pas cassé, il n'EXISTE pas
+  // encore — l'app Android n'est pas enregistrée dans le projet Firebase
+  // (#9492). Le workflow sort en skip explicite pour ce canal, donc un
+  // `failed` mentirait sur la nature du problème. `unknown` reste
+  // fail-closed : non publiable, exactement comme `failed`.
+  'accounting-mobile': 'unknown',
 };
 
 /** Référence du run CI qui a produit l'état ci-dessus (traçabilité). */
-export const MOBILE_DISTRIBUTION_STATUS_SOURCE = 'mobile-distribute-main.yml@42762379168';
+export const MOBILE_DISTRIBUTION_STATUS_SOURCE = 'mobile-distribute-main.yml@44523068667';
 
 /**
  * Le canal de distribution de cette application est-il en échec connu ?

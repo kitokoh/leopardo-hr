@@ -21,31 +21,54 @@ export function SurfaceHero({
   return (
     <header
       style={{
-        padding: 'clamp(2rem, 6vw, 4.5rem) 1.25rem',
-        borderBottom: `1px solid ${identity.palette.muted}33`,
+        position: 'relative',
+        overflow: 'hidden',
+        padding: 'clamp(2.5rem, 6vw, 4.75rem) 1.25rem',
+        borderBottom: `1px solid ${identity.palette.muted}25`,
+        background: `radial-gradient(75% 75% at 50% 0%, ${identity.palette.primary}12 0%, ${identity.palette.surface} 100%)`,
       }}
     >
-      <div style={{ maxWidth: '72rem', margin: '0 auto' }}>
+      <div style={{ maxWidth: '72rem', margin: '0 auto', position: 'relative' }}>
         {eyebrow ? (
-          <p
+          <div
             style={{
-              margin: 0,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.45rem',
+              padding: '0.3rem 0.8rem',
+              borderRadius: '9999px',
+              border: `1px solid ${identity.palette.muted}33`,
+              background: '#FFFFFF',
               fontSize: '0.75rem',
-              letterSpacing: '0.14em',
+              fontWeight: 700,
+              letterSpacing: '0.12em',
               textTransform: 'uppercase',
-              color: identity.palette.muted,
+              color: identity.palette.onSurface,
+              boxShadow: '0 1px 2px rgba(15, 23, 42, 0.04)',
             }}
           >
-            {eyebrow}
-          </p>
+            <span
+              style={{
+                width: '0.45rem',
+                height: '0.45rem',
+                borderRadius: '9999px',
+                background: identity.palette.accent,
+                display: 'inline-block',
+              }}
+              aria-hidden="true"
+            />
+            <span>{eyebrow}</span>
+          </div>
         ) : null}
 
         <h1
           style={{
-            margin: '0.5rem 0 0',
-            fontSize: 'clamp(1.9rem, 5vw, 3.1rem)',
+            margin: '0.75rem 0 0',
+            fontSize: 'clamp(2rem, 5.2vw, 3.25rem)',
+            fontWeight: 900,
             lineHeight: 1.1,
-            letterSpacing: '-0.02em',
+            letterSpacing: '-0.025em',
+            color: identity.palette.onSurface,
           }}
         >
           {identity.displayName}
@@ -53,9 +76,10 @@ export function SurfaceHero({
 
         <p
           style={{
-            margin: '0.9rem 0 0',
+            margin: '0.85rem 0 0',
             maxWidth: '46rem',
             fontSize: 'clamp(1rem, 2vw, 1.15rem)',
+            lineHeight: 1.55,
             color: identity.palette.muted,
           }}
         >

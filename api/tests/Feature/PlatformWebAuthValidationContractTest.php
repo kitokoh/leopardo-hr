@@ -6,6 +6,7 @@ namespace Tests\Feature;
 
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -86,23 +87,37 @@ class PlatformWebAuthValidationContractTest extends TestCase
     public function test_validation_failure_does_not_log_an_unexpected_error(): void
     {
         // Le garde #6974 loggue sur le canal 'structured' quand il absorbe une
-        // exception. Une saisie invalide ne doit PAS produire cette trace : on
-        // lit le fichier de log du canal et on verifie qu'aucune nouvelle
-        // entree n'est apparue pendant l'appel.
-        $logPath = storage_path('logs/structured-'.now()->format('Y-m-d').'.log');
-        $before = is_file($logPath) ? (int) filesize($logPath) : 0;
+        // exception. Une saisie invalide ne doit PAS produire cette trace.
+        //
+        // #9794 — `structured` est un canal `daily` : UN fichier par jour,
+        // partage par tous les processus de la suite (TenantContextGuard,
+        // TenantEventDispatcher, CrmConsentGate...). Un differentiel de
+        // `filesize()` mesurait donc aussi ce que les autres workers paratest
+        // avaient ecrit entre les deux lectures, d'ou un echec sans rapport
+        // avec l'endpoint. On isole le canal dans un fichier propre au test et
+        // on verifie l'EVENEMENT, pas un nombre d'octets.
+        $logPath = storage_path('logs/structured-test-'.Str::uuid().'.log');
+
+        config([
+            'logging.channels.structured.driver' => 'single',
+            'logging.channels.structured.path' => $logPath,
+        ]);
+
+        // Le canal a pu etre resolu avant la surcharge : on jette l'instance
+        // pour que le `Log::channel('structured')` du controleur relise la
+        // configuration.
+        app('log')->forgetChannel('structured');
 
         $this->post('/platform/login', array_merge($this->csrf(), [
             'email' => '',
             'password' => '',
         ]));
 
-        clearstatcache(true, $logPath);
-        $after = is_file($logPath) ? (int) filesize($logPath) : 0;
+        $entries = is_file($logPath) ? (string) file_get_contents($logPath) : '';
 
-        $this->assertSame(
-            $before,
-            $after,
+        $this->assertStringNotContainsString(
+            'platform.login.unexpected_error.web',
+            $entries,
             'Une saisie invalide a produit une entree dans le canal structured : '
             .'la ValidationException est de nouveau absorbee par le catch (Throwable).',
         );

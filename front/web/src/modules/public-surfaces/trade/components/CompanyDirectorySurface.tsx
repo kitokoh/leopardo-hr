@@ -98,7 +98,7 @@ export function CompanyDirectorySurface({
               padding: 0,
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.75rem',
+              gap: '0.85rem',
             }}
           >
             {result.cards.map(({ entry, categories }) => (
@@ -110,17 +110,33 @@ export function CompanyDirectorySurface({
                       flexWrap: 'wrap',
                       alignItems: 'baseline',
                       justifyContent: 'space-between',
-                      gap: '0.5rem',
+                      gap: '0.6rem',
                     }}
                   >
-                    <strong style={{ fontSize: '1.05rem', lineHeight: 1.25 }}>{entry.name}</strong>
+                    <strong
+                      style={{
+                        fontSize: '1.08rem',
+                        lineHeight: 1.25,
+                        letterSpacing: '-0.01em',
+                        fontWeight: 700,
+                      }}
+                    >
+                      {entry.name}
+                    </strong>
                     {entry.city ? (
                       <SurfaceMeta identity={identity}>{entry.city}</SurfaceMeta>
                     ) : null}
                   </div>
 
                   {categories.length > 0 ? (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        gap: '0.4rem',
+                        marginTop: '0.5rem',
+                      }}
+                    >
                       {categories.map((category) => (
                         <SurfaceBadge key={category} identity={identity}>
                           {category}
@@ -130,7 +146,18 @@ export function CompanyDirectorySurface({
                   ) : null}
 
                   {entry.description ? (
-                    <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.5 }}>
+                    <p
+                      style={{
+                        margin: '0.5rem 0 0',
+                        fontSize: '0.9rem',
+                        lineHeight: 1.55,
+                        color: identity.palette.muted,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
                       {entry.description}
                     </p>
                   ) : null}

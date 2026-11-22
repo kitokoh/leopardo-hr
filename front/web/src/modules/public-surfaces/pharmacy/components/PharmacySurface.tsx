@@ -99,14 +99,24 @@ export function PharmacySurface({
                 >
                   {/* La garde passe AVANT le nom : c'est le critère de choix. */}
                   {pharmacy.onDuty ? (
-                    <div>
+                    <div style={{ marginBottom: '0.4rem' }}>
                       <SurfaceBadge identity={identity} tone="accent">
                         {duty ?? shared.onDuty}
                       </SurfaceBadge>
                     </div>
                   ) : null}
 
-                  <strong style={{ fontSize: '1.05rem', lineHeight: 1.25 }}>{pharmacy.name}</strong>
+                  <strong
+                    style={{
+                      fontSize: '1.08rem',
+                      lineHeight: 1.25,
+                      letterSpacing: '-0.01em',
+                      fontWeight: 700,
+                      display: 'block',
+                    }}
+                  >
+                    {pharmacy.name}
+                  </strong>
 
                   <SurfaceMeta identity={identity}>
                     {[pharmacy.city, pharmacy.onDuty ? null : duty].filter(Boolean).join(' · ') ||
@@ -114,7 +124,18 @@ export function PharmacySurface({
                   </SurfaceMeta>
 
                   {pharmacy.description ? (
-                    <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.45 }}>
+                    <p
+                      style={{
+                        margin: '0.35rem 0 0',
+                        fontSize: '0.875rem',
+                        lineHeight: 1.5,
+                        color: identity.palette.muted,
+                        display: '-webkit-box',
+                        WebkitLineClamp: 2,
+                        WebkitBoxOrient: 'vertical',
+                        overflow: 'hidden',
+                      }}
+                    >
                       {pharmacy.description}
                     </p>
                   ) : null}
