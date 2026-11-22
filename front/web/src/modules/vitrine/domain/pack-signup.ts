@@ -77,3 +77,40 @@ export function packSignupHref(pack: PackSignupSlug, currentSearch = ''): string
   const query = params.toString();
   return query ? `/business/signup?${query}` : '/business/signup';
 }
+
+/**
+ * #9788 — secteur de l'entretien de préparation associé à un pack (miroir
+ * strict de `PACK_SECTORS` côté vitrine et de
+ * `SetupInterviewPlanner::QUESTIONS['sector']` côté serveur).
+ */
+export const PACK_SIGNUP_SECTORS: Record<PackSignupSlug, string> = {
+  restaurant: 'restaurant',
+  'station-service': 'fuel_station',
+  ecole: 'education',
+  'agence-de-voyage': 'travel',
+  cagnottes: 'association',
+  vtc: 'services',
+  trade: 'commerce',
+  retail: 'commerce',
+  hospitality: 'hospitality',
+  pharmacy: 'pharmacy',
+};
+
+/**
+ * #9788 — CTA des pages pack : `/business/signup?pack=<slug>&sector=<secteur>`.
+ *
+ * Le `?pack=` décide de la verticale provisionnée, le `?sector=` évite que
+ * l'entretien de préparation repose la question du métier au visiteur qui vient
+ * de le déclarer (cf. `tenantSignupHref`, qui applique la même règle).
+ *
+ * Distinct de `packSignupHref` (sans secteur) : les appelants historiques
+ * gardent leur comportement, et la query courante (`lang`, `utm_*`) est
+ * préservée.
+ */
+export function packSignupHrefWithSector(pack: PackSignupSlug, currentSearch = ''): string {
+  const params = new URLSearchParams(currentSearch);
+  params.set('pack', pack);
+  params.set('sector', PACK_SIGNUP_SECTORS[pack]);
+  const query = params.toString();
+  return query ? `/business/signup?${query}` : '/business/signup';
+}
