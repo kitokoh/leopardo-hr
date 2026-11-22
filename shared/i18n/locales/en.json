@@ -7815,8 +7815,15 @@
       "subtitle": "Issued quotes, versions, statuses and customer counterparties."
     },
     "orders": {
-      "title": "Orders & shipments",
-      "subtitle": "Purchase and sales orders, shipments and transitions."
+      "title": "Orders",
+      "subtitle": "Orders born from an accepted quote. Move them along: preparing, shipped, delivered.",
+      "empty": "No orders yet. An order is created when you accept a quote (your own to sell, a supplier's to buy).",
+      "direction": "Flow",
+      "purchase": "Purchase",
+      "sale": "Sale",
+      "total": "Amount",
+      "loadError": "Could not load orders. This tab does not reflect the real state.",
+      "cancel_reason_required": "Give the cancellation reason: without it the order is unexplainable later."
     },
     "transport": {
       "title": "Transport",
@@ -7864,6 +7871,20 @@
       "createdAt": "Created on",
       "destination": "Destination",
       "incoterm": "Incoterm"
+    },
+    "counterparties": {
+      "title": "Counterparties",
+      "subtitle": "Customers, suppliers, carriers and forwarders you trade with. Required before you can send a request for quote.",
+      "empty": "No counterparties yet. Add your contacts before sending a request for quote.",
+      "name": "Name",
+      "roles": "Roles",
+      "country": "Country",
+      "verification": "Verification",
+      "verifiedByTeam": "Verified by your team",
+      "notVerified": "Not verified",
+      "loadError": "Could not load the directory. This tab does not reflect the real state.",
+      "roles_required": "Declare at least one role: you cannot buy from or sell to someone without knowing which way it goes.",
+      "verification_not_self_assertable": "Verification is done by a member of your team and cannot be declared here."
     }
   },
   "vtc": {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Globe2, Package, RefreshCw, ShoppingCart, Store, Truck } from 'lucide-react';
+import { AlertTriangle, Globe2, Handshake, Package, RefreshCw, ShoppingCart, Store, Truck, ClipboardList } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
@@ -31,7 +31,41 @@ import { Button } from '@/components/ui/Button';
  * INDISPONIBLE. Aucune donnée n'est simulée pour combler un adaptateur absent.
  */
 
-type TradeTab = 'overview' | 'sourcing' | 'sales' | 'catalog' | 'costs';
+type TradeTab = 'overview' | 'sourcing' | 'sales' | 'catalog' | 'orders' | 'counterparties' | 'costs';
+
+/**
+ * Commande B2B (#9779).
+ *
+ * `direction` distingue ce que l'entreprise ACHETE (`purchase`) de ce qu'elle
+ * VEND (`sale`) : meme objet, deux flux — c'est la meme entreprise.
+ *
+ * `total_minor` vient de l'offre acceptee, jamais d'une saisie : le montant
+ * engage est celui que le serveur avait fige.
+ */
+type TradeOrderRow = {
+  id: number | string;
+  reference?: string | null;
+  direction?: 'purchase' | 'sale' | string;
+  status?: string | null;
+  currency?: string | null;
+  incoterm?: string | null;
+  total_minor?: number | null;
+};
+
+/**
+ * Contrepartie B2B (#9779) — annuaire clients / fournisseurs / transporteurs.
+ *
+ * `verification_status` est un etat INTERNE : `verified` signifie « verifie par
+ * un membre de l'equipe », jamais « verifie automatiquement » — aucun service
+ * de verification d'entreprise n'est souscrit.
+ */
+type TradeCounterpartyRow = {
+  id: number | string;
+  name?: string | null;
+  country?: string | null;
+  roles?: string[] | null;
+  verification_status?: string | null;
+};
 
 /**
  * Produit du catalogue B2B (#9767).
@@ -103,6 +137,11 @@ const TABS: { key: TradeTab; labelKey: string; icon: typeof Globe2 }[] = [
   // Le catalogue est l'outil du VENDEUR : sans lui, il ne peut pas alimenter
   // les lignes de ses offres (`trade_product_id` restait vide).
   { key: 'catalog', labelKey: 'trade.catalog.title', icon: Package },
+  // Les commandes et l'annuaire sont les deux outils qui manquaient au
+  // "GERER" : sans eux, une offre acceptee ne produisait rien de visible et
+  // aucune RFQ ne pouvait etre diffusee (il faut une contrepartie).
+  { key: 'orders', labelKey: 'trade.orders.title', icon: ClipboardList },
+  { key: 'counterparties', labelKey: 'trade.counterparties.title', icon: Handshake },
   { key: 'costs', labelKey: 'trade.costs.title', icon: Truck },
 ];
 
@@ -120,6 +159,12 @@ export default function TradeDashboardPage() {
   const [integrations, setIntegrations] = useState<TradeIntegration[]>([]);
   const [degraded, setDegraded] = useState(false);
 
+  // ── Commandes & contreparties (#9779) ──────────────────────────────────
+  const [orders, setOrders] = useState<TradeOrderRow[]>([]);
+  const [counterparties, setCounterparties] = useState<TradeCounterpartyRow[]>([]);
+  const [counterpartyError, setCounterpartyError] = useState<string | null>(null);
+  const [orderError, setOrderError] = useState<string | null>(null);
+
   // ── Catalogue produits (#9767) ───────────────────────────────────────────
   const [products, setProducts] = useState<TradeProduct[]>([]);
   const [draft, setDraft] = useState<ProductDraft>(EMPTY_DRAFT);
@@ -136,12 +181,16 @@ export default function TradeDashboardPage() {
       // Chaque appel est indépendant : un module partiellement déployé ne doit
       // pas vider tout l'écran. On tolère l'absence d'une source (404/403) et
       // on affiche « aucune donnée » plutôt qu'une erreur globale.
-      const [rfqRes, quoteRes, costRes, metaRes, productRes] = await Promise.allSettled([
+      const [rfqRes, quoteRes, costRes, metaRes, productRes, orderRes, counterpartyRes] = await Promise.allSettled([
         apiFetch('/trade/rfqs'),
         apiFetch('/trade/quotes'),
         apiFetch('/trade/cost-estimates'),
         apiFetch('/trade/meta/integrations'),
         apiFetch('/trade/products'),
+        // #9779 : deux sources de plus, elles aussi INDEPENDANTES — un 403 sur
+        // l'une ne doit pas vider les autres onglets.
+        apiFetch('/trade/orders'),
+        apiFetch('/trade/counterparties'),
       ]);
 
       const firstRejection = [rfqRes, quoteRes, costRes, metaRes].find(
@@ -169,6 +218,18 @@ export default function TradeDashboardPage() {
       setRfqs(await readList(rfqRes));
       setQuotes(await readList(quoteRes));
       setCostEstimates(await readList(costRes));
+      setOrders((await readList(orderRes)) as unknown as TradeOrderRow[]);
+      setCounterparties((await readList(counterpartyRes)) as unknown as TradeCounterpartyRow[]);
+
+      // #9779 — une erreur PROPRE a ces deux sources est affichee dans son
+      // onglet : l'ecran ne doit pas laisser croire que le vendeur n'a aucune
+      // contrepartie alors que c'est la lecture qui a echoue.
+      if (orderRes.status === 'rejected') {
+        setOrderError(t(locale, 'trade.orders.loadError'));
+      }
+      if (counterpartyRes.status === 'rejected') {
+        setCounterpartyError(t(locale, 'trade.counterparties.loadError'));
+      }
 
       // Le catalogue est une source INDÉPENDANTE : un 403/404 sur les autres
       // listes ne doit pas vider l'onglet Catalogue, et inversement.
@@ -502,6 +563,127 @@ export default function TradeDashboardPage() {
               </h2>
               <p className="mt-1 text-xs text-slate-500">{t(locale, 'trade.sales.subtitle')}</p>
               <div className="mt-3">{renderTable(quotes, 'trade-quotes-empty')}</div>
+            </div>
+          ) : null}
+
+          {tab === 'orders' ? (
+            <div className="rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-slate-200">
+              <h2 className="text-sm font-semibold text-slate-900">
+                {t(locale, 'trade.orders.title')}
+              </h2>
+              <p className="mt-1 text-xs text-slate-500">{t(locale, 'trade.orders.subtitle')}</p>
+
+              {orderError ? (
+                <p className="mt-3 rounded-xl bg-rose-50 px-4 py-2 text-xs text-rose-700">
+                  {orderError}
+                </p>
+              ) : null}
+
+              {!orders.length ? (
+                <p className="px-1 py-6 text-sm text-slate-500">
+                  {t(locale, 'trade.orders.empty')}
+                </p>
+              ) : (
+                <div className="mt-3 overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
+                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.reference')}</th>
+                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.orders.direction')}</th>
+                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.status')}</th>
+                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.orders.total')}</th>
+                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.incoterm')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {orders.map((order) => (
+                        <tr key={String(order.id)} className="border-t border-slate-100">
+                          <td className="px-3 py-3 font-mono text-xs text-slate-600">
+                            {order.reference ?? `#${order.id}`}
+                          </td>
+                          <td className="px-3 py-3 text-slate-600">
+                            {order.direction === 'purchase'
+                              ? t(locale, 'trade.orders.purchase')
+                              : order.direction === 'sale'
+                                ? t(locale, 'trade.orders.sale')
+                                : '—'}
+                          </td>
+                          <td className="px-3 py-3 text-slate-600">{order.status ?? '—'}</td>
+                          <td className="px-3 py-3 text-slate-900">
+                            {order.total_minor === null || order.total_minor === undefined
+                              ? '—'
+                              : `${(order.total_minor / 100).toLocaleString(locale)}${order.currency ? ` ${order.currency}` : ''}`}
+                          </td>
+                          <td className="px-3 py-3 text-slate-600">{order.incoterm ?? '—'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          ) : null}
+
+          {tab === 'counterparties' ? (
+            <div className="rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-slate-200">
+              <h2 className="text-sm font-semibold text-slate-900">
+                {t(locale, 'trade.counterparties.title')}
+              </h2>
+              <p className="mt-1 text-xs text-slate-500">
+                {t(locale, 'trade.counterparties.subtitle')}
+              </p>
+
+              {counterpartyError ? (
+                <p className="mt-3 rounded-xl bg-rose-50 px-4 py-2 text-xs text-rose-700">
+                  {counterpartyError}
+                </p>
+              ) : null}
+
+              {!counterparties.length ? (
+                <p className="px-1 py-6 text-sm text-slate-500">
+                  {t(locale, 'trade.counterparties.empty')}
+                </p>
+              ) : (
+                <div className="mt-3 overflow-x-auto">
+                  <table className="min-w-full text-sm">
+                    <thead>
+                      <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
+                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.counterparties.name')}</th>
+                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.counterparties.roles')}</th>
+                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.counterparties.country')}</th>
+                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.counterparties.verification')}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {counterparties.map((party) => (
+                        <tr key={String(party.id)} className="border-t border-slate-100">
+                          <td className="px-3 py-3 text-slate-900">{party.name ?? '—'}</td>
+                          <td className="px-3 py-3 text-slate-600">
+                            {party.roles?.length ? party.roles.join(' · ') : '—'}
+                          </td>
+                          <td className="px-3 py-3 text-slate-600">{party.country ?? '—'}</td>
+                          <td className="px-3 py-3">
+                            {/* `verified` veut dire « verifie par un membre de
+                                l'equipe ». On ne l'affiche jamais comme un
+                                controle automatique : il n'en existe pas. */}
+                            <span
+                              className={
+                                party.verification_status === 'verified'
+                                  ? 'rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700'
+                                  : 'rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600'
+                              }
+                            >
+                              {party.verification_status === 'verified'
+                                ? t(locale, 'trade.counterparties.verifiedByTeam')
+                                : t(locale, 'trade.counterparties.notVerified')}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           ) : null}
 

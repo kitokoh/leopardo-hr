@@ -7815,8 +7815,15 @@
       "subtitle": "Verilen teklifler, sürümler, durumlar ve müşteri karşı tarafları."
     },
     "orders": {
-      "title": "Siparişler ve sevkiyatlar",
-      "subtitle": "Alım ve satım siparişleri, sevkiyatlar ve geçişler."
+      "title": "Siparisler",
+      "subtitle": "Kabul edilen bir tekliften dogan siparisler. Ilerletin: hazirlaniyor, sevk edildi, teslim edildi.",
+      "empty": "Henuz siparis yok. Bir teklifi kabul ettiginizde siparis olusur (satmak icin sizin, almak icin tedarikcinin).",
+      "direction": "Akis",
+      "purchase": "Alim",
+      "sale": "Satis",
+      "total": "Tutar",
+      "loadError": "Siparisler yuklenemedi. Bu sekme gercek durumu yansitmiyor.",
+      "cancel_reason_required": "Iptal gerekcesini belirtin: olmadan siparis sonradan aciklanamaz."
     },
     "transport": {
       "title": "Taşımacılık",
@@ -7864,6 +7871,20 @@
       "createdAt": "Oluşturulma",
       "destination": "Varış",
       "incoterm": "Incoterm"
+    },
+    "counterparties": {
+      "title": "Karsilastrilar",
+      "subtitle": "Alisveris yaptiginiz musteriler, tedarikciler, tasiyicilar ve forwarderlar. Teklif talebi gondermek icin zorunludur.",
+      "empty": "Henuz karsilastrr yok. Teklif talebi gondermeden once kisilerinizi ekleyin.",
+      "name": "Ad",
+      "roles": "Roller",
+      "country": "Ulke",
+      "verification": "Dogrulama",
+      "verifiedByTeam": "Ekibiniz tarafindan dogrulandi",
+      "notVerified": "Dogrulanmadi",
+      "loadError": "Dizin yuklenemedi. Bu sekme gercek durumu yansitmiyor.",
+      "roles_required": "En az bir rol belirtin: yonu bilmeden bir tarafla alim-satim yapilamaz.",
+      "verification_not_self_assertable": "Dogrulama ekibinizden bir uye tarafindan yapilir, burada beyan edilemez."
     }
   },
   "vtc": {

@@ -8737,8 +8737,15 @@
       "subtitle": "Offres émises, versions, statuts et contreparties clients."
     },
     "orders": {
-      "title": "Commandes & expéditions",
-      "subtitle": "Commandes d'achat et de vente, expéditions et transitions."
+      "title": "Commandes",
+      "subtitle": "Commandes nées d'une offre acceptée. Faites-les avancer : préparation, expédition, livraison.",
+      "empty": "Aucune commande. Une commande est créée quand vous acceptez une offre (la vôtre pour vendre, celle d'un fournisseur pour acheter).",
+      "direction": "Flux",
+      "purchase": "Achat",
+      "sale": "Vente",
+      "total": "Montant",
+      "loadError": "Impossible de charger les commandes. L'onglet ne reflète pas l'état réel.",
+      "cancel_reason_required": "Indiquez le motif de l'annulation : sans lui, la commande reste inexplicable plus tard."
     },
     "transport": {
       "title": "Transport",
@@ -8799,6 +8806,20 @@
     },
     "roles": {
       "title": "Rôles métier Trade"
+    },
+    "counterparties": {
+      "title": "Contreparties",
+      "subtitle": "Clients, fournisseurs, transporteurs et transitaires avec qui vous traitez. Indispensables pour diffuser une demande de prix.",
+      "empty": "Aucune contrepartie. Ajoutez vos interlocuteurs avant de diffuser une demande de prix.",
+      "name": "Nom",
+      "roles": "Rôles",
+      "country": "Pays",
+      "verification": "Vérification",
+      "verifiedByTeam": "Vérifié par l'équipe",
+      "notVerified": "Non vérifié",
+      "loadError": "Impossible de charger l'annuaire. L'onglet ne reflète pas l'état réel.",
+      "roles_required": "Déclarez au moins un rôle : on ne peut pas acheter ni vendre à quelqu'un sans savoir dans quel sens.",
+      "verification_not_self_assertable": "La vérification est faite par un membre de votre équipe, elle ne peut pas être déclarée ici."
     }
   },
   "vtc": {
