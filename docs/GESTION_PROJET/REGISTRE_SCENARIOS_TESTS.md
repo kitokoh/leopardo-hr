@@ -45,6 +45,44 @@ Surface : `front/web/src/app/(dashboard)/edu-manager/fee-types/page.tsx` (nouvea
 
 **Contrôle visuel navigateur** — les 4 pages ont été ouvertes dans Chromium (serveur Next.js local, API mockée) et leurs captures lues : `/edu-manager/fee-types` (tableau des 4 types de frais, colonnes Code/Libellé/Montant/Fréquence/Actions), `/edu-manager/guardians` (3 responsables, colonnes Nom/Lien de parenté/Contact/Actions, contact masqué), `/edu-manager/reports` (blocs Présence et Inscriptions remplis) et `/business/ecole` (vitrine pack école). Aucun défaut de rendu. Ce contrôle a révélé un défaut réel corrigé depuis : l'en-tête « Statut » s'affichait au-dessus d'une colonne vide sur les référentiels sans statut (`CrudPage`).
 
+## 2026-11-22 — Trade : contreparties, recherche transverse, kit de promotion (PR #9791, #9780 #9781 #9783)
+
+Surface : `api/routes/modules/trade.php` (`GET|POST /v1/trade/counterparties`, `GET|PUT|DELETE /v1/trade/counterparties/{counterparty}`, `POST /v1/trade/counterparties/{counterparty}/verify`, `GET /v1/trade/search`, `GET /v1/trade/promotion-kit`), `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/TradeCounterpartyController.php` (nouveau), `TradeSearchController.php` (nouveau), `TradePromotionKitController.php` (nouveau), `Requests/StoreTradeCounterpartyRequest.php` / `UpdateTradeCounterpartyRequest.php` / `VerifyTradeCounterpartyRequest.php` (nouveaux), `Resources/TradeCounterpartyResource.php` (nouveau), `api/app/Modules/Trade/Infrastructure/Services/TradeSearchService.php` (nouveau), `TradePromotionKitBuilder.php` (nouveau), `api/lang/{fr,en,tr,ar}/trade.php`, `api/openapi.yaml`.
+
+**Pourquoi c'est un scénario de test** : `trade_counterparties`, son modèle, sa factory et ses enums existaient depuis TRADE-003/#8478, mais **aucune route ne les exposait** — `grep -rn "Counterpart" api/routes/` ne rendait rien. Un tenant activé sur `trade` pouvait émettre des RFQ et des offres **sans jamais pouvoir créer un fournisseur ni un client**, et `trade_deal.trade_counterparty_id` comme `trade_rfq_invitations.trade_counterparty_id` ne pouvaient jamais être renseignés : le cycle commercial s'arrêtait à la première étape. Deux manques s'y ajoutaient — aucun moyen de retrouver une entité en une recherche, et aucun calculateur import-export dans la Toolbox.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `POST /v1/trade/counterparties` avec `roles: []` répond 422 | une contrepartie sans rôle ne peut être ni invitée à une RFQ, ni destinataire d'une offre, ni sollicitée pour un transport |
+| `roles: ["pirate"]` répond 422 (`roles.0`) | un rôle hors registre serait ignoré silencieusement |
+| `roles: ["supplier","supplier","buyer"]` rend `["supplier","buyer"]` | le tableau jsonb n'a pas de contrainte d'unicité |
+| une contrepartie créée a `verification_status: "none"` et `verified_at: null` | on ne doit pas pouvoir s'auto-déclarer vérifié en créant sa fiche |
+| `POST …/verify` avec `status: "verified"` sans `note` répond 422 | une affirmation sans motif n'est pas une vérification, c'est une case cochée |
+| `POST …/verify` trace `verified_by_employee_id` et `verified_at` | `verified` doit dire QUI a vérifié et QUAND — jamais « vérifié automatiquement » |
+| `POST …/verify` avec `status: "pending"` efface la décision précédente | un retour à l'instruction ne doit pas laisser une trace de décision |
+| `POST …/verify` par un rôle `comptable` répond 403 | la vérification est un acte réservé à l'admin de la verticale |
+| la contrepartie d'un AUTRE tenant répond **404**, jamais 403 (GET/PUT/DELETE) | l'API ne doit pas révéler l'existence d'une ressource d'un autre tenant |
+| `DELETE` pose `deleted_at` et la ligne survit | les dossiers, RFQ et offres passés référencent la contrepartie |
+| `q=100%` ne ramène pas tout le répertoire | un `%` saisi était un joker `LIKE` non échappé |
+| `role=supplier` ramène une contrepartie `["manufacturer","supplier"]` | `roles` est un tableau : le filtre doit être une appartenance, pas une égalité |
+| `GET /v1/trade/search?q=a` répond 422 | une recherche d'un caractère ramènerait presque tout le répertoire — c'est un export déguisé |
+| `GET /v1/trade/search?q=acier` rend les 3 groupes peuplés | la recherche ne doit pas oublier silencieusement un référentiel |
+| la recherche ne rend jamais une contrepartie d'un autre tenant | le scope `BelongsToCompany` est la seule barrière — un `where` oublié serait invisible en production |
+| `limit=9999` est ramené au plafond de 50 | un écran de recherche n'est pas un export |
+| `GET /v1/trade/promotion-kit` ne publie rien | la publication reste l'acte séparé `PUT /v1/trade/profile/publication` |
+| le kit rend `publication.url: null` quand `is_public` est faux | un lien qui ne mène nulle part |
+| l'accroche du brouillon vient de `public_name`, jamais de la raison sociale | `legal_name` est documenté comme non publiable |
+| un profil vide ne produit ni accroche ni points forts inventés | le kit ne doit pas combler un champ vide par une phrase générique |
+
+**Défauts révélés par l'écriture des tests**
+
+- Les tests d'isolation cross-tenant étaient **faux** : le hook `creating` de `BelongsToCompany` réécrit `company_id` vers le tenant courant (#7646), donc les « données étrangères » étaient créées dans le bon tenant et le test ne prouvait rien. Ils basculent désormais le contexte tenant (`forgetInstance('current_company')`) avant de créer la donnée étrangère.
+- Le taux de marque à prix de vente nul affichait « 0 % » alors qu'il est **indéfini** : il vaut `null`, affiché « — ».
+
+**Couverture exécutée** — `phpunit` sur PostgreSQL 15 réel : **31 tests, 132 assertions, verts** (12 Unit `TradePromotionKitBuilderTest` + 11 `TradeCounterpartyApiTest` + 8 `TradeSearchApiTest`) ; `phpstan` level 8 sur les 9 fichiers nouveaux → **0 erreur** ; `yaml.safe_load(api/openapi.yaml)` OK ; `check-openapi-route-coverage.py --strict-staleness` → **0 nouvelle route non couverte** ; gardes `search_path` (dette 0), `form-request` (434 figées), `strict_types` (9/9), `accented-messages` (0 nouvelle), `module-route-middleware` → exit 0.
+
+**Non couvert** — `pint` (exige PHP ≥ 8.3, indisponible sur Debian 12 dans le sandbox) ; le rendu navigateur réel des 5 formulaires Toolbox.
+
 ## 2026-11-22 — Quota par plan : une fenêtre réelle de 60 s rendait le test instable (issue #9793)
 
 Surface : `api/tests/Feature/Security/ApiVersionAndPlanRateLimitTest.php` uniquement. Aucun changement de produit, de route ni de contrat d'API.
@@ -207,6 +245,29 @@ Surface : `dev-hub/tools/generate-mcp-openapi-tools.py`, `dev-hub/mcp-server/man
 **Couverture exécutée** — `tsc --noEmit` 0 erreur ; **55 tests vitest verts** (dont 10 d'intégration stdio sur le vrai binaire compilé et 5 sur les outils d'action) ; génération déterministe (md5 identique sur deux runs) ; garde `check-mcp-openapi-tools-drift.sh` verte (278 outils) ; test stdio **vu mordant** (transport non connecté → 10 échecs) ; `php -l` sur les 7 fichiers PHP ; `check-form-request-guard.py` OK (dette figée 437).
 
 **Non couvert** — tests Feature PHP (pas de `vendor/` dans le sandbox) ; transport contre une API Laravel réelle (serveur HTTP local de test).
+## 2026-11-21 — Parcours d'essai découpé par cas d'usage, 5 contrôleurs en FormRequest (PR #9734)
+
+Surface : `api/app/Modules/Billing/Interfaces/Api/V1/Controllers/SelfServiceTrialController.php` (955 → 350 lignes), `api/app/Modules/Billing/Application/Actions/` (`SignupTrial`, `ProvisionTrialSandbox`, `ActivateTrialInRequest`, `GetTrialStatus`, `VerifyTrialAndProvision`), `api/app/Modules/Billing/Application/Services/TrialEmailHash.php`, `api/app/Modules/Billing/Interfaces/Api/V1/Requests/` (`SignupTrialRequest`, `VerifyTrialRequest`, `SetTrialPasswordRequest`), `api/app/Modules/FarmOs/Interfaces/Api/V1/Requests/` (15 classes), `api/app/Modules/Recruitment/Interfaces/Api/V1/Requests/` (7), `api/app/Core/Auth/Interfaces/Api/V1/Requests/` (7), `api/app/Modules/HR/Interfaces/Api/V1/Requests/` (6), `dev-hub/tools/form-request-guard-baseline.txt` (434 → 399). Chemins, méthodes HTTP et permissions inchangés.
+
+**Pourquoi c'est un scénario de test** : un découpage de contrôleur et une conversion de validation peuvent changer un comportement métier sans changer aucune signature de route — donc sans qu'aucun test de contrat ne s'en aperçoive.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| un e-mail déjà manager reçoit la même réponse uniforme, sans second provisioning | l'anti-énumération (#3945) : la réponse révélerait l'existence du compte |
+| un double POST réutilise la ligne `pending` existante | l'idempotence (#3951) : deux tenants créés pour une intention |
+| une course sur l'insert (`23505`) rejoue la ligne gagnante, jamais un 500 | le retry réseau concurrent produirait une erreur serveur |
+| mailer KO → activation directe synchrone, espace réellement créé | #9305/#9323 : le prospect restait provisionné sans aucun moyen d'entrer |
+| `provisioned_at` (string) n'est jamais passé à `->toIso8601String()` | #2903 : 500 sur `/trial/status` |
+| `activation_url` exposé tant que `password_set` est faux | #9306 : espace provisionné mais inaccessible |
+| un échec d'auto-connexion n'empêche pas la réponse 201 | le compte EST créé ; absorber l'erreur évite de perdre le provisioning |
+| `POST /trial/signup` avec `Idempotency-Key` rejoue la première réponse 2xx | un double clic créait deux demandes et deux OTP |
+| `exists('employees','id')` est scopé `company_id` | on pouvait désigner comme formateur l'employé d'un autre tenant |
+| `statuses` accepte `[]` (règle `present`, pas `required`) | #5540 : impossible de retirer tous ses statuts personnels |
+| la cohérence marché↔profil est vérifiée après les règles de forme | #8625 : une intention absurde (« grossiste » sur un marché international) passait |
+
+**Couverture exécutée** — `php -l` sur tous les fichiers ; **PHPStan level 8 → 0 erreur** sur `Billing`, `FarmOs`, `Recruitment`, `HR`, `Core/Auth/Interfaces` ; `pint --test` PASS (426 fichiers) ; 7 gardes d'architecture exit 0 (`layer-purity`, `module-isolation`, `search_path` dette 0, `form-request` 399 figées, `unrouted-controllers`, `tenancy-schema-mode`, `canonical-domains`).
+
+**Non couvert** — suite PHPUnit complète (OOM sandbox) ; PHPStan sur l'arbre entier (OOM) ; endpoints non exercés de bout en bout. Une erreur `trait.unused` sur `ChecksResourceScopedAccess` apparaît quand on inclut `Core/Auth/Domain` : trait **non touché par ce diff**, préexistant.
 
 ## 2026-11-21 — Marketing découpé par ressource, sondes Health extraites, garde FormRequest (PR #9731, #9732)
 

@@ -58,30 +58,57 @@ return new class extends Migration
 
     private function widenPhoneToText(): void
     {
-        // Garde résolue via le search_path (#1613) : `Schema::hasTable()` seul
-        // n'interroge que `current_schema()` et répondrait `false` à tort
-        // lorsque la table vit dans `shared_tenants`.
-        if (! schemaTableExists('crm_contacts')) {
+        // Garde résolue EXPLICITEMENT sur les schémas tenant, pas via le
+        // search_path de la session.
+        //
+        // `schemaTableExists()` suit `current_schemas(false)` : lancée par un
+        // `migrate --path=…` dont la session a un search_path réduit à
+        // `public` (cas du test `CrmMigrationsTest`, et de tout appel artisan
+        // hors requête HTTP), la garde répondait `false` alors que
+        // `crm_contacts` existait bien dans `shared_tenants` — l'ALTER était
+        // silencieusement sauté et `phone` restait `varchar(60)`, donc le cast
+        // `encrypted` continuait de lever `22001` en production.
+        $schema = $this->resolveCrmSchema();
+        if ($schema === null) {
             return;
         }
 
-        if (! Schema::hasColumn('crm_contacts', 'phone')) {
+        if (! Schema::hasColumn($schema.'.crm_contacts', 'phone')) {
             return;
         }
 
         // Idempotence : ne rien faire si la colonne est déjà en `text`.
         $type = DB::selectOne(
-            "SELECT data_type
+            'SELECT data_type
                FROM information_schema.columns
-              WHERE table_name = 'crm_contacts'
-                AND column_name = 'phone'
-                AND table_schema = ANY (current_schemas(false))"
+              WHERE table_schema = ?
+                AND table_name = ?
+                AND column_name = ?',
+            [$schema, 'crm_contacts', 'phone']
         );
 
         if ($type !== null && ($type->data_type ?? null) === 'text') {
             return;
         }
 
-        DB::statement('ALTER TABLE crm_contacts ALTER COLUMN phone TYPE text');
+        DB::statement(sprintf('ALTER TABLE %s.crm_contacts ALTER COLUMN phone TYPE text', $schema));
+    }
+
+    /**
+     * Schéma réel de `crm_contacts`, cherché dans les schémas tenant connus
+     * plutôt que dans le seul `search_path` de la session.
+     */
+    private function resolveCrmSchema(): ?string
+    {
+        $row = DB::selectOne(
+            "SELECT table_schema
+               FROM information_schema.tables
+              WHERE table_name = 'crm_contacts'
+                AND table_schema IN ('shared_tenants', 'public')
+              ORDER BY CASE table_schema WHEN 'shared_tenants' THEN 0 ELSE 1 END
+              LIMIT 1"
+        );
+
+        return $row !== null ? (string) $row->table_schema : null;
     }
 };

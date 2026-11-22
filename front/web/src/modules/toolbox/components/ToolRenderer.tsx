@@ -14,6 +14,11 @@ import { DureeEntreDatesForm } from './tools/DureeEntreDatesForm';
 import { AgeForm } from './tools/AgeForm';
 import { TauxHoraireForm } from './tools/TauxHoraireForm';
 import { CalculDateEcheanceForm } from './tools/CalculDateEcheanceForm';
+import { ImportUnitCostForm } from './tools/ImportUnitCostForm';
+import { CustomsDutyForm } from './tools/CustomsDutyForm';
+import { IncotermSplitForm } from './tools/IncotermSplitForm';
+import { ContainerAllocationForm } from './tools/ContainerAllocationForm';
+import { ExportMarginForm } from './tools/ExportMarginForm';
 import type { ToolCopy, ToolboxCopy, ToolboxLocale } from '../data/copy';
 
 interface ToolRendererProps {
@@ -61,6 +66,17 @@ export function ToolRenderer({ slug, copy, common, locale }: ToolRendererProps) 
       return <TauxHoraireForm copy={copy} common={common} locale={locale} />;
     case 'calcul-date-echeance':
       return <CalculDateEcheanceForm copy={copy} common={common} locale={locale} />;
+    // ── Import-export (#9782) ─────────────────────────────────────────────
+    case 'prix-revient-import':
+      return <ImportUnitCostForm copy={copy} common={common} locale={locale} />;
+    case 'droits-douane':
+      return <CustomsDutyForm copy={copy} common={common} locale={locale} />;
+    case 'incoterm-repartition':
+      return <IncotermSplitForm copy={copy} common={common} locale={locale} />;
+    case 'repartition-conteneur':
+      return <ContainerAllocationForm copy={copy} common={common} locale={locale} />;
+    case 'marge-export':
+      return <ExportMarginForm copy={copy} common={common} locale={locale} />;
     default:
       return null;
   }

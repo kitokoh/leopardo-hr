@@ -6,37 +6,29 @@ namespace App\Core\Auth\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\User;
 use App\Core\Auth\Infrastructure\Services\UserAuthService;
+use App\Core\Auth\Interfaces\Api\V1\Requests\ChangeUserPasswordRequest;
+use App\Core\Auth\Interfaces\Api\V1\Requests\GoogleSignInRequest;
+use App\Core\Auth\Interfaces\Api\V1\Requests\LoginUserRequest;
+use App\Core\Auth\Interfaces\Api\V1\Requests\RegisterUserRequest;
+use App\Core\Auth\Interfaces\Api\V1\Requests\SearchCompaniesRequest;
+use App\Core\Auth\Interfaces\Api\V1\Requests\UpdatePersonalStatusesRequest;
+use App\Core\Auth\Interfaces\Api\V1\Requests\UpdateUserProfileRequest;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
-use App\Shared\Rules\PasswordPolicy;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserAuthController extends Controller
 {
-    /** Valid personal status values (#5540). */
-    private const VALID_STATUSES = [
-        'student',
-        'employee',
-        'entrepreneur',
-        'seeking_employment',
-    ];
-
     public function __construct(
         private readonly UserAuthService $userAuthService,
     ) {}
 
-    public function register(Request $request): JsonResponse
+    public function register(RegisterUserRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:100'],
-            'last_name' => ['required', 'string', 'max:100'],
-            'email' => ['required', 'email', 'unique:users,email'],
-            // #8021 — politique unique #5620 (pas de confirmation à l'inscription).
-            'password' => PasswordPolicy::required(confirmed: false),
-            'phone' => ['nullable', 'string', 'max:20'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         /** @var array{first_name: string, last_name: string, email: string, password: string, phone?: string|null} $validated */
         $result = $this->userAuthService->register(
@@ -54,13 +46,10 @@ class UserAuthController extends Controller
         ], 201);
     }
 
-    public function login(Request $request): JsonResponse
+    public function login(LoginUserRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-            'device_name' => ['nullable', 'string', 'max:255'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         /** @var array{email: string, password: string, device_name?: string|null} $validated */
         $result = $this->userAuthService->login(
@@ -76,12 +65,10 @@ class UserAuthController extends Controller
         ]);
     }
 
-    public function googleSignIn(Request $request): JsonResponse
+    public function googleSignIn(GoogleSignInRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'id_token' => ['required', 'string'],
-            'device_name' => ['nullable', 'string', 'max:255'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         /** @var array{id_token: string, device_name?: string|null} $validated */
         $result = $this->userAuthService->googleSignIn(
@@ -107,14 +94,10 @@ class UserAuthController extends Controller
         ]);
     }
 
-    public function updateProfile(Request $request): JsonResponse
+    public function updateProfile(UpdateUserProfileRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'first_name' => ['sometimes', 'string', 'max:100'],
-            'last_name' => ['sometimes', 'string', 'max:100'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'preferred_language' => ['sometimes', 'string', 'size:2'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         /** @var User $user */
         $user = $request->user('user_api');
@@ -134,12 +117,10 @@ class UserAuthController extends Controller
      * Valeurs acceptées : student, employee, entrepreneur, seeking_employment.
      * Le tableau peut être vide (reset des statuts).
      */
-    public function updatePersonalStatuses(Request $request): JsonResponse
+    public function updatePersonalStatuses(UpdatePersonalStatusesRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'statuses' => ['present', 'array', 'max:4'], // present : autorise le reset à vide (#5540)
-            'statuses.*' => ['string', 'in:'.implode(',', self::VALID_STATUSES)],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         /** @var User $user */
         $user = $request->user('user_api');
@@ -165,11 +146,10 @@ class UserAuthController extends Controller
      * envoyer une demande d'intégration (devenir employé).
      * Ne retourne que les noms et UUID — aucune donnée sensible.
      */
-    public function searchCompanies(Request $request): JsonResponse
+    public function searchCompanies(SearchCompaniesRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'q' => ['required', 'string', 'min:2', 'max:100'],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         /** @var array{q: string} $validated */
         $query = trim($validated['q']);
@@ -193,12 +173,10 @@ class UserAuthController extends Controller
         ]);
     }
 
-    public function changePassword(Request $request): JsonResponse
+    public function changePassword(ChangeUserPasswordRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'current_password' => ['required', 'string'],
-            'new_password' => PasswordPolicy::required(),
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         /** @var User $user */
         $user = $request->user('user_api');
