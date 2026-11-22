@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace App\Modules\CRM\Application\Actions;
 
 use App\Core\Auth\Domain\Models\Employee;
+use App\Modules\CRM\Domain\Enums\CrmAutomationTrigger;
 use App\Modules\CRM\Domain\Enums\CrmOpportunityStage;
 use App\Modules\CRM\Domain\Models\CrmActivity;
 use App\Modules\CRM\Domain\Models\CrmOpportunity;
+use App\Modules\CRM\Infrastructure\Services\AutomationEngine;
 use Illuminate\Database\DatabaseManager;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Deplacement d'une opportunite dans le pipeline — #9780.
@@ -35,31 +38,37 @@ use Illuminate\Database\DatabaseManager;
  * ## Ce qu'elle ne peut pas garantir (et qui doit etre dit)
  *
  * L'evenement d'automatisation `crm.opportunity.stage_changed`
- * (`CrmAutomationTrigger::OPPORTUNITY_STAGE_CHANGED`) est declare dans
- * l'enum mais **aucun emetteur n'existe** dans ce module — son docblock dit
- * « emis par le socle V0 une fois merge ». Cette action ne le simule pas :
- * brancher un faux emetteur donnerait l'illusion que les automatisations se
- * declenchent. Un `opened`/`closed` supplementaire sans consommateur ne
- * servirait a rien ; c'est un travail d'integration, pas une ligne ici.
+ * (`CrmAutomationTrigger::OPPORTUNITY_STAGE_CHANGED`) est desormais EMIS
+ * (cf. `emitStageChanged()`), mais l'emission est **best-effort** : une
+ * automatisation qui echoue ne doit pas annuler un deplacement d'etape deja
+ * commite. Le moteur lui-meme est idempotent (`run_key`), et la cle porte
+ * l'etape cible pour qu'une affaire qui avance deux fois declenche bien deux
+ * fois.
  */
 final class TransitionOpportunityStageAction
 {
     public function __construct(
         private readonly DatabaseManager $db,
-    ) {}
+    ) {
+    }
 
     /**
      * @param  array{stage: string, lost_reason?: string|null, amount?: mixed, expected_close_date?: string|null, notes?: string|null}  $data
      */
     public function execute(CrmOpportunity $opportunity, array $data, Employee $actor): CrmOpportunity
     {
-        return $this->db->transaction(function () use ($opportunity, $data, $actor): CrmOpportunity {
+        /** @var array{from: string, to: string} $transition */
+        $transition = ['from' => '', 'to' => ''];
+
+        $updated = $this->db->transaction(function () use ($opportunity, $data, $actor, &$transition): CrmOpportunity {
             /** @var CrmOpportunity $locked */
             $locked = CrmOpportunity::query()->whereKey($opportunity->id)->lockForUpdate()->firstOrFail();
 
             $from = (string) $locked->stage;
             $target = CrmOpportunityStage::from((string) $data['stage']);
             $to = $target->value;
+
+            $transition = ['from' => $from, 'to' => $to];
 
             // `status` est DERIVE de `stage` : une seule verite par ligne.
             // Les deux etats terminaux ferment l'affaire ; tous les autres la
@@ -103,6 +112,77 @@ final class TransitionOpportunityStageAction
 
             return $locked->refresh();
         });
+
+        // Emission HORS transaction : l'evenement decrit un fait COMMITE, jamais
+        // une intention. Emettre a l'interieur ferait tourner les automatisations
+        // sur une transition qu'un rollback pourrait annuler — un email de
+        // « affaire gagnee » pour une affaire qui n'a pas bouge. Best-effort
+        // (cf. docblock de `emitStageChanged()`).
+        if ($transition['from'] !== '' && $transition['from'] !== $transition['to']) {
+            $this->emitStageChanged($transition['from'], $transition['to'], $updated, $actor);
+        }
+
+        return $updated;
+    }
+
+    /**
+     * Emet `crm.opportunity.stage_changed` vers le moteur d'automatisations.
+     *
+     * ## Pourquoi ce n'est pas un faux emetteur
+     *
+     * `AutomationEngine::dispatch()` existe et est deja branche sur les
+     * evenements canal (`CrmChannelService::dispatchAutomationEvent()`). Le
+     * seul maillon manquant etait l'appel : l'enum declarait l'evenement, le
+     * moteur savait le consommer, et personne ne le produisait. On appelle
+     * donc le MEME moteur, avec le MEME contrat de contexte.
+     *
+     * ## Le piege de l'idempotence
+     *
+     * Le moteur dedoublonne par `run_key` = (automation, evenement, entite).
+     * Pour une creation d'entite c'est correct : l'evenement n'arrive qu'une
+     * fois. Pour un CHANGEMENT D'ETAPE, la meme opportunite declenche
+     * l'evenement plusieurs fois dans sa vie (prospecting -> proposal -> won).
+     * Sans discriminant, la deuxieme transition serait classee « deja
+     * traitee » et l'automatisation ne tournerait qu'une fois par affaire.
+     * `dedupe_key` porte donc l'etape CIBLE : deux transitions vers deux
+     * etapes differentes sont deux executions, un rejeu de la meme transition
+     * reste un no-op.
+     *
+     * ## Non bloquant, et pourquoi
+     *
+     * La transition est deja commitee quand on arrive ici. Une exception du
+     * moteur (automatisation mal configuree, action en echec, arret d'urgence)
+     * ne doit pas transformer un deplacement d'etape reussi en 500 : le
+     * commercial perdrait son clic pour un probleme qui ne le concerne pas.
+     * L'echec est journalise, jamais avale en silence.
+     */
+    private function emitStageChanged(string $from, string $to, CrmOpportunity $opportunity, Employee $actor): void
+    {
+        try {
+            /** @var AutomationEngine $engine */
+            $engine = app(AutomationEngine::class);
+
+            $engine->dispatch(CrmAutomationTrigger::OPPORTUNITY_STAGE_CHANGED, [
+                'entity_type' => 'opportunity',
+                'entity_id' => (string) $opportunity->id,
+                'dedupe_key' => $to,
+                'data' => [
+                    'opportunity_id' => (string) $opportunity->id,
+                    'from_stage' => $from,
+                    'to_stage' => $to,
+                    'status' => (string) $opportunity->status,
+                    'amount' => $opportunity->amount,
+                    'actor_id' => (string) $actor->id,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('CRM automation: emission stage_changed ignoree (non bloquant)', [
+                'opportunity_id' => $opportunity->id,
+                'from' => $from,
+                'to' => $to,
+                'error' => $e->getMessage(),
+            ]);
+        }
     }
 
     /**

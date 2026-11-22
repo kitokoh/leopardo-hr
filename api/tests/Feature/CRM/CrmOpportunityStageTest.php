@@ -6,7 +6,11 @@ namespace Tests\Feature\CRM;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\CRM\Domain\Enums\CrmAutomationActionType;
+use App\Modules\CRM\Domain\Enums\CrmAutomationTrigger;
 use App\Modules\CRM\Domain\Models\CrmActivity;
+use App\Modules\CRM\Domain\Models\CrmAutomation;
+use App\Modules\CRM\Domain\Models\CrmAutomationRun;
 use App\Modules\CRM\Domain\Models\CrmOpportunity;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -168,6 +172,88 @@ class CrmOpportunityStageTest extends TestCase
 
         // Et l'affaire n'a pas bouge.
         self::assertSame('prospecting', (string) CrmOpportunity::query()->withoutGlobalScopes()->findOrFail($opportunity->id)->stage);
+    }
+
+    /**
+     * L'evenement `crm.opportunity.stage_changed` est REELLEMENT emis.
+     *
+     * ## Ce que ce test protege
+     *
+     * L'enum declarait l'evenement, `AutomationEngine::dispatch()` savait le
+     * consommer, et **personne ne le produisait** : une automatisation
+     * « quand une affaire passe a gagne, creer une tache » ne se declenchait
+     * jamais. Un test qui se contenterait de verifier que la transition
+     * repond 200 ne verrait pas la difference — c'est precisement pourquoi le
+     * trou a survecu.
+     *
+     * On branche donc une automatisation reelle sur l'evenement et on verifie
+     * qu'une execution est persistee (`crm_automation_runs`).
+     */
+    public function test_the_stage_change_emits_the_automation_event(): void
+    {
+        $company = $this->createCompany();
+        $this->actingAsManager($company);
+
+        $automation = CrmAutomation::query()->create([
+            'name' => 'Tache a la victoire',
+            'trigger_event' => CrmAutomationTrigger::OPPORTUNITY_STAGE_CHANGED,
+            'conditions' => [],
+            'actions' => [
+                ['type' => CrmAutomationActionType::CREATE_TASK, 'config' => ['title' => 'Feter la signature']],
+            ],
+            'status' => 'active',
+        ]);
+
+        $opportunity = $this->opportunity($company, 'negotiation');
+
+        $this->patchJson("/api/v1/crm/opportunities/{$opportunity->id}/stage", ['stage' => 'won'])
+            ->assertStatus(200);
+
+        // L'automatisation a bien ete declenchee par l'evenement.
+        $this->assertDatabaseHas('crm_automation_runs', [
+            'automation_id' => $automation->id,
+            'trigger_event' => CrmAutomationTrigger::OPPORTUNITY_STAGE_CHANGED,
+            'entity_type' => 'opportunity',
+            'entity_id' => (string) $opportunity->id,
+        ]);
+    }
+
+    /**
+     * Deux transitions SUCCESSIVES declenchent DEUX executions.
+     *
+     * Le moteur dedoublonne par `run_key` = (automation, evenement, entite).
+     * Pour un changement d'etape, la meme affaire declenche l'evenement
+     * plusieurs fois dans sa vie : sans discriminant, la deuxieme transition
+     * serait classee « deja traitee » et l'automatisation ne tournerait qu'une
+     * fois par affaire — silencieusement. `dedupe_key` porte l'etape cible.
+     */
+    public function test_two_successive_transitions_run_the_automation_twice(): void
+    {
+        $company = $this->createCompany();
+        $this->actingAsManager($company);
+
+        $automation = CrmAutomation::query()->create([
+            'name' => 'Suivi a chaque etape',
+            'trigger_event' => CrmAutomationTrigger::OPPORTUNITY_STAGE_CHANGED,
+            'conditions' => [],
+            'actions' => [
+                ['type' => CrmAutomationActionType::CREATE_TASK, 'config' => ['title' => 'Relancer le client']],
+            ],
+            'status' => 'active',
+        ]);
+
+        $opportunity = $this->opportunity($company, 'prospecting');
+
+        $this->patchJson("/api/v1/crm/opportunities/{$opportunity->id}/stage", ['stage' => 'qualification'])
+            ->assertStatus(200);
+        $this->patchJson("/api/v1/crm/opportunities/{$opportunity->id}/stage", ['stage' => 'proposal'])
+            ->assertStatus(200);
+
+        self::assertSame(
+            2,
+            CrmAutomationRun::query()->where('automation_id', $automation->id)->count(),
+            'Deux etapes differentes doivent produire deux executions, pas une seule.',
+        );
     }
 
     // ── Fixtures ──────────────────────────────────────────────────────────
