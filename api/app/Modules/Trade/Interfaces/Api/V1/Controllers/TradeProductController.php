@@ -10,6 +10,7 @@ use App\Modules\Trade\Interfaces\Api\V1\Requests\UpdateTradeProductRequest;
 use App\Modules\Trade\Interfaces\Api\V1\Resources\TradeProductResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Catalogue produits B2B — BC-36 TRADE, #9767.
@@ -56,8 +57,16 @@ final class TradeProductController
         }
 
         if ($request->filled('q')) {
-            $term = '%'.str_replace(['%', '_'], ['\\%', '\\_'], (string) $request->string('q')).'%';
-            $query->where('name', 'ilike', $term);
+            // Échappement du motif : un `%` saisi par l'utilisateur est un
+            // joker SQL, pas un caractère — sans échappement, chercher « 100% »
+            // ramènerait tout le catalogue.
+            $term = '%'.str_replace(['\\', '%', '_'], ['\\\\', '\\%', '\\_'], (string) $request->string('q')).'%';
+
+            // `ilike` n'existe qu'en PostgreSQL ; ailleurs on retombe sur
+            // `like` (SQLite est insensible à la casse sur ASCII par défaut).
+            $operator = DB::getDriverName() === 'pgsql' ? 'ilike' : 'like';
+
+            $query->where('name', $operator, $term);
         }
 
         $perPage = min(max($request->integer('per_page', 20), 1), 100);
