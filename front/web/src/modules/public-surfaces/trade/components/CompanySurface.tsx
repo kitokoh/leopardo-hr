@@ -75,10 +75,19 @@ export function CompanySurface({
       />
 
       <main style={{ maxWidth: '56rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
-        <h2 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '-0.01em' }}>{company.name}</h2>
+        <h2
+          style={{
+            margin: 0,
+            fontSize: 'clamp(1.3rem, 3vw, 1.6rem)',
+            letterSpacing: '-0.02em',
+            fontWeight: 800,
+          }}
+        >
+          {company.name}
+        </h2>
 
         {directions.length > 0 ? (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.7rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem', marginTop: '0.75rem' }}>
             {directions.map((direction) => (
               <SurfaceBadge key={direction} identity={identity} tone="accent">
                 {direction}
@@ -88,7 +97,16 @@ export function CompanySurface({
         ) : null}
 
         {company.description ? (
-          <p style={{ marginTop: '1rem', lineHeight: 1.6 }}>{company.description}</p>
+          <p
+            style={{
+              marginTop: '1.1rem',
+              lineHeight: 1.65,
+              maxWidth: '50rem',
+              color: identity.palette.muted,
+            }}
+          >
+            {company.description}
+          </p>
         ) : null}
 
         {company.productCategories.length > 0 ? (
@@ -126,11 +144,13 @@ export function CompanySurface({
                   <li
                     key={category}
                     style={{
-                      border: `1px solid ${identity.palette.muted}33`,
+                      border: `1px solid ${identity.palette.muted}20`,
                       borderRadius: '999px',
-                      padding: '0.35rem 0.8rem',
+                      padding: '0.4rem 0.9rem',
                       fontSize: '0.875rem',
-                      background: '#FFFFFF',
+                      background: `${identity.palette.primary}05`,
+                      transition: 'background 0.15s ease',
+                      letterSpacing: '-0.005em',
                     }}
                   >
                     {category}

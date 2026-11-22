@@ -79,8 +79,15 @@ export function PropertySurface({
       />
 
       <main style={{ maxWidth: '72rem', margin: '0 auto', padding: '2rem 1.25rem 4rem' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.6rem' }}>
-          <h2 style={{ margin: 0, fontSize: '1.4rem', letterSpacing: '-0.01em' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.75rem' }}>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: 'clamp(1.3rem, 3vw, 1.6rem)',
+              letterSpacing: '-0.02em',
+              fontWeight: 800,
+            }}
+          >
             {property.name}
           </h2>
 
@@ -92,14 +99,46 @@ export function PropertySurface({
         </div>
 
         {/* Prix d'appel : le vrai minimum, calculé par le domaine. */}
-        <p style={{ margin: '0.6rem 0 0', fontSize: '1.05rem', fontWeight: 700 }}>
+        <p
+          style={{
+            margin: '0.75rem 0 0',
+            fontSize: '1.15rem',
+            fontWeight: 800,
+            letterSpacing: '-0.01em',
+            color: identity.palette.primary,
+          }}
+        >
           {priceLabel
             ? `${shared.from} ${priceLabel} ${shared.perNight}`
             : shared.priceOnRequest}
         </p>
 
         {property.amenities.length > 0 ? (
-          <SurfaceMeta identity={identity}>{property.amenities.join(' · ')}</SurfaceMeta>
+          <div
+            style={{
+              marginTop: '0.75rem',
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '0.35rem',
+            }}
+          >
+            {property.amenities.map((amenity) => (
+              <span
+                key={amenity}
+                style={{
+                  display: 'inline-flex',
+                  padding: '0.2rem 0.6rem',
+                  fontSize: '0.8rem',
+                  borderRadius: '999px',
+                  background: `${identity.palette.primary}08`,
+                  border: `1px solid ${identity.palette.muted}20`,
+                  color: identity.palette.muted,
+                }}
+              >
+                {amenity}
+              </span>
+            ))}
+          </div>
         ) : null}
 
         {property.roomTypes.length > 0 ? (
@@ -126,18 +165,52 @@ export function PropertySurface({
               <SurfaceGrid min="20rem">
                 {roomTypes.items.map((roomType) => (
                   <SurfaceCard key={roomType.code} as="li" identity={identity}>
-                    <strong style={{ fontSize: '1rem' }}>{roomType.name}</strong>
+                    <strong
+                      style={{
+                        fontSize: '1.02rem',
+                        letterSpacing: '-0.01em',
+                        display: 'block',
+                        fontWeight: 700,
+                      }}
+                    >
+                      {roomType.name}
+                    </strong>
 
                     {roomType.description ? (
-                      <p style={{ margin: 0, fontSize: '0.875rem', lineHeight: 1.45 }}>
+                      <p
+                        style={{
+                          margin: '0.3rem 0 0',
+                          fontSize: '0.875rem',
+                          lineHeight: 1.5,
+                          color: identity.palette.muted,
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                        }}
+                      >
                         {roomType.description}
                       </p>
                     ) : null}
 
-                    <SurfaceMeta identity={identity}>
-                      {formatMoney(roomType.basePriceMinor, roomType.currency) ??
-                        shared.priceOnRequest}
-                    </SurfaceMeta>
+                    <div
+                      style={{
+                        marginTop: '0.5rem',
+                        paddingTop: '0.5rem',
+                        borderTop: `1px solid ${identity.palette.muted}15`,
+                      }}
+                    >
+                      <strong
+                        style={{
+                          fontSize: '1rem',
+                          fontWeight: 700,
+                          color: identity.palette.primary,
+                        }}
+                      >
+                        {formatMoney(roomType.basePriceMinor, roomType.currency) ??
+                          shared.priceOnRequest}
+                      </strong>
+                    </div>
                   </SurfaceCard>
                 ))}
               </SurfaceGrid>

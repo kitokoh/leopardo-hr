@@ -95,23 +95,33 @@ export function ShopDirectorySurface({
                 <Link href={`${identity.basePath}/${entry.slug}`} data-surface-card-link="">
                   {/* La catégorie passe avant le nom : c'est le critère de tri. */}
                   {entry.category ? (
-                    <div>
+                    <div style={{ marginBottom: '0.35rem' }}>
                       <SurfaceBadge identity={identity} tone="accent">
                         {entry.category}
                       </SurfaceBadge>
                     </div>
                   ) : null}
 
-                  <strong style={{ fontSize: '1rem', lineHeight: 1.25 }}>{entry.name}</strong>
+                  <strong
+                    style={{
+                      fontSize: '1.05rem',
+                      lineHeight: 1.25,
+                      letterSpacing: '-0.01em',
+                      display: 'block',
+                    }}
+                  >
+                    {entry.name}
+                  </strong>
 
                   <SurfaceMeta identity={identity}>{meta ?? shared.shop}</SurfaceMeta>
 
                   {entry.description ? (
                     <p
                       style={{
-                        margin: 0,
+                        margin: '0.35rem 0 0',
                         fontSize: '0.85rem',
-                        lineHeight: 1.45,
+                        lineHeight: 1.5,
+                        color: identity.palette.muted,
                         // Deux lignes maximum : une carte d'annuaire dense ne
                         // doit pas être déformée par une description longue.
                         display: '-webkit-box',
