@@ -7823,7 +7823,17 @@
       "sale": "Sale",
       "total": "Amount",
       "loadError": "Could not load orders. This tab does not reflect the real state.",
-      "cancel_reason_required": "Give the cancellation reason: without it the order is unexplainable later."
+      "cancel_reason_required": "Give the cancellation reason: without it the order is unexplainable later.",
+      "status": {
+        "draft": "Draft",
+        "confirmed": "Confirmed",
+        "preparing": "Preparing",
+        "ready": "Ready to ship",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "closed": "Closed",
+        "cancelled": "Cancelled"
+      }
     },
     "transport": {
       "title": "Transport",
@@ -7884,7 +7894,17 @@
       "notVerified": "Not verified",
       "loadError": "Could not load the directory. This tab does not reflect the real state.",
       "roles_required": "Declare at least one role: you cannot buy from or sell to someone without knowing which way it goes.",
-      "verification_not_self_assertable": "Verification is done by a member of your team and cannot be declared here."
+      "verification_not_self_assertable": "Verification is done by a member of your team and cannot be declared here.",
+      "role": {
+        "buyer": "Buyer",
+        "supplier": "Supplier",
+        "manufacturer": "Manufacturer",
+        "wholesaler": "Wholesaler",
+        "carrier": "Carrier",
+        "forwarder": "Forwarder",
+        "customs_broker": "Customs broker",
+        "inspector": "Inspector"
+      }
     }
   },
   "vtc": {

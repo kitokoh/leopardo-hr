@@ -608,7 +608,16 @@ export default function TradeDashboardPage() {
                                 ? t(locale, 'trade.orders.sale')
                                 : '—'}
                           </td>
-                          <td className="px-3 py-3 text-slate-600">{order.status ?? '—'}</td>
+                          <td className="px-3 py-3 text-slate-600">
+                            {/* Le statut est un enum serveur (`confirmed`,
+                                `in_transit`…) : on affiche son libellé traduit,
+                                jamais la valeur brute de la base. Une valeur
+                                inconnue retombe sur elle-même plutôt que sur un
+                                vide qui laisserait croire à une absence. */}
+                            {order.status
+                              ? t(locale, `trade.orders.status.${order.status}`, order.status)
+                              : '—'}
+                          </td>
                           <td className="px-3 py-3 text-slate-900">
                             {order.total_minor === null || order.total_minor === undefined
                               ? '—'
@@ -659,7 +668,14 @@ export default function TradeDashboardPage() {
                         <tr key={String(party.id)} className="border-t border-slate-100">
                           <td className="px-3 py-3 text-slate-900">{party.name ?? '—'}</td>
                           <td className="px-3 py-3 text-slate-600">
-                            {party.roles?.length ? party.roles.join(' · ') : '—'}
+                            {/* `roles` est un tableau d'enums serveur
+                                (`buyer`, `supplier`, `carrier`…) : chaque rôle
+                                est traduit, une valeur inconnue reste lisible. */}
+                            {party.roles?.length
+                              ? party.roles
+                                  .map((role) => t(locale, `trade.counterparties.role.${role}`, role))
+                                  .join(' · ')
+                              : '—'}
                           </td>
                           <td className="px-3 py-3 text-slate-600">{party.country ?? '—'}</td>
                           <td className="px-3 py-3">

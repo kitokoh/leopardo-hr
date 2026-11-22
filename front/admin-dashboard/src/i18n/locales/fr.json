@@ -8745,7 +8745,17 @@
       "sale": "Vente",
       "total": "Montant",
       "loadError": "Impossible de charger les commandes. L'onglet ne reflète pas l'état réel.",
-      "cancel_reason_required": "Indiquez le motif de l'annulation : sans lui, la commande reste inexplicable plus tard."
+      "cancel_reason_required": "Indiquez le motif de l'annulation : sans lui, la commande reste inexplicable plus tard.",
+      "status": {
+        "draft": "Brouillon",
+        "confirmed": "Confirmée",
+        "preparing": "En préparation",
+        "ready": "Prête à expédier",
+        "shipped": "Expédiée",
+        "delivered": "Livrée",
+        "closed": "Clôturée",
+        "cancelled": "Annulée"
+      }
     },
     "transport": {
       "title": "Transport",
@@ -8819,7 +8829,17 @@
       "notVerified": "Non vérifié",
       "loadError": "Impossible de charger l'annuaire. L'onglet ne reflète pas l'état réel.",
       "roles_required": "Déclarez au moins un rôle : on ne peut pas acheter ni vendre à quelqu'un sans savoir dans quel sens.",
-      "verification_not_self_assertable": "La vérification est faite par un membre de votre équipe, elle ne peut pas être déclarée ici."
+      "verification_not_self_assertable": "La vérification est faite par un membre de votre équipe, elle ne peut pas être déclarée ici.",
+      "role": {
+        "buyer": "Acheteur",
+        "supplier": "Fournisseur",
+        "manufacturer": "Fabricant",
+        "wholesaler": "Grossiste",
+        "carrier": "Transporteur",
+        "forwarder": "Transitaire",
+        "customs_broker": "Courtier en douane",
+        "inspector": "Inspecteur"
+      }
     }
   },
   "vtc": {

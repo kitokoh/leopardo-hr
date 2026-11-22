@@ -8745,7 +8745,17 @@
       "sale": "بيع",
       "total": "المبلغ",
       "loadError": "تعذّر تحميل الطلبات. هذا التبويب لا يعكس الحالة الفعلية.",
-      "cancel_reason_required": "اذكر سبب الإلغاء: بدونه يصعب تفسير الطلب لاحقاً."
+      "cancel_reason_required": "اذكر سبب الإلغاء: بدونه يصعب تفسير الطلب لاحقاً.",
+      "status": {
+        "draft": "مسودة",
+        "confirmed": "مؤكدة",
+        "preparing": "قيد التحضير",
+        "ready": "جاهزة للشحن",
+        "shipped": "تم الشحن",
+        "delivered": "تم التسليم",
+        "closed": "مغلقة",
+        "cancelled": "ملغاة"
+      }
     },
     "transport": {
       "title": "النقل",
@@ -8819,7 +8829,17 @@
       "notVerified": "غير مُتحقَّق",
       "loadError": "تعذّر تحميل الدليل. هذا التبويب لا يعكس الحالة الفعلية.",
       "roles_required": "حدّد دوراً واحداً على الأقل: لا يمكنك البيع أو الشراء من طرف دون معرفة الاتجاه.",
-      "verification_not_self_assertable": "التحقق يقوم به عضو من فريقك، ولا يمكن الإعلان عنه هنا."
+      "verification_not_self_assertable": "التحقق يقوم به عضو من فريقك، ولا يمكن الإعلان عنه هنا.",
+      "role": {
+        "buyer": "مشترٍ",
+        "supplier": "مورّد",
+        "manufacturer": "مصنّع",
+        "wholesaler": "تاجر جملة",
+        "carrier": "ناقل",
+        "forwarder": "وكيل شحن",
+        "customs_broker": "وسيط جمركي",
+        "inspector": "مفتّش"
+      }
     }
   },
   "vtc": {
