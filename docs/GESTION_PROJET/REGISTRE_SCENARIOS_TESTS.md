@@ -75,6 +75,32 @@ Surface : `front/web/src/app/(dashboard)/edu-manager/fee-types/page.tsx` (nouvea
 
 **Contrôle visuel navigateur** — les 4 pages ont été ouvertes dans Chromium (serveur Next.js local, API mockée) et leurs captures lues : `/edu-manager/fee-types` (tableau des 4 types de frais, colonnes Code/Libellé/Montant/Fréquence/Actions), `/edu-manager/guardians` (3 responsables, colonnes Nom/Lien de parenté/Contact/Actions, contact masqué), `/edu-manager/reports` (blocs Présence et Inscriptions remplis) et `/business/ecole` (vitrine pack école). Aucun défaut de rendu. Ce contrôle a révélé un défaut réel corrigé depuis : l'en-tête « Statut » s'affichait au-dessus d'une colonne vide sur les référentiels sans statut (`CrudPage`).
 
+## 2026-11-22 — Trade OS : édition d'une contrepartie depuis l'écran vendeur (PR #9798, #9780)
+
+Surface : `front/web/src/app/(dashboard)/trade-os/components/CounterpartyForm.tsx`, `CounterpartyList.tsx`, `front/web/src/app/(dashboard)/trade-os/page.tsx`, `front/web/src/app/(dashboard)/trade-os/__tests__/counterparties.test.tsx`.
+
+**Pourquoi c'est un scénario de test** : l'UI vendeur des contreparties ne savait que créer. Corriger une faute de frappe, un email ou un rôle imposait de supprimer la fiche et de la recréer — or la fiche recréée est une AUTRE fiche, avec un autre identifiant : les dossiers, RFQ et offres passés restaient rattachés à l'ancienne. `PUT /v1/trade/counterparties/{counterparty}` existait depuis #9780 et n'était appelé par aucun écran.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| ouvrir « Modifier » pré-remplit nom, pays, ville, email et les rôles cochés | un formulaire vide en édition écraserait la fiche par des valeurs par défaut |
+| le bouton d'envoi dit « Modifier » en édition, « Enregistrer » en création | l'utilisateur ne sait pas si son clic crée une fiche ou en corrige une |
+| l'envoi en édition est un `PUT /trade/counterparties/{id}`, jamais un `POST` | un `POST` créerait un doublon au lieu de corriger la fiche |
+| le corps du `PUT` ne contient ni `verification_status` ni `company_id` | on s'auto-déclarerait vérifié, ou on choisirait son tenant d'écriture |
+| le corps du `PUT` ne contient ni `verified_at` ni `verified_by_employee_id` | la trace de vérification (qui, quand) serait réécrite par le client |
+| les rôles pré-remplis repartent sans doublon | le tableau jsonb n'a pas de contrainte d'unicité |
+| après un `PUT` réussi, la liste affiche la nouvelle valeur et plus l'ancienne | l'écran mentirait sur l'état réel de la fiche |
+| après un `PUT` réussi, les autres fiches sont intactes | une mise à jour en place mal ciblée écraserait la mauvaise ligne |
+| un `PUT` en échec affiche l'erreur et **conserve la saisie** | une erreur réseau ferait perdre ce que l'utilisateur vient de taper |
+| un `PUT` en échec ne modifie pas la liste | l'écran afficherait une modification qui n'a pas été enregistrée |
+| « Nouvelle contrepartie » après une édition repasse en création | le formulaire enverrait un `PUT` sur la fiche précédemment éditée |
+| décocher un rôle que la fiche possède déjà affiche « Rôles retirés à l'enregistrement : … » | l'utilisateur retirerait un rôle sans voir ce qu'il perd |
+| refuser la confirmation de retrait n'envoie **aucune** requête | un rôle serait retiré en silence, sur un simple clic de trop |
+| confirmer le retrait envoie le `PUT` **sans** le rôle retiré | le rôle retiré repartirait, ou un rôle non voulu serait ajouté |
+| décocher **tous** les rôles affiche l'erreur de validation locale | une fiche sans rôle ne peut être ni invitée à une RFQ, ni destinataire d'une offre, ni sollicitée pour un transport |
+| décocher **tous** les rôles n'envoie **ni `PUT` ni `POST`** | la fiche serait enregistrée dans un état inutilisable, ou une nouvelle fiche serait créée |
+| décocher **tous** les rôles ne déclenche **pas** la confirmation de retrait | demander « confirmer le retrait ? » pour un retrait déjà refusé est une question sans objet |
+
 ## 2026-11-22 — Trade : contreparties, recherche transverse, kit de promotion (PR #9791, #9780 #9781 #9783)
 
 Surface : `api/routes/modules/trade.php` (`GET|POST /v1/trade/counterparties`, `GET|PUT|DELETE /v1/trade/counterparties/{counterparty}`, `POST /v1/trade/counterparties/{counterparty}/verify`, `GET /v1/trade/search`, `GET /v1/trade/promotion-kit`), `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/TradeCounterpartyController.php` (nouveau), `TradeSearchController.php` (nouveau), `TradePromotionKitController.php` (nouveau), `Requests/StoreTradeCounterpartyRequest.php` / `UpdateTradeCounterpartyRequest.php` / `VerifyTradeCounterpartyRequest.php` (nouveaux), `Resources/TradeCounterpartyResource.php` (nouveau), `api/app/Modules/Trade/Infrastructure/Services/TradeSearchService.php` (nouveau), `TradePromotionKitBuilder.php` (nouveau), `api/lang/{fr,en,tr,ar}/trade.php`, `api/openapi.yaml`.
