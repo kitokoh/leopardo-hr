@@ -12,7 +12,9 @@ use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
+use App\Modules\Accounting\Infrastructure\Services\DocumentShareService;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\Concerns\ResolvesAccountingActor;
+use App\Modules\Accounting\Interfaces\Api\V1\Requests\ShareDocumentRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -32,6 +34,7 @@ class AccountingDocumentController extends Controller
         private readonly DocumentWorkflowService $workflow,
         private readonly DocumentNumberingService $numbering,
         private readonly DataAccessAuditLogger $auditLogger,
+        private readonly DocumentShareService $shareService,
     ) {}
 
     /**
@@ -229,6 +232,53 @@ class AccountingDocumentController extends Controller
                 'number' => $this->numbering->nextNumber((string) $actor->company_id, DocumentType::from($validated['type'])),
             ],
         ]);
+    }
+
+    /**
+     * POST /api/v1/accounting/documents/{document}/share — crée un partage
+     * tokenisé du document (#9765).
+     *
+     * Le modèle `AccountingDocumentShare`, `DocumentShareService` et le portail
+     * public existaient déjà ; seule la route de CRÉATION manquait, donc aucun
+     * jeton ne pouvait être généré depuis la plateforme et le vendeur ne
+     * pouvait jamais envoyer un devis ou une facture à son client.
+     *
+     * Le jeton n'est renvoyé qu'ICI (création) : l'audit des accès
+     * (`ShareAccessController`) ne l'expose jamais.
+     */
+    public function share(ShareDocumentRequest $request, int $document): JsonResponse
+    {
+        $actor = $this->actor($request);
+
+        // Isolation tenant fail-closed : scope global BelongsToCompany actif
+        // (middleware tenant) → document inconnu ou cross-tenant = 404.
+        $model = AccountingDocument::query()->findOrFail($document);
+
+        $validated = $request->validated();
+
+        $expiresAt = isset($validated['expires_in_days'])
+            ? now()->addDays((int) $validated['expires_in_days'])
+            : null;
+
+        $share = $this->shareService->createShare(
+            $model,
+            (string) ($validated['email'] ?? ''),
+            $expiresAt,
+        );
+
+        $this->auditLogger->recordSensitive($request, $actor, 'accounting.document_shared', $model);
+
+        return response()->json([
+            'data' => [
+                'id' => $share->id,
+                'document_id' => $share->document_id,
+                'share_token' => $share->share_token,
+                'shared_with_email' => $share->shared_with_email,
+                'expires_at' => $share->expires_at?->toIso8601String(),
+                'portal_url' => $this->shareService->portalUrl($share),
+                'download_url' => $this->shareService->downloadUrl($share),
+            ],
+        ], 201);
     }
 
     /**
