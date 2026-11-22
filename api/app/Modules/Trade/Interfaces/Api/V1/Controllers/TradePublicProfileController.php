@@ -7,6 +7,7 @@ namespace App\Modules\Trade\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Trade\Interfaces\Api\V1\Resources\PublicTradeProductResource;
 use App\Shared\Discovery\PublicProfileLocator;
+use App\Support\SearchPathGuard;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -130,6 +131,10 @@ class TradePublicProfileController extends Controller
 
     /**
      * Le profil est-il TOUJOURS publiable ? (revalidation anti-course)
+     *
+     * `trade_company_profiles` vit dans `shared_tenants` (registre cross-tenant
+     * des profils publics) — c'est ce qui permet de résoudre un slug sans
+     * connaître l'appelant.
      */
     private function isStillPublic(string $companyId, string $slug): bool
     {
@@ -149,49 +154,86 @@ class TradePublicProfileController extends Controller
     /**
      * Produits ACTIFS du tenant propriétaire, paginés.
      *
-     * Lecture cross-tenant explicite, alignée sur `readProfile` ci-dessus : on
-     * est hors contexte tenant (route publique, pas de middleware `tenant`),
-     * donc on lit la table par requête directe en filtrant sur le `company_id`
-     * RÉSOLU depuis le slug — jamais celui de l'appelant (qui n'est pas
-     * authentifié). Le filtre `deleted_at is null` respecte l'archivage logique
-     * du modèle (`SoftDeletes`).
+     * ## Pourquoi il faut basculer de schéma
+     *
+     * `trade_products` est une table **tenant** (migration
+     * `2026_10_14_000102_8477_create_trade_products_table.php`), pas une table
+     * `shared_tenants` : elle vit dans le schéma de l'entreprise
+     * (`companies.schema_name`). Une route publique n'a pas de middleware
+     * `tenant`, donc le `search_path` n'est pas posé — lire `trade_products`
+     * tel quel interrogerait le schéma courant et renverrait 0 ligne (ou pire,
+     * les produits d'un autre tenant).
+     *
+     * On résout donc le schéma du tenant **propriétaire du slug** (jamais celui
+     * de l'appelant, qui n'est pas authentifié) et on l'encadre dans
+     * `SearchPathGuard::run()`, dont le `finally` restaure le chemin même en
+     * cas d'exception — la leçon de #9115/#9719.
      *
      * @return array{items: list<array<string, mixed>>, total: int}
      */
     private function readActiveProducts(string $companyId, int $perPage, int $page): array
     {
-        $table = DB::getDriverName() === 'pgsql'
-            ? 'shared_tenants.trade_products'
-            : 'trade_products';
+        $schema = $this->tenantSchemaFor($companyId);
 
-        $base = DB::table($table)
-            ->where('company_id', $companyId)
-            ->where('status', 'active')
-            ->whereNull('deleted_at');
+        if ($schema === null) {
+            return ['items' => [], 'total' => 0];
+        }
 
-        /** @var int $total */
-        $total = (int) (clone $base)->count();
+        return SearchPathGuard::run($schema.', public', function () use ($companyId, $perPage, $page): array {
+            $base = DB::table('trade_products')
+                ->where('company_id', $companyId)
+                ->where('status', 'active')
+                ->whereNull('deleted_at');
 
-        /** @var list<array<string, mixed>> $items */
-        $items = (clone $base)
-            ->orderBy('id')
-            ->forPage($page, $perPage)
-            ->select([
-                'name',
-                'description',
-                'category',
-                'origin_country',
-                'unit',
-                'moq_quantity',
-                'indicative_unit_price_minor',
-                'currency',
-                'specs',
-            ])
-            ->get()
-            ->map(static fn ($row): array => (array) $row)
-            ->all();
+            /** @var int $total */
+            $total = (int) (clone $base)->count();
 
-        return ['items' => $items, 'total' => $total];
+            /** @var list<array<string, mixed>> $items */
+            $items = (clone $base)
+                ->orderBy('id')
+                ->forPage($page, $perPage)
+                ->select([
+                    'name',
+                    'description',
+                    'category',
+                    'origin_country',
+                    'unit',
+                    'moq_quantity',
+                    'indicative_unit_price_minor',
+                    'currency',
+                    'specs',
+                ])
+                ->get()
+                ->map(static fn ($row): array => (array) $row)
+                ->all();
+
+            return ['items' => $items, 'total' => $total];
+        });
+    }
+
+    /**
+     * Schéma du tenant propriétaire, ou `null` s'il est introuvable/insécable.
+     *
+     * Le nom de schéma vient de la base, mais il est interpolé dans un
+     * `SET search_path` : on le valide donc avant usage (même règle que
+     * `TenantContextService::isSafeSchemaName()`).
+     */
+    private function tenantSchemaFor(string $companyId): ?string
+    {
+        /** @var object{schema_name: string|null}|null $row */
+        $row = DB::table('companies')->where('id', $companyId)->first(['schema_name']);
+
+        if ($row === null) {
+            return null;
+        }
+
+        $schema = (string) ($row->schema_name ?? '');
+
+        if ($schema === '' || preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $schema) !== 1) {
+            return 'shared_tenants';
+        }
+
+        return $schema;
     }
 
     /**
