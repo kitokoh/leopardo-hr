@@ -11586,6 +11586,85 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /platform/accounts/{type}/{id}/ban:
+    post:
+      operationId: api_post_platform_accounts_by_type_by_id_ban
+      tags:
+      - Platform
+      summary: Bannir un compte (couper tous ses acces immediatement, #9815)
+      description: '#9815 — Pose un bannissement adosse a TokenRevocationService (#9808). Tous les jetons du compte sont refuses des la requete suivante, sans supprimer aucune ligne : le geste est reversible et audite. `hours` absent = bannissement permanent ; `hours` present = bannissement temporaire qui expire seul. Permission dediee `accounts.ban`, distincte de `users.manage` (bannir est un geste de securite, pas une suspension metier).'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/AccountType'
+      - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlatformAccountBanWrite'
+      responses:
+        '201':
+          description: Bannissement pose
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformAccountBanStateResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    delete:
+      operationId: api_delete_platform_accounts_by_type_by_id_ban
+      tags:
+      - Platform
+      summary: Lever le bannissement d'un compte (#9815)
+      description: '#9815 — Le compte retrouve l''acces a la requete suivante. Idempotent : lever un bannissement absent reussit et laisse le compte dans son etat normal.'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/AccountType'
+      - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          description: Etat apres levee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformAccountBanStateResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
+    get:
+      operationId: api_get_platform_accounts_by_type_by_id_ban
+      tags:
+      - Platform
+      summary: Consulter l'etat de bannissement d'un compte (#9815)
+      description: '#9815 — Ne revele rien du compte lui-meme (ni nom, ni e-mail) : seulement la decision de coupure. L''historique complet (motif, auteur, echeance) vit dans `structured.log` et `audit_logs`.'
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - $ref: '#/components/parameters/AccountType'
+      - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          description: Etat de bannissement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformAccountBanStateResponse'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /platform/companies/{company}/deletion-inventory:
     get:
       operationId: api_get_platform_companies_by_company_deletion_inventory
@@ -35423,6 +35502,59 @@ paths:
                         type: integer
                       last_page:
                         type: integer
+  /crm/opportunities/{opportunity}/stage:
+    patch:
+      operationId: api_patch_crm_opportunities_by_opportunity_stage
+      tags:
+      - CRM
+      summary: Déplacer une opportunité dans le pipeline
+      description: "Contrat #9790 — fait avancer une affaire dans le kanban. `stage` est validé contre la whitelist `CrmOpportunityStage` (422 sinon). `status` est DÉRIVÉ de `stage` (`won`/`lost` → `closed`, sinon `open`) : une seule source de vérité. `won` et `lost` sont TERMINAUX (422) — rouvrir réécrirait l'historique commercial. `lost_reason` est obligatoire pour `lost` et interdit ailleurs. L'étape précédente est journalisée en append-only dans `notes` et dans la timeline (`CrmActivity`). Écriture : `principal` ou `marketing` (api.manager)."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: opportunity
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - stage
+              properties:
+                stage:
+                  type: string
+                  enum:
+                  - prospecting
+                  - qualification
+                  - proposal
+                  - negotiation
+                  - won
+                  - lost
+                lost_reason:
+                  type: string
+                  maxLength: 500
+                  description: Obligatoire si `stage` vaut `lost`, interdit sinon.
+      responses:
+        '200':
+          description: Opportunité déplacée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmOpportunity'
+        '403':
+          description: Rôle insuffisant (ni principal ni marketing)
+        '404':
+          description: Opportunité absente du tenant courant
+        '422':
+          description: Étape inconnue, étape terminale, ou motif de perte manquant/inattendu
   /crm/leads/{crmLead}/convert:
     post:
       operationId: api_post_crm_leads_by_crmLead_convert
@@ -57253,6 +57385,505 @@ paths:
         '403':
           $ref: '#/components/responses/Error403'
 
+  /v1/trade/rfqs/{rfq}/transition:
+    post:
+      operationId: api_post_trade_rfq_transition
+      tags:
+      - Trade
+      summary: Faire avancer une demande de prix (#9779)
+      description: >-
+        Cycle : draft -> open -> (awarded | closed | cancelled).
+
+        `TradeRfqStateMachine` implementait deja tout le cycle, mais seule la
+        diffusion (`draft -> open`) etait branchee : une RFQ diffusee restait
+        `open` pour toujours. Le vendeur pouvait demander des prix et recevoir
+        des offres, mais jamais designer le gagnant ni clore — le sourcing
+        s'arretait au moment de decider.
+
+        Le client envoie la CIBLE ; le verdict appartient a
+        `TradeRfqStateMachine` — aucune regle de transition n'est dupliquee
+        dans le controleur. Un statut inconnu est une 422 de validation, une
+        transition interdite une 422 `INVALID_STATUS_TRANSITION` qui nomme
+        `from` et `to`.
+
+        `awarded_quote_id` est EXIGE pour `awarded` et doit appartenir a CETTE
+        RFQ : attribuer sans designer l'offre gagnante produirait un etat qui
+        affirme une decision sans la nommer.
+
+        Cette route ne cree AUCUNE commande : attribuer designe une offre
+        gagnante, l'accepter reste `POST /v1/trade/quotes/{quote}/accept`.
+      parameters:
+      - name: rfq
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [draft, open, closed, awarded, cancelled]
+                awarded_quote_id:
+                  type: integer
+                  minimum: 1
+                  description: Exige quand `status` vaut `awarded` ; doit appartenir a cette RFQ
+                close_reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: RFQ a son nouveau statut
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role purchase/admin
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/quotes/{quote}/transition:
+    post:
+      operationId: api_post_trade_quote_transition
+      tags:
+      - Trade
+      summary: Faire avancer une offre commerciale (#9779)
+      description: >-
+        Cycle : draft -> submitted -> under_review -> negotiating ->
+        (accepted | rejected | withdrawn | expired).
+
+        Seuls `draft -> submitted` et `-> accepted` etaient branches. Un
+        vendeur pouvait donc emettre une offre et l'accepter, mais pas la
+        refuser, la retirer ni la constater expiree — precisement les trois
+        issues les plus frequentes. Une offre refusee restait `submitted`
+        indefiniment et polluait le pipeline : le vendeur voyait « en attente »
+        des affaires deja mortes.
+
+        `accepted` est VOLONTAIREMENT absent de l'enum : accepter cree une
+        commande, c'est `POST /v1/trade/quotes/{quote}/accept`. L'autoriser ici
+        produirait une offre « acceptee » sans commande — un etat qui ment sur
+        ce qui s'est passe.
+
+        Le verdict appartient a `TradeQuoteStateMachine`.
+      parameters:
+      - name: quote
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [draft, submitted, under_review, negotiating, rejected, expired, withdrawn]
+                reason:
+                  type: string
+                  maxLength: 500
+                  description: Conserve dans les notes de l'offre
+      responses:
+        '200':
+          description: Offre a son nouveau statut
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role sales/admin
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/orders:
+    get:
+      operationId: api_get_trade_orders
+      tags:
+      - Trade
+      summary: Lister les commandes du vendeur B2B (#9779)
+      description: >-
+        `AcceptQuoteAction` creait une `TradeOrder` en `confirmed` et
+        `TradeOrderResource` existait — mais AUCUNE route ne servait la
+        ressource. Le vendeur acceptait une offre et la commande disparaissait
+        de son espace.
+
+        `?direction=purchase|sale` distingue, comme pour les offres, ce que
+        l'entreprise achete de ce qu'elle vend : meme objet, deux flux.
+      parameters:
+      - name: direction
+        in: query
+        schema:
+          type: string
+          enum: [purchase, sale]
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [draft, confirmed, preparing, ready, shipped, delivered, closed, cancelled]
+      - name: trade_counterparty_id
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginee des commandes du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/orders/{order}:
+    get:
+      operationId: api_get_trade_order
+      tags:
+      - Trade
+      summary: Detail d'une commande, expeditions incluses (#9779)
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/orders/{order}/transition:
+    post:
+      operationId: api_post_trade_order_transition
+      tags:
+      - Trade
+      summary: Faire avancer (ou annuler) une commande (#9779)
+      description: >-
+        Cycle : draft -> confirmed -> preparing -> ready -> shipped ->
+        delivered -> closed. Annulation possible AVANT `shipped` uniquement :
+        une fois la marchandise partie, un `cancelled` masquerait une
+        expedition reelle.
+
+        Le client envoie la CIBLE ; le verdict appartient a
+        `TradeOrderStateMachine` — aucune regle de transition n'est dupliquee
+        dans le controleur. Un statut inconnu est une 422 de validation, une
+        transition interdite une 422 `INVALID_STATUS_TRANSITION` qui nomme
+        `from` et `to`.
+
+        `cancel_reason` est EXIGE pour `cancelled` : une annulation sans motif
+        est inexploitable six mois plus tard.
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [draft, confirmed, preparing, ready, shipped, delivered, closed, cancelled]
+                cancel_reason:
+                  type: string
+                  maxLength: 500
+                  description: Exige quand `status` vaut `cancelled`
+                expected_delivery_at:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Commande dans son nouvel etat
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/documents:
+    get:
+      operationId: api_get_trade_documents
+      tags:
+      - Trade
+      summary: Lister les documents commerciaux d'un dossier (#9779)
+      description: >-
+        `trade_documents` existait depuis TRADE-005/#8480 (11 types normatifs,
+        disque `private`) sans aucune route. La checklist douaniere reclame la
+        facture commerciale qu'aucun ecran ne permettait de deposer.
+
+        `path` et `disk` ne sortent JAMAIS : le telechargement passe par une
+        route autorisee, pas par une URL de stockage.
+      parameters:
+      - name: trade_order_id
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      - name: trade_quote_id
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      - name: trade_rfq_id
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      - name: trade_deal_id
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      - name: type
+        in: query
+        schema:
+          $ref: '#/components/schemas/TradeDocumentType'
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginee des documents
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      operationId: api_post_trade_documents
+      tags:
+      - Trade
+      summary: Deposer un document commercial (#9779)
+      description: >-
+        `disk` et `path` ne sont JAMAIS acceptes du client : le stockage est
+        une decision serveur (disque `private`, chemin genere par uuid). Les
+        accepter permettrait d'ecrire ou de faire pointer un document vers un
+        fichier qu'on ne devrait pas lire.
+
+        `size_bytes` et `mime_type` sont CONSTATES a la reception
+        (`getSize()`, `getClientMimeType()`), jamais declares : un client peut
+        mentir sur la taille.
+
+        Le document doit etre rattache a au moins un dossier (commande, offre,
+        RFQ ou transaction) — un document orphelin serait introuvable dans
+        l'ecran du vendeur.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, type, title]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: 20 Mo maximum
+                type:
+                  $ref: '#/components/schemas/TradeDocumentType'
+                title:
+                  type: string
+                  maxLength: 200
+                trade_order_id:
+                  type: integer
+                  minimum: 1
+                trade_quote_id:
+                  type: integer
+                  minimum: 1
+                trade_rfq_id:
+                  type: integer
+                  minimum: 1
+                trade_deal_id:
+                  type: integer
+                  minimum: 1
+      responses:
+        '201':
+          description: Document depose
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/documents/{document}:
+    get:
+      operationId: api_get_trade_document
+      tags:
+      - Trade
+      summary: Detail d'un document commercial (#9779)
+      parameters:
+      - name: document
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Document
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistant OU appartenant a une autre entreprise (jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
+    delete:
+      operationId: api_delete_trade_document
+      tags:
+      - Trade
+      summary: Supprimer un document commercial (#9779)
+      description: >-
+        Suppression LOGIQUE de la ligne (`SoftDeletes`, tracabilite exigee par
+        une transaction internationale) ET suppression REELLE du fichier : un
+        document commercial retire ne doit pas rester lisible sur le disque.
+      parameters:
+      - name: document
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Document supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistant OU appartenant a une autre entreprise (jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/documents/{document}/download:
+    get:
+      operationId: api_get_trade_document_download
+      tags:
+      - Trade
+      summary: Telecharger un document commercial (#9779)
+      description: >-
+        Le fichier n'est jamais servi depuis une URL de stockage : sans cette
+        route, un document prive serait inatteignable ; avec une URL publique,
+        il serait lisible par qui devine le chemin. Le perimetre tenant est
+        applique par le model binding — 404 uniforme inter-tenant.
+      parameters:
+      - name: document
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Flux binaire du document
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistant, appartenant a une autre entreprise, ou fichier absent du disque
+        '429':
+          $ref: '#/components/responses/Error429'
+
+  /v1/crm/opportunities/{opportunity}/stage:
+    patch:
+      operationId: api_patch_crm_opportunity_stage
+      tags:
+      - CRM
+      summary: Deplacer une opportunite dans le pipeline (#9780)
+      description: >-
+        `GET /v1/crm/opportunities` existait et alimentait le kanban par
+        `stage`, mais AUCUNE route ne changeait `stage` : le pipeline etait en
+        lecture seule. Une affaire convertie restait figee et rien ne pouvait
+        etre marque gagne ou perdu.
+
+        `status` est DERIVE de `stage` (`won`/`lost` -> `closed`, sinon
+        `open`) : la requete ne l'accepte pas, pour qu'une ligne ne porte
+        jamais deux verites contradictoires.
+
+        `won` et `lost` sont TERMINAUX : en sortir renvoie 422. Rouvrir une
+        affaire gagnee reecrirait l'historique commercial (un CA deja compte
+        redeviendrait « en cours ») ; pour repartir, on cree une nouvelle
+        opportunite. Un retour en arriere dans le parcours OUVERT
+        (`prospecting` -> `qualification` -> `proposal` -> `negotiation`) est
+        en revanche permis : un client peut revenir a l'etape precedente.
+
+        `lost_reason` est EXIGE pour `lost` : une affaire perdue sans motif
+        rend le bilan trimestriel inexplicable.
+      parameters:
+      - name: opportunity
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [stage]
+              properties:
+                stage:
+                  type: string
+                  enum: [prospecting, qualification, proposal, negotiation, won, lost]
+                lost_reason:
+                  type: string
+                  maxLength: 500
+                  description: Exige quand `stage` vaut `lost`
+                amount:
+                  type: number
+                  minimum: 0
+                expected_close_date:
+                  type: string
+                  format: date
+                notes:
+                  type: string
+                  maxLength: 5000
+      responses:
+        '200':
+          description: Opportunite a sa nouvelle etape
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+
   /v1/paiements/internal/credit:
     post:
       operationId: api_post_v1_paiements_internal_credit
@@ -68641,6 +69272,26 @@ components:
       schema:
         type: string
         format: uuid
+    AccountType:
+      name: type
+      in: path
+      required: true
+      description: '#9815 — Type de compte. Valeurs acceptees : employee, user, travel_customer, super_admin. Un type inconnu est refuse (422) AVANT toute ecriture, pour ne pas creer une cle de cache fantome.'
+      schema:
+        type: string
+        enum:
+        - employee
+        - user
+        - travel_customer
+        - super_admin
+    AccountId:
+      name: id
+      in: path
+      required: true
+      description: '#9815 — Identifiant du compte dans son provider.'
+      schema:
+        type: integer
+        minimum: 1
     DeviceCode:
       name: deviceCode
       in: path
@@ -68737,6 +69388,20 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    TradeCounterpartyRole:
+      type: string
+      description: >-
+        Role metier d'une contrepartie. Une contrepartie porte PLUSIEURS roles
+        simultanement : un meme acteur est souvent fabricant ET fournisseur,
+        ou transitaire ET transporteur.
+      enum: [buyer, supplier, manufacturer, wholesaler, carrier, forwarder, customs_broker, inspector]
+    TradeDocumentType:
+      type: string
+      description: >-
+        Liste NORMATIVE des pieces d'une transaction internationale : elle sert
+        a la checklist documentaire douaniere autant qu'au rangement du dossier.
+      enum: [proforma_invoice, commercial_invoice, packing_list, bill_of_lading, airway_bill, certificate_of_origin, certificate_of_conformity, insurance_certificate, customs_declaration, contract, other]
+
     # Issue #9333 — entrée de la piste d'audit tenant.
     AuditLogEntry:
       type: object
@@ -73006,6 +73671,44 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/PlatformPlan'
+    PlatformAccountBanWrite:
+      type: object
+      description: '#9815 — Corps optionnel du bannissement. `hours` absent = bannissement permanent.'
+      properties:
+        hours:
+          type: integer
+          nullable: true
+          minimum: 1
+          maximum: 8760
+          description: Duree du bannissement en heures. Absent ou null = permanent.
+        reason:
+          type: string
+          nullable: true
+          maxLength: 500
+          description: Motif lisible, journalise et audite.
+    PlatformAccountBanState:
+      type: object
+      description: '#9815 — Etat de bannissement. Ne revele rien du compte lui-meme.'
+      properties:
+        account_type:
+          type: string
+          enum:
+          - employee
+          - user
+          - travel_customer
+          - super_admin
+        account_id:
+          type: integer
+        banned:
+          type: boolean
+        reason_recorded:
+          type: boolean
+          description: Vrai quand un bannissement est actif (le motif lui-meme n'est pas relu depuis le cache).
+    PlatformAccountBanStateResponse:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/PlatformAccountBanState'
     PlatformPlansResponse:
       type: object
       properties:

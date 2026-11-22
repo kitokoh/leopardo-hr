@@ -16,5 +16,35 @@ return [
     'profile_required_before_publish' => 'Yayinlamadan once ticari profilinizi tamamlayin.',
     'public_slug_required' => 'Sirketi yayinlamak icin genel bir slug ve ticari ad gereklidir.',
     'public_slug_taken' => 'Bu genel slug baska bir sirket tarafindan kullaniliyor.',
+    // #9777 — RFQ/teklif satirlari: secilen katalog urunu.
+    'lines' => [
+        'product_invalid' => 'Bu urun kataloğunuzda yok veya başka bir şirkete ait.',
+        'product_archived' => 'Bu urun arşivlenmiş: yeni bir satıra eklenemez.',
+    ],
+    // #9779 — karsilastrilar (musteri/tedarikci dizini).
+    'counterparties' => [
+        'roles_required' => 'En az bir rol belirtin: yonu bilmeden bir tarafla alim-satim yapilamaz.',
+        'verification_not_self_assertable' => 'Dogrulama ekibinizden bir uye tarafindan yapilir, burada beyan edilemez.',
+    ],
+
+    // #9779 — siparisler.
+    'orders' => [
+        'cancel_reason_required' => 'Iptal gerekcesini belirtin: olmadan siparis sonradan aciklanamaz.',
+    ],
+
+    // #9779 — ticari belgeler.
+    'documents' => [
+        'type_invalid' => 'Bu belge tipi duzenleyici listede yer almiyor.',
+        'title_required' => 'Belgeye bir baslik verin.',
+        'link_required' => 'Belgeyi bir siparise, teklife, talebe veya isleme baglayin.',
+    ],
+    // #9779 — teklif talebi ve teklif yasam donguleri.
+    'rfqs' => [
+        'awarded_quote_required' => 'Kazanan teklifi belirtin: hangisi oldugunu soylemeden vermek bir karar degildir.',
+        'awarded_quote_invalid' => 'Bu teklif bu teklif talebine ait degil.',
+    ],
+    'quotes' => [
+        'accept_has_its_own_route' => 'Teklifi kabul etmek siparis olusturur: durum degisikligi degil, kabul islemini kullanin.',
+    ],
     'search_query_too_short' => 'Arama en az :min karakter icermelidir.',
 ];

@@ -79,4 +79,17 @@ final class TradeProduct extends Model
     {
         return $this->hasMany(TradeRfqLine::class, 'trade_product_id');
     }
+
+    /**
+     * Lignes d'offre qui citent ce produit — #9777.
+     *
+     * Utile a l'archivage : un produit ne peut pas etre ajoute a une NOUVELLE
+     * ligne, mais les lignes existantes continuent de le referencer.
+     *
+     * @return HasMany<TradeQuoteLine, $this>
+     */
+    public function quoteLines(): HasMany
+    {
+        return $this->hasMany(TradeQuoteLine::class, 'trade_product_id');
+    }
 }

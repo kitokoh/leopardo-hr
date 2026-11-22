@@ -6,10 +6,13 @@ namespace App\Modules\Trade\Interfaces\Api\V1\Controllers;
 
 use App\Modules\Trade\Application\Actions\AcceptQuoteAction;
 use App\Modules\Trade\Application\Actions\SubmitQuoteAction;
+use App\Modules\Trade\Application\Actions\TransitionQuoteAction;
+use App\Modules\Trade\Domain\Enums\TradeQuoteStatus;
 use App\Modules\Trade\Domain\Exceptions\InvalidTradeStateTransitionException;
 use App\Modules\Trade\Domain\Models\TradeQuote;
 use App\Modules\Trade\Interfaces\Api\V1\Requests\QuoteAcceptRequest;
 use App\Modules\Trade\Interfaces\Api\V1\Requests\QuoteStoreRequest;
+use App\Modules\Trade\Interfaces\Api\V1\Requests\QuoteTransitionRequest;
 use App\Modules\Trade\Interfaces\Api\V1\Resources\TradeOrderResource;
 use App\Modules\Trade\Interfaces\Api\V1\Resources\TradeQuoteResource;
 use App\Shared\Enums\ApiError;
@@ -29,12 +32,15 @@ final class TradeQuoteController
     public function __construct(
         private readonly SubmitQuoteAction $submitQuote,
         private readonly AcceptQuoteAction $acceptQuote,
+        private readonly TransitionQuoteAction $transitionQuote,
     ) {}
 
     public function index(Request $request): JsonResponse
     {
         $query = TradeQuote::query()
-            ->with(['lines'])
+            // `lines.product` (#9777) : meme raison que sur les RFQ — le
+            // produit selectionne est affiche, donc eager-load obligatoire.
+            ->with(['lines.product'])
             ->orderByDesc('id');
 
         if ($request->filled('direction')) {
@@ -96,14 +102,14 @@ final class TradeQuoteController
             $submit,
         );
 
-        $quote->load('lines');
+        $quote->load('lines.product');
 
         return new JsonResponse(['data' => TradeQuoteResource::make($quote)->resolve()], 201);
     }
 
     public function show(TradeQuote $quote): JsonResponse
     {
-        $quote->load('lines');
+        $quote->load('lines.product');
 
         return new JsonResponse(['data' => TradeQuoteResource::make($quote)->resolve()]);
     }
@@ -131,5 +137,39 @@ final class TradeQuoteController
         $order->load('shipments');
 
         return new JsonResponse(['data' => TradeOrderResource::make($order)->resolve()], 201);
+    }
+
+    /**
+     * Fait avancer l'offre : `rejected | withdrawn | expired | under_review |
+     * negotiating | submitted`.
+     *
+     * `accepted` est exclu de la requete : accepter cree une commande, c'est
+     * `accept()` ci-dessus. L'autoriser ici produirait une offre « acceptee »
+     * sans commande — un etat qui ment sur ce qui s'est passe.
+     *
+     * Sans cette route, une offre refusee restait `submitted` indefiniment :
+     * le vendeur voyait « en attente » des affaires deja mortes.
+     */
+    public function transition(QuoteTransitionRequest $request, TradeQuote $quote): JsonResponse
+    {
+        /** @var string $status */
+        $status = $request->validated('status');
+
+        try {
+            $updated = $this->transitionQuote->execute(
+                $quote,
+                TradeQuoteStatus::from($status),
+                ['reason' => $request->validated('reason')],
+            );
+        } catch (InvalidTradeStateTransitionException $exception) {
+            return ApiError::INVALID_STATUS_TRANSITION->response([
+                'from' => $exception->from,
+                'to' => $exception->to,
+            ]);
+        }
+
+        $updated->load('lines.product');
+
+        return new JsonResponse(['data' => TradeQuoteResource::make($updated)->resolve()]);
     }
 }

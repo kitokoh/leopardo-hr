@@ -153,10 +153,38 @@ jobs:
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run start
         run: npx playwright test e2e/dashboard-mobile-nav.spec.ts e2e/auth-client-smoke.spec.ts e2e/manager-workday-smoke.spec.ts e2e/client-feature-gates.spec.ts e2e/client-visual-smoke.spec.ts e2e/payroll-compliance.spec.ts e2e/restaurant-reservations.spec.ts e2e/restaurant-stock.spec.ts e2e/kiosk.spec.ts e2e/shop-order.spec.ts e2e/restaurant-kitchen.spec.ts --project=chromium --workers=1
 
+      # #9779 — verification VISUELLE des onglets vendeur B2B de /trade-os.
+      #
+      # POURQUOI UNE ETAPE DEDIEE
+      # -------------------------
+      # `trade-os-visual-check.spec.ts` existait mais n'etait cite dans AUCUNE
+      # commande `playwright test` : le fichier etait versionne, ses 2 cas
+      # existaient, et rien ne les executait. Un spec jamais lance donne
+      # l'illusion d'une garantie — exactement le defaut corrige pour
+      # `TradeProductApiTest` (#9778).
+      #
+      # Il ne teste pas la logique metier (couverte par `Trade B2B CI`) : il
+      # rend la page dans un vrai Chromium avec la session du fixture
+      # `authenticated` et capture les deux onglets. Sans cette session, la
+      # page redirige vers /auth/login et les onglets n'existent jamais dans le
+      # DOM — un test qui « passe » sur un ecran de connexion ne prouve rien.
+      #
+      # Les captures sont jointes au rapport : un humain peut constater le
+      # rendu reel, pas seulement un code de sortie.
+      - name: Run trade-os B2B seller tabs visual check (#9779)
+        working-directory: front/web
+        env:
+          NEXT_PUBLIC_API_URL: ${{ vars.DEV_API_BASE_URL }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          PLAYWRIGHT_WEB_SERVER_COMMAND: npm run start
+        run: npx playwright test e2e/trade-os-visual-check.spec.ts --project=chromium --workers=1
+
       - name: Upload Playwright report
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: web-client-playwright-report
-          path: front/web/playwright-report
+          path: |
+            front/web/playwright-report
+            front/web/test-results
           if-no-files-found: ignore

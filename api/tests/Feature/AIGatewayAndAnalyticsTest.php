@@ -197,12 +197,13 @@ class AIGatewayAndAnalyticsTest extends TestCase
             ->assertStatus(503)
             ->assertJsonPath('error', 'STT_UNAVAILABLE');
 
-        // #7359 — `/voice/synthesize` est FAIL-CLOSED : sans fournisseur TTS
-        // opérationnel (ici `elevenlabs_key` à null), l'ancien contrat
-        // `200 + audio_url: null` a été remplacé par un 503 explicite. Un 200
-        // avec un audio nul était un succès apparent que le client ne pouvait
-        // pas distinguer d'un vrai audio. Ce test vérifiait encore l'ancien
-        // contrat : il est aligné sur le comportement livré.
+        // #9821 — #7359 a DÉLIBÉRÉMENT rendu `/voice/synthesize` fail-closed :
+        // sans fournisseur TTS opérationnel, l'endpoint répond 503
+        // `TTS_UNAVAILABLE` au lieu d'un 200 avec `audio_url: null` — un succès
+        // apparent que le client mobile ne pouvait pas distinguer d'un vrai
+        // audio. Ce test affirmait encore l'ancien contrat.
+        // Il garde toute sa valeur : il vérifie que l'absence de clé ne produit
+        // JAMAIS de faux succès.
         $this->postJson('/api/v1/ai/voice/synthesize', [
             'text' => 'Bonjour',
             'language' => 'fr',

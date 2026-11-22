@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Trade\Interfaces\Api\V1\Requests;
 
+use App\Modules\Trade\Domain\Rules\SelectableProductId;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -13,6 +14,12 @@ use Illuminate\Foundation\Http\FormRequest;
  * quantites le sont, le serveur calcule les totaux. Un champ `total_minor`
  * envoye serait simplement ignore — c'est ce qui garantit que le montant
  * affiche correspond toujours aux lignes reellement saisies.
+ *
+ * #9777 — `trade_product_id` est valide par {@see SelectableProductId} : le
+ * produit doit appartenir au tenant courant et ne pas etre archive. La regle
+ * est partagee avec `RfqStoreRequest` pour que les DEUX chemins d'ecriture
+ * appliquent le meme contrat — un correctif sur un seul des deux laisserait
+ * la moitie du trou ouverte.
  */
 final class QuoteStoreRequest extends FormRequest
 {
@@ -41,7 +48,7 @@ final class QuoteStoreRequest extends FormRequest
             'lines.*.quantity' => ['required', 'numeric', 'gt:0'],
             'lines.*.unit' => ['nullable', 'string', 'max:20'],
             'lines.*.unit_price_minor' => ['required', 'integer', 'min:0'],
-            'lines.*.trade_product_id' => ['nullable', 'integer', 'min:1'],
+            'lines.*.trade_product_id' => ['nullable', 'integer', 'min:1', new SelectableProductId],
             'lines.*.moq_quantity' => ['nullable', 'numeric', 'gt:0'],
             'lines.*.lead_time_days' => ['nullable', 'integer', 'min:0', 'max:3650'],
         ];

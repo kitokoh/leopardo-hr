@@ -35,8 +35,10 @@
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCompanyProfileController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCostEstimateController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCounterpartyController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeDocumentController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeHealthController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeMetaController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeOrderController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeProductController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradePromotionKitController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeQuoteController;
@@ -62,6 +64,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/rfqs', [TradeRfqController::class, 'store']);
             // Diffuser la RFQ : génère les liens de réponse (retournés une fois).
             Route::post('/rfqs/{rfq}/send', [TradeRfqController::class, 'send']);
+            // Faire avancer la consultation : `open -> awarded | closed |
+            // cancelled`. Sans cette route, une RFQ diffusée restait `open`
+            // pour toujours : le vendeur pouvait demander des prix et recevoir
+            // des offres, mais jamais désigner le gagnant ni clore. Le
+            // sourcing s'arrêtait au moment de décider.
+            Route::post('/rfqs/{rfq}/transition', [TradeRfqController::class, 'transition']);
         });
 
         // Le VENDEUR consulte la RFQ sur laquelle il est invité : même objet,
@@ -80,6 +88,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // opération d'ACHAT (l'engagement est pris par l'acheteur).
         Route::middleware('trade.role:sales,admin')->group(function (): void {
             Route::post('/quotes', [TradeQuoteController::class, 'store']);
+            // Faire avancer l'offre : `rejected | withdrawn | expired |
+            // under_review | negotiating`. `accepted` est exclu — accepter crée
+            // une commande, c'est la route `accept` ci-dessous. Sans cette
+            // route, une offre refusée restait `submitted` indéfiniment et le
+            // vendeur voyait « en attente » des affaires déjà mortes.
+            Route::post('/quotes/{quote}/transition', [TradeQuoteController::class, 'transition']);
         });
 
         Route::middleware('trade.role:purchase,admin')->group(function (): void {
@@ -141,6 +155,38 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // commerciale ordinaire, et la route le reflète.
         Route::middleware('trade.role:admin')->group(function (): void {
             Route::post('/counterparties/{counterparty}/verify', [TradeCounterpartyController::class, 'verify']);
+        });
+
+        // ── Commandes — #9779 ───────────────────────────────────────────────
+        // `AcceptQuoteAction` cree une `TradeOrder` en `confirmed` et
+        // `TradeOrderStateMachine` implementait tout le cycle... mais aucune
+        // route ne servait la ressource : la commande naissait puis
+        // disparaissait de l'espace vendeur. Une commande qu'on ne peut ni voir
+        // ni faire avancer n'est pas une commande.
+        //
+        // Lecture partagee : `?direction=purchase|sale` distingue ce que
+        // l'entreprise achete de ce qu'elle vend.
+        Route::middleware('trade.role:purchase,sales,logistics,admin')->group(function (): void {
+            Route::get('/orders', [TradeOrderController::class, 'index']);
+            Route::get('/orders/{order}', [TradeOrderController::class, 'show']);
+            // Faire avancer une commande : celui qui vend expedie, celui qui
+            // achete constate la livraison. Le verdict reste a la machine a
+            // etats — le controleur ne tranche pas.
+            Route::post('/orders/{order}/transition', [TradeOrderController::class, 'transition']);
+        });
+
+        // ── Documents commerciaux — #9779 ───────────────────────────────────
+        // `trade_documents` existait depuis #8480 (avec ses 11 types et le
+        // disque `private`) sans aucune route : l'exportateur ne pouvait pas
+        // deposer la facture commerciale que la checklist douaniere lui
+        // demande. Le telechargement passe par une route autorisee, jamais par
+        // une URL de stockage.
+        Route::middleware('trade.role:purchase,sales,logistics,admin')->group(function (): void {
+            Route::get('/documents', [TradeDocumentController::class, 'index']);
+            Route::get('/documents/{document}', [TradeDocumentController::class, 'show']);
+            Route::get('/documents/{document}/download', [TradeDocumentController::class, 'download']);
+            Route::post('/documents', [TradeDocumentController::class, 'store']);
+            Route::delete('/documents/{document}', [TradeDocumentController::class, 'destroy']);
         });
 
         // ── Profil commercial & publication vitrine (#9617) ────────────────

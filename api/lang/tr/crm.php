@@ -39,4 +39,10 @@ return [
         'process_sends_summary' => 'crm:process-campaign-sends — vadesi gelen: :due, çalışan: :running, gönderilen: :dispatched, başarısız: :failed.',
     ],
 
+    'opportunities' => [
+        'stage_invalid' => 'Bu asama satis hattinda yok.',
+        'stage_terminal' => 'Kazanilan veya kaybedilen firsat kesindir. Yeniden baslamak icin yeni bir firsat olusturun.',
+        'lost_reason_required' => 'Firsatin neden kaybedildigini belirtin: gerekce olmadan ceyrek degerlendirmesi aciklanamaz.',
+        'activity_stage_changed' => 'Asama degisti',
+    ],
 ];

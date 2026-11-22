@@ -1,0 +1,215 @@
+name: Trade B2B CI
+
+# POURQUOI CE WORKFLOW EXISTE (#9778)
+# ----------------------------------
+# La suite Feature de `tests.yml` dure ~80 min et son job `Backend` est rouge
+# sur `main` pour des causes INDEPENDANTES (#9774). Dans ce contexte, un
+# changement de la verticale Trade obtenait un verdict au bout d'une heure —
+# ou pas de verdict du tout.
+#
+# Symetriquement, `TradeProductApiTest.php` n'etait declare dans AUCUN des
+# ensembles lances par `tests.yml` (`--testsuite=FeatureRest`, `FeatureMvpFixture`,
+# `Unit`) : le fichier existait, ses 8 cas existaient, et rien ne les executait.
+# Un test jamais execute est pire qu'un test absent — il donne l'illusion d'une
+# garantie.
+#
+# Ce workflow donne un verdict REEL et CIBLE sur la verticale Trade en quelques
+# minutes, sur la meme stack que la suite complete (PHP 8.4 + PostgreSQL 16
+# PostGIS + Redis 7) via l'action composite `setup-backend-db` deja utilisee par
+# `backend-jobs-ci.yml`. Il ne remplace PAS `tests.yml`, qui reste la source de
+# verite pour l'ensemble du depot : il rend le verdict Trade exploitable.
+#
+# PORTEE
+#   tests/Feature/Trade/                       (dont TradeProductApiTest, #9778)
+#   tests/Feature/CRM/CrmOpportunityStageTest.php   (#9790)
+#   tests/Unit/Trade/
+#   tests/Feature/Security/TradeTenantIsolationTest.php
+#   tests/Feature/LeopardoPublic/TradePublicPublicationTest.php
+#
+# POURQUOI LE CRM EST ICI (#9790)
+# ------------------------------
+# Le pipeline commercial est l'outil qui rend une vente SUIVIE plutot
+# qu'isolee : c'est un outil vendeur, pas un outil d'administration. Le
+# fichier de test du deplacement d'etape est rattache a ce perimetre pour
+# qu'il soit execute a chaque changement de la verticale vendeur — sinon
+# il rejoindrait la longue liste des tests ecrits et jamais lances.
+#
+# Hors portee : le reste de la suite, cf. tests.yml.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/app/Modules/Trade/**'
+      - 'api/app/Modules/CRM/Interfaces/Api/V1/Controllers/CrmOpportunityController.php'
+      - 'api/app/Modules/CRM/Interfaces/Api/V1/Requests/TransitionOpportunityStageRequest.php'
+      - 'api/app/Modules/CRM/Application/Actions/TransitionOpportunityStageAction.php'
+      - 'api/tests/Feature/CRM/CrmOpportunityStageTest.php'
+      - 'api/routes/modules/trade.php'
+      - 'api/routes/modules/crm.php'
+      - 'api/routes/modules/trade_public.php'
+      - 'api/tests/Feature/Trade/**'
+      - 'api/tests/Unit/Trade/**'
+      - 'api/tests/Feature/Security/TradeTenantIsolationTest.php'
+      - 'api/tests/Feature/LeopardoPublic/TradePublicPublicationTest.php'
+      - 'api/database/migrations/tenant/*trade*'
+      - 'api/phpunit.xml'
+      - '.github/actions/setup-backend-db/**'
+      - '.github/workflows/trade-b2c-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/app/Modules/Trade/**'
+      - 'api/app/Modules/CRM/Interfaces/Api/V1/Controllers/CrmOpportunityController.php'
+      - 'api/app/Modules/CRM/Interfaces/Api/V1/Requests/TransitionOpportunityStageRequest.php'
+      - 'api/app/Modules/CRM/Application/Actions/TransitionOpportunityStageAction.php'
+      - 'api/tests/Feature/CRM/CrmOpportunityStageTest.php'
+      - 'api/routes/modules/trade.php'
+      - 'api/routes/modules/crm.php'
+      - 'api/routes/modules/trade_public.php'
+      - 'api/tests/Feature/Trade/**'
+      - 'api/tests/Unit/Trade/**'
+      - 'api/tests/Feature/Security/TradeTenantIsolationTest.php'
+      - 'api/tests/Feature/LeopardoPublic/TradePublicPublicationTest.php'
+      - 'api/database/migrations/tenant/*trade*'
+      - 'api/phpunit.xml'
+      - '.github/actions/setup-backend-db/**'
+      - '.github/workflows/trade-b2c-ci.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: trade-b2c-ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  trade-tests:
+    # 40 min : large, mais pas arbitraire. La verticale Trade represente ~80 cas
+    # et `CreatesMvpSchema` reconstruit le schema par fichier (cf. #6928). Ce
+    # plafond laisse de la marge sans masquer un vrai blocage.
+    timeout-minutes: 40
+    name: Trade (PHP 8.4 + PostgreSQL 16 + Redis 7)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.5
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo_user
+          POSTGRES_PASSWORD: leopardo_pass_test
+        ports:
+          - 5432:5432
+        # `-U leopardo_user` est OBLIGATOIRE : sans lui, `pg_isready` s'execute
+        # avec l'utilisateur ambiant du conteneur, role qui n'existe pas dans
+        # cette image (constat ATS #9477, repris de tests.yml).
+        options: >-
+          --health-cmd "pg_isready -U leopardo_user"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Setup backend (PHP + Composer + multi-tenant DB)
+        uses: ./.github/actions/setup-backend-db
+
+      - name: Assert every Trade FEATURE test file is registered in phpunit.xml
+        # #9778 — LE point de recidive. `tests.yml` lance des TESTSUITES NOMMEES
+        # (`--testsuite=FeatureRest`, `FeatureMvpFixture`, `Unit`), pas des
+        # repertoires.
+        #
+        # Pourquoi FEATURE seulement, et pas Unit : la testsuite `Unit` declare
+        # `<directory>tests/Unit</directory>` — tout fichier y est decouvert
+        # automatiquement, un fichier ne peut pas y etre orphelin. Les shards
+        # Feature, eux, listent des `<file>` explicites (seul mecanisme que
+        # paratest honore, cf. en-tete de generate-feature-shards.php) : un
+        # fichier absent de la liste n'est execute par AUCUNE suite nommee.
+        # C'est exactement par ce trou que TradeProductApiTest est passe.
+        #
+        # La garde #9707 couvre le chemin mort (une entree qui ne correspond a
+        # aucun fichier) mais pas le fichier orphelin (un fichier que rien ne
+        # reference). Cette etape ferme le trou, pas seulement l'instance.
+        working-directory: ./api
+        run: |
+          set -euo pipefail
+          missing=0
+          while IFS= read -r f; do
+            if ! grep -q "<file>${f}</file>" phpunit.xml; then
+              echo "::error file=api/${f}::${f} n'est declare dans aucune testsuite de api/phpunit.xml (#9778)."
+              missing=1
+            fi
+          done < <(find tests/Feature/Trade -name '*Test.php' | sort)
+          if [ "$missing" -ne 0 ]; then
+            echo "Ajoutez chaque fichier a la testsuite Trade ET a l'agregat FeatureRest."
+            exit 1
+          fi
+          echo "OK - tous les fichiers de test Feature/Trade sont enregistres."
+
+      - name: Assert the CRM opportunity stage test is registered in phpunit.xml
+        # #9790 — meme trou que #9778, autre verticale : un fichier de test
+        # ecrit, commite, et jamais execute parce qu'aucune suite nommee ne le
+        # reference. On le verifie ici pour que le test du pipeline ne
+        # rejoigne pas la liste des garanties illusoires.
+        working-directory: ./api
+        run: |
+          set -euo pipefail
+          f=tests/Feature/CRM/CrmOpportunityStageTest.php
+          if ! grep -q "<file>${f}</file>" phpunit.xml; then
+            echo "::error file=api/${f}::${f} n'est declare dans aucune testsuite de api/phpunit.xml (#9790)."
+            exit 1
+          fi
+          echo "OK - ${f} est enregistre."
+
+      - name: Run Trade tests
+        id: trade_tests
+        working-directory: ./api
+        # La configuration DB vient de phpunit.xml (DB_SEARCH_PATH=public,shared_tenants,
+        # SSL prefer, etc.) : ne pas la surcharger ici evite de diverger de tests.yml.
+        run: |
+          set -euo pipefail
+          mkdir -p storage/test-results
+          php artisan test \
+            tests/Feature/Trade \
+            tests/Feature/CRM/CrmOpportunityStageTest.php \
+            tests/Unit/Trade \
+            tests/Feature/Security/TradeTenantIsolationTest.php \
+            tests/Feature/LeopardoPublic/TradePublicPublicationTest.php \
+            --log-junit=storage/test-results/trade.xml
+
+      - name: Summarise
+        if: always()
+        working-directory: ./api
+        run: |
+          {
+            echo "### Trade B2B CI"
+            echo ""
+            echo "- Verdict: ${{ steps.trade_tests.outcome }}"
+            echo "- Stack: PHP 8.4 / PostgreSQL 16 (PostGIS) / Redis 7"
+            echo "- Scope: tests/Feature/Trade, CRM opportunity stage (#9790), "
+            echo "  tests/Unit/Trade, isolation tenant, vitrine publique"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload JUnit report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: trade-b2c-ci-junit
+          path: api/storage/test-results/trade.xml
+          if-no-files-found: ignore

@@ -7989,7 +7989,17 @@
     },
     "orders": {
       "title": "Commandes & expéditions",
-      "subtitle": "Commandes d'achat et de vente, expéditions et transitions."
+      "subtitle": "Commandes d'achat et de vente, expéditions et transitions.",
+      "status": {
+        "draft": "Brouillon",
+        "confirmed": "Confirmée",
+        "preparing": "En préparation",
+        "ready": "Prête",
+        "shipped": "Expédiée",
+        "delivered": "Livrée",
+        "closed": "Clôturée",
+        "cancelled": "Annulée"
+      }
     },
     "transport": {
       "title": "Transport",
@@ -7998,7 +8008,12 @@
     "costs": {
       "title": "Coûts & douane",
       "subtitle": "Coût total rendu par poste et préparation documentaire.",
-      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité."
+      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité.",
+      "status": {
+        "draft": "Brouillon",
+        "finalized": "Finalisé",
+        "archived": "Archivé"
+      }
     },
     "catalog": {
       "title": "Catalogue produits",
@@ -8036,7 +8051,8 @@
       "status": "Statut",
       "createdAt": "Créé le",
       "destination": "Destination",
-      "incoterm": "Incoterm"
+      "incoterm": "Incoterm",
+      "actions": "Actions"
     },
     "counterparties": {
       "title": "Contreparties",
@@ -8067,6 +8083,9 @@
       "verifiedBy": "Vérifié par l’équipe le",
       "saved": "Contrepartie enregistrée.",
       "deleted": "Contrepartie retirée du répertoire.",
+      "archive": "Archiver",
+      "archiveConfirm": "Archiver cette contrepartie ? Elle quittera le répertoire mais restera dans l'historique des dossiers et offres.",
+      "archived": "Contrepartie archivée.",
       "verified": "Contrepartie vérifiée.",
       "error": "Opération impossible. Vérifiez les champs et réessayez.",
       "nameRequired": "Le nom de la contrepartie est obligatoire.",
@@ -8092,6 +8111,131 @@
         "customs_broker": "Courtier en douane",
         "inspector": "Inspecteur"
       }
+    },
+    "transition": {
+      "awarded": "Attribuer",
+      "closed": "Clore",
+      "cancelled": "Annuler",
+      "rejected": "Refuser",
+      "withdrawn": "Retirer",
+      "refused": "Transition refusée : cet état ne le permet pas.",
+      "failed": "La transition a échoué. Réessayez."
+    },
+    "rfqs": {
+      "status": {
+        "draft": "Brouillon",
+        "open": "Diffusée",
+        "closed": "Clôturée",
+        "awarded": "Attribuée",
+        "cancelled": "Annulée"
+      }
+    },
+    "quotes": {
+      "status": {
+        "draft": "Brouillon",
+        "submitted": "Soumise",
+        "under_review": "En revue",
+        "negotiating": "En négociation",
+        "accepted": "Acceptée",
+        "rejected": "Refusée",
+        "expired": "Expirée",
+        "withdrawn": "Retirée"
+      }
+    },
+    "profile": {
+      "title": "Profil commercial",
+      "subtitle": "Ce que votre entreprise declare faire : directions, marches, conditions par defaut.",
+      "empty": "Aucun profil commercial enregistre. Renseignez-le pour apparaitre dans l'annuaire.",
+      "importEnabled": "Import",
+      "exportEnabled": "Export",
+      "domesticScope": "Marche domestique",
+      "hqCountry": "Pays du siege",
+      "marketsServed": "Marches desservis",
+      "productCategories": "Categories de produits",
+      "defaultCurrency": "Devise par defaut",
+      "defaultIncoterm": "Incoterm par defaut",
+      "notes": "Notes internes",
+      "listHint": "Separez les valeurs par une virgule.",
+      "save": "Enregistrer le profil",
+      "saved": "Profil enregistre.",
+      "error": "L'enregistrement du profil a echoue.",
+      "directionRequired": "Activez au moins une direction : import, export ou marche domestique.",
+      "publicationTitle": "Vitrine publique",
+      "publicationSubtitle": "Apparaitre dans l'annuaire /entreprises. C'est un acte distinct de l'enregistrement du profil.",
+      "isPublic": "Publier ma fiche dans l'annuaire",
+      "publicSlug": "Identifiant d'URL",
+      "publicName": "Nom commercial publie",
+      "publicDescription": "Description publique",
+      "publicCity": "Ville",
+      "slugHint": "Minuscules, chiffres et tirets. Unique et definitif.",
+      "publish": "Publier",
+      "unpublish": "Depublier",
+      "published": "Fiche publiee.",
+      "unpublished": "Fiche depubliee.",
+      "publishError": "La publication a echoue.",
+      "slugTaken": "Cet identifiant est deja pris par une autre entreprise.",
+      "slugRequired": "Un identifiant et un nom commercial sont requis pour publier.",
+      "profileRequiredBeforePublish": "Enregistrez d'abord votre profil commercial.",
+      "publicUrl": "Voir ma fiche publique",
+      "notPublished": "Non publiee"
+    },
+    "documents": {
+      "title": "Documents commerciaux",
+      "subtitle": "Factures, connaissements, certificats : ce que la checklist douaniere vous demande.",
+      "empty": "Aucun document depose.",
+      "new": "Deposer un document",
+      "type": "Type de document",
+      "titleField": "Intitule",
+      "file": "Fichier",
+      "upload": "Deposer",
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "deleteConfirm": "Supprimer definitivement ce document ?",
+      "download": "Telecharger",
+      "saved": "Document depose.",
+      "deleted": "Document supprime.",
+      "error": "L'operation a echoue.",
+      "typeRequired": "Choisissez un type de document.",
+      "titleRequired": "Donnez un intitule au document.",
+      "fileRequired": "Selectionnez un fichier.",
+      "linkRequired": "Rattachez le document a une commande, une offre ou une RFQ.",
+      "linkTo": "Rattacher a",
+      "noLink": "Aucun rattachement",
+      "size": "Taille",
+      "uploadedAt": "Depose le",
+      "linkedTo": "Rattache a",
+      "maxSize": "20 Mo maximum.",
+      "types": {
+        "proforma_invoice": "Facture proforma",
+        "commercial_invoice": "Facture commerciale",
+        "packing_list": "Liste de colisage",
+        "bill_of_lading": "Connaissement maritime",
+        "airway_bill": "Lettre de transport aerien",
+        "certificate_of_origin": "Certificat d'origine",
+        "certificate_of_conformity": "Certificat de conformite",
+        "insurance_certificate": "Attestation d'assurance",
+        "customs_declaration": "Declaration en douane",
+        "contract": "Contrat",
+        "other": "Autre"
+      }
+    },
+    "promotion": {
+      "title": "Kit de promotion",
+      "subtitle": "Ce qui manque a votre fiche publique, et un brouillon adosse a vos donnees reelles.",
+      "checklist": "Points a completer",
+      "draft": "Brouillon propose",
+      "headline": "Accroche",
+      "summary": "Resume",
+      "highlights": "Points forts",
+      "publication": "Etat de publication",
+      "published": "Publiee",
+      "notPublished": "Non publiee",
+      "openPublicPage": "Ouvrir ma fiche publique",
+      "disclaimer": "Ce kit ne publie rien : il propose. La publication reste votre decision, dans l'onglet Profil.",
+      "empty": "Aucun brouillon disponible : renseignez d'abord votre profil commercial.",
+      "done": "Fait",
+      "todo": "A completer",
+      "loadError": "Le kit de promotion n'a pas pu etre charge."
     }
   },
   "vtc": {

@@ -194,7 +194,18 @@ final class AutomationEngine
         $entityType = isset($context['entity_type']) && is_string($context['entity_type']) ? $context['entity_type'] : '';
         $entityId = isset($context['entity_id']) && is_string($context['entity_id']) ? $context['entity_id'] : '';
 
-        return substr(hash('sha256', $automation->id.'|'.$event.'|'.$entityType.'|'.$entityId), 0, 64);
+        // #9780 — la cle d'idempotence ne peut pas etre (automation, evenement,
+        // entite) seule : `crm.opportunity.stage_changed` se declenche
+        // PLUSIEURS fois pour la MEME opportunite (prospecting -> proposal ->
+        // won). Sans discriminant supplementaire, la deuxieme transition serait
+        // vue comme un rejeu et l'automatisation ne tournerait qu'une fois par
+        // affaire — silencieusement. `context['dedupe_key']` porte ce
+        // discriminant quand l'evenement en a besoin (l'etape cible, ici) ;
+        // les evenements de creation ne le fournissent pas et gardent leur
+        // cle d'origine.
+        $dedupe = isset($context['dedupe_key']) && is_string($context['dedupe_key']) ? $context['dedupe_key'] : '';
+
+        return substr(hash('sha256', $automation->id.'|'.$event.'|'.$entityType.'|'.$entityId.'|'.$dedupe), 0, 64);
     }
 
     /**

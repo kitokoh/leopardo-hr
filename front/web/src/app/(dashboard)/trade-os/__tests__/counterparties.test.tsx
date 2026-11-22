@@ -10,6 +10,21 @@ jest.mock('@/lib/api-client', () => ({
   },
 }));
 
+/**
+ * Session mockée : le bouton « Vérifier » dépend du rôle Trade de
+ * l'utilisateur courant (`isTradeAdmin`). Sans ce mock, `getStoredUser()`
+ * lirait un localStorage vide et le test ne pourrait pas distinguer un admin
+ * d'un manager opérationnel.
+ */
+jest.mock('@/lib/auth-session', () => ({
+  ...jest.requireActual('@/lib/auth-session'),
+  getStoredUser: jest.fn(() => null),
+}));
+
+import { getStoredUser } from '@/lib/auth-session';
+
+const mockedGetStoredUser = getStoredUser as jest.MockedFunction<typeof getStoredUser>;
+
 const mockedApiFetch = apiFetch as jest.MockedFunction<typeof apiFetch>;
 
 const counterpartiesPayload = {
@@ -57,6 +72,8 @@ beforeAll(() => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // Par défaut : un manager opérationnel, PAS admin de la verticale.
+  mockedGetStoredUser.mockReturnValue({ manager_role: 'dept' } as never);
 });
 
 /**
@@ -458,6 +475,222 @@ describe('Trade OS — contreparties (#9780)', () => {
         expect(screen.getByLabelText(/nom de la contrepartie/i)).toHaveValue(
           'Anadolu Tekstil A.Ş.',
         );
+        expect(screen.getByText('Anadolu Tekstil A.Ş.')).toBeInTheDocument();
+      } finally {
+        confirmSpy.mockRestore();
+      }
+    });
+  });
+
+  /**
+   * #9780 — « Vérifier » est réservé à l'admin de la verticale.
+   *
+   * `POST /trade/counterparties/{id}/verify` est derrière `trade.role:admin`
+   * côté API. Afficher le bouton à un manager `dept` promettrait une action
+   * qui renverrait 403 : l'écran ne doit pas montrer ce qu'il ne peut pas
+   * tenir. Le test vérifie les DEUX côtés — absent pour un non-admin, présent
+   * et fonctionnel pour un admin.
+   */
+  describe('vérification réservée à l’admin de la verticale', () => {
+    const openList = async () => {
+      render(<TradeDashboardPage />);
+      await userEvent.click(await screen.findByRole('tab', { name: /contreparties/i }));
+      await screen.findByText('Anadolu Tekstil A.Ş.');
+    };
+
+    it('n’affiche pas le bouton Vérifier à un manager opérationnel', async () => {
+      mockAll();
+      // `dept` obtient purchase/sales/logistics/reports — jamais `admin`.
+      mockedGetStoredUser.mockReturnValue({ manager_role: 'dept' } as never);
+
+      await openList();
+
+      expect(
+        screen.queryByRole('button', { name: /^vérifier Anadolu/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('affiche le bouton Vérifier au manager principal', async () => {
+      mockAll();
+      mockedGetStoredUser.mockReturnValue({ manager_role: 'principal' } as never);
+
+      await openList();
+
+      expect(
+        screen.getByRole('button', { name: /^vérifier Anadolu/i }),
+      ).toBeInTheDocument();
+    });
+
+    it('affiche le bouton Vérifier à un employé portant le grant trade.admin', async () => {
+      mockAll();
+      // Délégation BOS-013 : un non-manager peut porter `trade.admin`.
+      mockedGetStoredUser.mockReturnValue({
+        manager_role: null,
+        module_grants: ['trade.admin'],
+      } as never);
+
+      await openList();
+
+      expect(
+        screen.getByRole('button', { name: /^vérifier Anadolu/i }),
+      ).toBeInTheDocument();
+    });
+
+    it('envoie le POST de vérification avec un motif quand l’admin confirme', async () => {
+      mockedApiFetch.mockImplementation(async (url: string, init?: RequestInit) => {
+        if (url === '/trade/counterparties/11/verify' && init?.method === 'POST') {
+          return {
+            json: async () => ({
+              data: { ...counterpartiesPayload.data[0], verification_status: 'verified' },
+            }),
+          } as Response;
+        }
+        if (url.startsWith('/trade/counterparties')) {
+          return { json: async () => counterpartiesPayload } as Response;
+        }
+        return { json: async () => ({ data: [] }) } as Response;
+      });
+
+      mockedGetStoredUser.mockReturnValue({ manager_role: 'principal' } as never);
+      const promptSpy = jest.spyOn(window, 'prompt').mockReturnValue('Kbis contrôlé.');
+
+      try {
+        await openList();
+        await userEvent.click(screen.getByRole('button', { name: /^vérifier Anadolu/i }));
+
+        await waitFor(() => {
+          const post = mockedApiFetch.mock.calls.find(
+            ([url, init]) =>
+              url === '/trade/counterparties/11/verify' && init?.method === 'POST',
+          );
+          expect(post).toBeDefined();
+
+          const body = JSON.parse(String(post?.[1]?.body));
+          expect(body.status).toBe('verified');
+          expect(body.note).toBe('Kbis contrôlé.');
+        });
+      } finally {
+        promptSpy.mockRestore();
+      }
+    });
+
+    it('n’envoie rien si l’admin annule le motif', async () => {
+      mockAll();
+      mockedGetStoredUser.mockReturnValue({ manager_role: 'principal' } as never);
+      // `null` = annulation du prompt : pas de motif, donc pas de vérification.
+      const promptSpy = jest.spyOn(window, 'prompt').mockReturnValue(null);
+
+      try {
+        await openList();
+        await userEvent.click(screen.getByRole('button', { name: /^vérifier Anadolu/i }));
+
+        expect(
+          mockedApiFetch.mock.calls.some(([url]) =>
+            String(url).includes('/verify'),
+          ),
+        ).toBe(false);
+      } finally {
+        promptSpy.mockRestore();
+      }
+    });
+  });
+
+  /**
+   * #9780 — archivage d'une contrepartie depuis la liste.
+   *
+   * L'archivage réutilise `DELETE /trade/counterparties/{id}` : le serveur pose
+   * `deleted_at` (suppression douce), la fiche quitte le répertoire mais reste
+   * dans l'historique des dossiers et offres. La confirmation est posée AVANT
+   * l'appel — un clic de trop ne doit pas retirer une contrepartie en silence.
+   */
+  describe('archivage d’une contrepartie', () => {
+    const openList = async () => {
+      render(<TradeDashboardPage />);
+      await userEvent.click(await screen.findByRole('tab', { name: /contreparties/i }));
+      await screen.findByText('Anadolu Tekstil A.Ş.');
+    };
+
+    it('n’envoie aucun DELETE quand l’utilisateur refuse la confirmation', async () => {
+      mockAll();
+      const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(false);
+
+      try {
+        await openList();
+        await userEvent.click(screen.getByRole('button', { name: /^archiver Anadolu/i }));
+
+        // La question a bien été posée…
+        expect(confirmSpy).toHaveBeenCalled();
+        // …et le refus a bloqué l'appel.
+        expect(
+          mockedApiFetch.mock.calls.some(
+            ([url, init]) => url === '/trade/counterparties/11' && init?.method === 'DELETE',
+          ),
+        ).toBe(false);
+
+        // La fiche est toujours dans la liste.
+        expect(screen.getByText('Anadolu Tekstil A.Ş.')).toBeInTheDocument();
+      } finally {
+        confirmSpy.mockRestore();
+      }
+    });
+
+    it('archive la fiche et la retire de la liste après confirmation', async () => {
+      mockedApiFetch.mockImplementation(async (url: string, init?: RequestInit) => {
+        if (url === '/trade/counterparties/11' && init?.method === 'DELETE') {
+          return { json: async () => null } as Response;
+        }
+        if (url.startsWith('/trade/counterparties')) {
+          return { json: async () => counterpartiesPayload } as Response;
+        }
+        return { json: async () => ({ data: [] }) } as Response;
+      });
+
+      const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
+
+      try {
+        await openList();
+        await userEvent.click(screen.getByRole('button', { name: /^archiver Anadolu/i }));
+
+        await waitFor(() => {
+          expect(
+            mockedApiFetch.mock.calls.some(
+              ([url, init]) => url === '/trade/counterparties/11' && init?.method === 'DELETE',
+            ),
+          ).toBe(true);
+        });
+
+        // La fiche archivée quitte le répertoire…
+        await waitFor(() => {
+          expect(screen.queryByText('Anadolu Tekstil A.Ş.')).not.toBeInTheDocument();
+        });
+        // …et l'autre fiche n'est pas touchée.
+        expect(screen.getByText('SARL Import Ouest')).toBeInTheDocument();
+        // Le message parle d'archivage, pas de suppression définitive.
+        expect(await screen.findByText(/contrepartie archivée/i)).toBeInTheDocument();
+      } finally {
+        confirmSpy.mockRestore();
+      }
+    });
+
+    it('affiche l’erreur et garde la fiche quand l’archivage échoue', async () => {
+      mockedApiFetch.mockImplementation(async (url: string, init?: RequestInit) => {
+        if (url === '/trade/counterparties/11' && init?.method === 'DELETE') {
+          throw new Error('réseau indisponible');
+        }
+        if (url.startsWith('/trade/counterparties')) {
+          return { json: async () => counterpartiesPayload } as Response;
+        }
+        return { json: async () => ({ data: [] }) } as Response;
+      });
+
+      const confirmSpy = jest.spyOn(window, 'confirm').mockReturnValue(true);
+
+      try {
+        await openList();
+        await userEvent.click(screen.getByRole('button', { name: /^archiver Anadolu/i }));
+
+        expect(await screen.findByText(/opération impossible/i)).toBeInTheDocument();
+        // Un échec ne retire pas la fiche de la liste.
         expect(screen.getByText('Anadolu Tekstil A.Ş.')).toBeInTheDocument();
       } finally {
         confirmSpy.mockRestore();

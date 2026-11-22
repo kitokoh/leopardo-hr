@@ -20,6 +20,66 @@ Surface : `api/database/migrations/tenant/2026_11_23_000100_9793_add_batch_id_to
 **Couverture exécutée** — `php8.4 vendor/bin/pest --filter=EduFeeBatchReceiptTest` → **6 passed (32 assertions)** ; `--filter=EduFee` → **43 passed (298 assertions)** de non-régression ; `phpstan analyse -c phpstan-strict.neon app/Modules/EduManager` → **0 erreur** ; `pint` → 0 style issue ; `check-module-isolation.sh` → aucun nouvel import croisé ; `check-i18n-catalog-parity.sh` → parité OK (4 langues) ; `validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `_local_governance_check.py` → PASS ; `tsc --noEmit` → 0 erreur ; `eslint --max-warnings 0` → 0 erreur ; `jest` → **9 passed** (dont 2 nouveaux).
 
 **Non couvert** — la suite Feature complète n'a pas été relancée (blocage de migration PostGIS dans le sandbox, cf. entrées précédentes) : la mesure reste le run CI. Le rendu navigateur du reçu PDF n'a pas été ouvert dans un lecteur : le test vérifie l'en-tête `application/pdf` et la signature `%PDF`, pas la mise en page.
+## 2026-11-23 — Trade OS : vérifier et archiver une contrepartie depuis l'écran vendeur (PR #9798, #9780)
+
+Surface : `front/web/src/app/(dashboard)/trade-os/components/CounterpartyList.tsx`, `types.ts`, `front/web/src/app/(dashboard)/trade-os/page.tsx`, `front/web/src/app/(dashboard)/trade-os/__tests__/counterparties.test.tsx`, `shared/i18n/locales/{fr,en,tr,ar}.json`.
+
+**Pourquoi c'est un scénario de test** : deux opérations existaient côté API sans aucun point d'entrée à l'écran. `POST /v1/trade/counterparties/{id}/verify` est derrière `trade.role:admin` et exige un motif — le bouton était monté pour personne (`canVerify={false}` en dur). Et l'action de la liste s'appelait « Supprimer » alors que le serveur fait une suppression **douce** (`deleted_at`) : le mot promettait une destruction qui n'a pas lieu.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| un manager `dept` ne voit **pas** le bouton « Vérifier » | il cliquerait et recevrait 403 — l'écran promettrait ce qu'il ne peut pas tenir |
+| un manager `principal` voit le bouton « Vérifier » | l'admin de la verticale n'aurait aucun moyen de vérifier une fiche |
+| un employé portant le grant `trade.admin` voit le bouton | la délégation BOS-013 serait inopérante à l'écran |
+| cliquer « Vérifier » envoie `POST /trade/counterparties/{id}/verify` avec `status: verified` et le motif saisi | la décision ne serait pas tracée avec son auteur et sa date |
+| annuler le prompt de motif n'envoie **aucune** requête | une vérification sans motif serait enregistrée, ou une décision vide |
+| refuser la confirmation d'archivage n'envoie **aucun** `DELETE` | une contrepartie quitterait le répertoire sur un clic de trop |
+| confirmer l'archivage envoie `DELETE /trade/counterparties/{id}` | la fiche resterait dans le répertoire malgré la confirmation |
+| après archivage, la fiche quitte la liste et les autres sont intactes | l'écran mentirait sur l'état du répertoire, ou retirerait la mauvaise ligne |
+| le message d'archivage parle d'archivage, pas de suppression définitive | l'utilisateur croirait avoir détruit l'historique des dossiers |
+| un archivage en échec affiche l'erreur et **garde** la fiche | l'écran afficherait une disparition qui n'a pas eu lieu |
+
+**Non couvert** — le rendu navigateur réel des deux boutons : la mesure est le run CI.
+
+## 2026-11-22 — Plateforme : bannissement de compte exposé en API (issue #9815)
+
+Surface : `api/routes/api.php` (groupe `platform` : `POST|DELETE|GET /v1/platform/accounts/{type}/{id}/ban`), `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformAccountBanController.php` (nouveau), `api/app/Modules/Platform/Interfaces/Api/V1/Requests/BanAccountRequest.php` (nouveau), `api/app/Core/Auth/Infrastructure/Services/TokenRevocationService.php` (constantes), `api/openapi.yaml`, `api/tests/Feature/Security/PlatformAccountBanApiTest.php` (nouveau), `dev-hub/tools/check-platform-mfa-coverage.py`.
+
+**Pourquoi c'est un scénario de test** : le bannissement existait depuis #9808 mais **uniquement** via `php artisan auth:ban-account`. Le docblock de cette commande annonçait déjà un `PlatformAccountBanController` qui n'existait pas — la documentation décrivait une surface absente. Un opérateur plateforme ne pouvait donc couper un accès compromis qu'en ouvrant un shell sur le serveur, ce qui exclut toute réponse à incident depuis la console.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `POST …/ban` avec `hours: 24` puis `GET …/ban` → `banned: true`, `until` renseigné | un bannissement temporaire non daté est indistinguable d'un permanent |
+| `POST …/ban` sans `hours` → permanent (`until: null`) | la durée par défaut doit être explicite, pas un défaut implicite de 24 h |
+| le jeton du compte banni est refusé à la requête **suivante** | le bannissement doit couper l'accès, pas seulement s'afficher |
+| `DELETE …/ban` → l'accès revient à la requête suivante | un bannissement irréversible obligerait à recréer le compte |
+| `DELETE …/ban` sur un compte non banni → **200** (idempotent) | un 404 forcerait l'appelant à interroger l'état avant un geste déjà sans effet |
+| `GET …/ban` ne sérialise **ni nom ni e-mail** | l'endpoint de sécurité ne doit pas devenir un annuaire de comptes |
+| `type` inconnu (`typo`) → **422 sans clé fantôme** | une clé `auth:banned:typo:42` ne serait jamais relue par `AccountStatusGuard` : bannissement silencieusement sans effet |
+| un rôle sans `accounts.ban` (`finance`) → 403 | bannir est un geste de sécurité distinct de `users.manage` |
+| `support` et `ops` peuvent bannir | la réponse à incident ne doit pas exiger le rôle `super_admin` |
+
+**Couverture exécutée** — `php -l` sur les 5 fichiers PHP (0 erreur) ; `check-openapi-route-coverage.py` → exit 0 (les 3 routes documentées) ; `yaml.safe_load(api/openapi.yaml)` OK ; `check-platform-mfa-coverage.py --self-test` → 6/6 ; `check-form-request-guard.py` → exit 0 (dette figée 434) ; `check-routes-tenant-platform.sh` → 2 544 routes, aucune fuite R1/R2/R3 ; `check-unrouted-controllers.sh` → 0 orphelin ; `check-phpunit-file-paths.py` → 2 659 entrées, 0 orpheline ; shards régénérés (le test est listé) ; `check-i18n-catalog-parity.sh` → OK (4 langues).
+
+**Non couvert** — exécution locale de PHPUnit (pas de `vendor/` ni de PostgreSQL dans l'espace de travail) : `PlatformAccountBanApiTest` (9 cas) est la mesure du run CI.
+
+## 2026-11-22 — Facturation des abonnements : deux tables `invoices` divergentes (issue #9806)
+
+Surface : `api/database/migrations/public/2026_11_22_000100_9806_align_public_invoices_with_billing_schema.php`, `api/tests/Feature/Billing/PublicInvoicesSchemaParityTest.php`. Aucun changement de route, de contrat d'API ni de comportement produit hors correction.
+
+**Pourquoi c'est un scénario de test** : `billing:generate-invoices` échouait hors CI (`column "subscription_id" does not exist`) et ne produisait donc **aucune** facture d'abonnement. La cause n'est pas le job mais la **divergence de deux tables homonymes** : le modèle `Invoice` n'épingle aucun schéma et résout par le `search_path`, qui vaut `shared_tenants` en CI (table riche, 17 colonnes) et `public,shared_tenants` en dev/production (table pauvre, 13 colonnes trouvée en premier, ce qui fait **sauter** la migration tenant). La garde `if (! schemaTableExists('invoices'))` testait l'**existence**, pas la **conformité**.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `public.invoices` porte toutes les colonnes écrites par le modèle | la facturation reste muette en production tout en étant verte en CI |
+| le modèle résout une table conforme sous le `search_path` de **production** | la parité de colonnes seule ne prouve pas que le chemin réel fonctionne |
+| `billing:generate-invoices` produit une facture (numéro, `subscription_id`, `total`) | le correctif pourrait aligner les colonnes sans débloquer la commande |
+| `total` backfillé depuis `amount` pour les lignes héritées | les factures historiques resteraient à `total = null` |
+| la migration est additive et idempotente | rejouer la migration ne doit ni perdre ni dupliquer de données |
+
+**Couverture exécutée** — `php -l` sur la migration ; `PublicInvoicesSchemaParityTest` → **3 passed (13 assertions)** ; **contrôle négatif : correctif retiré → 3/3 échecs**, dont la reproduction exacte du bug (`0 invoice`) ; non-régression `GenerateMonthlyInvoicesTest` → **14/14**. Vérification en HTTP réel sur l'API locale (PHP 8.4.28, PostgreSQL 15 + PostGIS) : facture `LEO-2026-0001` / 79,00 EUR générée, `POST /api/v1/billing/checkout` → **200** avec appel sortant réel, webhook signé `invoice.paid` → statut `paid` et paiement 79,00 EUR `completed`, rejeu du webhook idempotent (`replayed: true`, un seul paiement).
+
+**Non couvert** — la suite Backend complète et `phpstan analyse` sur tout le dépôt (OOM killer, 2 Go de RAM) : la mesure est le run CI. La convergence de `/health` vers `main` en production n'a pas pu être observée (service Render suspendu, projet Vercel désactivé).
 
 ## 2026-11-22 — École : encaissement en lot et exports CSV du guichet (PR #9792, #9791)
 
@@ -161,6 +221,27 @@ Surface : `api/routes/modules/trade.php` (`GET|POST /v1/trade/counterparties`, `
 **Couverture exécutée** — `phpunit` sur PostgreSQL 15 réel : **31 tests, 132 assertions, verts** (12 Unit `TradePromotionKitBuilderTest` + 11 `TradeCounterpartyApiTest` + 8 `TradeSearchApiTest`) ; `phpstan` level 8 sur les 9 fichiers nouveaux → **0 erreur** ; `yaml.safe_load(api/openapi.yaml)` OK ; `check-openapi-route-coverage.py --strict-staleness` → **0 nouvelle route non couverte** ; gardes `search_path` (dette 0), `form-request` (434 figées), `strict_types` (9/9), `accented-messages` (0 nouvelle), `module-route-middleware` → exit 0.
 
 **Non couvert** — `pint` (exige PHP ≥ 8.3, indisponible sur Debian 12 dans le sandbox) ; le rendu navigateur réel des 5 formulaires Toolbox.
+
+## 2026-11-22 — Vendeur B2B : pipeline CRM en écriture et 13 routes Trade sans contrat (PR #9784, issues #9777, #9778, #9779, #9790)
+
+Surface : `api/routes/modules/crm.php` (`PATCH /v1/crm/opportunities/{opportunity}/stage`, `whereNumber`), `api/routes/modules/trade.php` (contreparties, commandes, documents — 13 opérations), `api/app/Modules/CRM/Interfaces/Api/V1/Controllers/CrmOpportunityController.php`, `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/{TradeCounterpartyController,TradeOrderController,TradeDocumentController}.php`, `api/openapi.yaml`, `front/web/src/app/(dashboard)/trade-os/page.tsx` (onglets Commandes, Contreparties).
+
+**Pourquoi c'est un scénario de test** : `GET /crm/opportunities` alimentait un kanban par `stage`, mais hors `ConvertLeadAction` **aucune route n'écrivait** dans `crm_opportunities` — le pipeline était en lecture seule, une affaire convertie restait figée et rien ne pouvait être marqué gagné ou perdu. Côté Trade, trois outils vendeur (contreparties, commandes, documents) avaient table + modèle + factory et **aucune route** : sans contreparties créables, `POST /trade/rfqs/{rfq}/send` (qui exige `counterparty_ids`) était inutilisable par un tenant réel.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `PATCH /crm/opportunities/{id}/stage` avec une étape hors whitelist → 422 | `CrmOpportunityStage` n'était validée sur aucun chemin d'écriture : la colonne n'était qu'un `string(80)` |
+| `status` **dérivé** de `stage` (`won`/`lost` → `closed`) | deux vérités dans la même ligne : un `status` fourni par le client pourrait contredire l'étape |
+| `won`/`lost` **terminaux** (rejouer → 422) | rouvrir réécrirait l'historique commercial : un CA déjà compté redeviendrait « en cours » |
+| retour en arrière permis dans le parcours **ouvert** | un client qui revient sur son budget forcerait le commercial à mentir sur l'étape |
+| `lost_reason` exigé et conservé avec l'étape précédente | une affaire perdue sans motif ne dit rien, et l'étape d'origine serait perdue |
+| contrepartie d'un AUTRE tenant → **404**, jamais 403 | l'API ne doit pas révéler l'existence d'une ressource d'un autre tenant |
+| `POST /trade/rfqs/{rfq}/send` avec `counterparty_ids` d'un tenant réel → 200 | la diffusion d'une demande de prix, cœur du sourcing B2B, restait impossible |
+| `TradeProductApiTest` déclaré dans une testsuite de `phpunit.xml` | un test jamais exécuté donne l'illusion d'une garantie (garde anti-test-orphelin) |
+
+**Couverture exécutée** — `php -l` sur les fichiers touchés ; Pint `--test` (0 écart) ; `check-openapi-route-coverage.py` (0 nouvelle route non couverte) ; `tsc --noEmit` 0 erreur ; le workflow `Trade B2B CI` mesure la suite (177 passes, 0 échec, 845 assertions au dernier run).
+
+**Non couvert** — exécution locale de PHPUnit (pas de PostgreSQL dans l'espace de travail) et le rendu navigateur des deux nouveaux onglets (vérifié par TypeScript, pas visuellement).
 
 ## 2026-11-22 — Quota par plan : une fenêtre réelle de 60 s rendait le test instable (issue #9793)
 

@@ -9,8 +9,11 @@ namespace App\Modules\CRM\Domain\Enums;
  *
  * Whitelist stricte : un événement inconnu est refusé à l'écriture. Les
  * événements `crm.message.*` sont émis par le module CRM (CrmChannelService) ;
- * les événements `crm.*.created` / `crm.opportunity.stage_changed` seront
- * émis par le socle V0 une fois mergé (contrat documenté).
+ * `crm.opportunity.stage_changed` est émis par
+ * {@see \App\Modules\CRM\Application\Actions\TransitionOpportunityStageAction}
+ * (#9790). Les événements `crm.*.created` restent à brancher : leur émetteur
+ * n'existe pas encore, et un faux émetteur donnerait l'illusion que les
+ * automatisations se déclenchent.
  */
 final class CrmAutomationTrigger
 {

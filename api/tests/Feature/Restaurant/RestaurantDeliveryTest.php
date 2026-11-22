@@ -56,7 +56,9 @@ class RestaurantDeliveryTest extends TestCase
 
         $ids = app(TenantManager::class)->withinTenant($company, function (): array {
             $branch = RestaurantBranch::factory()->create();
-            $rider = RestaurantDeliveryRider::factory()->create(['branch_id' => $branch->id]);
+            // #9820 — `is_active` explicite : le cycle nominal exige un livreur
+            // actif, il ne doit pas dépendre du hasard de la factory.
+            $rider = RestaurantDeliveryRider::factory()->create(['branch_id' => $branch->id, 'is_active' => true]);
             $order = RestaurantOrder::factory()->create([
                 'branch_id' => $branch->id,
                 'order_type' => 'delivery',

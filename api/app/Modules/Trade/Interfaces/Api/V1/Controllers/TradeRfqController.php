@@ -6,10 +6,13 @@ namespace App\Modules\Trade\Interfaces\Api\V1\Controllers;
 
 use App\Modules\Trade\Application\Actions\CreateRfqAction;
 use App\Modules\Trade\Application\Actions\SendRfqAction;
+use App\Modules\Trade\Application\Actions\TransitionRfqAction;
+use App\Modules\Trade\Domain\Enums\TradeRfqStatus;
 use App\Modules\Trade\Domain\Exceptions\InvalidTradeStateTransitionException;
 use App\Modules\Trade\Domain\Models\TradeRfq;
 use App\Modules\Trade\Interfaces\Api\V1\Requests\RfqSendRequest;
 use App\Modules\Trade\Interfaces\Api\V1\Requests\RfqStoreRequest;
+use App\Modules\Trade\Interfaces\Api\V1\Requests\RfqTransitionRequest;
 use App\Modules\Trade\Interfaces\Api\V1\Resources\TradeRfqResource;
 use App\Shared\Enums\ApiError;
 use Illuminate\Http\JsonResponse;
@@ -28,6 +31,7 @@ final class TradeRfqController
     public function __construct(
         private readonly CreateRfqAction $createRfq,
         private readonly SendRfqAction $sendRfq,
+        private readonly TransitionRfqAction $transitionRfq,
     ) {}
 
     /**
@@ -37,7 +41,10 @@ final class TradeRfqController
     public function index(Request $request): JsonResponse
     {
         $query = TradeRfq::query()
-            ->with(['lines'])
+            // `lines.product` (#9777) : la ressource de ligne expose le produit
+            // selectionne — sans eager loading, chaque ligne ferait sa propre
+            // requete (N+1) sur une liste paginee.
+            ->with(['lines.product'])
             ->orderByDesc('id');
 
         if ($request->filled('status')) {
@@ -70,14 +77,14 @@ final class TradeRfqController
             isset($validated['trade_deal_id']) ? (int) $validated['trade_deal_id'] : null,
         );
 
-        $rfq->load(['lines', 'invitations']);
+        $rfq->load(['lines.product', 'invitations']);
 
         return new JsonResponse(['data' => TradeRfqResource::make($rfq)->resolve()], 201);
     }
 
     public function show(TradeRfq $rfq): JsonResponse
     {
-        $rfq->load(['lines', 'invitations', 'quotes']);
+        $rfq->load(['lines.product', 'invitations', 'quotes']);
 
         return new JsonResponse(['data' => TradeRfqResource::make($rfq)->resolve()]);
     }
@@ -106,7 +113,7 @@ final class TradeRfqController
             ]);
         }
 
-        $updated->load(['lines', 'invitations']);
+        $updated->load(['lines.product', 'invitations']);
 
         return new JsonResponse([
             'data' => TradeRfqResource::make($updated)->resolve(),
@@ -121,5 +128,42 @@ final class TradeRfqController
             ),
             'notice' => 'Ces liens de reponse ne sont affiches qu\'une fois. Conservez-les avant de fermer cette page.',
         ]);
+    }
+
+    /**
+     * Fait avancer la RFQ : `open -> awarded | closed | cancelled`.
+     *
+     * Sans cette route, une consultation diffusee restait `open` pour
+     * toujours : le vendeur pouvait demander des prix et recevoir des offres,
+     * mais jamais designer le gagnant ni clore. Le sourcing s'arretait au
+     * moment de decider.
+     *
+     * Le verdict reste a `TradeRfqStateMachine` : une transition interdite est
+     * un 422 metier, pas une erreur serveur.
+     */
+    public function transition(RfqTransitionRequest $request, TradeRfq $rfq): JsonResponse
+    {
+        /** @var string $status */
+        $status = $request->validated('status');
+
+        try {
+            $updated = $this->transitionRfq->execute(
+                $rfq,
+                TradeRfqStatus::from($status),
+                [
+                    'awarded_quote_id' => $request->validated('awarded_quote_id'),
+                    'close_reason' => $request->validated('close_reason'),
+                ],
+            );
+        } catch (InvalidTradeStateTransitionException $exception) {
+            return ApiError::INVALID_STATUS_TRANSITION->response([
+                'from' => $exception->from,
+                'to' => $exception->to,
+            ]);
+        }
+
+        $updated->load(['lines.product', 'invitations', 'quotes']);
+
+        return new JsonResponse(['data' => TradeRfqResource::make($updated)->resolve()]);
     }
 }
