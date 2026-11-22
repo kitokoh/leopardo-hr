@@ -17,6 +17,7 @@
  * des professionnels inscrits.
  */
 
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradePublicInquiryController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradePublicProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -33,4 +34,18 @@ Route::middleware(['throttle:shop-public'])
         Route::get('/companies/{slug}/products', [TradePublicProfileController::class, 'products'])
             ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
             ->name('trade.public.company.products');
+
+        // #9779 — demande de devis d'un visiteur PUBLIC.
+        //
+        // La fiche et le catalogue rendaient le vendeur VISIBLE, mais un
+        // acheteur qui trouvait le bon fournisseur n'avait aucun moyen de le
+        // joindre : la visite ne produisait jamais de contact. Cette route
+        // cree un lead CRM dans le tenant du vendeur (`source` =
+        // `trade.public.inquiry`), ce qui rend la fiche publique MESURABLE.
+        //
+        // Meme perimetre opt-in et meme 404 uniforme que la fiche ; reponse
+        // `202` sans identifiant de lead ni nom de tenant.
+        Route::post('/companies/{slug}/inquiries', [TradePublicInquiryController::class, 'store'])
+            ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
+            ->name('trade.public.company.inquiries');
     });
