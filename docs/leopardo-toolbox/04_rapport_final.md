@@ -32,10 +32,10 @@ Issue #9158 fermée.
 
 **Décisions #9156 / #9157 (2026-11-09)** : tranchées et documentées, puis
 implémentées dans le commit `98dd2cb53` (PR #9266) :
-- `docs/DECISIONS/2026-11-09-toolbox-persistance-mes-outils.md` — option A,
+- `docs/decisions/2026-11-09-toolbox-persistance-mes-outils.md` — option A,
   `localStorage` reste la source de vérité (clé versionnée
   `leopardo_toolbox_state_v1`, façade `lib/storage.ts`).
-- `docs/DECISIONS/2026-11-09-toolbox-administration-metadonnees.md` — option A,
+- `docs/decisions/2026-11-09-toolbox-administration-metadonnees.md` — option A,
   catalogue statique versionné + champ `enabled` (masquage par PR, sans table).
 
 **Lot 3 (2026-11-13)** : câblage de « Mes outils » dans l'interface publique.
@@ -255,7 +255,7 @@ rien n'est envoyé à un serveur.
 1. ✅ ~~Fournir un token GitHub valide~~ — fait ; branches poussées, issues créées,
    PR mergées dans `main` (#9159, #9182, #9190, #9266, #9441).
 2. ✅ ~~Trancher #9156 et #9157~~ — fait le 2026-11-09, deux ADR dans
-   `docs/DECISIONS/`, option A retenue pour les deux.
+   `docs/decisions/`, option A retenue pour les deux.
 3. ✅ ~~Implémenter le lot 3 d'outils (#9158)~~ — fait (PR #9190).
 4. ✅ ~~Câbler « Mes outils » dans l'UI~~ — fait (PR #9441).
 5. ✅ ~~Partage d'un résultat par lien~~ — fait (issue #9454, PR #9455, merge
