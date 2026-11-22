@@ -97,6 +97,15 @@ final class PublicDocumentShareController
             }
         }
 
+        // `ensure()` a rafraîchi le modèle : le chemin est désormais renseigné.
+        // La variable locale explicite garde le type étroit pour PHPStan (le
+        // `refresh()` du service n'est pas visible depuis l'analyse statique).
+        $pdfPath = $document->pdf_path;
+
+        if ($pdfPath === null) {
+            return $this->errorResponse('DOCUMENT_PDF_NOT_READY', 404);
+        }
+
         $filename = $document->type.'-'.$document->number.'.pdf';
 
         // #5521 — no-referrer strict : le token ne doit pas fuiter via Referer
@@ -104,7 +113,7 @@ final class PublicDocumentShareController
         // NB : Storage::download() renvoie un StreamedResponse Symfony — la
         // macro Laravel ->header() n'existe pas dessus (500 en prod) ; on
         // pose le header via HeaderBag (#5522 — fix main 2026-08-25).
-        $response = Storage::disk(GenerateDocumentPdf::DISK)->download($document->pdf_path, $filename);
+        $response = Storage::disk(GenerateDocumentPdf::DISK)->download($pdfPath, $filename);
         $response->headers->set('Referrer-Policy', 'no-referrer');
 
         return $response;
