@@ -199,7 +199,7 @@ const FR: SurfaceCopy = {
     phoneLabel: 'Téléphone',
     coverLetterLabel: 'Lettre de motivation',
     resumeLabel: 'CV (PDF, DOC)',
-    consentLabel: 'J'accepte que mes données soient traitées dans le cadre de cette candidature.',
+    consentLabel: "J'accepte que mes données soient traitées dans le cadre de cette candidature.",
     applySubmit: 'Postuler',
     alreadyApplied: 'Vous avez déjà postulé à cette offre.',
     applicationSent: 'Candidature envoyée',
