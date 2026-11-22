@@ -370,7 +370,26 @@ export default function TradeDashboardPage() {
     return `${t(locale, 'trade.catalog.priceIndicative')} — ${amount}${product.currency ? ` ${product.currency}` : ''}`;
   };
 
-  const renderTable = (rows: TradeRow[], emptyKey: string) => {
+  /**
+   * Traduit une valeur d'enum venue de l'API.
+   *
+   * POURQUOI CE N'EST PAS COSMETIQUE
+   * --------------------------------
+   * `renderTable` affichait `row.status` brut : un vendeur B2B lisait
+   * `under_review`, `in_transit` ou `incomplete` dans une interface francaise.
+   * Il devait traduire mentalement l'etat de sa propre affaire — ce n'est pas
+   * un outil, c'est un dump de base de donnees.
+   *
+   * Le repli est la valeur BRUTE, jamais une chaine vide : une valeur d'enum
+   * inconnue (nouvel etat cote API, donnee historique) doit rester lisible
+   * plutot que disparaitre et laisser croire a une absence de donnee.
+   */
+  const statusLabel = (namespace: string, value?: string | null): string => {
+    if (!value) return '—';
+    return t(locale, `trade.${namespace}.status.${value}`, value);
+  };
+
+  const renderTable = (rows: TradeRow[], emptyKey: string, statusNamespace: string) => {
     if (!rows.length) {
       return (
         <p className="px-1 py-6 text-sm text-slate-500">{t(locale, 'trade.noData')}</p>
@@ -396,7 +415,7 @@ export default function TradeDashboardPage() {
                   {row.reference ?? '—'}
                 </td>
                 <td className="px-3 py-3 text-slate-900">{row.title ?? '—'}</td>
-                <td className="px-3 py-3 text-slate-600">{row.status ?? '—'}</td>
+                <td className="px-3 py-3 text-slate-600">{statusLabel(statusNamespace, row.status)}</td>
                 <td className="px-3 py-3 text-slate-600">{row.destination ?? '—'}</td>
                 <td className="px-3 py-3 text-slate-600">{row.incoterm ?? '—'}</td>
               </tr>
@@ -552,7 +571,7 @@ export default function TradeDashboardPage() {
               <p className="mt-1 text-xs text-slate-500">
                 {t(locale, 'trade.sourcing.subtitle')}
               </p>
-              <div className="mt-3">{renderTable(rfqs, 'trade-rfqs-empty')}</div>
+              <div className="mt-3">{renderTable(rfqs, 'trade-rfqs-empty', 'rfqs')}</div>
             </div>
           ) : null}
 
@@ -562,7 +581,7 @@ export default function TradeDashboardPage() {
                 {t(locale, 'trade.sales.title')}
               </h2>
               <p className="mt-1 text-xs text-slate-500">{t(locale, 'trade.sales.subtitle')}</p>
-              <div className="mt-3">{renderTable(quotes, 'trade-quotes-empty')}</div>
+              <div className="mt-3">{renderTable(quotes, 'trade-quotes-empty', 'quotes')}</div>
             </div>
           ) : null}
 
@@ -915,7 +934,7 @@ export default function TradeDashboardPage() {
                 {t(locale, 'trade.costs.title')}
               </h2>
               <p className="mt-1 text-xs text-slate-500">{t(locale, 'trade.costs.subtitle')}</p>
-              <div className="mt-3">{renderTable(costEstimates, 'trade-costs-empty')}</div>
+              <div className="mt-3">{renderTable(costEstimates, 'trade-costs-empty', 'costs')}</div>
               {/* Cadre légal : jamais présenté comme une décision douanière. */}
               <p className="mt-4 rounded-xl bg-slate-50 px-4 py-3 text-xs text-slate-600">
                 {t(locale, 'trade.costs.disclaimer')}

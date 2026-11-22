@@ -7842,7 +7842,12 @@
     "costs": {
       "title": "Maliyetler ve gümrük",
       "subtitle": "Kalem bazında teslim maliyeti ve belge hazırlığı.",
-      "disclaimer": "Gösterge niteliğinde tahmin — resmî gümrük beyanı veya uygunluk garantisi değildir."
+      "disclaimer": "Gösterge niteliğinde tahmin — resmî gümrük beyanı veya uygunluk garantisi değildir.",
+      "status": {
+        "draft": "Taslak",
+        "incomplete": "Eksik",
+        "complete": "Tamamlandı"
+      }
     },
     "catalog": {
       "title": "Ürün kataloğu",
@@ -7904,6 +7909,27 @@
         "forwarder": "Forwarder",
         "customs_broker": "Gümrük müşaviri",
         "inspector": "Denetçi"
+      }
+    },
+    "rfqs": {
+      "status": {
+        "draft": "Taslak",
+        "open": "Açık",
+        "closed": "Kapalı",
+        "awarded": "Verildi",
+        "cancelled": "İptal edildi"
+      }
+    },
+    "quotes": {
+      "status": {
+        "draft": "Taslak",
+        "submitted": "Gönderildi",
+        "under_review": "İncelemede",
+        "negotiating": "Müzakerede",
+        "accepted": "Kabul edildi",
+        "rejected": "Reddedildi",
+        "expired": "Süresi doldu",
+        "withdrawn": "Geri çekildi"
       }
     }
   },

@@ -7842,7 +7842,12 @@
     "costs": {
       "title": "Costs & customs",
       "subtitle": "Landed cost per line item and documentary preparation.",
-      "disclaimer": "Indicative estimate — neither an official customs declaration nor a compliance guarantee."
+      "disclaimer": "Indicative estimate — neither an official customs declaration nor a compliance guarantee.",
+      "status": {
+        "draft": "Draft",
+        "incomplete": "Incomplete",
+        "complete": "Complete"
+      }
     },
     "catalog": {
       "title": "Product catalogue",
@@ -7904,6 +7909,27 @@
         "forwarder": "Forwarder",
         "customs_broker": "Customs broker",
         "inspector": "Inspector"
+      }
+    },
+    "rfqs": {
+      "status": {
+        "draft": "Draft",
+        "open": "Open",
+        "closed": "Closed",
+        "awarded": "Awarded",
+        "cancelled": "Cancelled"
+      }
+    },
+    "quotes": {
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "under_review": "Under review",
+        "negotiating": "Negotiating",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "expired": "Expired",
+        "withdrawn": "Withdrawn"
       }
     }
   },

@@ -7842,7 +7842,12 @@
     "costs": {
       "title": "Coûts & douane",
       "subtitle": "Coût total rendu par poste et préparation documentaire.",
-      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité."
+      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité.",
+      "status": {
+        "draft": "Brouillon",
+        "incomplete": "Incomplet",
+        "complete": "Complet"
+      }
     },
     "catalog": {
       "title": "Catalogue produits",
@@ -7904,6 +7909,27 @@
         "forwarder": "Transitaire",
         "customs_broker": "Courtier en douane",
         "inspector": "Inspecteur"
+      }
+    },
+    "rfqs": {
+      "status": {
+        "draft": "Brouillon",
+        "open": "Ouverte",
+        "closed": "Clôturée",
+        "awarded": "Attribuée",
+        "cancelled": "Annulée"
+      }
+    },
+    "quotes": {
+      "status": {
+        "draft": "Brouillon",
+        "submitted": "Soumise",
+        "under_review": "En cours d'examen",
+        "negotiating": "En négociation",
+        "accepted": "Acceptée",
+        "rejected": "Refusée",
+        "expired": "Expirée",
+        "withdrawn": "Retirée"
       }
     }
   },
