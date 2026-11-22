@@ -223,16 +223,40 @@ class CrmMigrationsTest extends TestCase
             $migrationsDir.'/2026_08_28_000001_5708_create_crm_accounts_table.php',
             $tmpDir.'/2026_08_28_000001_5708_create_crm_accounts_table.php'
         );
+        // #9741 — le répertoire doit contenir TOUTE la chaîne qui définit le
+        // schéma CRM, pas seulement les deux CREATE. `8866` élargit
+        // `crm_contacts.phone` en `text` (le cast `encrypted` écrit 228
+        // caractères, la colonne d'origine en accepte 60). En ne rejouant que
+        // 5708, ce test RECRÉAIT la colonne en varchar(60) et laissait la base
+        // dans un état que le code applicatif ne peut plus écrire : le test
+        // suivant (`crm contacts phone accepts encrypted payload`) échouait en
+        // SQLSTATE[22001] « value too long for character varying(60) ». Un test
+        // de migration ne doit pas corrompre le schéma des autres.
         copy(
             $migrationsDir.'/2026_08_28_000002_5708_create_crm_contacts_table.php',
             $tmpDir.'/2026_08_28_000002_5708_create_crm_contacts_table.php'
         );
+        copy(
+            $migrationsDir.'/2026_10_25_000100_8866_widen_crm_contacts_phone_for_encryption.php',
+            $tmpDir.'/2026_10_25_000100_8866_widen_crm_contacts_phone_for_encryption.php'
+        );
+
+        // Batch créé par CE test : le rollback doit cibler le nôtre, pas
+        // « le dernier » — la base peut déjà contenir des batches postérieurs.
+        $batchBefore = (int) DB::table('migrations')->max('batch');
 
         try {
             // Fresh run : up() des deux migrations.
+            // #9741 — `->run()` est OBLIGATOIRE. `assertExitCode()` ne fait que
+            // POSER l'attente : `PendingCommand` n'execute la commande qu'a sa
+            // destruction, donc les assertions d'existence qui suivaient
+            // s'executaient AVANT la migration et lisaient un schema vide.
+            // (`--realpath` reste necessaire : sans lui Laravel prefixe `--path`
+            // par `basePath()`, et un repertoire temporaire absolu devient
+            // `/workspace/leopardo-hr/api//tmp/...` — inexistant.)
             /** @var PendingCommand $migrate */
-            $migrate = $this->artisan('migrate', ['--path' => $tmpDir]);
-            $migrate->assertExitCode(0);
+            $migrate = $this->artisan('migrate', ['--path' => $tmpDir, '--realpath' => true]);
+            $migrate->assertExitCode(0)->run();
 
             // Existence vérifiée par schéma explicite (to_regclass) — évite la
             // résolution de `current_schema()` de Schema::hasTable selon le
@@ -240,16 +264,34 @@ class CrmMigrationsTest extends TestCase
             $this->assertNotNull($this->tableSchema('crm_accounts'), 'crm_accounts doit exister après migrate');
             $this->assertNotNull($this->tableSchema('crm_contacts'), 'crm_contacts doit exister après migrate');
 
-            // Rollback : down() des deux migrations (dernier batch = le nôtre).
+            // La colonne doit être `text` : c'est le contrat que le cast
+            // `encrypted` du modèle exige (#8866).
+            $phoneType = DB::selectOne(
+                "SELECT data_type FROM information_schema.columns
+                  WHERE table_schema = 'shared_tenants' AND table_name = 'crm_contacts' AND column_name = 'phone'"
+            );
+            $this->assertSame('text', $phoneType->data_type ?? null, 'crm_contacts.phone doit être text (#8866)');
+
+            // Rollback : down() de la chaîne, sur le batch que ce test a créé.
             /** @var PendingCommand $rollback */
-            $rollback = $this->artisan('migrate:rollback', ['--path' => $tmpDir, '--step' => 1]);
-            $rollback->assertExitCode(0);
+            $rollback = $this->artisan('migrate:rollback', [
+                '--path' => $tmpDir,
+                '--realpath' => true,
+                '--batch' => $batchBefore + 1,
+            ]);
+            $rollback->assertExitCode(0)->run();
 
             $this->assertNull($this->tableSchema('crm_accounts'), 'crm_accounts doit être dropée après rollback');
             $this->assertNull($this->tableSchema('crm_contacts'), 'crm_contacts doit être dropée après rollback');
         } finally {
-            // Nettoyage du répertoire temporaire (le batch de test est
-            // annulé par la transaction du trait RefreshDatabase).
+            // #9741 — le schéma doit être RESTAURÉ quoi qu'il arrive : ce test
+            // l'a détruit, et les tests suivants du process en dépendent.
+            if ($this->tableSchema('crm_accounts') === null) {
+                /** @var PendingCommand $restore */
+                $restore = $this->artisan('migrate', ['--path' => $tmpDir, '--realpath' => true]);
+                $restore->assertExitCode(0)->run();
+            }
+
             foreach (glob($tmpDir.'/*') ?: [] as $file) {
                 unlink($file);
             }

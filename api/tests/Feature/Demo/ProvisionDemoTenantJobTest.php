@@ -48,10 +48,19 @@ class ProvisionDemoTenantJobTest extends TestCase
         $this->assertSame(64, strlen((string) $manager->extra_data['demo_access_token_hash']));
         $this->assertArrayHasKey('demo_access_token_expires_at', $manager->extra_data);
 
-        // L'email contient le lien magic /demo-login/{token}.
+        // L'email contient le lien d'acces au PORTAIL.
+        // #9741 — l'assertion attendait `/demo-login/`, contrat de #2253. #7238
+        // a VOLONTAIREMENT change ce contrat : le lien mene desormais a l'UI
+        // produit (`config('app.frontend_url')` + `/auth/login`) et non plus au
+        // backend, ou le prospect atterrissait sur un dashboard Blade. Le test
+        // n'avait pas suivi. On asserte le contrat reel : le lien part bien
+        // vers le portail, et le jeton reste emis (la route backend
+        // `/demo-login/{token}` est conservee pour les liens deja envoyes).
         Mail::assertSent(CommunicationMail::class, function (CommunicationMail $mail) use ($email): bool {
+            $frontUrl = rtrim((string) config('app.frontend_url', config('app.url')), '/');
+
             return $mail->hasTo($email)
-                && str_contains($mail->bodyText, '/demo-login/');
+                && str_contains($mail->bodyText, $frontUrl.'/auth/login');
         });
     }
 

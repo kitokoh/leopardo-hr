@@ -23,10 +23,22 @@ class RestaurantPromotionFactory extends Factory
             'title' => $this->faker->unique()->words(3, true),
             'discount_type' => PromotionDiscountType::PERCENT->value,
             'value_minor' => $this->faker->numberBetween(100, 5000),
-            'min_order_minor' => $this->faker->optional()->numberBetween(500, 20000),
-            'starts_at' => $this->faker->optional()->dateTimeBetween('-1 month', 'now'),
-            'ends_at' => $this->faker->optional()->dateTimeBetween('now', '+2 months'),
-            'max_uses' => $this->faker->optional()->numberBetween(10, 1000),
+            // #9744 — les CONTRAINTES METIER ne sont plus tirees au hasard.
+            // `min_order_minor`, `max_uses`, `starts_at` et `ends_at` etaient
+            // tires par `optional()` : toute fixture qui ne les fixait pas
+            // heritait d'une promotion parfois inapplicable (seuil de panier
+            // non atteint, plafond d'usage deja consomme, fenetre de validite
+            // fermee) et le test echouait ~1 fois sur 4 sans qu'aucune ligne
+            // de code n'ait change (`RestaurantPromotionCrudTest::test_valid_
+            // promotion_applies_and_increments_usage`, 422 « Order does not
+            // reach the promotion minimum »). Meme famille que #8660 pour
+            // `is_active` : une promotion creee par la factory est TOUJOURS
+            // applicable ; un test qui veut un seuil, un plafond ou une
+            // fenetre le declare explicitement.
+            'min_order_minor' => null,
+            'starts_at' => null,
+            'ends_at' => null,
+            'max_uses' => null,
             'used_count' => 0,
             // #8660 — `is_active` était tiré au hasard (`boolean(80)`). Toute
             // fixture qui ne le fixait pas explicitement devenait donc

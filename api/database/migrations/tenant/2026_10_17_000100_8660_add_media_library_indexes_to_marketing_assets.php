@@ -77,11 +77,22 @@ return new class extends Migration
         // reste fonctionnelle sans l'index, elle est seulement plus lente.
         if (DB::getDriverName() === 'pgsql') {
             try {
-                DB::statement('CREATE EXTENSION IF NOT EXISTS pg_trgm');
+                // #9741 — le try/catch ne suffisait PAS : sous PostgreSQL, une
+                // instruction en echec AVORTE la transaction courante, et
+                // l'avaler ne la rend pas utilisable. Le migrateur inserait
+                // ensuite sa ligne dans `migrations` et mourait en
+                // SQLSTATE[25P02] « current transaction is aborted » — la
+                // migration entiere echouait a cause d'une OPTIMISATION
+                // optionnelle. `DB::transaction()` imbrique ouvre un SAVEPOINT :
+                // l'echec ne defait que le point de sauvegarde, la transaction
+                // appelante reste saine.
+                DB::transaction(function (): void {
+                    DB::statement('CREATE EXTENSION IF NOT EXISTS pg_trgm');
 
-                if (! $this->hasIndex('marketing_assets_name_trgm_index')) {
-                    DB::statement('CREATE INDEX marketing_assets_name_trgm_index ON marketing_assets USING gin (name gin_trgm_ops)');
-                }
+                    if (! $this->hasIndex('marketing_assets_name_trgm_index')) {
+                        DB::statement('CREATE INDEX marketing_assets_name_trgm_index ON marketing_assets USING gin (name gin_trgm_ops)');
+                    }
+                });
             } catch (\Throwable) {
                 // Absence de droits ou de l'extension : dégradation silencieuse
                 // d'un OPTIMISATION, jamais du comportement fonctionnel.

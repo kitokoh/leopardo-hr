@@ -386,7 +386,19 @@ class SSOOidcFlowTest extends TestCase
         $payload = $this->base64UrlEncode((string) json_encode($claims));
         $signingInput = $header.'.'.$payload;
 
-        openssl_sign($signingInput, $signature, $privateKey, $signAlgo ?? OPENSSL_ALGO_SHA256);
+        // #9741 — le helper signait TOUJOURS en SHA256 alors que le header
+        // annoncait `alg`. Un token `alg: RS384` signe en SHA256 est un token
+        // genuinement invalide : le validateur (correct depuis #6542) le
+        // rejetait a juste titre en 422, et le test « accepts rs384 » ne
+        // testait donc pas RS384 du tout. L'algorithme de signature doit
+        // suivre celui annonce dans le header.
+        $signAlgo ??= match ($alg) {
+            'RS384' => OPENSSL_ALGO_SHA384,
+            'RS512' => OPENSSL_ALGO_SHA512,
+            default => OPENSSL_ALGO_SHA256,
+        };
+
+        openssl_sign($signingInput, $signature, $privateKey, $signAlgo);
 
         return $signingInput.'.'.$this->base64UrlEncode($signature);
     }
