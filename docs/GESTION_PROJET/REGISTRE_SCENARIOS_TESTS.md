@@ -1,3 +1,21 @@
+## 2026-11-22 — Facturation des abonnements : deux tables `invoices` divergentes (issue #9806)
+
+Surface : `api/database/migrations/public/2026_11_22_000100_9806_align_public_invoices_with_billing_schema.php`, `api/tests/Feature/Billing/PublicInvoicesSchemaParityTest.php`. Aucun changement de route, de contrat d'API ni de comportement produit hors correction.
+
+**Pourquoi c'est un scénario de test** : `billing:generate-invoices` échouait hors CI (`column "subscription_id" does not exist`) et ne produisait donc **aucune** facture d'abonnement. La cause n'est pas le job mais la **divergence de deux tables homonymes** : le modèle `Invoice` n'épingle aucun schéma et résout par le `search_path`, qui vaut `shared_tenants` en CI (table riche, 17 colonnes) et `public,shared_tenants` en dev/production (table pauvre, 13 colonnes trouvée en premier, ce qui fait **sauter** la migration tenant). La garde `if (! schemaTableExists('invoices'))` testait l'**existence**, pas la **conformité**.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `public.invoices` porte toutes les colonnes écrites par le modèle | la facturation reste muette en production tout en étant verte en CI |
+| le modèle résout une table conforme sous le `search_path` de **production** | la parité de colonnes seule ne prouve pas que le chemin réel fonctionne |
+| `billing:generate-invoices` produit une facture (numéro, `subscription_id`, `total`) | le correctif pourrait aligner les colonnes sans débloquer la commande |
+| `total` backfillé depuis `amount` pour les lignes héritées | les factures historiques resteraient à `total = null` |
+| la migration est additive et idempotente | rejouer la migration ne doit ni perdre ni dupliquer de données |
+
+**Couverture exécutée** — `php -l` sur la migration ; `PublicInvoicesSchemaParityTest` → **3 passed (13 assertions)** ; **contrôle négatif : correctif retiré → 3/3 échecs**, dont la reproduction exacte du bug (`0 invoice`) ; non-régression `GenerateMonthlyInvoicesTest` → **14/14**. Vérification en HTTP réel sur l'API locale (PHP 8.4.28, PostgreSQL 15 + PostGIS) : facture `LEO-2026-0001` / 79,00 EUR générée, `POST /api/v1/billing/checkout` → **200** avec appel sortant réel, webhook signé `invoice.paid` → statut `paid` et paiement 79,00 EUR `completed`, rejeu du webhook idempotent (`replayed: true`, un seul paiement).
+
+**Non couvert** — la suite Backend complète et `phpstan analyse` sur tout le dépôt (OOM killer, 2 Go de RAM) : la mesure est le run CI. La convergence de `/health` vers `main` en production n'a pas pu être observée (service Render suspendu, projet Vercel désactivé).
+
 ## 2026-11-22 — Quota par plan : une fenêtre réelle de 60 s rendait le test instable (issue #9793)
 
 Surface : `api/tests/Feature/Security/ApiVersionAndPlanRateLimitTest.php` uniquement. Aucun changement de produit, de route ni de contrat d'API.
