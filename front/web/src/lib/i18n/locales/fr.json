@@ -5065,7 +5065,10 @@
       "manageStudents": "Gérer les élèves",
       "manageAssessments": "Évaluations & notes",
       "manageReportCards": "Bulletins",
-      "teacherSpace": "Espace enseignant"
+      "teacherSpace": "Espace enseignant",
+      "manageFeeTypes": "Types de frais",
+      "manageGuardians": "Responsables légaux",
+      "manageReports": "Rapports"
     },
     "campuses": {
       "title": "Campus",
@@ -5232,6 +5235,45 @@
       "view": "Voir",
       "back": "Retour",
       "deleteConfirm": "Supprimer cet élément ?"
+    },
+    "feeTypes": {
+      "title": "Types de frais",
+      "subtitle": "Catalogue des frais facturables de l'établissement.",
+      "empty": "Aucun type de frais. Créez le premier (scolarité, cantine, transport…).",
+      "create": "Nouveau type de frais",
+      "edit": "Modifier le type de frais",
+      "code": "Code",
+      "label": "Libellé",
+      "amount": "Montant",
+      "currency": "Devise",
+      "frequency": "Fréquence"
+    },
+    "guardians": {
+      "title": "Responsables légaux",
+      "subtitle": "Parents et tuteurs des élèves, et leur rattachement.",
+      "empty": "Aucun responsable légal. Créez le premier.",
+      "create": "Nouveau responsable",
+      "edit": "Modifier le responsable",
+      "name": "Nom",
+      "firstName": "Prénom",
+      "lastName": "Nom",
+      "relationship": "Lien de parenté",
+      "contact": "Contact",
+      "contactHint": "Téléphone ou e-mail — chiffré au repos.",
+      "link": "Rattacher",
+      "linkTitle": "Rattacher à un élève",
+      "student": "Élève",
+      "canViewGrades": "Voit les notes",
+      "canReceiveNotifications": "Reçoit les notifications"
+    },
+    "reports": {
+      "title": "Rapports",
+      "subtitle": "Indicateurs agrégés de l'établissement (direction).",
+      "presence": "Présence",
+      "enrollment": "Inscriptions",
+      "results": "Résultats",
+      "capacity": "Occupation des classes",
+      "empty": "Aucune donnée sur la période."
     }
   },
   "travel": {

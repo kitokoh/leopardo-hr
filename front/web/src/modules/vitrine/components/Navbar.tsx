@@ -111,7 +111,7 @@ function buildNavEntries(locale: AppLocale): NavEntry[] {
         { href: '/business/packs', icon: <Gift className="w-4 h-4" />, label: nav('packsHub'), description: nav('packsHubDesc') },
         { href: '/business/restaurateur', icon: <UtensilsCrossed className="w-4 h-4" />, label: nav('packsRestaurant'), description: nav('packsRestaurantDesc') },
         { href: '/business/packs/station-service', icon: <Fuel className="w-4 h-4" />, label: nav('packsFuel'), description: nav('packsFuelDesc') },
-        { href: '/business/packs/ecole', icon: <GraduationCap className="w-4 h-4" />, label: nav('packsEdu'), description: nav('packsEduDesc') },
+        { href: '/business/ecole', icon: <GraduationCap className="w-4 h-4" />, label: nav('packsEdu'), description: nav('packsEduDesc') },
         { href: '/business/packs/agence-de-voyage', icon: <Plane className="w-4 h-4" />, label: nav('packsTravel'), description: nav('packsTravelDesc') },
       ],
     },

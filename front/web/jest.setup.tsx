@@ -37,6 +37,25 @@ Object.defineProperty(global, 'IntersectionObserver', {
   value: MockIntersectionObserver,
 });
 
+// jsdom n'implémente pas `window.matchMedia`, dont dépend gsap/ScrollTrigger
+// (importé par le module vitrine). Sans ce polyfill, tout test qui rend un
+// composant vitrine échoue au chargement du module, avant même le premier
+// rendu. `matches: false` = comportement « pas de préférence » par défaut.
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  configurable: true,
+  value: (query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  }),
+});
+
 // Mock next/navigation
 jest.mock('next/navigation', () => ({
   useRouter() {

@@ -5065,7 +5065,10 @@
       "manageStudents": "إدارة التلاميذ",
       "manageAssessments": "التقييمات والنقاط",
       "manageReportCards": "كشوف النقاط",
-      "teacherSpace": "فضاء المعلّم"
+      "teacherSpace": "فضاء المعلّم",
+      "manageFeeTypes": "أنواع الرسوم",
+      "manageGuardians": "أولياء الأمور",
+      "manageReports": "التقارير"
     },
     "campuses": {
       "title": "الحرم الجامعي",
@@ -5232,6 +5235,45 @@
       "view": "عرض",
       "back": "رجوع",
       "deleteConfirm": "حذف هذا العنصر؟"
+    },
+    "feeTypes": {
+      "title": "أنواع الرسوم",
+      "subtitle": "فهرس الرسوم القابلة للفوترة في المدرسة.",
+      "empty": "لا يوجد نوع رسوم بعد. أنشئ الأول (الدراسة، المطعم، النقل…).",
+      "create": "نوع رسوم جديد",
+      "edit": "تعديل نوع الرسوم",
+      "code": "الرمز",
+      "label": "التسمية",
+      "amount": "المبلغ",
+      "currency": "العملة",
+      "frequency": "التكرار"
+    },
+    "guardians": {
+      "title": "أولياء الأمور",
+      "subtitle": "أولياء أمور التلاميذ وصلاتهم.",
+      "empty": "لا يوجد ولي أمر بعد. أنشئ الأول.",
+      "create": "ولي أمر جديد",
+      "edit": "تعديل ولي الأمر",
+      "name": "الاسم",
+      "firstName": "الاسم الأول",
+      "lastName": "اسم العائلة",
+      "relationship": "صلة القرابة",
+      "contact": "الاتصال",
+      "contactHint": "هاتف أو بريد — مشفّر عند التخزين.",
+      "link": "ربط",
+      "linkTitle": "ربط بتلميذ",
+      "student": "التلميذ",
+      "canViewGrades": "يرى النقاط",
+      "canReceiveNotifications": "يتلقى الإشعارات"
+    },
+    "reports": {
+      "title": "التقارير",
+      "subtitle": "مؤشرات المدرسة المجمعة (الإدارة).",
+      "presence": "الحضور",
+      "enrollment": "التسجيلات",
+      "results": "النتائج",
+      "capacity": "إشغال الصفوف",
+      "empty": "لا بيانات في هذه الفترة."
     }
   },
   "travel": {

@@ -3,12 +3,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
+  BarChart3,
   Building2,
   CalendarRange,
   ClipboardCheck,
   GraduationCap,
   Layers,
   ListChecks,
+  Receipt,
   School,
   UserPlus,
   Users,
@@ -103,6 +105,11 @@ export default function EduManagerHomePage() {
     { label: t(locale, 'edu.home.manageReportCards'), href: '/edu-manager/report-cards', icon: ClipboardCheck },
     { label: t(locale, 'edu.academicYears.title'), href: '/edu-manager/academic-years', icon: CalendarRange },
     { label: t(locale, 'edu.subjects.title'), href: '/edu-manager/subjects', icon: Layers },
+    // #9789 — frais scolaires, responsables légaux et rapports : l'API existait
+    // mais ces outils n'avaient aucune entrée de navigation.
+    { label: t(locale, 'edu.home.manageFeeTypes'), href: '/edu-manager/fee-types', icon: Receipt },
+    { label: t(locale, 'edu.home.manageGuardians'), href: '/edu-manager/guardians', icon: Users },
+    { label: t(locale, 'edu.home.manageReports'), href: '/edu-manager/reports', icon: BarChart3 },
   ];
 
   if (isTeacher) {
