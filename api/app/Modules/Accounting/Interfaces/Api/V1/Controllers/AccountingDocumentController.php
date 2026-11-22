@@ -12,6 +12,7 @@ use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
+use App\Modules\Accounting\Infrastructure\Services\DocumentPdfArchiveService;
 use App\Modules\Accounting\Infrastructure\Services\DocumentShareService;
 use App\Modules\Accounting\Interfaces\Api\V1\Controllers\Concerns\ResolvesAccountingActor;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\ShareDocumentRequest;
@@ -35,6 +36,7 @@ class AccountingDocumentController extends Controller
         private readonly DocumentNumberingService $numbering,
         private readonly DataAccessAuditLogger $auditLogger,
         private readonly DocumentShareService $shareService,
+        private readonly DocumentPdfArchiveService $pdfArchive,
     ) {}
 
     /**
@@ -259,6 +261,14 @@ class AccountingDocumentController extends Controller
         $expiresAt = isset($validated['expires_in_days'])
             ? now()->addDays((int) $validated['expires_in_days'])
             : null;
+
+        // #9799 — le PDF est produit AVANT de rendre le lien : sans cela le
+        // vendeur partageait un document puis obtenait 404 au téléchargement,
+        // et le lien envoyé au client était mort à la naissance. Endpoint
+        // authentifié, donc pas de surface d'abus ; le service est idempotent
+        // et n'échoue pas la requête si le rendu rate (le repli paresseux du
+        // portail public retentera, et le 404 localisé reste la réponse).
+        $this->pdfArchive->ensure($model);
 
         $share = $this->shareService->createShare(
             $model,
