@@ -50,6 +50,10 @@ ModuleRoutes::tenantModule('', function (): void {
 
     // ── Employees ─────────────────────────────────────────────────────────────
     Route::get('/employees', [EmployeeController::class, 'index']);
+    // Famille `/stats` homogène (cf. /absences/stats, /expense/stats) :
+    // déclarée AVANT `/employees/{employee}` pour ne pas être capturée par le
+    // binding `whereNumber` (qui renverrait 404 sur « stats »).
+    Route::get('/employees/stats', [EmployeeController::class, 'stats']);
     // MULTI-PAYS (#1867) : création/modification d'employé refusées si le pays
     // légal du tenant est absent ou non supporté.
     Route::post('/employees', [EmployeeController::class, 'store'])->middleware(['api.manager', 'tenant.country']);

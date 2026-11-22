@@ -12,6 +12,7 @@ use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
+use App\Modules\HR\Infrastructure\Services\EmployeeStatsService;
 use App\Modules\HR\Interfaces\Api\V1\Requests\ArchiveEmployeeRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\StoreEmployeeRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEmployeeRequest;
@@ -414,6 +415,38 @@ class EmployeeController extends Controller
         $employee->loadMissing('schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes');
 
         return (new EmployeeResource($employee))->response();
+    }
+
+    /**
+     * Statistiques de l'effectif (dashboard RH / écran Équipe).
+     *
+     * Homogénéise la famille `/stats` de l'API (`/absences/stats`,
+     * `/expense/stats`, `/recruitment/stats`, `/library/stats`) : même
+     * convention de période (`from`/`to`), même enveloppe `{"data": {...}}`,
+     * même RBAC (`employees.view` via la Policy, donc managers uniquement).
+     *
+     * Le périmètre « équipe » de l'acteur est appliqué : un superviseur ne
+     * lit pas les effectifs qu'il ne voit pas dans la liste.
+     */
+    public function stats(Request $request, EmployeeStatsService $statsService): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $this->authorize('viewAny', Employee::class);
+
+        $validated = $request->validate([
+            'from' => ['nullable', 'date_format:Y-m-d'],
+            'to' => ['nullable', 'date_format:Y-m-d'],
+        ]);
+
+        return new JsonResponse([
+            'data' => $statsService->overview(
+                $actor,
+                $validated['from'] ?? null,
+                $validated['to'] ?? null,
+            ),
+        ]);
     }
 
     public function archive(ArchiveEmployeeRequest $request, string $employeeId): JsonResponse
