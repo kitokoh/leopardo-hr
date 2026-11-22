@@ -1,0 +1,185 @@
+name: Trade B2B CI
+
+# POURQUOI CE WORKFLOW EXISTE (#9778)
+# ----------------------------------
+# La suite Feature complete de `tests.yml` dure ~82 min et son job `Backend`
+# est rouge sur `main` pour des causes INDEPENDANTES (#9774). Dans ce contexte,
+# un changement de la verticale Trade obtenait un verdict apres une heure —
+# ou aucun verdict du tout.
+#
+# Symetriquement, `TradeProductApiTest.php` n'etait declare dans AUCUNE
+# testsuite de `api/phpunit.xml` : le fichier existait, les 8 cas existaient,
+# et rien ne les executait. Un test jamais execute est pire qu'un test absent :
+# il donne l'illusion d'une garantie.
+#
+# Ce workflow donne un verdict REEL et CIBLE sur la verticale Trade en quelques
+# minutes, sur la meme stack que la suite complete (PHP 8.4 + PostgreSQL 16
+# PostGIS + Redis 7), via l'action composite `setup-backend-db` deja utilisee
+# par `backend-jobs-ci.yml`. Il ne remplace pas `tests.yml` (qui reste la
+# source de verite pour l'ensemble) : il rend le verdict Trade exploitable.
+#
+# PORTEE — ce qu'il couvre
+#   tests/Feature/Trade/          (dont TradeProductApiTest depuis #9778)
+#   tests/Unit/Trade/
+#   tests/Feature/Security/TradeTenantIsolationTest.php
+#   tests/Feature/LeopardoPublic/TradePublicPublicationTest.php
+#
+# Ce qu'il ne couvre pas : le reste de la suite. Voir tests.yml.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/app/Modules/Trade/**'
+      - 'api/routes/modules/trade.php'
+      - 'api/routes/modules/trade_public.php'
+      - 'api/tests/Feature/Trade/**'
+      - 'api/tests/Unit/Trade/**'
+      - 'api/tests/Feature/Security/TradeTenantIsolationTest.php'
+      - 'api/tests/Feature/LeopardoPublic/TradePublicPublicationTest.php'
+      - 'api/database/migrations/tenant/*trade*'
+      - 'api/phpunit.xml'
+      - '.github/workflows/trade-b2c-ci.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/app/Modules/Trade/**'
+      - 'api/routes/modules/trade.php'
+      - 'api/routes/modules/trade_public.php'
+      - 'api/tests/Feature/Trade/**'
+      - 'api/tests/Unit/Trade/**'
+      - 'api/tests/Feature/Security/TradeTenantIsolationTest.php'
+      - 'api/tests/Feature/LeopardoPublic/TradePublicPublicationTest.php'
+      - 'api/database/migrations/tenant/*trade*'
+      - 'api/phpunit.xml'
+      - '.github/workflows/trade-b2c-ci.yml'
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: trade-b2c-ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  trade-tests:
+    # Marge confortable : la verticale Trade represente ~70 tests, la fixture
+    # CreatesMvpSchema etant reconstruite par fichier (cf. #6928). 30 min
+    # laisse de la place sans masquer une vraie suspension.
+    timeout-minutes: 40
+    name: Trade (PHP 8.4 + PostgreSQL 16 + Redis 7)
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgis/postgis:16-3.5
+        env:
+          POSTGRES_DB: leopardo_test
+          POSTGRES_USER: leopardo_user
+          POSTGRES_PASSWORD: leopardo_pass_test
+        ports:
+          - 5432:5432
+        # `-U leopardo_user` est OBLIGATOIRE : sans lui, `pg_isready` s'execute
+        # en tant qu'utilisateur ambiant (`root`), role qui n'existe pas ici
+        # (cf. constat ATS #9477 rapporte dans tests.yml).
+        options: >-
+          --health-cmd "pg_isready -U leopardo_user"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Setup backend (PHP + Composer + multi-tenant DB)
+        uses: ./.github/actions/setup-backend-db
+
+      - name: Assert Trade test files are registered in phpunit.xml
+        # #9778 — un fichier de test absent de `api/phpunit.xml` n'est execute
+        # par AUCUNE suite nommee. `tests.yml` lance les repertoires entiers
+        # (`tests/Feature`), donc il finit par l'attraper ; mais tout run CIBLE
+        # par testsuite l'ignorerait silencieusement, et c'est exactement ce
+        # qui est arrive a TradeProductApiTest. Cette etape rend le defaut
+        # bruyant AVANT de lancer quoi que ce soit.
+        working-directory: ./api
+        run: |
+          set -euo pipefail
+          missing=0
+          while IFS= read -r f; do
+            if ! grep -q "<file>${f}</file>" phpunit.xml; then
+              echo "::error::${f} n'est declare dans aucune testsuite de api/phpunit.xml (#9778)."
+              missing=1
+            fi
+          done < <(find tests/Feature/Trade tests/Unit/Trade -name '*Test.php' | sort)
+          if [ "$missing" -ne 0 ]; then
+            echo "Ajoutez chaque fichier a la testsuite Trade ET a l'agregat (cf. dev-tools/generate-feature-shards.php)."
+            exit 1
+          fi
+          echo "Tous les fichiers de test Trade sont enregistres."
+
+      - name: Run Trade feature tests
+        id: trade_feature
+        working-directory: ./api
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: leopardo_test
+          DB_SEARCH_PATH: public,shared_tenants
+        run: |
+          php artisan test tests/Feature/Trade \
+            tests/Feature/Security/TradeTenantIsolationTest.php \
+            tests/Feature/LeopardoPublic/TradePublicPublicationTest.php \
+            --log-junit=storage/test-results/trade-feature.xml
+
+      - name: Run Trade unit tests
+        id: trade_unit
+        working-directory: ./api
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_DATABASE: leopardo_test
+          DB_SEARCH_PATH: public,shared_tenants
+        run: php artisan test tests/Unit/Trade --log-junit=storage/test-results/trade-unit.xml
+
+      - name: Build Trade CI summary
+        if: always()
+        working-directory: ./api
+        run: |
+          mkdir -p storage/test-results
+          {
+            echo "### Trade B2B CI"
+            echo ""
+            echo "- Trade feature tests: ${{ steps.trade_feature.outcome }}"
+            echo "- Trade unit tests: ${{ steps.trade_unit.outcome }}"
+            echo ""
+            echo "Stack: PHP 8.4 / PostgreSQL 16 (PostGIS) / Redis 7."
+            echo "Scope: tests/Feature/Trade, tests/Unit/Trade, isolation tenant et vitrine publique."
+          } > storage/test-results/trade-ci-summary.md
+          cat storage/test-results/trade-ci-summary.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload Trade CI artifacts
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: trade-b2c-ci-reports
+          path: |
+            api/storage/test-results/trade-*.xml
+            api/storage/test-results/trade-ci-summary.md
+          if-no-files-found: ignore

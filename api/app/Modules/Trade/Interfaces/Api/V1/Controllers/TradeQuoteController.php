@@ -98,14 +98,14 @@ final class TradeQuoteController
             $submit,
         );
 
-        $quote->load('lines');
+        $quote->load('lines.product');
 
         return new JsonResponse(['data' => TradeQuoteResource::make($quote)->resolve()], 201);
     }
 
     public function show(TradeQuote $quote): JsonResponse
     {
-        $quote->load('lines');
+        $quote->load('lines.product');
 
         return new JsonResponse(['data' => TradeQuoteResource::make($quote)->resolve()]);
     }
