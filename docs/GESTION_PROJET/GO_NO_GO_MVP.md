@@ -1,5 +1,20 @@
 # GO / NO-GO MVP — LEOPARDO RH
 
+> ## ⚠️ Décision révisée le 2026-11-22 — voir ADR-0036
+>
+> Le **gel de scope** acté ci-dessous le 2026-04-21 est **levé** par
+> [`ADR-0036`](../architecture/adr/0036-levee-gel-scope-mvp.md) (issue #9803).
+>
+> Motif : le périmètre livré a dépassé le MVP (41 modules, dont 13 postérieurs à avril 2026) et
+> la catégorie produit a changé (décision #7428 — « suite métier »). Le gel était factuellement
+> mort mais juridiquement actif, ce qui désapprenait à lire les décisions du dépôt.
+>
+> Le gel est remplacé par un cadre explicite (critère d'entrée d'un module, obligation de
+> registre, obligation de tests, revue périodique du portefeuille) — voir ADR-0036 §Décision.
+>
+> **Le texte ci-dessous est conservé tel quel** : il est la trace de la décision d'avril, et
+> réécrire l'historique rendrait l'audit impossible.
+
 ## DECISION OFFICIELLE MVP - 2026-04-21
 
 Decision:
