@@ -1,11 +1,16 @@
-# Évaluation Leopardo HR — recette v2 (tenant restaurateur)
+# Évaluation Leopardo HR — recette v3 (correctifs RBAC + OpenAPI)
 
 **Dépôt :** Kitokoh/leopardo-hr · **Version :** 4.24.0 · **Date :** 22/11/2026
 **Branche de recette :** `eval/leopardo-hr-recette-2026-11-22`
 
-Cette version complète la recette v1 (tenant `techcorp-algerie`) par une recette
+La v2 a complété la recette v1 (tenant `techcorp-algerie`) par une recette
 exhaustive d'un **tenant de la verticale restaurant** : `resto-pilot-001`
 (« Chez Leo », Cameroun, XAF).
+
+Cette **v3** traite les trois corrections demandées sur ce périmètre :
+restriction RBAC de `POST /departments`, documentation OpenAPI du bridge
+d'impression et du paramètre de `GET /restaurant/print-jobs`. Chacune est
+vérifiée en conditions réelles sur l'instance (voir §9).
 
 ---
 
@@ -140,14 +145,19 @@ sur `email`** → violation d'unicité au re-seed, cycle de recette impossible �
 rejouer.
 **Correction :** `PilotSeedCommand` purge aussi `public.user_lookups`.
 
-### 🟡 Manques constatés, non corrigés (hors périmètre du seeder)
-- **Bridge d'impression** inaccessible aux profils humains (403 pour les 8) :
-  attend un jeton d'appareil, non documenté.
-- **`GET /restaurant/print-jobs`** exige un paramètre de requête non documenté
-  (422 sans lui).
-- **Anomalie RBAC héritée de la v1 :** `POST /departments` n'est protégé que
-  par `EnsureApiManagerMiddleware` sans liste de rôles — le comptable et le
-  superviseur peuvent créer un département.
+### 🟡 Manques constatés — état après la v3
+- ✅ **Corrigé (v3) — Bridge d'impression** inaccessible aux profils humains
+  (403 pour les 8) : attend un jeton d'appareil (`X-Restaurant-Print-Bridge-Token`
+  + `X-Company-Id`), hors Sanctum. Comportement voulu, désormais décrit dans
+  l'OpenAPI (mécanisme, auth dédiée, fail-closed).
+- ✅ **Corrigé (v3) — `GET /restaurant/print-jobs`** : le code lit `branch_id`
+  en **query** (422 sans lui) alors que la spec déclarait un en-tête
+  `X-Branch-Id` inexistant. La spec documente `branch_id` (obligatoire) ainsi
+  que les filtres `status` et `order_id`.
+- ✅ **Corrigé (v3) — Anomalie RBAC sur `POST /departments`** : la route ne
+  portait qu'un `api.manager` sans liste de rôles (comptable et superviseur
+  obtenaient 201). Elle est restreinte à `principal` et `rh`, et
+  `DepartmentController::store()` évalue enfin `DepartmentPolicy::create()`.
 - **Routes de statistiques non homogènes :** `/employees/stats`, `/documents`,
   `/crm/activities`, `/planning` → 404.
 - **Payloads de verticales très stricts et non documentés** dans l'OpenAPI.
@@ -179,7 +189,8 @@ rejouer.
 | **Verticale restaurant — provisionnement / seeders** | **3,5** (5/5 après correctifs) |
 | Sécurité (MFA, anti-IDOR, cloisonnement) | 5 |
 | Qualité des tests automatisés | 4,5 |
-| **Moyenne globale** | **4,5** |
+| Documentation OpenAPI (bridge, print-jobs) | 5 |
+| **Moyenne globale** | **4,6** |
 
 ### Verdict
 Produit **mature et cohérent**. La verticale restaurant est **réellement
@@ -190,8 +201,10 @@ fort — cloisonnement fin par succursale et par métier.
 
 Le point faible n'est pas le code métier mais le **provisionnement** : un tenant
 de verticale n'était pas livrable en l'état (modules requis, comptes de
-connexion, assignations de ressource). Corrigé ici, et le cycle `--clean` +
-re-seed est désormais rejouable.
+connexion, assignations de ressource). Corrigé en v2, et le cycle `--clean` +
+re-seed est désormais rejouable. La **v3** a fermé les trois derniers points
+ouverts : restriction de `POST /departments` par rôle, documentation du bridge
+d'impression et du paramètre de `/restaurant/print-jobs`.
 
 ---
 
@@ -209,6 +222,65 @@ Branche : `eval/leopardo-hr-recette-2026-11-22`
 | `95f74fd11` | `eval/resto/workflows.py` | Parcours métier de bout en bout |
 | `95f74fd11` | `eval/resto/security.py` | Tests de cloisonnement |
 | `95f74fd11` | `eval/resto/*.json` | Résultats bruts |
+| `17554221d` | `api/routes/modules/rh.php` | `POST /departments` : `api.manager` → `api.manager:principal,rh` |
+| `17554221d` | `api/app/Modules/HR/…/DepartmentController.php` | `authorize('create', Department::class)` — la Policy existait mais n'était jamais évaluée |
+| `17554221d` | `api/openapi.yaml` | `/restaurant/print-jobs` : `branch_id` (query, obligatoire) + `status`/`order_id` documentés ; en-tête `X-Branch-Id` inexistant retiré |
+| `17554221d` | `api/tests/Feature/HR/OrgReferentialCrudTest.php` | Test de non-régression `test_only_principal_and_rh_can_create_departments` |
+
+---
+
+## 9 · Correctifs v3 — vérification en conditions réelles
+
+Commit `17554221d` sur `eval/leopardo-hr-recette-2026-11-22`, vérifié sur
+l'instance locale avec les 8 profils de `resto-pilot-001`.
+
+### 1 & 3 · `POST /departments` restreint à `principal` et `rh`
+
+**Cause racine :** la route ne portait que `api.manager` —
+`EnsureApiManagerMiddleware` sans liste de rôles autorise *tout* manager. La
+`DepartmentPolicy::create()` qui exprime la règle (`hasManagerRole('principal','rh')`)
+existait et était bien enregistrée dans `AuthServiceProvider`, mais `store()`
+ne l'évaluait jamais.
+
+| Profil | Avant correctif | Après correctif | Verdict |
+|---|---|---|---|
+| principal | 201 | 201 | ✅ autorisé |
+| gérant (`manager_role=rh`) | 201 | 201 | ✅ autorisé |
+| comptable | 201 | 403 `INSUFFICIENT_ROLE` | ✅ refusé |
+| superviseur | 201 | 403 `INSUFFICIENT_ROLE` | ✅ refusé |
+| chef / serveur / caissier / livreur | 403 | 403 `MANAGER_REQUIRED` | ✅ refusé |
+
+Correctif appliqué à **deux niveaux** : middleware de route
+(`api.manager:principal,rh`) et `authorize('create', …)` dans le contrôleur,
+pour qu'un futur changement de route ne rouvre pas la faille. Un test de
+non-régression couvre les quatre rôles.
+
+### 2 · Documentation OpenAPI du bridge et de `/restaurant/print-jobs`
+
+**Cause racine :** la spec déclarait un en-tête `X-Branch-Id` sur
+`GET /restaurant/print-jobs` alors que le contrôleur lit
+`$request->query('branch_id')` et renvoie 422 sans lui. Un client généré depuis
+la spec envoyait donc le mauvais paramètre et recevait systématiquement 422.
+
+| Élément | Avant | Après |
+|---|---|---|
+| `GET /restaurant/print-jobs` | en-tête `X-Branch-Id` (inexistant côté code) | `branch_id` en query, obligatoire, + `status` / `order_id` documentés |
+| Bridge `/restaurant/printing/bridge/*` | 7 opérations documentées, mécanisme d'auth peu explicite | jeton partagé `X-Restaurant-Print-Bridge-Token` + `X-Company-Id`, hors Sanctum, fail-closed explicité |
+
+**Contrôle automatisé :** `dev-hub/tools/check-openapi-route-coverage.py` —
+`new_uncovered: 0`, `new_param_drift: 0`, `new_reverse_drift: 0`. Le drift de
+paramètres restant (1) est l'entrée pré-existante et justifiée de l'allowlist
+(`PATCH /v1/notifications/{param}/read`, alias déprécié #4932), sans rapport
+avec ces correctifs.
+
+### Bilan v3
+
+Les trois corrections demandées sont **appliquées, testées et poussées**. Les
+points 1 et 3 étant la même correction, elle est vérifiée une seule fois sur
+les 8 profils : **201** pour `principal` et `rh`, **403** pour `comptable` et
+`superviseur`, **403** pour les profils non-managers. La documentation OpenAPI
+est alignée sur le code et le contrôle de couverture ne signale aucun nouveau
+drift.
 
 ---
 
