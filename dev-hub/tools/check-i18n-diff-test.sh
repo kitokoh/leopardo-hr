@@ -446,6 +446,26 @@ for motif in '0 1px 2px rgba(15, 23, 42, 0.04)' 'box-shadow 120ms ease, transfor
 done
 expect_flagged 'Réserver maintenant votre séjour' "contre-contrôle : phrase utilisateur reste flaggée (#9594)"
 
+# ── Cas 2d : courbes d'animation et propriétés CSS composées (#9797) ──────────
+# `cubic-bezier(...)` et `border-color` étaient les seuls jetons non reconnus de
+# la valeur `transition` des primitives de vitrine : toute transition
+# personnalisée était donc lue comme une phrase utilisateur. Le contre-contrôle
+# vérifie que l'élargissement du vocabulaire CSS n'ouvre pas la porte à du texte.
+mkdir -p "$REPO_TEXT/front/web/src/modules/public-surfaces/kernel/components"
+cat > "$REPO_TEXT/front/web/src/modules/public-surfaces/kernel/components/SurfacePrimitives.tsx" <<'TSX'
+export function SurfaceCard() {
+  const transition = 'box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1), border-color 160ms cubic-bezier(0.16, 1, 0.3, 1)'
+  // Contre-contrôle : une vraie phrase utilisateur reste détectée.
+  const label = 'Réserver maintenant votre séjour'
+  return { transition, label }
+}
+TSX
+git -C "$REPO_TEXT" add -A
+git -C "$REPO_TEXT" commit -q -m "courbes d'animation et propriétés CSS composées (#9797)"
+run_guard "$REPO_TEXT"
+expect_clean 'box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1), border-color 160ms cubic-bezier(0.16, 1, 0.3, 1)' "valeur de transition avec cubic-bezier (#9797)"
+expect_flagged 'Réserver maintenant votre séjour' "contre-contrôle : phrase utilisateur reste flaggée (#9797)"
+
 # ── Cas 3 : le message d'erreur dit quoi faire (critère 3) ───────────────────
 if ! printf '%s\n' "$OUT" | grep -qF 'catalogue i18n'; then
   printf '%s\n' "$OUT" >&2

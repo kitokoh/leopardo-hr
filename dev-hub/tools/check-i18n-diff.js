@@ -312,9 +312,26 @@ const cssStyleKeywords = new Set([
   // `box-shadow 120ms ease, transform 120ms ease` est une déclaration de
   // transition, pas une phrase.
   'ease', 'ease-in', 'ease-out', 'ease-in-out', 'linear', 'step-start', 'step-end',
+  // #9797 : `cubic-bezier(0.16, 1, 0.3, 1)` est une courbe d'animation. Le nom
+  // de fonction etait le seul jeton non reconnu de la valeur `transition`, donc
+  // toute transition personnalisee etait lue comme une phrase utilisateur.
+  'cubic-bezier', 'steps',
   'box-shadow', 'transform', 'transition', 'opacity', 'background', 'color',
   'border', 'padding', 'margin', 'font', 'display', 'gap', 'width', 'height',
   'inset', 'filter', 'backdrop-filter', 'will-change', 'outline', 'shadow',
+  // #9797 : propriétés CSS composées. `border-color` était le seul jeton non
+  // reconnu de `box-shadow 160ms cubic-bezier(...), border-color 160ms ...`,
+  // donc la valeur restait lue comme une phrase utilisateur.
+  'border-color', 'border-radius', 'border-width', 'border-style',
+  'background-color', 'background-image', 'background-position', 'background-size',
+  'font-size', 'font-weight', 'font-family', 'line-height', 'letter-spacing',
+  'text-align', 'text-decoration', 'text-transform', 'text-overflow',
+  'min-width', 'max-width', 'min-height', 'max-height',
+  'flex-direction', 'flex-wrap', 'flex-grow', 'flex-shrink', 'flex-basis',
+  'grid-template-columns', 'grid-template-rows', 'grid-column', 'grid-row',
+  'align-items', 'align-content', 'align-self', 'justify-content', 'justify-items', 'justify-self',
+  'overflow-x', 'overflow-y', 'white-space', 'word-break', 'object-fit', 'object-position',
+  'pointer-events', 'user-select', 'z-index', 'top', 'right', 'bottom', 'left',
 ]);
 function isCssStyleValue(value) {
   const trimmed = value.trim();
