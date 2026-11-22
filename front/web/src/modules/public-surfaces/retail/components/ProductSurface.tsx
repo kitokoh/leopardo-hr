@@ -135,7 +135,7 @@ export function ProductSurface({
 
               {purchasable ? (
                 <SurfaceCta identity={identity} href={`/panier?add=${product.id}`}>
-                  {shared.product}
+                  {shared.addToCart}
                 </SurfaceCta>
               ) : (
                 <SurfaceNotice identity={identity}>{shared.soldOut}</SurfaceNotice>
