@@ -69,7 +69,7 @@ class HealthController extends Controller
         // environnement) cartographierait la stack pour un attaquant. Elle est
         // reservee aux super admins plateforme (guard `super_admin_api`).
         if (! $request->user('super_admin_api') instanceof SuperAdmin) {
-            return response()->json([
+            return new JsonResponse([
                 'status' => $globalOk ? 'ok' : 'fail',
                 'version' => $version,
                 'timestamp' => now()->toIso8601String(),
@@ -96,7 +96,13 @@ class HealthController extends Controller
             'timestamp' => now()->toIso8601String(),
         ];
 
-        return response()->json($payload, $statusCode);
+        // #9741 — `new JsonResponse` et non `response()->json()` : le helper
+        // resout la ResponseFactory, qui resout le Redirector, qui resout la
+        // session, qui resout l'Encrypter — et leve MissingAppKeyException
+        // quand APP_KEY est absente. La sonde qui doit PRECISEMENT signaler
+        // `app_key_missing` repondait donc 500, exactement le faux negatif
+        // qu'elle existe pour eviter.
+        return new JsonResponse($payload, $statusCode);
     }
 
     /**
@@ -109,7 +115,7 @@ class HealthController extends Controller
      */
     public function live(): JsonResponse
     {
-        return response()->json([
+        return new JsonResponse([
             'status' => 'ok',
             'timestamp' => now()->toIso8601String(),
         ]);
@@ -161,7 +167,7 @@ class HealthController extends Controller
 
         $ok = $failed === [];
 
-        return response()->json([
+        return new JsonResponse([
             'status' => ! $ok ? 'fail' : ($degraded === [] ? 'ok' : 'degraded'),
             'checks' => $checks,
             'failed_checks' => $failed,
