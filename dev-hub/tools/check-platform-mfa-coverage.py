@@ -47,13 +47,19 @@ MFA = "platform.mfa"
 # Exemptions EXPLICITES et motivees. Une exemption n'est pas un oubli : c'est
 # une decision ecrite, verifiable en revue. Toute nouvelle entree doit dire
 # POURQUOI la MFA n'a pas de sens sur cette route.
+#
+# La cle est `{fichier}:{liste de middlewares}` — et NON un numero de ligne.
+# Une cle numerotee se casse au premier ajout de lignes au-dessus : le 2026-11-22
+# l'insertion des routes de bannissement (#9815) a decale `/metrics` de la ligne
+# 129 a la 130, et la garde a signale une exemption « perdue » qui n'avait pas
+# bouge. Indexer sur le contenu rend l'exemption stable par construction.
 EXEMPTIONS: dict[str, str] = {
     # `GET /api/v1/metrics` est consomme par la supervision (scrapers, sondes
     # externes) avec un jeton de service. Un scraper ne peut pas saisir un code
     # TOTP : exiger la MFA ici couperait la supervision, donc l'alerte, donc la
     # capacite a voir une panne. La route est deja protegee par un jeton
     # super-admin dedie + `throttle:metrics` (anti-fingerprinting, #1466).
-    "api/routes/api.php:129": "endpoint de supervision machine (scrapers) — pas de TOTP possible",
+    "api/routes/api.php:'auth:super_admin_api', 'throttle:metrics'": "endpoint de supervision machine (scrapers) — pas de TOTP possible",
 }
 
 # Un appel de middleware : `Route::middleware([...])` ou `->middleware([...])`.
@@ -96,7 +102,7 @@ def scan_file(path: Path) -> list[tuple[int, str]]:
         window = text[start : start + 400]
         if MFA in window:
             continue
-        problems.append((line_of(text, start), f"middleware('{GUARD}') sans {MFA} a proximite"))
+        problems.append((line_of(text, start), f"'{GUARD}'"))
 
     return problems
 
@@ -115,7 +121,8 @@ def run(verbose: bool = False) -> int:
         total_groups += text.count(GUARD)
         for line, snippet in scan_file(path):
             rel = str(path.relative_to(REPO_ROOT))
-            key = f"{rel}:{line}"
+            # Cle stable : fichier + contenu de la liste de middlewares.
+            key = f"{rel}:{snippet}"
             if key in EXEMPTIONS:
                 if verbose:
                     print(f"  [exempte] {key} — {EXEMPTIONS[key]}")
@@ -186,6 +193,25 @@ def self_test() -> int:
             print(f"  [{status}] {description} (attendu {expected}, trouve {found})")
             if not ok:
                 failed += 1
+
+    # La cle d'exemption doit etre STABLE : ajouter des lignes au-dessus d'un
+    # groupe exempte ne doit pas la casser. C'est le defaut corrige le
+    # 2026-11-22 (#9815) : la cle etait `fichier:ligne`, donc l'insertion des
+    # routes de bannissement a fait « disparaitre » l'exemption de `/metrics`.
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "stable.php"
+        body = "Route::middleware(['auth:super_admin_api', 'throttle:metrics'])->group(function () {});"
+        path.write_text(body, encoding="utf-8")
+        before = scan_file(path)[0][1]
+
+        path.write_text("// 40 lignes ajoutees au-dessus\n" * 40 + body, encoding="utf-8")
+        after = scan_file(path)[0][1]
+
+        ok = before == after
+        status = "OK  " if ok else "ECHEC"
+        print(f"  [{status}] la cle d'exemption survit a un decalage de lignes")
+        if not ok:
+            failed += 1
 
     if failed:
         print(f"\nAUTOTEST ECHOUE : {failed} cas.", file=sys.stderr)

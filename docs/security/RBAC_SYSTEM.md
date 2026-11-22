@@ -171,6 +171,28 @@ qu'une révocation bruyante).
 Geste d'exploitation : `php artisan auth:ban-account {type} {id} [--hours=]
 [--reason=] [--lift]`.
 
+**Surface API (#9815)** — le même geste, sans terminal, sous le groupe
+`platform` (`auth:super_admin_api` + `platform.mfa` +
+`throttle:platform-sensitive`) et la permission **dédiée `accounts.ban`** :
+
+| Méthode | Chemin | Effet |
+|---|---|---|
+| `POST` | `/platform/accounts/{type}/{id}/ban` | bannit (`hours` optionnel, sinon permanent, + `reason`) |
+| `DELETE` | `/platform/accounts/{type}/{id}/ban` | lève le bannissement (idempotent) |
+| `GET` | `/platform/accounts/{type}/{id}/ban` | état, sans révéler le compte |
+
+`accounts.ban` est **distincte de `users.manage`** : suspendre un compte
+(`status = suspended`) est un geste métier réversible par le même écran ;
+bannir est un geste de sécurité qui coupe l'accès sans toucher aux données.
+Les confondre obligerait à donner le droit de couper un accès à quiconque doit
+seulement activer un compte — même défaut que #7973 (offres) et #8729 (Pages).
+Portée par `super_admin`/`admin` (matrice `allExcept`), `support` (signalements
+d'abus) et `ops` (incident) ; ni `finance` ni `marketing`.
+
+Un `type` inconnu est refusé **avant toute écriture** (422) : une clé
+`auth:banned:typo:42` ne serait jamais relue par `AccountStatusGuard`, donc le
+bannissement serait silencieusement sans effet.
+
 ### MFA plateforme (#9810)
 
 `EnsurePlatformMfaEnrolled` (#9096) n'est appliqué que là où il est écrit dans
@@ -197,6 +219,10 @@ ci-dessus qui citait `EduCampusPolicy` comme utilisant le concern était
 
 - `api/tests/Feature/Security/TokenRevocationTest.php` — révocation sans
   suppression, bannissement temporaire qui expire, TTL borné, statut refusé.
+- `api/tests/Feature/Security/PlatformAccountBanApiTest.php` — la surface API
+  (#9815) : bannissement temporaire puis permanent, levée idempotente,
+  consultation sans fuite du compte, type inconnu refusé **sans clé fantôme**,
+  et refus d'un rôle sans `accounts.ban`.
 - `api/tests/Feature/Security/SiteResourceScopedPolicyTest.php` — périmètre
   ressource sur `site` : progressivité, niveaux, `principal`, isolation tenant.
 

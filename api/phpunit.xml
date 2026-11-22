@@ -1532,7 +1532,7 @@
           `RefreshTenantDatabase` fait `DROP SCHEMA shared_tenants CASCADE`
           et detruit le marqueur `__mvp_fixture_ready`.
 
-          FeatureMvpFixture : 241 fichiers.
+          FeatureMvpFixture : 242 fichiers.
           FeatureRest       : 1091 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
@@ -1744,6 +1744,7 @@
             <file>tests/Feature/Security/GoogleAuthGlobalLookupTest.php</file>
             <file>tests/Feature/Security/IndexCrossTenantValidationTest.php</file>
             <file>tests/Feature/Security/ModuleGrantsTest.php</file>
+            <file>tests/Feature/Security/PlatformAccountBanApiTest.php</file>
             <file>tests/Feature/Security/ResourceAccessLifecycleTest.php</file>
             <file>tests/Feature/Security/ResourceScopedRbacTest.php</file>
             <file>tests/Feature/Security/ResourceScopedVerticalPoliciesTest.php</file>

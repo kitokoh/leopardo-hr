@@ -68,6 +68,10 @@ enum PlatformRole: string
                 PlatformPermission::UsersManage,
                 PlatformPermission::SupportManage,
                 PlatformPermission::Impersonate,
+                // #9815 — le support traite les signalements d'abus : il peut
+                // couper l'accès d'un compte compromis. C'est un geste de
+                // sécurité, distinct de la suspension de compte.
+                PlatformPermission::AccountsBan,
                 PlatformPermission::ObservabilityView,
                 PlatformPermission::MetricsView,
                 // BC PAGES (#8729) — le support instruit les litiges de
@@ -107,6 +111,9 @@ enum PlatformRole: string
                 PlatformPermission::MetricsView,
                 PlatformPermission::KillSwitchManage,
                 PlatformPermission::EdgeManage,
+                // #9815 — l'exploitation coupe un accès compromis (incident,
+                // fuite de jeton) sans attendre un administrateur.
+                PlatformPermission::AccountsBan,
                 // #7973 — webhooks sortants (admin + ops) et audit paie
                 // cross-tenant (débogage des calculs).
                 PlatformPermission::WebhooksManage,
