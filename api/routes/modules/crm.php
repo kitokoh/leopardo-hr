@@ -28,7 +28,7 @@ use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmEmailWebhookController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmExportController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmImportController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmLeadController;
-use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmOpportunityStageController;
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmOpportunityController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmSearchController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmSegmentController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmTaskController;
@@ -133,15 +133,18 @@ ModuleRoutes::tenantModule('crm', function (): void {
         Route::get('/contacts/{contact}', [CrmDirectoryWriteController::class, 'showContact'])->whereNumber('contact');
 
         Route::get('/opportunities', [CrmDirectoryController::class, 'opportunities']);
-        // #9790 — faire avancer une affaire dans le pipeline. Écriture réservée
-        // aux rôles qui pilotent le commercial : un lecteur ne déplace pas une
-        // affaire, et `won`/`lost` constatent du CA.
+
+        // #9780/#9790 — LE chemin d'ecriture qui manquait. `GET /opportunities`
+        // existait (kanban par stage) mais AUCUNE route ne changeait `stage` :
+        // le pipeline etait en lecture seule, une affaire convertie restait
+        // figee et rien ne pouvait etre marque gagne ou perdu.
         //
-        // Rôles limités à `principal` et `marketing` : ce sont les deux seules
-        // valeurs de `manager_role` (`employees.manager_role`) qui portent le
-        // commercial dans le dépôt. `commercial` n'existe pas dans l'enum — le
-        // déclarer ici refuserait l'accès à tout le monde en 403.
-        Route::patch('/opportunities/{opportunity}/stage', [CrmOpportunityStageController::class, 'update'])
+        // RBAC : `principal` et `marketing` — les deux seules valeurs de
+        // `employees.manager_role` qui portent le commercial dans le depot.
+        // `commercial` n'existe pas dans l'enum : le declarer ici refuserait
+        // l'acces a tout le monde en 403. Un lecteur ne deplace pas une
+        // affaire, et `won`/`lost` constatent du CA.
+        Route::patch('/opportunities/{opportunity}/stage', [CrmOpportunityController::class, 'transitionStage'])
             ->whereNumber('opportunity')
             ->middleware('api.manager:principal,marketing,module:crm');
     });
