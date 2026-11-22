@@ -16,4 +16,5 @@ return [
     'profile_required_before_publish' => 'أكمل ملفك التجاري قبل نشره.',
     'public_slug_required' => 'يلزم معرف واسم تجاري عامان لنشر الشركة.',
     'public_slug_taken' => 'هذا المعرف العام مستخدم بالفعل من قبل شركة أخرى.',
+    'search_query_too_short' => 'يجب أن يحتوي البحث على :min أحرف على الأقل.',
 ];

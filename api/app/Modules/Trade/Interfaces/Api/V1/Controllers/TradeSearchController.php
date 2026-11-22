@@ -37,10 +37,14 @@ final class TradeSearchController
         $query = trim((string) $request->string('q'));
 
         if (mb_strlen($query) < TradeSearchService::MIN_QUERY_LENGTH) {
+            // Message traduit : un texte français codé en dur est invisible
+            // pour un utilisateur turc ou arabophone (PA2-I18N-007, #5432).
+            $message = __('trade.search_query_too_short', ['min' => TradeSearchService::MIN_QUERY_LENGTH]);
+
             return new JsonResponse([
-                'message' => 'La recherche doit contenir au moins '.TradeSearchService::MIN_QUERY_LENGTH.' caractères.',
+                'message' => $message,
                 'errors' => [
-                    'q' => ['La recherche doit contenir au moins '.TradeSearchService::MIN_QUERY_LENGTH.' caractères.'],
+                    'q' => [$message],
                 ],
             ], 422);
         }

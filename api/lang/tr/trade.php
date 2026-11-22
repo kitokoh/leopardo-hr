@@ -16,4 +16,5 @@ return [
     'profile_required_before_publish' => 'Yayinlamadan once ticari profilinizi tamamlayin.',
     'public_slug_required' => 'Sirketi yayinlamak icin genel bir slug ve ticari ad gereklidir.',
     'public_slug_taken' => 'Bu genel slug baska bir sirket tarafindan kullaniliyor.',
+    'search_query_too_short' => 'Arama en az :min karakter icermelidir.',
 ];
