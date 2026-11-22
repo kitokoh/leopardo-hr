@@ -33,9 +33,14 @@ final class PayrollReadToolCatalog
             new AIToolDefinition(
                 name: 'payroll_current_status',
                 description: "Statut agrégé de la paie du tenant : dernier run clôturé (validé/payé) et run en cours éventuel (draft/calculating/processing/calculated/error) avec progression (bulletins générés/validés rapportés à l'effectif du run). Aucun montant, aucune donnée nominative.",
+                // Issue #9752 — `properties` doit être un OBJET JSON, pas un
+                // tableau : `[]` sérialise en `"properties": []`, un schéma
+                // invalide que tout client MCP strict rejette (le SDK officiel
+                // lève « expected record, received array » et refuse alors
+                // TOUT `tools/list`). `new \stdClass` sérialise en `{}`.
                 inputSchema: [
                     'type' => 'object',
-                    'properties' => [],
+                    'properties' => new \stdClass,
                 ],
                 outputSchema: [
                     'type' => 'object',

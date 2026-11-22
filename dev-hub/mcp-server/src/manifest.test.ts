@@ -51,7 +51,13 @@ describe("manifest", () => {
     for (const tool of generated) {
       expect(tool.route, `route absente pour ${tool.name}`).toBeDefined();
       expect(tool.route!.path.startsWith("/api/v1/")).toBe(true);
-      expect(tool.sensitivity).toBe(tool.route!.method === "GET" ? "read" : "write");
+      if (tool.route!.action === true) {
+        // Issue #9753 — une action est TOUJOURS `write`, même en GET
+        // (`/departure`, `/preview`) : elle n'est jamais exécutée directement.
+        expect(tool.sensitivity, `${tool.name} : action non-write`).toBe("write");
+      } else {
+        expect(tool.sensitivity).toBe(tool.route!.method === "GET" ? "read" : "write");
+      }
     }
   });
 

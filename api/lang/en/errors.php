@@ -313,6 +313,10 @@ return [
     'STT_UNAVAILABLE' => 'Voice transcription is temporarily unavailable (service not configured).',
     'TTS_UNAVAILABLE' => 'Voice synthesis is temporarily unavailable (service not configured).',
     'AI_ACTION_REJECTED' => 'Action rejected by the user.',
+    // Issue #9753 — action proposal from an external MCP client.
+    'AI_TOOL_UNKNOWN' => 'Unknown tool.',
+    'AI_ACTION_NOT_SENSITIVE' => 'This tool is read-only: no confirmation is required.',
+    'AI_ACTION_NOT_CONFIRMABLE' => 'This tool cannot be proposed: it has no confirmation handler.',
     // #7268 — Onboarding: localized step messages (no more hardcoded literals)
     'ONBOARDING_STEP_REQUIRED' => 'This step is required and cannot be skipped.',
     'ONBOARDING_STEP_NOT_DONE' => 'This step cannot be marked complete: no matching action has been recorded yet.',

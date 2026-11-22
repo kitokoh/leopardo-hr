@@ -1,6 +1,7 @@
 <?php
 
 use App\AI\Interfaces\Api\V1\Controllers\AgentController;
+use App\AI\Interfaces\Api\V1\Controllers\AIActionProposalController;
 use App\AI\Interfaces\Api\V1\Controllers\AIAnalyticsController;
 use App\AI\Interfaces\Api\V1\Controllers\AIGatewayController;
 use App\AI\Interfaces\Api\V1\Controllers\ConversationExportController;
@@ -23,6 +24,11 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'throttle:ai
     Route::delete('/chat/{conversationId}', [AIGatewayController::class, 'deleteConversation'])->whereNumber('conversationId');
     Route::post('/actions/{pendingActionId}/confirm', [AIGatewayController::class, 'confirmAction']);
     Route::post('/actions/{pendingActionId}/reject', [AIGatewayController::class, 'rejectAction']);
+    // Issue #9753 — proposition d'action depuis un client MCP externe. Le
+    // serveur MCP n'a pas d'accès base : il ne peut pas écrire lui-même dans
+    // `ai_pending_actions`. Cet endpoint crée la PROPOSITION (contrôles de
+    // rôle + sensibilité + handler), la confirmation reste humaine.
+    Route::post('/actions/propose', [AIActionProposalController::class, 'propose']);
     Route::get('/tools', [AIGatewayController::class, 'tools']);
 
     // BC-23-D07 (issue #6239) — export asynchrone de conversation (idempotent,

@@ -145,7 +145,7 @@ sans affinité de session.
 
 ```bash
 curl -s http://127.0.0.1:8787/healthz
-# {"status":"ok","tools":170}
+# {"status":"ok","tools":287}
 ```
 
 ## 7. Les deux sources d'outils
@@ -167,13 +167,20 @@ trois filtres :
 
 1. **allowlist de tags** — `Employees`, `Tasks`, `Projects`, `Schedules`,
    `Attendance`, `Evaluations`, `Payroll`, `Me`, `Notifications`,
-   `HR Referentials` ;
+   `HR Referentials`, et depuis l'issue #9751 les verticales `Travel` et
+   `Restaurant` ;
 2. **verbes CRUD uniquement** — les endpoints d'action (`/approve`, `/lock`,
    `/confirm`, `/publish`…) sont exclus : ils passent par `PendingAction` ;
 3. **exclusion de `/public/*` et `/webhooks/*`** — pas d'authentification
    tenant, donc hors du modèle d'autorisation.
 
-Résultat actuel : **161 outils** (94 `read`, 67 `write`).
+Résultat actuel : **278 outils** (129 `read`, 149 `write`), dont 52 Travel et
+25 Restaurant (issue #9751) et **40 outils d'action** (issue #9753).
+
+> L'allowlist est un **choix produit**, pas un miroir de la spec. Les autres
+> verticales (`FuelStation`, `Retail`, `HealthManager`, `Pharmacy`…) restent
+> hors périmètre tant qu'aucun consommateur externe ne les demande : exposer
+> ~1 950 opérations rendrait `tools/list` illisible pour un agent.
 
 ## 8. Régénérer les manifestes
 
@@ -217,6 +224,7 @@ pour les outils générés), jamais décidée par le serveur MCP.
 | `read` | exécution directe — Laravel applique RBAC + Policy |
 | `write` | **refus**, aucun effet de bord |
 | `send` | **refus**, aucun effet de bord |
+| `write` + `route.action: true` | **proposition** — crée une action en attente, jamais exécutée |
 
 Pour une action `write`/`send`, le client doit passer par le flux de
 confirmation de l'API :
@@ -226,6 +234,42 @@ POST /api/v1/ai/actions/{id}/confirm
 ```
 
 Un outil déclaré sans route REST mappée est également refusé (**fail-closed**).
+
+### Proposer une action (issue #9753)
+
+Les endpoints d'**action** métier (`/approve`, `/publish`, `/rotate`, `/revoke`…)
+sont exposés comme outils MCP, mais `tools/call` ne les exécute **jamais** : il
+crée une **proposition** et renvoie l'identifiant à confirmer par un humain.
+
+```
+Client MCP                    Serveur MCP                 API Laravel
+    |                              |                          |
+    |-- tools/call(absence_decision) -->                      |
+    |                              |-- POST /ai/actions/propose -->
+    |                              |                          | RBAC (403 si refusé)
+    |                              |                          | sensibilité (422 si read)
+    |                              |                          | handler (422 si absent)
+    |                              |                          | PendingActionStore::store()
+    |<-- pending_action_id --------|<-- 201 {pending_action_id}--|
+    |                                                          |
+    |  (un HUMAIN confirme)                                    |
+    |-- POST /api/v1/ai/actions/{id}/confirm ------------------>| exécution effective
+```
+
+Trois propriétés à retenir :
+
+1. **Le serveur MCP n'a aucun accès base.** Il ne peut pas écrire lui-même dans
+   `ai_pending_actions` — c'est ce qui garantit que Laravel reste le seul point
+   d'autorisation. D'où l'endpoint `POST /api/v1/ai/actions/propose`.
+2. **Aucun effet métier à la proposition.** `absences` reste vide tant qu'un
+   humain n'a pas confirmé.
+3. **Les refus sont fail-closed et sans stockage** : outil inconnu (`422`),
+   outil de lecture (`422`), outil sans handler de confirmation (`422`), rôle
+   non habilité (`403`). Aucun pending fantôme n'est créé.
+
+Les arguments sont transmis **tels quels** : la proposition est une intention,
+pas une requête HTTP. Laravel revalide les arguments au moment de la
+confirmation.
 
 ## 10. Dépannage
 

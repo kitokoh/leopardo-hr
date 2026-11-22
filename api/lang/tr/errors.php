@@ -306,6 +306,10 @@ return [
     'STT_UNAVAILABLE' => 'Sesli yazıya dönüştürme geçici olarak kullanılamıyor (hizmet yapılandırılmamış).',
     'TTS_UNAVAILABLE' => 'Sesli sentez geçici olarak kullanılamıyor (hizmet yapılandırılmamış).',
     'AI_ACTION_REJECTED' => 'İşlem kullanıcı tarafından reddedildi.',
+    // Issue #9753 — proposition d'action depuis un client MCP externe.
+    'AI_TOOL_UNKNOWN' => 'Bilinmeyen araç.',
+    'AI_ACTION_NOT_SENSITIVE' => 'Bu araç salt okunur: onay gerekmez.',
+    'AI_ACTION_NOT_CONFIRMABLE' => 'Bu araç önerilemez: onay işleyicisi yok.',
     // #7268 — Onboarding: yerelleştirilmiş adım mesajları (sabit metin yok)
     'ONBOARDING_STEP_REQUIRED' => 'Bu adım zorunludur ve atlanamaz.',
     'ONBOARDING_STEP_NOT_DONE' => 'Bu adım tamamlandı olarak işaretlenemez: ilgili bir işlem kaydedilmedi.',
