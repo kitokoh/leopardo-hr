@@ -1368,6 +1368,7 @@
             <file>tests/Feature/Trade/TradeQuoteApiTest.php</file>
             <file>tests/Feature/Trade/TradeRfqApiTest.php</file>
             <file>tests/Feature/Trade/TradeSchemaTest.php</file>
+            <file>tests/Feature/Trade/TradeSearchApiTest.php</file>
         </testsuite>
         <testsuite name="Training">
             <file>tests/Feature/Training/TrainingControllerTest.php</file>
