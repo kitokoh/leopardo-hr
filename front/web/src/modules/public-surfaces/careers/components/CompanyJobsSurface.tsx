@@ -76,17 +76,27 @@ export function CompanyJobsSurface({
         <Link
           href="/emploi"
           style={{
-            display: 'inline-block',
-            marginBottom: '1.25rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            marginBottom: '1.5rem',
             fontSize: '0.85rem',
             color: identity.palette.muted,
             textDecoration: 'none',
+            transition: 'color 0.15s ease',
           }}
         >
           ← {shared.allCompanies}
         </Link>
 
-        <h1 style={{ margin: '0 0 0.35rem', fontSize: 'clamp(1.4rem, 3vw, 1.9rem)' }}>
+        <h1
+          style={{
+            margin: '0 0 0.4rem',
+            fontSize: 'clamp(1.4rem, 3vw, 1.9rem)',
+            letterSpacing: '-0.02em',
+            fontWeight: 800,
+          }}
+        >
           {result.companyName}
         </h1>
         <SurfaceMeta identity={identity}>
@@ -133,7 +143,7 @@ export function CompanyJobsSurface({
               <SurfaceSectionTitle identity={identity}>{shared.company}</SurfaceSectionTitle>
             ) : null}
 
-            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '0.75rem' }}>
+            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '0.85rem' }}>
               {company.map(({ offer, contractLabel, remoteLabel, salary, open }) => (
                 <SurfaceCard key={offer.id} as="li" interactive identity={identity}>
                   <Link href={`/emploi/${companySlug}/offres/${offer.id}`} data-surface-card-link="">
@@ -141,13 +151,22 @@ export function CompanyJobsSurface({
                       style={{
                         display: 'flex',
                         flexWrap: 'wrap',
-                        gap: '0.75rem',
+                        gap: '0.85rem',
                         alignItems: 'baseline',
                         justifyContent: 'space-between',
                       }}
                     >
                       <div style={{ minWidth: '12rem' }}>
-                        <strong style={{ display: 'block', fontSize: '1rem' }}>{offer.title}</strong>
+                        <strong
+                          style={{
+                            display: 'block',
+                            fontSize: '1.02rem',
+                            letterSpacing: '-0.01em',
+                            fontWeight: 700,
+                          }}
+                        >
+                          {offer.title}
+                        </strong>
                         <SurfaceMeta identity={identity}>
                           {[offer.location, contractLabel, remoteLabel]
                             .filter(Boolean)
@@ -155,8 +174,18 @@ export function CompanyJobsSurface({
                         </SurfaceMeta>
                       </div>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                        {salary ? <strong style={{ fontSize: '0.95rem' }}>{salary}</strong> : null}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                        {salary ? (
+                          <strong
+                            style={{
+                              fontSize: '0.95rem',
+                              fontWeight: 700,
+                              color: identity.palette.primary,
+                            }}
+                          >
+                            {salary}
+                          </strong>
+                        ) : null}
                         <SurfaceBadge identity={identity} tone={open ? 'accent' : 'neutral'}>
                           {open ? shared.bookable : shared.soldOut}
                         </SurfaceBadge>
@@ -176,7 +205,7 @@ export function CompanyJobsSurface({
           <section style={{ marginTop: '1.75rem' }}>
             <SurfaceSectionTitle identity={identity}>{shared.allCompanies}</SurfaceSectionTitle>
 
-            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '0.75rem' }}>
+            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '0.85rem' }}>
               {external.map(({ offer, contractLabel, salary }) => (
                 <SurfaceCard key={`ext-${offer.id}`} as="li" identity={identity}>
                   <a
@@ -189,13 +218,22 @@ export function CompanyJobsSurface({
                       style={{
                         display: 'flex',
                         flexWrap: 'wrap',
-                        gap: '0.75rem',
+                        gap: '0.85rem',
                         alignItems: 'baseline',
                         justifyContent: 'space-between',
                       }}
                     >
                       <div style={{ minWidth: '12rem' }}>
-                        <strong style={{ display: 'block', fontSize: '1rem' }}>{offer.title}</strong>
+                        <strong
+                          style={{
+                            display: 'block',
+                            fontSize: '1.02rem',
+                            letterSpacing: '-0.01em',
+                            fontWeight: 700,
+                          }}
+                        >
+                          {offer.title}
+                        </strong>
                         <SurfaceMeta identity={identity}>
                           {[offer.companyName, offer.location, contractLabel]
                             .filter(Boolean)
@@ -203,7 +241,17 @@ export function CompanyJobsSurface({
                         </SurfaceMeta>
                       </div>
 
-                      {salary ? <strong style={{ fontSize: '0.95rem' }}>{salary}</strong> : null}
+                      {salary ? (
+                        <strong
+                          style={{
+                            fontSize: '0.95rem',
+                            fontWeight: 700,
+                            color: identity.palette.primary,
+                          }}
+                        >
+                          {salary}
+                        </strong>
+                      ) : null}
                     </div>
                   </a>
                 </SurfaceCard>

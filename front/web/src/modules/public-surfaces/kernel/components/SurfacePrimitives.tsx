@@ -42,17 +42,17 @@ export function SurfaceCard({
   interactive?: boolean;
 }) {
   const style: CSSProperties = {
-    border: `1px solid ${identity.palette.muted}33`,
-    borderRadius: '0.9rem',
-    padding: '1.1rem',
+    border: `1px solid ${identity.palette.muted}25`,
+    borderRadius: '1rem',
+    padding: '1.25rem',
     background: '#FFFFFF',
     display: 'flex',
     flexDirection: 'column',
-    gap: '0.4rem',
+    gap: '0.45rem',
     ...(interactive
       ? {
-          boxShadow: '0 1px 2px rgba(15, 23, 42, 0.04)',
-          transition: 'box-shadow 120ms ease, transform 120ms ease',
+          boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02)',
+          transition: 'box-shadow 160ms cubic-bezier(0.16, 1, 0.3, 1), border-color 160ms cubic-bezier(0.16, 1, 0.3, 1)',
         }
       : {}),
   };
@@ -84,7 +84,7 @@ export function SurfaceGrid({
         margin: 0,
         padding: 0,
         display: 'grid',
-        gap: '1rem',
+        gap: '1.25rem',
         gridTemplateColumns: `repeat(auto-fill, minmax(${min}, 1fr))`,
       }}
     >
@@ -109,14 +109,16 @@ export function SurfaceBadge({
   return (
     <span
       style={{
-        display: 'inline-block',
-        padding: '0.2rem 0.55rem',
-        borderRadius: '0.5rem',
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding: '0.22rem 0.65rem',
+        borderRadius: '9999px',
         fontSize: '0.75rem',
         fontWeight: 700,
-        letterSpacing: '0.01em',
-        background: isAccent ? `${identity.palette.accent}22` : `${identity.palette.muted}1A`,
-        color: isAccent ? identity.palette.primary : identity.palette.muted,
+        letterSpacing: '0.015em',
+        background: isAccent ? `${identity.palette.accent}20` : `${identity.palette.muted}14`,
+        color: isAccent ? identity.palette.primary : identity.palette.onSurface,
+        border: `1px solid ${isAccent ? identity.palette.accent + '33' : identity.palette.muted + '22'}`,
       }}
     >
       {children}
@@ -135,10 +137,10 @@ export function SurfaceSectionTitle({
   return (
     <h2
       style={{
-        margin: '0 0 0.9rem',
-        fontSize: '1.05rem',
+        margin: '0 0 1rem',
+        fontSize: '1.15rem',
         fontWeight: 800,
-        letterSpacing: '-0.01em',
+        letterSpacing: '-0.015em',
         color: identity.palette.onSurface,
       }}
     >
@@ -167,11 +169,13 @@ export function SurfaceNotice({
       role={alert ? 'alert' : undefined}
       style={{
         margin: 0,
-        padding: '1rem 1.1rem',
-        borderRadius: '0.75rem',
-        border: `1px dashed ${identity.palette.muted}55`,
+        padding: '1.25rem 1.4rem',
+        borderRadius: '0.9rem',
+        border: `1px dashed ${identity.palette.muted}44`,
+        background: `${identity.palette.muted}06`,
         color: identity.palette.muted,
         fontSize: '0.9rem',
+        lineHeight: 1.5,
       }}
     >
       {children}
@@ -188,7 +192,7 @@ export function SurfaceMeta({
   children: ReactNode;
 }) {
   return (
-    <p style={{ margin: 0, color: identity.palette.muted, fontSize: '0.85rem' }}>{children}</p>
+    <p style={{ margin: 0, color: identity.palette.muted, fontSize: '0.85rem', lineHeight: 1.4 }}>{children}</p>
   );
 }
 
@@ -207,13 +211,18 @@ export function SurfaceCta({
       href={href}
       data-surface-cta=""
       style={{
-        display: 'inline-block',
-        padding: '0.7rem 1.2rem',
-        borderRadius: '0.6rem',
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '0.7rem 1.35rem',
+        borderRadius: '0.75rem',
         background: identity.palette.primary,
         color: identity.palette.onPrimary,
-        fontWeight: 600,
+        fontWeight: 700,
+        fontSize: '0.9rem',
         textDecoration: 'none',
+        boxShadow: '0 1px 3px rgba(15, 23, 42, 0.08)',
+        transition: 'filter 140ms ease, box-shadow 140ms ease',
       }}
     >
       {children}

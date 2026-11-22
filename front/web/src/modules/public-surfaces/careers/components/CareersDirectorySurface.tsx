@@ -89,14 +89,24 @@ export function CareersDirectorySurface({
             {result.companies.map((company) => (
               <SurfaceCard key={company.slug} as="li" interactive identity={identity}>
                 <Link href={`/emploi/${company.slug}`} data-surface-card-link="">
-                  <strong style={{ fontSize: '1.02rem', lineHeight: 1.3 }}>{company.name}</strong>
+                  <strong
+                    style={{
+                      fontSize: '1.06rem',
+                      lineHeight: 1.3,
+                      letterSpacing: '-0.01em',
+                      fontWeight: 700,
+                      display: 'block',
+                    }}
+                  >
+                    {company.name}
+                  </strong>
 
                   <SurfaceMeta identity={identity}>
                     {company.country ?? shared.company}
                   </SurfaceMeta>
 
                   {company.lastPublishedAt ? (
-                    <div>
+                    <div style={{ marginTop: '0.4rem' }}>
                       <SurfaceBadge identity={identity} tone="accent">
                         {company.lastPublishedAt.slice(0, 10)}
                       </SurfaceBadge>
