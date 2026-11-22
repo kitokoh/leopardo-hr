@@ -81,3 +81,18 @@ jobs:
       - name: Run phpunit file paths guard
         shell: bash
         run: python3 dev-hub/tools/check-phpunit-file-paths.py --verbose
+
+      # Issue #9802 : les deux generateurs de testsuites doivent rester
+      # synchronises avec le disque. `--check` n'etait branche nulle part pour
+      # le split MVP (la CI le regenerait silencieusement avant les tests) et
+      # seulement dans un workflow MANUEL pour les shards. Une zone perimee
+      # commitee signifie que le fichier lu par un developpeur ne correspond
+      # pas a ce que la CI execute.
+      - name: Feature MVP split is up to date (issue #9802)
+        shell: bash
+        run: python3 dev-hub/tools/generate-feature-mvp-split.py --check
+
+      - name: Feature shards are up to date (issue #9802)
+        shell: bash
+        working-directory: ./api
+        run: php dev-tools/generate-feature-shards.php --check
