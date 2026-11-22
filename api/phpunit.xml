@@ -1532,10 +1532,11 @@
           `RefreshTenantDatabase` fait `DROP SCHEMA shared_tenants CASCADE`
           et detruit le marqueur `__mvp_fixture_ready`.
 
-          FeatureMvpFixture : 238 fichiers.
-          FeatureRest       : 1089 fichiers.
+          FeatureMvpFixture : 241 fichiers.
+          FeatureRest       : 1091 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
+            <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
             <file>tests/Feature/AI/AIActionProposalTest.php</file>
             <file>tests/Feature/AI/AIToolContractGuardTest.php</file>
             <file>tests/Feature/AI/AIToolExecutionAuditTest.php</file>
@@ -1747,9 +1748,11 @@
             <file>tests/Feature/Security/ResourceScopedRbacTest.php</file>
             <file>tests/Feature/Security/ResourceScopedVerticalPoliciesTest.php</file>
             <file>tests/Feature/Security/SensitiveRateLimitTest.php</file>
+            <file>tests/Feature/Security/SiteResourceScopedPolicyTest.php</file>
             <file>tests/Feature/Security/SupervisorScopedRbacTest.php</file>
             <file>tests/Feature/Security/TenantModelIsolationTest.php</file>
             <file>tests/Feature/Security/TenantScopeFailClosedTest.php</file>
+            <file>tests/Feature/Security/TokenRevocationTest.php</file>
             <file>tests/Feature/Security/TrustProxiesRateLimitTest.php</file>
             <file>tests/Feature/Security/WebhookRbacTest.php</file>
             <file>tests/Feature/Security/WebhookSsrfGuardTest.php</file>
@@ -2706,11 +2709,13 @@
             <file>tests/Feature/Trade/TradeActivationTest.php</file>
             <file>tests/Feature/Trade/TradeCompanyProfileTest.php</file>
             <file>tests/Feature/Trade/TradeCostEstimateApiTest.php</file>
+            <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
             <file>tests/Feature/Trade/TradeFeatureFlagTest.php</file>
             <file>tests/Feature/Trade/TradeProductApiTest.php</file>
             <file>tests/Feature/Trade/TradeQuoteApiTest.php</file>
             <file>tests/Feature/Trade/TradeRfqApiTest.php</file>
             <file>tests/Feature/Trade/TradeSchemaTest.php</file>
+            <file>tests/Feature/Trade/TradeSearchApiTest.php</file>
             <file>tests/Feature/TranslationCatalogApiTest.php</file>
             <file>tests/Feature/Travel/TravelAbsentSeatsTest.php</file>
             <file>tests/Feature/Travel/TravelActivateCommandTest.php</file>
