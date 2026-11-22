@@ -26,4 +26,11 @@ Route::middleware(['throttle:shop-public'])
         Route::get('/companies/{slug}', [TradePublicProfileController::class, 'show'])
             ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
             ->name('trade.public.company.show');
+
+        // #9768 — catalogue produits du profil publié (même périmètre opt-in,
+        // même 404 uniforme). Seuls les produits actifs remontent, et jamais
+        // `hs_code` ni identifiant tenant (PublicTradeProductResource).
+        Route::get('/companies/{slug}/products', [TradePublicProfileController::class, 'products'])
+            ->where('slug', '[a-z0-9][a-z0-9\-]{0,159}')
+            ->name('trade.public.company.products');
     });

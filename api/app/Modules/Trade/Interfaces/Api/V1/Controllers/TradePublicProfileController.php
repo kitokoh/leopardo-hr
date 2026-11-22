@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Modules\Trade\Interfaces\Api\V1\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Trade\Interfaces\Api\V1\Resources\PublicTradeProductResource;
 use App\Shared\Discovery\PublicProfileLocator;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -59,6 +61,137 @@ class TradePublicProfileController extends Controller
         return response()->json([
             'data' => $profile,
         ]);
+    }
+
+    /**
+     * P2-01b (#9768) — catalogue PUBLIC d'une entreprise de commerce.
+     *
+     * `GET /api/v1/public/trade/companies/{slug}/products`
+     *
+     * ## Pourquoi ce second endpoint
+     *
+     * La fiche publique exposait des **catégories** (`product_categories` :
+     * des chaînes saisies dans le profil) et rien d'autre. Un acheteur
+     * professionnel arrivant sur la fiche d'un vendeur ne voyait donc jamais
+     * ce que ce vendeur vend : ni produit, ni MOQ, ni unité, ni prix
+     * indicatif, ni origine. Les catégories qualifient l'offre, elles ne la
+     * composent pas.
+     *
+     * ## Même périmètre opt-in que la fiche, fail-closed
+     *
+     * On ne réinvente pas la règle : `PublicProfileLocator` + `TradeProfileResolver`
+     * appliquent déjà `is_public`, `public_slug` unique global, `public_name`
+     * non vide, société non suspendue/expirée et feature `trade` active. Un
+     * profil non publiable produit le **même 404 uniforme** que la fiche —
+     * impossible de distinguer « slug inexistant » de « dépublié ».
+     *
+     * ## Ce qui n'est jamais publié
+     *
+     * Seuls les produits `status = active` remontent (un produit archivé sort
+     * du catalogue public), et `PublicTradeProductResource` exclut `hs_code`,
+     * `status` et tout identifiant tenant. Le prix est **indicatif** : le
+     * catalogue n'est pas une offre ferme.
+     */
+    public function products(Request $request, string $slug): JsonResponse
+    {
+        $tenant = $this->locator->locate('trade_company', $slug);
+
+        if ($tenant === null) {
+            abort(404);
+        }
+
+        $companyId = $tenant['company_id'];
+
+        // Seconde barrière, identique à la fiche : le profil doit toujours
+        // être publié au moment de la lecture (course possible entre la
+        // résolution et la lecture).
+        if (! $this->isStillPublic($companyId, $slug)) {
+            abort(404);
+        }
+
+        $perPage = min(max($request->integer('per_page', 24), 1), 100);
+        $page = max($request->integer('page', 1), 1);
+
+        $rows = $this->readActiveProducts($companyId, $perPage, $page);
+
+        return response()->json([
+            'data' => array_map(
+                static fn (array $row): array => PublicTradeProductResource::make($row),
+                $rows['items'],
+            ),
+            'meta' => [
+                'page' => $page,
+                'per_page' => $perPage,
+                'total' => $rows['total'],
+                'last_page' => (int) max(1, (int) ceil($rows['total'] / $perPage)),
+            ],
+        ]);
+    }
+
+    /**
+     * Le profil est-il TOUJOURS publiable ? (revalidation anti-course)
+     */
+    private function isStillPublic(string $companyId, string $slug): bool
+    {
+        $table = DB::getDriverName() === 'pgsql'
+            ? 'shared_tenants.trade_company_profiles'
+            : 'trade_company_profiles';
+
+        return DB::table($table)
+            ->where('public_slug', $slug)
+            ->where('company_id', $companyId)
+            ->where('is_public', true)
+            ->whereNotNull('public_name')
+            ->where('public_name', '!=', '')
+            ->exists();
+    }
+
+    /**
+     * Produits ACTIFS du tenant propriétaire, paginés.
+     *
+     * Lecture cross-tenant explicite, alignée sur `readProfile` ci-dessus : on
+     * est hors contexte tenant (route publique, pas de middleware `tenant`),
+     * donc on lit la table par requête directe en filtrant sur le `company_id`
+     * RÉSOLU depuis le slug — jamais celui de l'appelant (qui n'est pas
+     * authentifié). Le filtre `deleted_at is null` respecte l'archivage logique
+     * du modèle (`SoftDeletes`).
+     *
+     * @return array{items: list<array<string, mixed>>, total: int}
+     */
+    private function readActiveProducts(string $companyId, int $perPage, int $page): array
+    {
+        $table = DB::getDriverName() === 'pgsql'
+            ? 'shared_tenants.trade_products'
+            : 'trade_products';
+
+        $base = DB::table($table)
+            ->where('company_id', $companyId)
+            ->where('status', 'active')
+            ->whereNull('deleted_at');
+
+        /** @var int $total */
+        $total = (int) (clone $base)->count();
+
+        /** @var list<array<string, mixed>> $items */
+        $items = (clone $base)
+            ->orderBy('id')
+            ->forPage($page, $perPage)
+            ->select([
+                'name',
+                'description',
+                'category',
+                'origin_country',
+                'unit',
+                'moq_quantity',
+                'indicative_unit_price_minor',
+                'currency',
+                'specs',
+            ])
+            ->get()
+            ->map(static fn ($row): array => (array) $row)
+            ->all();
+
+        return ['items' => $items, 'total' => $total];
     }
 
     /**
