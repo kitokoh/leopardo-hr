@@ -121,6 +121,85 @@ d'autorisation à part entière : le responsable donne à un collaborateur
 - `api/tests/Feature/Security/AdminMiddlewareRbacTest.php` — middleware admin/manager.
 - `api/tests/Feature/EmployeesRbacTest.php` — RBAC employé générique.
 
+## ♻️ Cycle de vie du compte — révocation, bannissement, statut (#9808 / #9809)
+
+Cette couche s'évalue **avant** toute permission : un compte coupé n'atteint
+jamais l'étape « quelle policy s'applique ? ». Elle est distincte du RBAC et de
+l'ABAC ci-dessus, et elle les précède.
+
+### Les quatre identités et leur guard
+
+| Identité | Guard | Modèle | Statut |
+| :--- | :--- | :--- | :--- |
+| Employé (tenant) | `sanctum` | `Employee` | `status` (`active`/`suspended`/`archived`) |
+| Compte public | `user_api` | `User` | `status` |
+| Client grand public | `travel_customer` | `TravelCustomerAccount` | `status` (ajouté par #9809) |
+| Équipe plateforme | `super_admin_api` | `SuperAdmin` | `isPlatformActive()` |
+
+### Où la décision est prise
+
+- **Guards à jeton** (tous, y compris mobile et kiosque) :
+  `AccountStatusGuard` branché dans le hook officiel de Sanctum
+  (`Sanctum::authenticateAccessTokensUsing`, `AppServiceProvider::boot`). Un
+  seul point de décision couvre les quatre identités.
+- **Guards à session** (`auth:user_api`, `auth:travel_customer`), qui n'ont pas
+  de jeton personnel : middleware `account.active`
+  (`App\Http\Middleware\EnsureAccountIsActive`), même service de décision.
+- **Routes tenant** : `TenantMiddleware` vérifie en plus le statut de la
+  **société** et pose le contexte. Les deux se complètent, aucun n'est redondant.
+
+### Révocation et bannissement
+
+`TokenRevocationService` (`App\Core\Auth\Infrastructure\Services`) adosse la
+décision au cache applicatif (`CACHE_STORE=redis` en production) :
+
+- `revoke(tokenId, expiresAt, reason, actorId)` — refuse un jeton **sans
+  supprimer sa ligne** : la révocation est donc réversible et auditable, ce
+  qu'une suppression ne permet pas ;
+- `ban(type, id, until|null, reason)` — ferme toutes les sessions d'un compte,
+  pour une durée choisie ou indéfiniment ;
+- `unban(type, id)` — rend l'accès à la requête suivante.
+
+Le TTL d'une clé de révocation est **borné par l'expiration réelle du jeton** :
+aucune clé orpheline éternelle en cache.
+
+**Politique de panne (tranchée, pas implicite)** : lecture du cache impossible
+⇒ **refus** (un cache muet ne prouve pas qu'un jeton est valide) ; écriture
+impossible ⇒ erreur propagée (une révocation qui échoue en silence est pire
+qu'une révocation bruyante).
+
+Geste d'exploitation : `php artisan auth:ban-account {type} {id} [--hours=]
+[--reason=] [--lift]`.
+
+### MFA plateforme (#9810)
+
+`EnsurePlatformMfaEnrolled` (#9096) n'est appliqué que là où il est écrit dans
+les routes. La garde `dev-hub/tools/check-platform-mfa-coverage.py` (workflow
+`platform-mfa-coverage-guard.yml`) refuse tout groupe `auth:super_admin_api`
+sans `platform.mfa`. Une exemption explicite et motivée : `GET /metrics`,
+consommé par la supervision machine, où un code TOTP est impossible.
+
+### Garde du périmètre ressource (#9812)
+
+`dev-hub/tools/check-resource-scoped-policies.py` (workflow
+`resource-rbac-guards.yml`) vérifie que la policy qui garde le **modèle** d'une
+ressource déclarée dans `config/resource_types.php` applique le niveau
+`view`/`operate`/`manage` (concern `ChecksResourceScopedAccess` ou lecture
+directe de `EmployeeResourceAssignment`).
+
+Cette garde a trouvé deux vraies failles, corrigées : `EduCampusPolicy` et
+`SitePolicy` ne vérifiaient que `company_id` + `isManager()`, donc **tout
+manager voyait et modifiait toutes les ressources du tenant**. La phrase
+ci-dessus qui citait `EduCampusPolicy` comme utilisant le concern était
+**fausse** avant #9812 — elle est vraie depuis.
+
+### Tests
+
+- `api/tests/Feature/Security/TokenRevocationTest.php` — révocation sans
+  suppression, bannissement temporaire qui expire, TTL borné, statut refusé.
+- `api/tests/Feature/Security/SiteResourceScopedPolicyTest.php` — périmètre
+  ressource sur `site` : progressivité, niveaux, `principal`, isolation tenant.
+
 ## 🔒 Security Principles
 - **Fail-closed par défaut** : un manager team-scoped (`dept`/`superviseur`) mal configuré (pas de département, pas de rapport direct) ne voit **personne**, jamais toute l'entreprise. Voir les commentaires `Employee::managesDepartmentOf()`/`managesEmployeeDirectly()`.
 - **Isolation tenant** : toute requête `Employee`/RH passe par le middleware `tenant`, scopée sur `company_id`. Le Platform Admin est un système d'authentification distinct (`auth:super_admin_api`), jamais un rôle `Employee` avec portée multi-tenant.
