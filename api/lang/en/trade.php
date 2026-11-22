@@ -16,4 +16,9 @@ return [
     'profile_required_before_publish' => 'Complete your trade profile before publishing it.',
     'public_slug_required' => 'A public slug and trade name are required to publish the company.',
     'public_slug_taken' => 'This public slug is already used by another company.',
+    // #9777 — RFQ/quote lines: selected catalogue product.
+    'lines' => [
+        'product_invalid' => 'This product does not exist in your catalogue, or belongs to another company.',
+        'product_archived' => 'This product is archived and cannot be added to a new line.',
+    ],
 ];

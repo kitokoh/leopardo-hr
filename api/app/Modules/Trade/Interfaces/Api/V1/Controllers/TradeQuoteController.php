@@ -34,7 +34,9 @@ final class TradeQuoteController
     public function index(Request $request): JsonResponse
     {
         $query = TradeQuote::query()
-            ->with(['lines'])
+            // `lines.product` (#9777) : meme raison que sur les RFQ — le
+            // produit selectionne est affiche, donc eager-load obligatoire.
+            ->with(['lines.product'])
             ->orderByDesc('id');
 
         if ($request->filled('direction')) {

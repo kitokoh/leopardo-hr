@@ -16,4 +16,9 @@ return [
     'profile_required_before_publish' => 'Yayinlamadan once ticari profilinizi tamamlayin.',
     'public_slug_required' => 'Sirketi yayinlamak icin genel bir slug ve ticari ad gereklidir.',
     'public_slug_taken' => 'Bu genel slug baska bir sirket tarafindan kullaniliyor.',
+    // #9777 — RFQ/teklif satirlari: secilen katalog urunu.
+    'lines' => [
+        'product_invalid' => 'Bu urun kataloğunuzda yok veya başka bir şirkete ait.',
+        'product_archived' => 'Bu urun arşivlenmiş: yeni bir satıra eklenemez.',
+    ],
 ];

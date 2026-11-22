@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Trade\Interfaces\Api\V1\Requests;
 
+use App\Modules\Trade\Domain\Rules\SelectableProductId;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
@@ -12,6 +13,11 @@ use Illuminate\Foundation\Http\FormRequest;
  * Au moins une ligne est EXIGEE (`lines` min:1) : une RFQ sans ligne serait un
  * objet vide qui ne peut rien produire. Chaque ligne porte soit un produit
  * catalogue, soit une description libre — jamais les deux obligatoirement.
+ *
+ * #9777 — `trade_product_id` est valide par {@see SelectableProductId} : le
+ * produit doit exister DANS LE TENANT COURANT et ne pas etre archive. Avant
+ * cette regle, la seule contrainte etait `integer|min:1`, donc l'id d'un
+ * produit d'une autre entreprise passait et etait ecrit dans la ligne.
  *
  * Le montant est en MINOR UNITS (entier) : aucun flottant ne traverse l'API
  * pour representer de l'argent.
@@ -38,7 +44,7 @@ final class RfqStoreRequest extends FormRequest
             'lines.*.description' => ['required', 'string', 'max:300'],
             'lines.*.quantity' => ['required', 'numeric', 'gt:0'],
             'lines.*.unit' => ['nullable', 'string', 'max:20'],
-            'lines.*.trade_product_id' => ['nullable', 'integer', 'min:1'],
+            'lines.*.trade_product_id' => ['nullable', 'integer', 'min:1', new SelectableProductId],
             'lines.*.target_unit_price_minor' => ['nullable', 'integer', 'min:0'],
             'lines.*.specs' => ['nullable', 'array'],
         ];

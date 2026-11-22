@@ -37,7 +37,10 @@ final class TradeRfqController
     public function index(Request $request): JsonResponse
     {
         $query = TradeRfq::query()
-            ->with(['lines'])
+            // `lines.product` (#9777) : la ressource de ligne expose le produit
+            // selectionne — sans eager loading, chaque ligne ferait sa propre
+            // requete (N+1) sur une liste paginee.
+            ->with(['lines.product'])
             ->orderByDesc('id');
 
         if ($request->filled('status')) {
@@ -70,14 +73,14 @@ final class TradeRfqController
             isset($validated['trade_deal_id']) ? (int) $validated['trade_deal_id'] : null,
         );
 
-        $rfq->load(['lines', 'invitations']);
+        $rfq->load(['lines.product', 'invitations']);
 
         return new JsonResponse(['data' => TradeRfqResource::make($rfq)->resolve()], 201);
     }
 
     public function show(TradeRfq $rfq): JsonResponse
     {
-        $rfq->load(['lines', 'invitations', 'quotes']);
+        $rfq->load(['lines.product', 'invitations', 'quotes']);
 
         return new JsonResponse(['data' => TradeRfqResource::make($rfq)->resolve()]);
     }
@@ -106,7 +109,7 @@ final class TradeRfqController
             ]);
         }
 
-        $updated->load(['lines', 'invitations']);
+        $updated->load(['lines.product', 'invitations']);
 
         return new JsonResponse([
             'data' => TradeRfqResource::make($updated)->resolve(),

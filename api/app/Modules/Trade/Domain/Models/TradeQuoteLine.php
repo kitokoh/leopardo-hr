@@ -17,6 +17,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * client ne fournit jamais un total, il ne peut donc pas imposer un prix
  * incoherent avec ses propres lignes.
  *
+ * `trade_product_id` (nullable, #9777) relie la ligne au catalogue produits ;
+ * la saisie libre reste permise.
+ *
  * @property int $id
  * @property string $company_id
  * @property int $trade_quote_id
@@ -69,5 +72,19 @@ final class TradeQuoteLine extends Model
     public function quote(): BelongsTo
     {
         return $this->belongsTo(TradeQuote::class, 'trade_quote_id');
+    }
+
+    /**
+     * Produit catalogue selectionne sur la ligne — #9777.
+     *
+     * Nullable : la saisie LIBRE reste permise. La relation existe surtout
+     * pour que la ressource puisse exposer le nom/l'unite au lieu d'un simple
+     * identifiant opaque.
+     *
+     * @return BelongsTo<TradeProduct, $this>
+     */
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(TradeProduct::class, 'trade_product_id');
     }
 }
