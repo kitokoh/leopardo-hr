@@ -5842,6 +5842,13 @@
         "EDU_FEE_OVERPAYMENT": "The amount exceeds the outstanding balance of this charge.",
         "EDU_FEE_TERMINAL": "This charge is settled or waived: no further payment is possible.",
         "EDU_FEE_CURRENCY_MISMATCH": "The payment currency does not match the charge currency."
+      },
+      "statuses": {
+        "pending": "Pending",
+        "partial": "Partial",
+        "paid": "Settled",
+        "waived": "Waived",
+        "cancelled": "Cancelled"
       }
     },
     "fees": {
@@ -5863,6 +5870,13 @@
       "cancelConfirm": "Cancel this fee?",
       "errors": {
         "EDU_FEE_TERMINAL": "This fee is already settled, waived or cancelled."
+      },
+      "statuses": {
+        "pending": "Pending",
+        "partial": "Partial",
+        "paid": "Settled",
+        "waived": "Waived",
+        "cancelled": "Cancelled"
       }
     },
     "accountingEntries": {

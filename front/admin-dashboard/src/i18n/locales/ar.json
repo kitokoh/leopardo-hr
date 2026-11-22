@@ -5842,6 +5842,13 @@
         "EDU_FEE_OVERPAYMENT": "المبلغ يتجاوز الرصيد المتبقي للفاتورة.",
         "EDU_FEE_TERMINAL": "هذه الفاتورة مسددة أو مسقطة: لا يمكن تحصيل أي دفعة أخرى.",
         "EDU_FEE_CURRENCY_MISMATCH": "عملة الدفعة لا تطابق عملة الفاتورة."
+      },
+      "statuses": {
+        "pending": "قيد الانتظار",
+        "partial": "جزئي",
+        "paid": "مسدد",
+        "waived": "مسقط",
+        "cancelled": "ملغى"
       }
     },
     "fees": {
@@ -5863,6 +5870,13 @@
       "cancelConfirm": "إلغاء هذا الرسم؟",
       "errors": {
         "EDU_FEE_TERMINAL": "هذا الرسم مسدد أو مسقط أو ملغى بالفعل."
+      },
+      "statuses": {
+        "pending": "قيد الانتظار",
+        "partial": "جزئي",
+        "paid": "مسدد",
+        "waived": "مسقط",
+        "cancelled": "ملغى"
       }
     },
     "accountingEntries": {

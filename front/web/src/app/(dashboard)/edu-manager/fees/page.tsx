@@ -179,7 +179,12 @@ export default function FeesPage() {
       {
         key: 'status',
         header: t(locale, 'edu.fees.status'),
-        render: (row) => <StatusBadge status={String(row.status ?? '')} />,
+        render: (row) => {
+          const status = String(row.status ?? '');
+          return (
+            <StatusBadge status={status} label={t(locale, `edu.fees.statuses.${status}`) || status} />
+          );
+        },
       },
       {
         key: 'paid_at',

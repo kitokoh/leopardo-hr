@@ -5309,6 +5309,13 @@
         "EDU_FEE_OVERPAYMENT": "Tutar, faturanın kalan bakiyesini aşıyor.",
         "EDU_FEE_TERMINAL": "Bu fatura kapatıldı veya vazgeçildi: başka ödeme alınamaz.",
         "EDU_FEE_CURRENCY_MISMATCH": "Ödeme para birimi faturanın para birimiyle uyuşmuyor."
+      },
+      "statuses": {
+        "pending": "Beklemede",
+        "partial": "Kısmi",
+        "paid": "Kapatıldı",
+        "waived": "Vazgeçildi",
+        "cancelled": "İptal"
       }
     },
     "fees": {
@@ -5330,6 +5337,13 @@
       "cancelConfirm": "Bu ücret iptal edilsin mi?",
       "errors": {
         "EDU_FEE_TERMINAL": "Bu ücret zaten ödendi, vazgeçildi veya iptal edildi."
+      },
+      "statuses": {
+        "pending": "Beklemede",
+        "partial": "Kısmi",
+        "paid": "Kapatıldı",
+        "waived": "Vazgeçildi",
+        "cancelled": "İptal"
       }
     },
     "accountingEntries": {

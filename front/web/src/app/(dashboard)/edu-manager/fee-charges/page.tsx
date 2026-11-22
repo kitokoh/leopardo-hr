@@ -328,7 +328,15 @@ export default function FeeChargesPage() {
       {
         key: 'status',
         header: t(locale, 'edu.feeCharges.status'),
-        render: (row) => <StatusBadge status={String(row.status ?? '')} />,
+        render: (row) => {
+          const status = String(row.status ?? '');
+          return (
+            <StatusBadge
+              status={status}
+              label={t(locale, `edu.feeCharges.statuses.${status}`) || status}
+            />
+          );
+        },
       },
       {
         key: '__actions',

@@ -5309,6 +5309,13 @@
         "EDU_FEE_OVERPAYMENT": "Le montant dépasse le solde restant de la facturation.",
         "EDU_FEE_TERMINAL": "Cette facturation est soldée ou abandonnée : plus aucun encaissement n'est possible.",
         "EDU_FEE_CURRENCY_MISMATCH": "La devise de l'encaissement ne correspond pas à celle de la facturation."
+      },
+      "statuses": {
+        "pending": "En attente",
+        "partial": "Partiel",
+        "paid": "Soldé",
+        "waived": "Abandonné",
+        "cancelled": "Annulé"
       }
     },
     "fees": {
@@ -5330,6 +5337,13 @@
       "cancelConfirm": "Annuler ce frais ?",
       "errors": {
         "EDU_FEE_TERMINAL": "Ce frais est déjà réglé, remisé ou annulé."
+      },
+      "statuses": {
+        "pending": "En attente",
+        "partial": "Partiel",
+        "paid": "Soldé",
+        "waived": "Abandonné",
+        "cancelled": "Annulé"
       }
     },
     "accountingEntries": {
