@@ -104,8 +104,8 @@ class EduOnboardingStepPredicateTest extends TestCase
         $year = EduAcademicYear::query()->create([
             'company_id' => $this->company->id,
             'name' => '2026-2027',
-            'start_date' => '2026-09-01',
-            'end_date' => '2027-06-30',
+            'start_date' => now()->subMonths(2)->toDateString(),
+            'end_date' => now()->addMonths(8)->toDateString(),
             'status' => EduAcademicYear::STATUS_ACTIVE,
         ]);
 

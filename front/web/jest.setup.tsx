@@ -41,20 +41,24 @@ Object.defineProperty(global, 'IntersectionObserver', {
 // (importé par le module vitrine). Sans ce polyfill, tout test qui rend un
 // composant vitrine échoue au chargement du module, avant même le premier
 // rendu. `matches: false` = comportement « pas de préférence » par défaut.
-Object.defineProperty(window, 'matchMedia', {
-  writable: true,
-  configurable: true,
-  value: (query: string) => ({
-    matches: false,
-    media: query,
-    onchange: null,
-    addListener: jest.fn(),
-    removeListener: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-    dispatchEvent: jest.fn(),
-  }),
-});
+// Certaines suites tournent en environnement `node` (routes API, lib) où
+// `window` n'existe pas : on ne pose le polyfill que côté jsdom.
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    configurable: true,
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    }),
+  });
+}
 
 // Mock next/navigation
 jest.mock('next/navigation', () => ({

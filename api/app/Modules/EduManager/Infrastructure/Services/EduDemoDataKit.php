@@ -15,7 +15,6 @@ use App\Modules\EduManager\Domain\Models\EduClassEnrollment;
 use App\Modules\EduManager\Domain\Models\EduGuardian;
 use App\Modules\EduManager\Domain\Models\EduStudent;
 use App\Modules\EduManager\Domain\Models\EduStudentGuardian;
-use App\Modules\EduManager\Domain\Models\EduSubject;
 
 /**
  * Kit de données de démonstration de la verticale EduManager (#9785).
@@ -45,9 +44,6 @@ use App\Modules\EduManager\Domain\Models\EduSubject;
  */
 final class EduDemoDataKit implements DemoDataKit
 {
-    /** Préfixe des codes de démonstration (ancre d'idempotence). */
-    private const DEMO_PREFIX = 'DEMO';
-
     /**
      * Classes de démonstration : code stable → libellé + niveau.
      *

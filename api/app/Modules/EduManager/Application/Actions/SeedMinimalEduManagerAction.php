@@ -38,28 +38,32 @@ final class SeedMinimalEduManagerAction
      * Codes STABLES : ils servent de clé d'idempotence (`(company_id, code)`
      * unique) et de référence dans les tests et les imports.
      *
-     * @var array<int, array{code: string, name: string, coefficient: string}>
+     * Les libellés passent par le catalogue `edu.*` (PA2-I18N-007) : une
+     * constante de classe ne peut pas appeler `__()`, on stocke donc la CLÉ et
+     * on la résout à l'écriture.
+     *
+     * @var array<int, array{code: string, name_key: string, coefficient: string}>
      */
     private const DEFAULT_SUBJECTS = [
-        ['code' => 'MATH', 'name' => 'Mathématiques', 'coefficient' => '3.00'],
-        ['code' => 'LANG', 'name' => 'Langue principale', 'coefficient' => '3.00'],
-        ['code' => 'SCI', 'name' => 'Sciences', 'coefficient' => '2.00'],
-        ['code' => 'HIST', 'name' => 'Histoire-Géographie', 'coefficient' => '2.00'],
-        ['code' => 'PE', 'name' => 'Éducation physique', 'coefficient' => '1.00'],
-        ['code' => 'ART', 'name' => 'Arts', 'coefficient' => '1.00'],
+        ['code' => 'MATH', 'name_key' => 'edu.subject_math', 'coefficient' => '3.00'],
+        ['code' => 'LANG', 'name_key' => 'edu.subject_lang', 'coefficient' => '3.00'],
+        ['code' => 'SCI', 'name_key' => 'edu.subject_sci', 'coefficient' => '2.00'],
+        ['code' => 'HIST', 'name_key' => 'edu.subject_hist', 'coefficient' => '2.00'],
+        ['code' => 'PE', 'name_key' => 'edu.subject_pe', 'coefficient' => '1.00'],
+        ['code' => 'ART', 'name_key' => 'edu.subject_art', 'coefficient' => '1.00'],
     ];
 
     /**
      * Types de frais scolaires courants (#9786), montants à 0 : le directeur
      * n'a qu'à ajuster les montants, pas à deviner la nomenclature.
      *
-     * @var array<int, array{code: string, label: string, frequency: string}>
+     * @var array<int, array{code: string, label_key: string, frequency: string}>
      */
     private const DEFAULT_FEE_TYPES = [
-        ['code' => 'TUITION', 'label' => 'Scolarité', 'frequency' => EduFeeType::FREQUENCY_TERM],
-        ['code' => 'CANTEEN', 'label' => 'Cantine', 'frequency' => EduFeeType::FREQUENCY_MONTHLY],
-        ['code' => 'TRANSPORT', 'label' => 'Transport', 'frequency' => EduFeeType::FREQUENCY_MONTHLY],
-        ['code' => 'REGISTRATION', 'label' => 'Frais d\'inscription', 'frequency' => EduFeeType::FREQUENCY_ONCE],
+        ['code' => 'TUITION', 'label_key' => 'edu.fee_type_tuition', 'frequency' => EduFeeType::FREQUENCY_TERM],
+        ['code' => 'CANTEEN', 'label_key' => 'edu.fee_type_canteen', 'frequency' => EduFeeType::FREQUENCY_MONTHLY],
+        ['code' => 'TRANSPORT', 'label_key' => 'edu.fee_type_transport', 'frequency' => EduFeeType::FREQUENCY_MONTHLY],
+        ['code' => 'REGISTRATION', 'label_key' => 'edu.fee_type_registration', 'frequency' => EduFeeType::FREQUENCY_ONCE],
     ];
 
     public function __construct(
@@ -81,7 +85,7 @@ final class SeedMinimalEduManagerAction
      * Campus principal du tenant (idempotent). Retourne le campus existant ou
      * nouvellement créé — il sert d'ancrage optionnel aux matières et frais.
      */
-    private function seedCampus(Company $company): ?EduCampus
+    private function seedCampus(Company $company): EduCampus
     {
         /** @var EduCampus|null $campus */
         $campus = EduCampus::query()
@@ -133,7 +137,7 @@ final class SeedMinimalEduManagerAction
                     'code' => $subject['code'],
                 ],
                 [
-                    'name' => $subject['name'],
+                    'name' => __($subject['name_key']),
                     'campus_id' => $campus?->getKey(),
                     'default_coefficient' => $subject['coefficient'],
                     'status' => EduSubject::STATUS_ACTIVE,
@@ -158,7 +162,7 @@ final class SeedMinimalEduManagerAction
                 ],
                 [
                     'campus_id' => $campus?->getKey(),
-                    'label' => $feeType['label'],
+                    'label' => __($feeType['label_key']),
                     'amount' => 0,
                     'currency' => $currency,
                     'billing_frequency' => $feeType['frequency'],
