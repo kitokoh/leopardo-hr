@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Pencil, Search, ShieldCheck, ShieldAlert, ShieldQuestion, Trash2 } from 'lucide-react';
+import { Archive, Pencil, Search, ShieldCheck, ShieldAlert, ShieldQuestion } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { t } from '@/lib/i18n/locale-catalog';
 import type { AppLocale } from '@/lib/i18n';
@@ -30,7 +30,7 @@ type Props = {
   locale: AppLocale;
   counterparties: TradeCounterparty[];
   loading: boolean;
-  onDelete: (counterparty: TradeCounterparty) => void;
+  onArchive: (counterparty: TradeCounterparty) => void;
   onVerify: (counterparty: TradeCounterparty) => void;
   onEdit: (counterparty: TradeCounterparty) => void;
   canVerify: boolean;
@@ -54,7 +54,7 @@ export function CounterpartyList({
   locale,
   counterparties,
   loading,
-  onDelete,
+  onArchive,
   onVerify,
   onEdit,
   canVerify,
@@ -178,22 +178,38 @@ export function CounterpartyList({
                   >
                     <Pencil className="h-4 w-4" />
                   </Button>
+                  {/* Vérification : acte réservé à l'admin de la verticale
+                      (`trade.role:admin`). Le bouton n'est monté que pour lui —
+                      afficher une action qui renverrait 403 promettrait quelque
+                      chose que l'écran ne peut pas tenir. */}
                   {canVerify ? (
-                    <Button variant="outline" size="sm" onClick={() => onVerify(item)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      aria-label={`${t(locale, 'trade.counterparties.verify')} ${item.name}`}
+                      onClick={() => onVerify(item)}
+                    >
+                      <ShieldCheck className="h-4 w-4" />
                       {t(locale, 'trade.counterparties.verify')}
                     </Button>
                   ) : null}
+                  {/* Archivage : la fiche quitte le répertoire mais reste dans
+                      l'historique des dossiers et offres (suppression douce
+                      côté serveur). La confirmation est posée AVANT l'appel —
+                      un clic de trop ne doit pas retirer une contrepartie du
+                      répertoire en silence. */}
                   <Button
                     variant="outline"
                     size="sm"
+                    aria-label={`${t(locale, 'trade.counterparties.archive')} ${item.name}`}
                     onClick={() => {
-                      if (window.confirm(t(locale, 'trade.counterparties.deleteConfirm'))) {
-                        onDelete(item);
+                      if (window.confirm(t(locale, 'trade.counterparties.archiveConfirm'))) {
+                        onArchive(item);
                       }
                     }}
                   >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">{t(locale, 'trade.counterparties.delete')}</span>
+                    <Archive className="h-4 w-4" />
+                    <span className="sr-only">{t(locale, 'trade.counterparties.archive')}</span>
                   </Button>
                 </div>
               </li>

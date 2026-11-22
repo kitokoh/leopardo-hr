@@ -4,12 +4,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, ClipboardList, FileText, Globe2, Handshake, Megaphone, Package, RefreshCw, ShoppingCart, Store, Truck, Users } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
+import { getStoredUser } from '@/lib/auth-session';
 import { t } from '@/lib/i18n/locale-catalog';
 import { ModulePageShell } from '@/components/module-page-shell';
 import { Button } from '@/components/ui/Button';
 import { CounterpartyForm } from './components/CounterpartyForm';
 import { CounterpartyList } from './components/CounterpartyList';
 import type { TradeCounterparty } from './components/types';
+import { isTradeAdmin } from './components/types';
 
 /**
  * BC-36 TRADE (TRADE-009/#8484) — dashboard `/trade` de la verticale
@@ -701,19 +703,24 @@ export default function TradeDashboardPage() {
   };
 
   /**
-   * Suppression douce — le serveur pose `deleted_at`.
+   * Archivage d'une contrepartie — `DELETE /trade/counterparties/{id}`.
    *
-   * Aucune suppression physique : les dossiers, RFQ et offres passés
-   * référencent la contrepartie, un `DELETE` dur casserait leur historique.
+   * Le serveur pose `deleted_at` (suppression douce) : la fiche quitte le
+   * répertoire mais reste dans l'historique des dossiers, RFQ et offres qui la
+   * référencent. Aucune suppression physique n'est possible, et l'écran ne le
+   * promet pas non plus.
+   *
+   * La confirmation est demandée par la liste, AVANT l'appel : ce handler ne
+   * s'exécute que si l'utilisateur a accepté.
    */
-  const deleteCounterparty = async (counterparty: TradeCounterparty) => {
+  const archiveCounterparty = async (counterparty: TradeCounterparty) => {
     setCounterpartyError(null);
     setCounterpartyNotice(null);
 
     try {
       await apiFetch(`/trade/counterparties/${counterparty.id}`, { method: 'DELETE' });
       setCounterparties((current) => current.filter((item) => item.id !== counterparty.id));
-      setCounterpartyNotice(t(locale, 'trade.counterparties.deleted'));
+      setCounterpartyNotice(t(locale, 'trade.counterparties.archived'));
     } catch {
       setCounterpartyError(t(locale, 'trade.counterparties.error'));
     }
@@ -1448,14 +1455,14 @@ export default function TradeDashboardPage() {
                   locale={locale}
                   counterparties={counterparties}
                   loading={false}
-                  onDelete={(item) => void deleteCounterparty(item)}
+                  onArchive={(item) => void archiveCounterparty(item)}
                   onVerify={(item) => void verifyCounterparty(item)}
                   onEdit={startEditCounterparty}
                   // La vérification est réservée à l'admin de la verticale
                   // (`trade.role:admin`). On n'affiche pas un bouton qui
                   // renverrait 403 : le serveur reste l'autorité, l'UI ne
                   // promet pas une action qu'elle ne peut pas tenir.
-                  canVerify={false}
+                  canVerify={isTradeAdmin(getStoredUser())}
                 />
               </div>
             </div>
