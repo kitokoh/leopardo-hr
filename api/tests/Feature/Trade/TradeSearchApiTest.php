@@ -113,6 +113,12 @@ class TradeSearchApiTest extends TestCase
         /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
 
+        // ⚠️ Création HORS du contexte tenant actif : le hook `creating` de
+        // `BelongsToCompany` réécrit `company_id` vers le tenant courant
+        // (#7646). Sans cette bascule, les « données étrangères » seraient en
+        // réalité créées dans NOTRE tenant et le test ne prouverait rien.
+        app()->forgetInstance('current_company');
+
         TradeCounterparty::factory()->create([
             'company_id' => $otherCompany->id,
             'name' => 'Acier Secret SARL',
@@ -121,6 +127,8 @@ class TradeSearchApiTest extends TestCase
             'company_id' => $otherCompany->id,
             'name' => 'Acier Secret',
         ]);
+
+        app()->instance('current_company', $company);
 
         $this->getJson('/api/v1/trade/search?q=acier')
             ->assertStatus(200)

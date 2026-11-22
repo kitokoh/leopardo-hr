@@ -38,6 +38,7 @@ use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeCounterpartyController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeHealthController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeMetaController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeProductController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradePromotionKitController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeQuoteController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeRfqController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeSearchController;
@@ -154,4 +155,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/profile', [TradeCompanyProfileController::class, 'update']);
         // Acte distinct : publier n'est pas enregistrer un champ commercial.
         Route::put('/profile/publication', [TradeCompanyProfileController::class, 'publish']);
+
+        // ── Kit de promotion (#9783) ─────────────────────────────────────────
+        // « Être capable de promouvoir son entreprise » : le kit liste ce qui
+        // manque à la fiche publique et propose un brouillon adossé aux données
+        // réelles. Il ne publie RIEN — la publication reste la route ci-dessus.
+        Route::middleware('trade.role:admin')->group(function (): void {
+            Route::get('/promotion-kit', [TradePromotionKitController::class, 'show']);
+        });
     });

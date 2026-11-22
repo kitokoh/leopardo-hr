@@ -154,8 +154,19 @@ class TradeCounterpartyApiTest extends TestCase
         /** @var Company $otherCompany */
         $otherCompany = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
 
+        // ⚠️ La contrepartie étrangère doit être créée HORS du contexte tenant
+        // actif : le hook `creating` de `BelongsToCompany` réécrit `company_id`
+        // vers le tenant courant (#7646), donc la créer ici la placerait dans
+        // NOTRE tenant et le test ne prouverait rien.
+        app()->forgetInstance('current_company');
+
         /** @var TradeCounterparty $foreign */
         $foreign = TradeCounterparty::factory()->create(['company_id' => $otherCompany->id]);
+
+        // On rétablit notre tenant pour la requête.
+        app()->instance('current_company', $company);
+
+        $this->assertSame($otherCompany->id, $foreign->company_id);
 
         // 404, jamais 403 : l'API ne révèle pas l'existence de la ressource.
         $this->getJson("/api/v1/trade/counterparties/{$foreign->id}")->assertStatus(404);
