@@ -5887,7 +5887,10 @@
       "dueFrom": "Vade başlangıcı",
       "dueTo": "Vade bitişi",
       "paidWithMethod": "Önceden ödenen yöntem",
-      "allMethods": "Tüm yöntemler"
+      "allMethods": "Tüm yöntemler",
+      "batchReceipt": "Makbuzu indir (PDF)",
+      "batchStudentBanner": "Öğrenci {student} — {charges} tahsil edilecek borç.",
+      "batchFromStudent": "Bu öğrenci için toplu tahsilat"
     },
     "fees": {
       "title": "Okul ücretleri",

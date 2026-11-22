@@ -149,6 +149,10 @@ ModuleRoutes::tenantModule('', function (): void {
     // actif avec, par élève, ses charges encore encaissables et leur solde.
     // Le guichet part de la classe, pas d'une liste de charges à filtrer.
     Route::get('/edu-manager/classes/{class}/fee-charges', [EduFeeChargeController::class, 'forClass'])->whereNumber('class');
+    // #9793 — encaissement en lot DEPUIS LA FICHE D'UN ÉLÈVE : toutes ses
+    // charges encore encaissables d'un coup (un parent règle plusieurs frais
+    // en une fois). Même contrat que `forClass`, un seul élève.
+    Route::get('/edu-manager/students/{student}/fee-charges', [EduFeeChargeController::class, 'forStudent'])->whereNumber('student');
     Route::post('/edu-manager/classes/{class}/enrollments', [EduClassEnrollmentController::class, 'store'])->whereNumber('class');
     Route::delete('/edu-manager/class-enrollments/{enrollment}', [EduClassEnrollmentController::class, 'destroy'])->whereNumber('enrollment');
 
@@ -203,6 +207,10 @@ ModuleRoutes::tenantModule('', function (): void {
     // #9791 — export CSV du journal (mêmes filtres, sans pagination) : état de
     // caisse remis à la comptabilité, contrôle d'un dépôt bancaire.
     Route::get('/edu-manager/fee-payments/export.csv', [EduFeePaymentController::class, 'export']);
+    // #9793 — reçu PDF d'un encaissement EN LOT : le guichet remet une pièce au
+    // payeur après un dépôt de classe. Le lot est identifié par `batch_id`
+    // (colonne #9793), `external_id` étant optionnel.
+    Route::get('/edu-manager/fee-payments/batches/{batch}/receipt.pdf', [EduFeePaymentController::class, 'batchReceipt']);
     Route::get('/edu-manager/fee-accounting-entries', [EduAccountingEntryController::class, 'index']);
     // #9791 — export CSV du rapprochement, avec totaux et écart débit − crédit.
     Route::get('/edu-manager/fee-accounting-entries/export.csv', [EduAccountingEntryController::class, 'export']);

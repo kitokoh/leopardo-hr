@@ -21,7 +21,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2, Layers, Plus, Trash2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, FileDown, Layers, Plus, Trash2 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { getPreferredLocale, type AppLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
@@ -102,6 +102,12 @@ export default function FeeBatchPage() {
   const [className, setClassName] = useState('');
   const [students, setStudents] = useState<Row[]>([]);
 
+  // #9793 — encaissement en lot DEPUIS LA FICHE D'UN ÉLÈVE : `?student_id=`
+  // pré-sélectionne toutes ses charges encore encaissables (un parent règle
+  // scolarité + cantine + transport en une fois).
+  const [studentId, setStudentId] = useState('');
+  const [studentName, setStudentName] = useState('');
+
   // #9792 — `?class_id=` est lu AVANT le premier chargement. Sans ce verrou, la
   // page chargeait la liste GLOBALE des charges puis rechargeait l'effectif :
   // une requête gaspillée et un flash de la mauvaise liste (constaté par le
@@ -123,6 +129,10 @@ export default function FeeBatchPage() {
   const [lineErrors, setLineErrors] = useState<LineError[]>([]);
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  // #9793 — identifiant du lot qui vient d'être encaissé : il porte le reçu
+  // PDF. On le garde après le succès pour que le caissier puisse imprimer la
+  // pièce sans quitter l'écran.
+  const [lastBatchId, setLastBatchId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const load = useCallback(async () => {
@@ -174,6 +184,37 @@ export default function FeeBatchPage() {
         return;
       }
 
+      // #9793 — fiche d'un élève : toutes ses charges encaissables d'un coup.
+      if (studentId !== '') {
+        const res = await apiFetch(
+          `/edu-manager/students/${studentId}/fee-charges?${params.toString()}`,
+          { _cacheBust: true },
+        );
+        const json = (await res.json()) as {
+          data?: { student?: Row; charges?: Row[] };
+        };
+        const list = Array.isArray(json.data?.charges) ? json.data.charges : [];
+        const student = json.data?.student ?? null;
+        setStudentName(String(student?.display_name ?? ''));
+        setStudents([]);
+        setClassName('');
+        setCharges(list);
+
+        setLines((prev) => {
+          if (prev.some((line) => line.chargeId !== '')) {
+            return prev;
+          }
+          const auto = list.slice(0, 200).map((charge) => ({
+            key: `auto-${String(charge.id)}`,
+            chargeId: String(charge.id),
+            amount: String(charge.remaining_amount ?? ''),
+          }));
+          return auto.length > 0 ? auto : [newLine()];
+        });
+
+        return;
+      }
+
       // Seules les charges encore encaissables ont un sens dans un lot :
       // une charge soldée/abandonnée/annulée serait refusée par le serveur.
       const res = await apiFetch(`/edu-manager/fee-charges?${params.toString()}`, {
@@ -194,12 +235,17 @@ export default function FeeBatchPage() {
     } finally {
       setLoading(false);
     }
-  }, [locale, classId, dueFrom, dueTo, methodFilter]);
+  }, [locale, classId, studentId, dueFrom, dueTo, methodFilter]);
 
   useEffect(() => {
-    const fromQuery = new URLSearchParams(window.location.search).get('class_id');
+    const params = new URLSearchParams(window.location.search);
+    const fromQuery = params.get('class_id');
     if (fromQuery !== null && fromQuery !== '') {
       setClassId(fromQuery);
+    }
+    const fromStudent = params.get('student_id');
+    if (fromStudent !== null && fromStudent !== '') {
+      setStudentId(fromStudent);
     }
     setQueryResolved(true);
   }, []);
@@ -269,6 +315,7 @@ export default function FeeBatchPage() {
     setFormError(null);
     setLineErrors([]);
     setSuccess(null);
+    setLastBatchId(null);
 
     try {
       const body: Record<string, unknown> = {
@@ -313,11 +360,12 @@ export default function FeeBatchPage() {
       }
 
       const payload = (await res.json()) as {
-        summary?: { recorded?: number; total_amount?: number; currency?: string };
+        summary?: { recorded?: number; total_amount?: number; currency?: string; batch_id?: string };
       };
       const recorded = Number(payload.summary?.recorded ?? 0);
       const sum = money(payload.summary?.total_amount, payload.summary?.currency);
 
+      setLastBatchId(payload.summary?.batch_id ?? null);
       setSuccess(
         t(locale, 'edu.feeCharges.batchSuccess')
           .replace('{count}', String(recorded))
@@ -378,6 +426,21 @@ export default function FeeBatchPage() {
                 .replace('{charges}', String(charges.length))}
             </p>
             <Button variant="ghost" onClick={() => setClassId('')}>
+              {t(locale, 'edu.feeCharges.batchClearClass')}
+            </Button>
+          </div>
+        ) : null}
+
+        {/* #9793 — bandeau de la fiche élève : le caissier voit de qui il
+            encaisse et combien de charges sont pré-sélectionnées. */}
+        {studentId !== '' ? (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-3">
+            <p className="text-sm font-bold text-emerald-800">
+              {t(locale, 'edu.feeCharges.batchStudentBanner')
+                .replace('{student}', studentName || `#${studentId}`)
+                .replace('{charges}', String(charges.length))}
+            </p>
+            <Button variant="ghost" onClick={() => setStudentId('')}>
               {t(locale, 'edu.feeCharges.batchClearClass')}
             </Button>
           </div>
@@ -543,10 +606,26 @@ export default function FeeBatchPage() {
           ) : null}
 
           {success ? (
-            <p className="mt-4 flex items-center gap-2 rounded-xl bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-700">
-              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
-              {success}
-            </p>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-emerald-50 px-3 py-2">
+              <p className="flex items-center gap-2 text-sm font-bold text-emerald-700">
+                <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
+                {success}
+              </p>
+              {/* #9793 — reçu PDF du lot : le guichet remet une pièce au payeur
+                  sans quitter l'écran. Le lien n'apparaît que si le serveur a
+                  rendu un `batch_id` — sinon il pointerait vers un 404. */}
+              {lastBatchId !== null ? (
+                <a
+                  href={`/api/v1/edu-manager/fee-payments/batches/${encodeURIComponent(lastBatchId)}/receipt.pdf`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-emerald-700"
+                >
+                  <FileDown className="h-4 w-4" aria-hidden="true" />
+                  {t(locale, 'edu.feeCharges.batchReceipt')}
+                </a>
+              ) : null}
+            </div>
           ) : null}
 
           <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-4">

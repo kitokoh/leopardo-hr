@@ -67,6 +67,12 @@ final class RecordEduFeeBatchPaymentsAction
             ? (string) $data['external_id']
             : null;
 
+        // #9793 — identifiant de LOT, distinct de l'idempotence : il regroupe
+        // les encaissements d'un même dépôt de guichet pour que le reçu PDF
+        // puisse être réimprimé. Sans `external_id` fourni, un UUID est généré
+        // — sinon deux lots anonymes seraient indistinguables.
+        $batchId = $batchExternalId ?? (string) \Illuminate\Support\Str::uuid();
+
         // ── 1. Charger toutes les charges en UNE requête, bornées au tenant ──
         $chargeIds = [];
         foreach ($lines as $line) {
@@ -179,6 +185,7 @@ final class RecordEduFeeBatchPaymentsAction
             $reference,
             $paidAt,
             $batchExternalId,
+            $batchId,
             &$paidSoFar,
         ): array {
             $written = [];
@@ -202,6 +209,8 @@ final class RecordEduFeeBatchPaymentsAction
                     $payload['external_id'] = $batchExternalId.':'.$chargeId;
                 }
 
+                $payload['batch_id'] = $batchId;
+
                 ['payment' => $payment, 'charge' => $updated] = $this->fees->recordPayment(
                     $actor,
                     $charge,
@@ -214,6 +223,7 @@ final class RecordEduFeeBatchPaymentsAction
                 $written[] = [
                     'charge_id' => $chargeId,
                     'payment_id' => (int) $payment->getAttribute('id'),
+                    'batch_id' => $batchId,
                     'student_id' => (int) $updated->student_id,
                     'amount' => $amount,
                     'paid_amount' => $paidSoFar[$chargeId],
@@ -242,6 +252,7 @@ final class RecordEduFeeBatchPaymentsAction
                 'recorded' => count($results),
                 'total_amount' => round($total, 2),
                 'currency' => $currency,
+                'batch_id' => $batchId,
             ],
         ];
     }

@@ -5887,7 +5887,10 @@
       "dueFrom": "Due from",
       "dueTo": "Due until",
       "paidWithMethod": "Already paid by",
-      "allMethods": "All methods"
+      "allMethods": "All methods",
+      "batchReceipt": "Download receipt (PDF)",
+      "batchStudentBanner": "Student {student} — {charges} charge(s) to collect.",
+      "batchFromStudent": "Collect in batch for this student"
     },
     "fees": {
       "title": "School fees",
