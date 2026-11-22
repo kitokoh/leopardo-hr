@@ -10,6 +10,7 @@ use App\Core\Tenant\TenantManager;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
 use App\Modules\Accounting\Infrastructure\Jobs\GenerateDocumentPdf;
+use App\Modules\Accounting\Infrastructure\Services\DocumentPdfArchiveService;
 use App\Modules\Accounting\Infrastructure\Services\DocumentShareService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +27,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 final class PublicDocumentShareController
 {
-    public function __construct(private readonly DocumentShareService $shareService) {}
+    public function __construct(
+        private readonly DocumentShareService $shareService,
+        private readonly DocumentPdfArchiveService $pdfArchive,
+    ) {}
 
     public function info(string $token): JsonResponse
     {
@@ -83,6 +87,22 @@ final class PublicDocumentShareController
         $document = $share->document;
 
         if ($document->pdf_path === null || ! Storage::disk(GenerateDocumentPdf::DISK)->exists($document->pdf_path)) {
+            // #9799 — repli paresseux : le PDF n'était généré que par l'envoi
+            // par e-mail, donc un partage créé puis téléchargé aussitôt
+            // renvoyait 404. On le produit ici à la demande (idempotent : le
+            // service ne rend rien si le fichier existe déjà). Un échec réel de
+            // rendu conserve le 404 localisé — jamais une 500 ni un fichier vide.
+            if (! $this->pdfArchive->ensure($document)) {
+                return $this->errorResponse('DOCUMENT_PDF_NOT_READY', 404);
+            }
+        }
+
+        // `ensure()` a rafraîchi le modèle : le chemin est désormais renseigné.
+        // La variable locale explicite garde le type étroit pour PHPStan (le
+        // `refresh()` du service n'est pas visible depuis l'analyse statique).
+        $pdfPath = $document->pdf_path;
+
+        if ($pdfPath === null) {
             return $this->errorResponse('DOCUMENT_PDF_NOT_READY', 404);
         }
 
@@ -93,7 +113,7 @@ final class PublicDocumentShareController
         // NB : Storage::download() renvoie un StreamedResponse Symfony — la
         // macro Laravel ->header() n'existe pas dessus (500 en prod) ; on
         // pose le header via HeaderBag (#5522 — fix main 2026-08-25).
-        $response = Storage::disk(GenerateDocumentPdf::DISK)->download($document->pdf_path, $filename);
+        $response = Storage::disk(GenerateDocumentPdf::DISK)->download($pdfPath, $filename);
         $response->headers->set('Referrer-Policy', 'no-referrer');
 
         return $response;

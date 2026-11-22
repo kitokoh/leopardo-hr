@@ -85,6 +85,40 @@ export interface SharedCopy {
   readonly onDuty: string;
   readonly regularHours: string;
   readonly reviews: string;
+  /* ───── Careers — verticale Emploi (#9826) ───── */
+  /** Label du champ prénom (formulaire candidature). */
+  readonly firstName: string;
+  /** Label du champ nom (formulaire candidature). */
+  readonly lastName: string;
+  /** Label du champ e-mail. */
+  readonly emailLabel: string;
+  /** Label du champ téléphone. */
+  readonly phoneLabel: string;
+  /** Label du champ lettre de motivation. */
+  readonly coverLetterLabel: string;
+  /** Label du champ CV / upload. */
+  readonly resumeLabel: string;
+  /** Texte RGPD du consentement candidature. */
+  readonly consentLabel: string;
+  /** CTA du bouton « Postuler ». */
+  readonly applySubmit: string;
+  /** Message « déjà postulé ». */
+  readonly alreadyApplied: string;
+  /** Confirmation d'envoi de candidature. */
+  readonly applicationSent: string;
+  /** Sous-texte de confirmation (référence). */
+  readonly applicationSentHint: string;
+  /** CTA du bouton « Rechercher mes dossiers » (suivi). */
+  readonly trackSubmit: string;
+  /** CTA du lien vers le suivi de candidature. */
+  readonly trackApplications: string;
+  /** Label singulier : « offre ». */
+  readonly offer: string;
+  /** Label pluriel : « offres ». */
+  readonly offers: string;
+  /* ───── Retail — verticale Marché (#9826) ───── */
+  /** CTA « Ajouter au panier ». */
+  readonly addToCart: string;
   /**
    * Pagination des annuaires (#9657).
    *
@@ -159,6 +193,22 @@ const FR: SurfaceCopy = {
     onDuty: 'De garde',
     regularHours: 'Horaires habituels',
     reviews: 'avis',
+    firstName: 'Prénom',
+    lastName: 'Nom',
+    emailLabel: 'Adresse e-mail',
+    phoneLabel: 'Téléphone',
+    coverLetterLabel: 'Lettre de motivation',
+    resumeLabel: 'CV (PDF, DOC)',
+    consentLabel: 'J'accepte que mes données soient traitées dans le cadre de cette candidature.',
+    applySubmit: 'Postuler',
+    alreadyApplied: 'Vous avez déjà postulé à cette offre.',
+    applicationSent: 'Candidature envoyée',
+    applicationSentHint: 'Conservez cette référence pour suivre votre dossier.',
+    trackSubmit: 'Rechercher mes dossiers',
+    trackApplications: 'Suivre mes candidatures',
+    offer: 'offre',
+    offers: 'offres',
+    addToCart: 'Ajouter au panier',
     previousPage: 'Page précédente',
     nextPage: 'Page suivante',
     pageOf: 'Page {page} sur {last}',
@@ -264,6 +314,22 @@ const EN: SurfaceCopy = {
     onDuty: 'On duty',
     regularHours: 'Regular hours',
     reviews: 'reviews',
+    firstName: 'First name',
+    lastName: 'Last name',
+    emailLabel: 'Email address',
+    phoneLabel: 'Phone',
+    coverLetterLabel: 'Cover letter',
+    resumeLabel: 'Resume (PDF, DOC)',
+    consentLabel: 'I agree that my data will be processed for this application.',
+    applySubmit: 'Apply',
+    alreadyApplied: 'You have already applied for this position.',
+    applicationSent: 'Application sent',
+    applicationSentHint: 'Keep this reference to track your application.',
+    trackSubmit: 'Search my applications',
+    trackApplications: 'Track my applications',
+    offer: 'opening',
+    offers: 'openings',
+    addToCart: 'Add to cart',
     previousPage: 'Previous page',
     nextPage: 'Next page',
     pageOf: 'Page {page} of {last}',
@@ -369,6 +435,22 @@ const TR: SurfaceCopy = {
     onDuty: 'Nöbetçi',
     regularHours: 'Normal saatler',
     reviews: 'değerlendirme',
+    firstName: 'Ad',
+    lastName: 'Soyad',
+    emailLabel: 'E-posta adresi',
+    phoneLabel: 'Telefon',
+    coverLetterLabel: 'Ön yazı',
+    resumeLabel: 'Özgeçmiş (PDF, DOC)',
+    consentLabel: 'Bu başvuru kapsamında verilerimin işlenmesini kabul ediyorum.',
+    applySubmit: 'Başvur',
+    alreadyApplied: 'Bu pozisyona zaten başvurdunuz.',
+    applicationSent: 'Başvuru gönderildi',
+    applicationSentHint: 'Başvurunuzu takip etmek için bu referansı saklayın.',
+    trackSubmit: 'Başvurularımı ara',
+    trackApplications: 'Başvurularımı takip et',
+    offer: 'ilan',
+    offers: 'ilan',
+    addToCart: 'Sepete ekle',
     previousPage: 'Önceki sayfa',
     nextPage: 'Sonraki sayfa',
     pageOf: 'Sayfa {page} / {last}',
@@ -474,6 +556,22 @@ const AR: SurfaceCopy = {
     onDuty: 'صيدلية مناوبة',
     regularHours: 'ساعات العمل العادية',
     reviews: 'تقييم',
+    firstName: 'الاسم الأول',
+    lastName: 'اسم العائلة',
+    emailLabel: 'البريد الإلكتروني',
+    phoneLabel: 'الهاتف',
+    coverLetterLabel: 'رسالة التقديم',
+    resumeLabel: 'السيرة الذاتية (PDF, DOC)',
+    consentLabel: 'أوافق على معالجة بياناتي في إطار هذا الطلب.',
+    applySubmit: 'تقديم',
+    alreadyApplied: 'لقد تقدمت بالفعل لهذه الوظيفة.',
+    applicationSent: 'تم إرسال الطلب',
+    applicationSentHint: 'احتفظ بهذا المرجع لتتبع طلبك.',
+    trackSubmit: 'البحث عن طلباتي',
+    trackApplications: 'تتبع طلباتي',
+    offer: 'عرض',
+    offers: 'عروض',
+    addToCart: 'أضف إلى السلة',
     previousPage: 'الصفحة السابقة',
     nextPage: 'الصفحة التالية',
     pageOf: 'الصفحة {page} من {last}',

@@ -85,7 +85,7 @@ export function TrackApplicationsForm({
               color: identity.palette.muted,
             }}
           >
-            {shared.company}
+            {shared.emailLabel}
           </label>
           <input
             id="track-email"
@@ -120,7 +120,7 @@ export function TrackApplicationsForm({
             opacity: phase === 'loading' ? 0.7 : 1,
           }}
         >
-          {phase === 'loading' ? '…' : shared.bookable}
+          {phase === 'loading' ? '…' : shared.trackSubmit}
         </button>
       </form>
 

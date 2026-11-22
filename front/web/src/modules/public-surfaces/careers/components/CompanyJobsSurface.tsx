@@ -100,7 +100,7 @@ export function CompanyJobsSurface({
           {result.companyName}
         </h1>
         <SurfaceMeta identity={identity}>
-          {page.total} {shared.product}
+          {page.total} {page.total > 1 ? shared.offers : shared.offer}
         </SurfaceMeta>
 
         <div style={{ marginTop: '1.25rem' }}>
@@ -277,7 +277,7 @@ export function CompanyJobsSurface({
 
         <div style={{ marginTop: '1.75rem' }}>
           <SurfaceCta identity={identity} href={`/emploi/${companySlug}/suivi`}>
-            {shared.bookable}
+            {shared.trackApplications}
           </SurfaceCta>
         </div>
       </main>

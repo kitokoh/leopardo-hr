@@ -1351,6 +1351,377 @@ paths:
           description: Produit inexistant OU appartenant a une autre entreprise (jamais 403)
         '429':
           $ref: '#/components/responses/Error429'
+  /v1/trade/counterparties:
+    get:
+      operationId: api_get_trade_counterparties
+      tags:
+      - Trade
+      summary: Lister les contreparties du tenant (#9780)
+      description: >-
+        Repertoire clients / fournisseurs / transporteurs / transitaires /
+        courtiers en douane (BC-36 TRADE). `trade_counterparties`, son modele,
+        sa factory et ses enums existaient depuis TRADE-003/#8478 mais AUCUNE
+        route ne les exposait : un tenant pouvait emettre des RFQ et des offres
+        sans jamais pouvoir creer un fournisseur ni un client, et
+        `trade_deal.trade_counterparty_id` ne pouvait jamais etre renseigne.
+
+        Isolation tenant appliquee par `BelongsToCompany` — une contrepartie
+        d'une autre entreprise est introuvable (404), jamais 403.
+
+        `q` est echappe : un `%` saisi est un CARACTERE, pas un joker SQL.
+      parameters:
+      - name: role
+        in: query
+        description: Role metier (appartenance au tableau `roles`, pas egalite)
+        schema:
+          type: string
+          enum: [buyer, supplier, manufacturer, carrier, forwarder, customs_broker, inspector]
+      - name: country
+        in: query
+        schema:
+          type: string
+          minLength: 2
+          maxLength: 2
+      - name: verification_status
+        in: query
+        schema:
+          type: string
+          enum: [none, pending, verified, rejected]
+      - name: q
+        in: query
+        description: Recherche sur le nom, l'email ou la ville
+        schema:
+          type: string
+          maxLength: 200
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginee des contreparties du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier de lecture
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      operationId: api_post_trade_counterparties
+      tags:
+      - Trade
+      summary: Creer une contrepartie (#9780)
+      description: >-
+        `roles` est OBLIGATOIRE et ferme : une contrepartie sans role ne peut
+        etre ni invitee a une RFQ, ni destinataire d'une offre, ni sollicitee
+        pour un transport. Les doublons sont dedoublonnes.
+
+        `verification_status` n'est PAS accepte ici : le statut de verification
+        est un acte distinct (`POST .../verify`) qui trace QUI a verifie et
+        QUAND. L'accepter a la creation permettrait de s'auto-declarer
+        « verified » en une requete.
+
+        `company_id` n'est jamais accepte : il est pose par `BelongsToCompany`
+        depuis le contexte tenant (anti-spoof #7646).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, roles]
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                country:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                city:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  format: email
+                  maxLength: 190
+                phone:
+                  type: string
+                  maxLength: 40
+                website:
+                  type: string
+                  format: uri
+                  maxLength: 255
+                roles:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    enum: [buyer, supplier, manufacturer, carrier, forwarder, customs_broker, inspector]
+                capabilities:
+                  type: object
+                notes:
+                  type: string
+                  maxLength: 5000
+                crm_account_id:
+                  type: integer
+                  minimum: 1
+      responses:
+        '201':
+          description: Contrepartie creee (verification_status = none)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier d'ecriture
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/counterparties/{counterparty}:
+    get:
+      operationId: api_get_trade_counterparty
+      tags:
+      - Trade
+      summary: Detail d'une contrepartie (#9780)
+      parameters:
+      - name: counterparty
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Contrepartie du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier de lecture
+        '404':
+          description: Contrepartie inexistante OU appartenant a une autre entreprise (jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
+    put:
+      operationId: api_put_trade_counterparty
+      tags:
+      - Trade
+      summary: Mettre a jour une contrepartie (#9780)
+      description: >-
+        Mise a jour partielle : un champ non envoye n'est pas efface.
+        `verification_status` reste absent — la verification est un acte
+        distinct et trace.
+      parameters:
+      - name: counterparty
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                country:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                city:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  format: email
+                  maxLength: 190
+                phone:
+                  type: string
+                  maxLength: 40
+                website:
+                  type: string
+                  format: uri
+                  maxLength: 255
+                roles:
+                  type: array
+                  minItems: 1
+                  items:
+                    type: string
+                    enum: [buyer, supplier, manufacturer, carrier, forwarder, customs_broker, inspector]
+                capabilities:
+                  type: object
+                notes:
+                  type: string
+                  maxLength: 5000
+                crm_account_id:
+                  type: integer
+                  minimum: 1
+      responses:
+        '200':
+          description: Contrepartie mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier d'ecriture
+        '404':
+          description: Contrepartie inexistante OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+    delete:
+      operationId: api_delete_trade_counterparty
+      tags:
+      - Trade
+      summary: Supprimer (logiquement) une contrepartie (#9780)
+      description: >-
+        Suppression DOUCE (`deleted_at`) : aucune suppression physique. Les
+        dossiers, RFQ et offres passes referencent la contrepartie — un
+        `DELETE` physique casserait leur historique.
+      parameters:
+      - name: counterparty
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '204':
+          description: Contrepartie supprimee (logiquement)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier d'ecriture
+        '404':
+          description: Contrepartie inexistante OU appartenant a une autre entreprise (jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/counterparties/{counterparty}/verify:
+    post:
+      operationId: api_post_trade_counterparty_verify
+      tags:
+      - Trade
+      summary: Verifier une contrepartie — acte trace (#9780)
+      description: >-
+        Acte DISTINCT de la mise a jour, reserve au role `admin` de la
+        verticale. Trace `verified_by_employee_id` et `verified_at`.
+
+        `verified` signifie « verifie par l'equipe » — JAMAIS « verifie
+        automatiquement » : aucun service de verification d'entreprise n'est
+        souscrit en v1. Toute decision (`verified` / `rejected`) exige un
+        motif : une affirmation sans motif n'est pas une verification, c'est
+        une case cochee.
+
+        `pending` efface la decision precedente (retour a l'instruction).
+      parameters:
+      - name: counterparty
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [pending, verified, rejected]
+                note:
+                  type: string
+                  maxLength: 2000
+                  description: Obligatoire pour `verified` et `rejected`
+      responses:
+        '200':
+          description: Statut de verification mis a jour et trace
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans le role admin de la verticale
+        '404':
+          description: Contrepartie inexistante OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/search:
+    get:
+      operationId: api_get_trade_search
+      tags:
+      - Trade
+      summary: Recherche transverse import-export (#9781)
+      description: >-
+        « Je ne sais plus ou c'est » : un seul champ qui interroge les
+        contreparties, le catalogue produits et les dossiers de transaction.
+
+        AUCUNE recherche floue ni score invente : `ILIKE` echappe sur des
+        colonnes nommees, tri par identifiant decroissant (reproductible et
+        explicable). Isolation tenant appliquee par le scope
+        `BelongsToCompany` des trois modeles.
+
+        `q` de moins de 2 caracteres renvoie 422 : une recherche d'un
+        caractere ramenerait presque tout le repertoire — ce n'est pas une
+        recherche, c'est un export deguise.
+      parameters:
+      - name: q
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 2
+          maxLength: 200
+      - name: limit
+        in: query
+        description: Plafond PAR GROUPE
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+          default: 10
+      responses:
+        '200':
+          description: Resultats groupes (counterparties, products, deals) + total
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/promotion-kit:
+    get:
+      operationId: api_get_trade_promotion_kit
+      tags:
+      - Trade
+      summary: Kit de promotion de l'entreprise (#9783)
+      description: >-
+        « Etre capable de promouvoir son entreprise » : le profil public
+        existait, mais rien n'aidait le responsable a produire le contenu.
+
+        Le kit NE PUBLIE RIEN : la publication reste l'acte separe
+        `PUT /v1/trade/profile/publication`. Il n'invente aucune promesse —
+        seuls les champs reellement renseignes sont utilises, et l'accroche
+        vient de `public_name`, jamais de la raison sociale (que le modele
+        documente comme non publiable). Il ne rend jamais un lien mort :
+        `publication.url` vaut null des que la fiche n'est pas joignable.
+
+        Generation DETERMINISTE, sans IA : reproductible et testable.
+      responses:
+        '200':
+          description: Kit (publication, checklist, draft, disclaimer)
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans le role admin de la verticale
+        '429':
+          $ref: '#/components/responses/Error429'
   /public/vtc/marketplace/estimate:
     post:
       operationId: api_post_public_vtc_marketplace_estimate
@@ -35052,6 +35423,59 @@ paths:
                         type: integer
                       last_page:
                         type: integer
+  /crm/opportunities/{opportunity}/stage:
+    patch:
+      operationId: api_patch_crm_opportunities_by_opportunity_stage
+      tags:
+      - CRM
+      summary: Déplacer une opportunité dans le pipeline
+      description: "Contrat #9790 — fait avancer une affaire dans le kanban. `stage` est validé contre la whitelist `CrmOpportunityStage` (422 sinon). `status` est DÉRIVÉ de `stage` (`won`/`lost` → `closed`, sinon `open`) : une seule source de vérité. `won` et `lost` sont TERMINAUX (422) — rouvrir réécrirait l'historique commercial. `lost_reason` est obligatoire pour `lost` et interdit ailleurs. L'étape précédente est journalisée en append-only dans `notes` et dans la timeline (`CrmActivity`). Écriture : `principal` ou `marketing` (api.manager)."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: opportunity
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - stage
+              properties:
+                stage:
+                  type: string
+                  enum:
+                  - prospecting
+                  - qualification
+                  - proposal
+                  - negotiation
+                  - won
+                  - lost
+                lost_reason:
+                  type: string
+                  maxLength: 500
+                  description: Obligatoire si `stage` vaut `lost`, interdit sinon.
+      responses:
+        '200':
+          description: Opportunité déplacée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmOpportunity'
+        '403':
+          description: Rôle insuffisant (ni principal ni marketing)
+        '404':
+          description: Opportunité absente du tenant courant
+        '422':
+          description: Étape inconnue, étape terminale, ou motif de perte manquant/inattendu
   /crm/leads/{crmLead}/convert:
     post:
       operationId: api_post_crm_leads_by_crmLead_convert
@@ -47766,6 +48190,67 @@ paths:
           $ref: '#/components/responses/Error422'
 
   /edu-manager/fee-charges:
+    get:
+      operationId: api_get_edu_manager_fee_charges
+      tags:
+      - EduManager
+      summary: Lister les charges de frais scolaires
+      description: 'Direction/RH uniquement. Liste paginée des charges du tenant, avec le solde
+        restant calculé en base (`paid_amount`, `remaining_amount`). Filtres : `status`,
+        `student_id`, `fee_type_id`, `academic_year_id`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - pending
+          - partial
+          - paid
+          - waived
+          - cancelled
+      - name: student_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: fee_type_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: academic_year_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+      responses:
+        '200':
+          description: Liste paginée des charges
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EduFeeCharge'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
     post:
       operationId: api_post_edu_manager_fee_charges
       tags:
@@ -47925,6 +48410,113 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  /edu-manager/fee-charges/{charge}:
+    get:
+      operationId: api_get_edu_manager_fee_charges_by_charge
+      tags:
+      - EduManager
+      summary: Détail d'une charge de frais et de ses encaissements
+      description: 'Direction/RH uniquement. Renvoie la charge avec son solde restant et la liste
+        de ses paiements. Une charge d''un autre tenant répond 404 (aucune fuite d''existence).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: charge
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Charge et ses paiements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                    - $ref: '#/components/schemas/EduFeeCharge'
+                    - type: object
+                      properties:
+                        payments:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/EduFeePayment'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edu-manager/fee-payments:
+    get:
+      operationId: api_get_edu_manager_fee_payments
+      tags:
+      - EduManager
+      summary: Journal des encaissements scolaires
+      description: 'Direction/RH uniquement. Liste paginée des encaissements du tenant, tous guichets
+        confondus. Filtres : `fee_charge_id`, `student_id`, `method`, `from`, `to` (sur `paid_at`).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fee_charge_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: student_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: method
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - cash
+          - transfer
+          - card
+          - mobile_money
+          - other
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+      responses:
+        '200':
+          description: Liste paginée des encaissements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EduFeePayment'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /edu-manager/fee-accounting-entries:
     get:
       operationId: api_get_edu_manager_fee_accounting_entries

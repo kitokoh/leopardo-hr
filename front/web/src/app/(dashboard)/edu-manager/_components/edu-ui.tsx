@@ -199,19 +199,31 @@ export function Button({ variant = 'primary', className = '', ...props }: Button
   return <button {...props} className={`${base} ${variants[variant]} ${className}`} />;
 }
 
-export function StatusBadge({ status }: { status: string }) {
+export function StatusBadge({ status, label }: { status: string; label?: string }) {
+  // #9790 — les statuts de frais (`partial`, `paid`, `waived`, `cancelled`)
+  // tombaient tous dans le ton par défaut et s'affichaient BRUTS en majuscules
+  // (« PARTIAL ») : un directeur lisait un code technique, pas un état. Le
+  // libellé est désormais fourni par l'appelant (catalogue i18n) et les tons
+  // distinguent l'encaissé (vert) du partiel (ambre) du terminal (gris).
   const tone =
-    status === 'active' || status === 'published' || status === 'validated'
+    status === 'active' ||
+    status === 'published' ||
+    status === 'validated' ||
+    status === 'paid'
       ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-      : status === 'draft' || status === 'pending'
+      : status === 'draft' || status === 'pending' || status === 'partial'
         ? 'border-amber-200 bg-amber-50 text-amber-700'
-        : status === 'inactive' || status === 'archived' || status === 'rejected'
+        : status === 'inactive' ||
+            status === 'archived' ||
+            status === 'rejected' ||
+            status === 'waived' ||
+            status === 'cancelled'
           ? 'border-slate-200 bg-slate-100 text-slate-500'
           : 'border-cyan-200 bg-cyan-50 text-cyan-700';
 
   return (
     <span className={`inline-block rounded-lg border px-2 py-0.5 text-xs font-black uppercase tracking-widest ${tone}`}>
-      {status}
+      {label ?? status}
     </span>
   );
 }

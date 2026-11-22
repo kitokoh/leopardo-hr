@@ -57,11 +57,11 @@ api/app/Modules/Absence/Interfaces/Api/V1/Controllers/AbsenceController.php:267
 api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingAuditController.php:35
 api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingChartController.php:36
 api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingContactController.php:34
-api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingDocumentController.php:173
-api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingDocumentController.php:195
-api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingDocumentController.php:225
-api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingDocumentController.php:50
-api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingDocumentController.php:91
+api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingDocumentController.php:175
+api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingDocumentController.php:197
+api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingDocumentController.php:227
+api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingDocumentController.php:52
+api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingDocumentController.php:93
 api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingFiscalYearController.php:51
 api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingLedgerController.php:33
 api/app/Modules/Accounting/Interfaces/Api/V1/Controllers/AccountingLedgerController.php:79
