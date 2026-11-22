@@ -46,18 +46,29 @@ export function JobDetailSurface({
         <Link
           href={`/emploi/${companySlug}`}
           style={{
-            display: 'inline-block',
-            marginBottom: '1.25rem',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.35rem',
+            marginBottom: '1.5rem',
             fontSize: '0.85rem',
             color: identity.palette.muted,
             textDecoration: 'none',
+            transition: 'color 0.15s ease',
           }}
         >
           ← {offer.companyName}
         </Link>
 
         <SurfaceCard identity={identity}>
-          <h1 style={{ margin: 0, fontSize: 'clamp(1.35rem, 3vw, 1.85rem)', lineHeight: 1.2 }}>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: 'clamp(1.35rem, 3vw, 1.85rem)',
+              lineHeight: 1.2,
+              letterSpacing: '-0.02em',
+              fontWeight: 800,
+            }}
+          >
             {offer.title}
           </h1>
 
@@ -67,7 +78,7 @@ export function JobDetailSurface({
               .join(' · ')}
           </SurfaceMeta>
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem', marginTop: '0.75rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.65rem', marginTop: '0.85rem' }}>
             {card.salary ? (
               <SurfaceBadge identity={identity} tone="accent">
                 {card.salary}
@@ -86,10 +97,11 @@ export function JobDetailSurface({
           {offer.description ? (
             <div
               style={{
-                marginTop: '1.25rem',
+                marginTop: '1.5rem',
                 fontSize: '0.95rem',
-                lineHeight: 1.65,
+                lineHeight: 1.7,
                 whiteSpace: 'pre-line',
+                color: identity.palette.muted,
               }}
             >
               {offer.description}
@@ -97,25 +109,29 @@ export function JobDetailSurface({
           ) : null}
         </SurfaceCard>
 
-        <div style={{ marginTop: '1.5rem' }}>
+        <div style={{ marginTop: '1.75rem' }}>
           {!card.open ? (
             <SurfaceNotice identity={identity}>{shared.soldOut}</SurfaceNotice>
           ) : offer.external ? (
             <SurfaceCard identity={identity}>
-              <p style={{ margin: '0 0 0.75rem', fontSize: '0.9rem' }}>{shared.company}</p>
+              <p style={{ margin: '0 0 0.85rem', fontSize: '0.9rem', color: identity.palette.muted }}>{shared.company}</p>
               <a
                 href={offer.applyUrl ?? '#'}
                 target="_blank"
                 rel="noopener noreferrer nofollow"
                 style={{
-                  display: 'inline-block',
-                  padding: '0.7rem 1.1rem',
-                  borderRadius: '0.6rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.35rem',
+                  padding: '0.75rem 1.25rem',
+                  borderRadius: '0.75rem',
                   background: identity.palette.primary,
                   color: identity.palette.onPrimary,
                   fontWeight: 700,
                   fontSize: '0.9rem',
                   textDecoration: 'none',
+                  boxShadow: `0 2px 8px ${identity.palette.primary}30`,
+                  transition: 'filter 0.15s ease, box-shadow 0.15s ease',
                 }}
               >
                 {shared.bookable} ↗

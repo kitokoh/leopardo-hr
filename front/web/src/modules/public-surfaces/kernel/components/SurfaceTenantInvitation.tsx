@@ -49,16 +49,17 @@ export function SurfaceTenantInvitation({
   }
 
   const style: CSSProperties = {
-    marginTop: '3rem',
-    padding: '1.5rem 1.6rem',
-    borderRadius: '1rem',
-    border: `1px solid ${palette.muted}33`,
-    background: `${palette.accent}0F`,
+    marginTop: '3.5rem',
+    padding: '1.75rem 2rem',
+    borderRadius: '1.25rem',
+    border: `1px solid ${palette.muted}25`,
+    background: `linear-gradient(135deg, ${palette.accent}14 0%, ${palette.primary}08 100%)`,
     display: 'flex',
     flexWrap: 'wrap',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: '1.25rem',
+    gap: '1.5rem',
+    boxShadow: '0 4px 20px -2px rgba(15, 23, 42, 0.03)',
   };
 
   return (
@@ -79,33 +80,36 @@ export function SurfaceTenantInvitation({
         <h2
           style={{
             margin: '0.4rem 0 0',
-            fontSize: '1.15rem',
+            fontSize: '1.2rem',
             fontWeight: 800,
-            letterSpacing: '-0.01em',
+            letterSpacing: '-0.015em',
             color: palette.onSurface,
           }}
         >
           {copy.titles[identity.vertical]}
         </h2>
 
-        <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', color: palette.muted }}>
+        <p style={{ margin: '0.5rem 0 0', fontSize: '0.9rem', lineHeight: 1.5, color: palette.muted }}>
           {copy.body}
         </p>
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
         <Link
           href={href}
           data-surface-tenant-cta=""
           style={{
             display: 'inline-block',
-            padding: '0.7rem 1.2rem',
-            borderRadius: '0.6rem',
+            padding: '0.75rem 1.4rem',
+            borderRadius: '0.75rem',
             background: palette.primary,
             color: palette.onPrimary,
-            fontWeight: 600,
+            fontWeight: 700,
+            fontSize: '0.9rem',
             textDecoration: 'none',
             textAlign: 'center',
+            boxShadow: '0 1px 3px rgba(15, 23, 42, 0.08)',
+            transition: 'filter 140ms ease, box-shadow 140ms ease',
           }}
         >
           {copy.cta}
