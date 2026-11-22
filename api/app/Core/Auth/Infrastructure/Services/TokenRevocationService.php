@@ -100,8 +100,8 @@ final class TokenRevocationService
      *
      * @param  null|string  $expiresAt  Expiration RÉELLE du jeton (`expires_at`).
      *                                  Sert à borner le TTL : jamais au-delà.
-     * @param  string  $reason         Motif lisible, journalisé.
-     * @param  int|null  $actorId      Auteur de la révocation (null = système).
+     * @param  string  $reason  Motif lisible, journalisé.
+     * @param  int|null  $actorId  Auteur de la révocation (null = système).
      */
     public function revoke(int $tokenId, ?string $expiresAt, string $reason, ?int $actorId = null, ?int $companyId = null): void
     {
@@ -152,8 +152,8 @@ final class TokenRevocationService
     /**
      * Bannit un compte, tous guards confondus.
      *
-     * @param  string  $type       L'une des constantes TYPE_*.
-     * @param  int  $id            Identifiant du compte dans son provider.
+     * @param  string  $type  L'une des constantes TYPE_*.
+     * @param  int  $id  Identifiant du compte dans son provider.
      * @param  CarbonImmutable|null  $until  Fin du bannissement (`null` = permanent).
      */
     public function ban(string $type, int $id, ?CarbonImmutable $until = null, ?string $reason = null, ?int $actorId = null): void
