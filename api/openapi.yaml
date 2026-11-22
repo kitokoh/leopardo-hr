@@ -35423,6 +35423,59 @@ paths:
                         type: integer
                       last_page:
                         type: integer
+  /crm/opportunities/{opportunity}/stage:
+    patch:
+      operationId: api_patch_crm_opportunities_by_opportunity_stage
+      tags:
+      - CRM
+      summary: Déplacer une opportunité dans le pipeline
+      description: "Contrat #9790 — fait avancer une affaire dans le kanban. `stage` est validé contre la whitelist `CrmOpportunityStage` (422 sinon). `status` est DÉRIVÉ de `stage` (`won`/`lost` → `closed`, sinon `open`) : une seule source de vérité. `won` et `lost` sont TERMINAUX (422) — rouvrir réécrirait l'historique commercial. `lost_reason` est obligatoire pour `lost` et interdit ailleurs. L'étape précédente est journalisée en append-only dans `notes` et dans la timeline (`CrmActivity`). Écriture : `principal` ou `marketing` (api.manager)."
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: opportunity
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - stage
+              properties:
+                stage:
+                  type: string
+                  enum:
+                  - prospecting
+                  - qualification
+                  - proposal
+                  - negotiation
+                  - won
+                  - lost
+                lost_reason:
+                  type: string
+                  maxLength: 500
+                  description: Obligatoire si `stage` vaut `lost`, interdit sinon.
+      responses:
+        '200':
+          description: Opportunité déplacée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmOpportunity'
+        '403':
+          description: Rôle insuffisant (ni principal ni marketing)
+        '404':
+          description: Opportunité absente du tenant courant
+        '422':
+          description: Étape inconnue, étape terminale, ou motif de perte manquant/inattendu
   /crm/leads/{crmLead}/convert:
     post:
       operationId: api_post_crm_leads_by_crmLead_convert
