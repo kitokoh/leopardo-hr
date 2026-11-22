@@ -284,7 +284,7 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/public/travel/marketplace/account/login', [TravelCustomerAccountController::class, 'login']);
     });
 
-    Route::middleware(['throttle:shop-public', 'auth:travel_customer'])->group(function (): void {
+    Route::middleware(['throttle:shop-public', 'auth:travel_customer', 'account.active'])->group(function (): void {
         Route::post('/public/travel/marketplace/account/logout', [TravelCustomerAccountController::class, 'logout']);
         Route::get('/public/travel/marketplace/account/me', [TravelCustomerAccountController::class, 'me']);
         Route::get('/public/travel/marketplace/account/bookings', [TravelCustomerAccountController::class, 'bookings']);
