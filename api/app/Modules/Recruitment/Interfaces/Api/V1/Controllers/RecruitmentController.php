@@ -20,10 +20,16 @@ use App\Modules\Recruitment\Domain\Models\Applicant;
 use App\Modules\Recruitment\Domain\Models\Interview;
 use App\Modules\Recruitment\Domain\Models\JobPosting;
 use App\Modules\Recruitment\Infrastructure\Services\RecruitmentStatsService;
+use App\Modules\Recruitment\Interfaces\Api\V1\Requests\RecruitmentStatsRequest;
+use App\Modules\Recruitment\Interfaces\Api\V1\Requests\StoreRecruitmentApplicantRequest;
+use App\Modules\Recruitment\Interfaces\Api\V1\Requests\StoreRecruitmentInterviewRequest;
+use App\Modules\Recruitment\Interfaces\Api\V1\Requests\StoreRecruitmentJobRequest;
+use App\Modules\Recruitment\Interfaces\Api\V1\Requests\UpdateRecruitmentApplicantRequest;
+use App\Modules\Recruitment\Interfaces\Api\V1\Requests\UpdateRecruitmentInterviewRequest;
+use App\Modules\Recruitment\Interfaces\Api\V1\Requests\UpdateRecruitmentJobRequest;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class RecruitmentController extends Controller
 {
@@ -37,7 +43,7 @@ class RecruitmentController extends Controller
      *
      * Permission : `recruitment.view` (Gate), scope tenant `company_id`.
      */
-    public function stats(Request $request, RecruitmentStatsService $statsService): JsonResponse
+    public function stats(RecruitmentStatsRequest $request, RecruitmentStatsService $statsService): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -46,10 +52,8 @@ class RecruitmentController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'from' => 'nullable|date',
-            'to' => 'nullable|date',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $from = isset($validated['from']) ? Carbon::parse($validated['from'])->startOfDay() : null;
         $to = isset($validated['to']) ? Carbon::parse($validated['to'])->endOfDay() : null;
@@ -81,7 +85,7 @@ class RecruitmentController extends Controller
             ->response();
     }
 
-    public function storeJob(Request $request): JsonResponse
+    public function storeJob(StoreRecruitmentJobRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -89,28 +93,8 @@ class RecruitmentController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:200',
-            'description' => 'nullable|string',
-            'department_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('departments', 'id')->where('company_id', $actor->company_id),
-            ],
-            'position_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('positions', 'id')->where('company_id', $actor->company_id),
-            ],
-            'location' => 'nullable|string|max:200',
-            'remote_policy' => 'nullable|in:onsite,hybrid,remote',
-            'contract_type' => 'nullable|in:cdi,cdd,stage,freelance',
-            'salary_range_min' => 'nullable|numeric|min:0',
-            'salary_range_max' => 'nullable|numeric|min:0',
-            'currency' => 'nullable|string|max:3',
-            'skills_required' => 'nullable|array',
-            'closes_at' => 'nullable|date',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $job = app(CreateJobPostingAction::class)->execute(
             (int) $actor->company_id,
@@ -134,7 +118,7 @@ class RecruitmentController extends Controller
         return (new JobPostingResource($jobPosting->load(['department:id,name', 'applicants'])))->response();
     }
 
-    public function updateJob(Request $request, JobPosting $jobPosting): JsonResponse
+    public function updateJob(UpdateRecruitmentJobRequest $request, JobPosting $jobPosting): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -145,28 +129,8 @@ class RecruitmentController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'title' => 'sometimes|string|max:200',
-            'description' => 'nullable|string',
-            'department_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('departments', 'id')->where('company_id', $actor->company_id),
-            ],
-            'position_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('positions', 'id')->where('company_id', $actor->company_id),
-            ],
-            'location' => 'nullable|string|max:200',
-            'remote_policy' => 'nullable|in:onsite,hybrid,remote',
-            'contract_type' => 'nullable|in:cdi,cdd,stage,freelance',
-            'salary_range_min' => 'nullable|numeric|min:0',
-            'salary_range_max' => 'nullable|numeric|min:0',
-            'skills_required' => 'nullable|array',
-            'status' => 'sometimes|in:draft,published,closed,archived',
-            'closes_at' => 'nullable|date',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $jobPosting = app(UpdateJobPostingAction::class)->execute($jobPosting, $validated);
 
@@ -196,7 +160,7 @@ class RecruitmentController extends Controller
             ->response();
     }
 
-    public function storeApplicant(Request $request, JobPosting $jobPosting): JsonResponse
+    public function storeApplicant(StoreRecruitmentApplicantRequest $request, JobPosting $jobPosting): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -207,15 +171,8 @@ class RecruitmentController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'first_name' => 'required|string|max:100',
-            'last_name' => 'required|string|max:100',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:30',
-            'source' => 'nullable|in:website,referral,linkedin,agency,other',
-            'cover_letter' => 'nullable|string',
-            'notes' => 'nullable|string',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         // Issue #3860 — pas de doublon (job_posting_id, email), même garde
         // que le portail public : un doublon retourne 409 ALREADY_APPLIED.
@@ -238,7 +195,7 @@ class RecruitmentController extends Controller
             ->setStatusCode(201);
     }
 
-    public function updateApplicant(Request $request, Applicant $applicant): JsonResponse
+    public function updateApplicant(UpdateRecruitmentApplicantRequest $request, Applicant $applicant): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -249,12 +206,8 @@ class RecruitmentController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'status' => 'sometimes|in:new,screening,interview,offer,hired,rejected,withdrawn',
-            'rating' => 'nullable|integer|min:1|max:5',
-            'notes' => 'nullable|string',
-            'status_reason' => 'nullable|string|max:500',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $applicant = app(UpdateApplicantAction::class)->execute(
             $applicant,
@@ -267,7 +220,7 @@ class RecruitmentController extends Controller
 
     // ── Interviews ──────────────────────────────────────────────────────────
 
-    public function storeInterview(Request $request, Applicant $applicant): JsonResponse
+    public function storeInterview(StoreRecruitmentInterviewRequest $request, Applicant $applicant): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -278,16 +231,8 @@ class RecruitmentController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'interviewer_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
-            ],
-            'type' => 'required|in:phone,video,onsite,technical',
-            'scheduled_at' => 'required|date',
-            'duration_minutes' => 'nullable|integer|min:15|max:480',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $interview = app(ScheduleInterviewAction::class)->execute(
             (int) $actor->company_id,
@@ -300,7 +245,7 @@ class RecruitmentController extends Controller
             ->setStatusCode(201);
     }
 
-    public function updateInterview(Request $request, Interview $interview): JsonResponse
+    public function updateInterview(UpdateRecruitmentInterviewRequest $request, Interview $interview): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -311,11 +256,8 @@ class RecruitmentController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'status' => 'sometimes|in:scheduled,completed,cancelled,no_show',
-            'feedback' => 'nullable|string',
-            'rating' => 'nullable|integer|min:1|max:5',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $interview = app(UpdateInterviewAction::class)->execute($interview, $validated);
 

@@ -12,9 +12,14 @@ use App\Http\Resources\Api\V1\TrainingSessionResource;
 use App\Modules\HR\Domain\Models\TrainingCourse;
 use App\Modules\HR\Domain\Models\TrainingEnrollment;
 use App\Modules\HR\Domain\Models\TrainingSession;
+use App\Modules\HR\Interfaces\Api\V1\Requests\EnrollTrainingRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\StoreTrainingCourseRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\StoreTrainingSessionRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateTrainingCourseRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateTrainingEnrollmentRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateTrainingSessionRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 class TrainingController extends Controller
 {
@@ -34,7 +39,7 @@ class TrainingController extends Controller
             ->response();
     }
 
-    public function storeCourse(Request $request): JsonResponse
+    public function storeCourse(StoreTrainingCourseRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -42,17 +47,8 @@ class TrainingController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'title' => 'required|string|max:200',
-            'description' => 'nullable|string',
-            'category' => 'nullable|string|max:100',
-            'type' => 'required|in:internal,external,online,certification',
-            'provider' => 'nullable|string|max:200',
-            'duration_hours' => 'nullable|numeric|min:0',
-            'max_participants' => 'nullable|integer|min:1',
-            'cost_per_participant' => 'nullable|numeric|min:0',
-            'currency' => 'nullable|string|max:3',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $course = TrainingCourse::create([
             ...$validated,
@@ -75,7 +71,7 @@ class TrainingController extends Controller
         return (new TrainingCourseResource($trainingCourse->load('sessions')))->response();
     }
 
-    public function updateCourse(Request $request, TrainingCourse $trainingCourse): JsonResponse
+    public function updateCourse(UpdateTrainingCourseRequest $request, TrainingCourse $trainingCourse): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -86,17 +82,8 @@ class TrainingController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'title' => 'sometimes|string|max:200',
-            'description' => 'nullable|string',
-            'category' => 'nullable|string|max:100',
-            'type' => 'sometimes|in:internal,external,online,certification',
-            'provider' => 'nullable|string|max:200',
-            'duration_hours' => 'nullable|numeric|min:0',
-            'max_participants' => 'nullable|integer|min:1',
-            'cost_per_participant' => 'nullable|numeric|min:0',
-            'active' => 'boolean',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $trainingCourse->update($validated);
 
@@ -174,7 +161,7 @@ class TrainingController extends Controller
         )->response();
     }
 
-    public function storeSession(Request $request, TrainingCourse $trainingCourse): JsonResponse
+    public function storeSession(StoreTrainingSessionRequest $request, TrainingCourse $trainingCourse): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -185,18 +172,8 @@ class TrainingController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'trainer_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
-            ],
-            'external_trainer' => 'nullable|string|max:200',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'location' => 'nullable|string|max:200',
-            'notes' => 'nullable|string',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $session = TrainingSession::create([
             ...$validated,
@@ -209,7 +186,7 @@ class TrainingController extends Controller
             ->setStatusCode(201);
     }
 
-    public function updateSession(Request $request, TrainingSession $trainingSession): JsonResponse
+    public function updateSession(UpdateTrainingSessionRequest $request, TrainingSession $trainingSession): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -220,19 +197,8 @@ class TrainingController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'trainer_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
-            ],
-            'external_trainer' => 'nullable|string|max:200',
-            'start_date' => 'sometimes|date',
-            'end_date' => 'sometimes|date',
-            'location' => 'nullable|string|max:200',
-            'status' => 'sometimes|in:planned,in_progress,completed,cancelled',
-            'notes' => 'nullable|string',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $trainingSession->update($validated);
 
@@ -241,7 +207,7 @@ class TrainingController extends Controller
 
     // â”€â”€ Enrollments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-    public function enroll(Request $request, TrainingSession $trainingSession): JsonResponse
+    public function enroll(EnrollTrainingRequest $request, TrainingSession $trainingSession): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -252,13 +218,8 @@ class TrainingController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'employee_id' => [
-                'required',
-                'integer',
-                Rule::exists('employees', 'id')->where('company_id', $actor->company_id),
-            ],
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         $enrollment = TrainingEnrollment::firstOrCreate([
             'training_session_id' => $trainingSession->id,
@@ -273,7 +234,7 @@ class TrainingController extends Controller
             ->setStatusCode(201);
     }
 
-    public function updateEnrollment(Request $request, TrainingEnrollment $trainingEnrollment): JsonResponse
+    public function updateEnrollment(UpdateTrainingEnrollmentRequest $request, TrainingEnrollment $trainingEnrollment): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -284,11 +245,8 @@ class TrainingController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'status' => 'sometimes|in:enrolled,attended,completed,no_show,cancelled',
-            'score' => 'nullable|numeric|min:0|max:100',
-            'feedback' => 'nullable|string',
-        ]);
+        /** @var array<string, mixed> $validated */
+        $validated = $request->validated();
 
         if (isset($validated['status']) && $validated['status'] === 'completed') {
             $validated['completed_at'] = now();
