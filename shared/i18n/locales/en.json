@@ -5065,7 +5065,10 @@
       "manageStudents": "Manage students",
       "manageAssessments": "Assessments & grades",
       "manageReportCards": "Report cards",
-      "teacherSpace": "Teacher space"
+      "teacherSpace": "Teacher space",
+      "manageFeeTypes": "Fee types",
+      "manageGuardians": "Legal guardians",
+      "manageReports": "Reports"
     },
     "campuses": {
       "title": "Campuses",
@@ -5232,6 +5235,45 @@
       "view": "View",
       "back": "Back",
       "deleteConfirm": "Delete this item?"
+    },
+    "feeTypes": {
+      "title": "Fee types",
+      "subtitle": "Catalogue of the school's billable fees.",
+      "empty": "No fee type yet. Create the first one (tuition, canteen, transport…).",
+      "create": "New fee type",
+      "edit": "Edit fee type",
+      "code": "Code",
+      "label": "Label",
+      "amount": "Amount",
+      "currency": "Currency",
+      "frequency": "Frequency"
+    },
+    "guardians": {
+      "title": "Legal guardians",
+      "subtitle": "Students' parents and guardians, and their links.",
+      "empty": "No guardian yet. Create the first one.",
+      "create": "New guardian",
+      "edit": "Edit guardian",
+      "name": "Name",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "relationship": "Relationship",
+      "contact": "Contact",
+      "contactHint": "Phone or email — encrypted at rest.",
+      "link": "Link",
+      "linkTitle": "Link to a student",
+      "student": "Student",
+      "canViewGrades": "Sees grades",
+      "canReceiveNotifications": "Receives notifications"
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "Aggregated school indicators (leadership).",
+      "presence": "Attendance",
+      "enrollment": "Enrolments",
+      "results": "Results",
+      "capacity": "Class capacity",
+      "empty": "No data for this period."
     }
   },
   "travel": {

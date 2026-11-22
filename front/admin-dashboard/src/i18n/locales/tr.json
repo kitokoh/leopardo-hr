@@ -5598,7 +5598,10 @@
       "manageStudents": "Öğrencileri yönet",
       "manageAssessments": "Değerlendirme ve notlar",
       "manageReportCards": "Karneler",
-      "teacherSpace": "Öğretmen alanı"
+      "teacherSpace": "Öğretmen alanı",
+      "manageFeeTypes": "Ücret türleri",
+      "manageGuardians": "Veliler",
+      "manageReports": "Raporlar"
     },
     "campuses": {
       "title": "Kampüsler",
@@ -5765,6 +5768,45 @@
       "view": "Görüntüle",
       "back": "Geri",
       "deleteConfirm": "Bu öğe silinsin mi?"
+    },
+    "feeTypes": {
+      "title": "Ücret türleri",
+      "subtitle": "Okulun faturalandırılabilir ücret kataloğu.",
+      "empty": "Henüz ücret türü yok. İlkini oluşturun (öğrenim, kantin, ulaşım…).",
+      "create": "Yeni ücret türü",
+      "edit": "Ücret türünü düzenle",
+      "code": "Kod",
+      "label": "Etiket",
+      "amount": "Tutar",
+      "currency": "Para birimi",
+      "frequency": "Sıklık"
+    },
+    "guardians": {
+      "title": "Veliler",
+      "subtitle": "Öğrencilerin velileri ve bağlantıları.",
+      "empty": "Henüz veli yok. İlkini oluşturun.",
+      "create": "Yeni veli",
+      "edit": "Veliyi düzenle",
+      "name": "Ad",
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "relationship": "Yakınlık",
+      "contact": "İletişim",
+      "contactHint": "Telefon veya e-posta — depoda şifreli.",
+      "link": "Bağla",
+      "linkTitle": "Bir öğrenciye bağla",
+      "student": "Öğrenci",
+      "canViewGrades": "Notları görür",
+      "canReceiveNotifications": "Bildirim alır"
+    },
+    "reports": {
+      "title": "Raporlar",
+      "subtitle": "Okulun toplu göstergeleri (yönetim).",
+      "presence": "Devam",
+      "enrollment": "Kayıtlar",
+      "results": "Sonuçlar",
+      "capacity": "Sınıf doluluğu",
+      "empty": "Bu dönem için veri yok."
     }
   },
   "travel": {
