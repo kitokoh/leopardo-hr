@@ -27,6 +27,7 @@ use Illuminate\Support\Carbon;
  * @property string $method
  * @property string|null $reference
  * @property string|null $external_id
+ * @property string|null $batch_id
  * @property Carbon $paid_at
  * @property int|null $recorded_by
  * @property Carbon|null $created_at
@@ -66,6 +67,7 @@ class EduFeePayment extends Model
         'method',
         'reference',
         'external_id',
+        'batch_id',
         'paid_at',
         'recorded_by',
     ];

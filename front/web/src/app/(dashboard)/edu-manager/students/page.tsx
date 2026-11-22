@@ -1,6 +1,7 @@
 'use client';
 
-import { Lock } from 'lucide-react';
+import Link from 'next/link';
+import { Lock, Receipt } from 'lucide-react';
 import CrudPage, { type CrudResource } from '../_components/edu-crud';
 
 const resource: CrudResource = {
@@ -40,6 +41,20 @@ const resource: CrudResource = {
       ),
     },
   ],
+  /**
+   * #9793 — encaissement en lot depuis la fiche d'un élève : un parent règle
+   * scolarité + cantine + transport en une fois. Le geste part de la ligne de
+   * l'élève, pas d'une liste de charges à filtrer à la main.
+   */
+  rowActions: (row) => (
+    <Link
+      href={`/edu-manager/fee-charges/batch?student_id=${String(row.id)}`}
+      title="Encaisser en lot"
+      className="rounded-lg p-1.5 text-emerald-600 hover:bg-emerald-50"
+    >
+      <Receipt className="h-4 w-4" aria-hidden="true" />
+    </Link>
+  ),
 };
 
 export default function StudentsPage() {

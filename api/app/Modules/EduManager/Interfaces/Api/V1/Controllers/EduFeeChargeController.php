@@ -259,6 +259,78 @@ class EduFeeChargeController extends Controller
         ]);
     }
 
+    /**
+     * GET /edu-manager/students/{student}/fee-charges (#9793).
+     *
+     * Encaissement en lot DEPUIS LA FICHE D'UN ÉLÈVE : un parent règle
+     * plusieurs frais en une fois (scolarité + cantine + transport). Le guichet
+     * part de l'élève, pas d'une liste de charges à filtrer à la main.
+     *
+     * Même contrat que `forClass` — un seul élève au lieu d'un effectif — pour
+     * que l'écran de lot n'ait qu'un seul format de réponse à comprendre.
+     *
+     * Un élève d'un autre tenant → 404 (on ne révèle pas son existence).
+     */
+    public function forStudent(Request $request, EduStudent $student): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->assertSameTenant($student, $actor->company_id);
+        $this->assertAdmin($actor);
+
+        $query = EduFeeCharge::query()
+            ->where('company_id', $actor->company_id)
+            ->where('student_id', (int) $student->getAttribute('id'))
+            ->with([
+                'student:id,student_number,display_name',
+                'feeType:id,code,label',
+            ])
+            ->withSum('payments as paid_amount', 'amount');
+
+        // Par défaut, seules les charges encore encaissables : une charge
+        // soldée/abandonnée/annulée serait refusée par le lot.
+        if (! $request->boolean('include_terminal')) {
+            $query->whereNotIn('status', [
+                EduFeeCharge::STATUS_PAID,
+                EduFeeCharge::STATUS_WAIVED,
+                EduFeeCharge::STATUS_CANCELLED,
+            ]);
+        }
+
+        if ($request->filled('due_from')) {
+            $query->whereDate('due_date', '>=', (string) $request->input('due_from'));
+        }
+
+        if ($request->filled('due_to')) {
+            $query->whereDate('due_date', '<=', (string) $request->input('due_to'));
+        }
+
+        if ($request->filled('paid_with_method')) {
+            $method = (string) $request->input('paid_with_method');
+            $query->whereHas('payments', fn ($payments) => $payments->where('method', $method));
+        }
+
+        $charges = $query->orderBy('due_date')->orderBy('id')->get();
+
+        return response()->json([
+            'data' => [
+                'student' => [
+                    'id' => (int) $student->getAttribute('id'),
+                    'student_number' => $student->student_number,
+                    'display_name' => $student->display_name,
+                ],
+                'charges' => $charges
+                    ->map(fn (EduFeeCharge $charge): array => $this->chargePayload($charge))
+                    ->values(),
+            ],
+            'meta' => [
+                'charges' => $charges->count(),
+            ],
+        ]);
+    }
+
     public function store(StoreEduFeeChargeRequest $request): JsonResponse
     {
         $this->assertSolutionActive();

@@ -5318,7 +5318,10 @@
       "dueFrom": "Échéance à partir du",
       "dueTo": "Échéance jusqu'au",
       "paidWithMethod": "Déjà réglé par",
-      "allMethods": "Tous les moyens"
+      "allMethods": "Tous les moyens",
+      "batchReceipt": "Télécharger le reçu (PDF)",
+      "batchStudentBanner": "Élève {student} — {charges} facturation(s) à encaisser.",
+      "batchFromStudent": "Encaisser en lot pour cet élève"
     },
     "fees": {
       "title": "Frais scolaires",

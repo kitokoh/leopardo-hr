@@ -1,3 +1,25 @@
+## 2026-11-23 — École : reçu PDF par encaissement de lot et lot depuis la fiche d'un élève (#9793)
+
+Surface : `api/database/migrations/tenant/2026_11_23_000100_9793_add_batch_id_to_edu_fee_payments.php` (nouveau), `.../Infrastructure/Services/EduFeeBatchReceiptPdfRenderer.php` (nouveau), `api/resources/views/pdf/edu-fee-batch-receipt.blade.php` (nouveau), `.../Application/Actions/RecordEduFeeBatchPaymentsAction.php` (`batch_id`), `.../Infrastructure/Services/EduFeeService.php` (`batch_id` à l'écriture), `.../Domain/Models/EduFeePayment.php` (`batch_id` fillable), `.../Controllers/EduFeePaymentController.php` (`batchReceipt`), `.../Controllers/EduFeeChargeController.php` (`forStudent`), `api/routes/modules/edu_manager.php` (`GET /fee-payments/batches/{batch}/receipt.pdf`, `GET /students/{student}/fee-charges`), `api/lang/{fr,en,ar,tr}/pdf.php`, `api/tests/Feature/EduManager/EduFeeBatchReceiptTest.php` (nouveau, 6 tests), `front/web/src/app/(dashboard)/edu-manager/fee-charges/batch/page.tsx` (lot depuis un élève + lien reçu), `.../students/page.tsx` (action « encaisser en lot »), `.../__tests__/edu-fee-student-batch-receipt.test.tsx` (nouveau, 2 tests), `shared/i18n/locales/{fr,en,ar,tr}.json` + catalogues générés.
+
+**Pourquoi c'est un scénario de test** : le guichet encaissait une classe entière en une saisie, puis devait remettre une pièce au payeur — le caissier recopiait la liste des élèves et le total à la main, et un parent n'avait rien à produire en cas de contestation. Un lot n'était d'ailleurs identifiable que par le préfixe de `external_id`, et seulement quand l'appelant en fournissait un : deux dépôts anonymes étaient indistinguables, donc le reçu introuvable. Par ailleurs l'encaissement en lot partait d'une classe, jamais d'un élève, alors qu'un parent règle scolarité + cantine + transport en une fois.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| un lot expose `summary.batch_id` et chaque encaissement porte ce `batch_id` | le reçu ne serait pas réimprimable, et deux dépôts anonymes resteraient indistinguables |
+| un lot SANS `external_id` reçoit quand même un `batch_id` (UUID) | le reçu d'un dépôt sans bordereau serait introuvable |
+| `GET /fee-payments/batches/{batch}/receipt.pdf` rend 200, `application/pdf`, `attachment;` et un corps `%PDF` | le guichet n'aurait aucune pièce à remettre au payeur |
+| le reçu d'un lot d'une autre école rend 404 | fuite inter-tenants : montants et noms d'élèves d'une autre école |
+| un lot inexistant rend 404, jamais un PDF vide | un PDF vide ferait croire à un encaissement nul |
+| `GET /students/{student}/fee-charges` ne rend que les charges de CET élève, et exclut les terminales par défaut | le caissier composerait un lot que le serveur refuserait ligne par ligne |
+| `include_terminal=1` fait réapparaître la charge soldée, jamais celle d'un autre élève | l'écran mentirait sur l'historique de l'élève |
+| un élève d'une autre école rend 404 | fuite d'existence d'un élève hors tenant |
+| `?student_id=` pré-sélectionne une ligne par charge au solde restant | le caissier ressaisirait chaque montant à la main |
+| le lien de reçu n'apparaît qu'APRÈS un encaissement réussi et pointe sur le `batch_id` rendu | un lien affiché trop tôt mènerait à un 404 au guichet |
+
+**Couverture exécutée** — `php8.4 vendor/bin/pest --filter=EduFeeBatchReceiptTest` → **6 passed (32 assertions)** ; `--filter=EduFee` → **43 passed (298 assertions)** de non-régression ; `phpstan analyse -c phpstan-strict.neon app/Modules/EduManager` → **0 erreur** ; `pint` → 0 style issue ; `check-module-isolation.sh` → aucun nouvel import croisé ; `check-i18n-catalog-parity.sh` → parité OK (4 langues) ; `validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `_local_governance_check.py` → PASS ; `tsc --noEmit` → 0 erreur ; `eslint --max-warnings 0` → 0 erreur ; `jest` → **9 passed** (dont 2 nouveaux).
+
+**Non couvert** — la suite Feature complète n'a pas été relancée (blocage de migration PostGIS dans le sandbox, cf. entrées précédentes) : la mesure reste le run CI. Le rendu navigateur du reçu PDF n'a pas été ouvert dans un lecteur : le test vérifie l'en-tête `application/pdf` et la signature `%PDF`, pas la mise en page.
 ## 2026-11-23 — Trade OS : vérifier et archiver une contrepartie depuis l'écran vendeur (PR #9798, #9780)
 
 Surface : `front/web/src/app/(dashboard)/trade-os/components/CounterpartyList.tsx`, `types.ts`, `front/web/src/app/(dashboard)/trade-os/page.tsx`, `front/web/src/app/(dashboard)/trade-os/__tests__/counterparties.test.tsx`, `shared/i18n/locales/{fr,en,tr,ar}.json`.

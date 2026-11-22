@@ -155,6 +155,11 @@ final class EduFeeService
             'method' => (string) $data['method'],
             'reference' => $data['reference'] ?? null,
             'external_id' => $externalId,
+            // #9793 — appartenance à un lot d'encaissement (reçu PDF). `null`
+            // pour un règlement unitaire : il n'a pas de reçu de lot.
+            'batch_id' => isset($data['batch_id']) && $data['batch_id'] !== ''
+                ? (string) $data['batch_id']
+                : null,
             'paid_at' => $data['paid_at'] ?? now(),
             'recorded_by' => $actor->id,
         ]);

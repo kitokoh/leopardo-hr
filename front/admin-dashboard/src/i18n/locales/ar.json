@@ -5318,7 +5318,10 @@
       "dueFrom": "الاستحقاق من",
       "dueTo": "الاستحقاق حتى",
       "paidWithMethod": "دُفع مسبقًا بـ",
-      "allMethods": "كل الوسائل"
+      "allMethods": "كل الوسائل",
+      "batchReceipt": "تحميل الوصل (PDF)",
+      "batchStudentBanner": "التلميذ {student} — {charges} فاتورة للتحصيل.",
+      "batchFromStudent": "تحصيل جماعي لهذا التلميذ"
     },
     "fees": {
       "title": "الرسوم الدراسية",
