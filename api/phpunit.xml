@@ -258,6 +258,7 @@
             <file>tests/Feature/WebhookTestEndpointTest.php</file>
         </testsuite>
         <testsuite name="AI">
+            <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
             <file>tests/Feature/AI/AIActionProposalTest.php</file>
             <file>tests/Feature/AI/AICostRatesConfigTest.php</file>
             <file>tests/Feature/AI/AIToolContractGuardTest.php</file>
@@ -502,6 +503,7 @@
             <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
             <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
             <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
+            <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxRuntimeTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxTest.php</file>
@@ -1357,11 +1359,13 @@
             <file>tests/Feature/Trade/TradeActivationTest.php</file>
             <file>tests/Feature/Trade/TradeCompanyProfileTest.php</file>
             <file>tests/Feature/Trade/TradeCostEstimateApiTest.php</file>
+            <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
             <file>tests/Feature/Trade/TradeFeatureFlagTest.php</file>
             <file>tests/Feature/Trade/TradeProductApiTest.php</file>
             <file>tests/Feature/Trade/TradeQuoteApiTest.php</file>
             <file>tests/Feature/Trade/TradeRfqApiTest.php</file>
             <file>tests/Feature/Trade/TradeSchemaTest.php</file>
+            <file>tests/Feature/Trade/TradeSearchApiTest.php</file>
         </testsuite>
         <testsuite name="Training">
             <file>tests/Feature/Training/TrainingControllerTest.php</file>
@@ -1532,10 +1536,11 @@
           `RefreshTenantDatabase` fait `DROP SCHEMA shared_tenants CASCADE`
           et detruit le marqueur `__mvp_fixture_ready`.
 
-          FeatureMvpFixture : 238 fichiers.
-          FeatureRest       : 1089 fichiers.
+          FeatureMvpFixture : 239 fichiers.
+          FeatureRest       : 1092 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
+            <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
             <file>tests/Feature/AI/AIActionProposalTest.php</file>
             <file>tests/Feature/AI/AIToolContractGuardTest.php</file>
             <file>tests/Feature/AI/AIToolExecutionAuditTest.php</file>
@@ -1966,6 +1971,7 @@
             <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
             <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
             <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
+            <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxRuntimeTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxTest.php</file>
@@ -2706,11 +2712,13 @@
             <file>tests/Feature/Trade/TradeActivationTest.php</file>
             <file>tests/Feature/Trade/TradeCompanyProfileTest.php</file>
             <file>tests/Feature/Trade/TradeCostEstimateApiTest.php</file>
+            <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
             <file>tests/Feature/Trade/TradeFeatureFlagTest.php</file>
             <file>tests/Feature/Trade/TradeProductApiTest.php</file>
             <file>tests/Feature/Trade/TradeQuoteApiTest.php</file>
             <file>tests/Feature/Trade/TradeRfqApiTest.php</file>
             <file>tests/Feature/Trade/TradeSchemaTest.php</file>
+            <file>tests/Feature/Trade/TradeSearchApiTest.php</file>
             <file>tests/Feature/TranslationCatalogApiTest.php</file>
             <file>tests/Feature/Travel/TravelAbsentSeatsTest.php</file>
             <file>tests/Feature/Travel/TravelActivateCommandTest.php</file>

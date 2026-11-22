@@ -19,6 +19,83 @@ Surface : `front/web/src/app/(dashboard)/trade-os/components/CounterpartyList.ts
 
 **Non couvert** — le rendu navigateur réel des deux boutons : la mesure est le run CI.
 
+## 2026-11-22 — École : encaissement en lot et exports CSV du guichet (PR #9792, #9791)
+
+Surface : `api/app/Modules/EduManager/Application/Actions/RecordEduFeeBatchPaymentsAction.php` (nouveau), `.../Interfaces/Api/V1/Requests/StoreEduFeeBatchPaymentRequest.php` (nouveau), `.../Infrastructure/Exports/FeePaymentsCsvExporter.php` (nouveau), `.../FeeAccountingEntriesCsvExporter.php` (nouveau), `.../Controllers/EduFeeChargeController.php` (`batchPayment`), `.../EduFeePaymentController.php` (`export` + requête filtrée partagée), `.../EduAccountingEntryController.php` (`export` + requête filtrée partagée), `api/routes/modules/edu_manager.php` (`POST /fee-charges/batch-payments`, `GET /fee-payments/export.csv`, `GET /fee-accounting-entries/export.csv`), `api/tests/Feature/EduManager/EduFeeBatchAndExportTest.php` (nouveau, 9 tests), `front/web/src/app/(dashboard)/edu-manager/fee-charges/batch/page.tsx` (nouveau), `.../fee-charges/page.tsx` (export + lien lot), `.../fee-accounting-entries/page.tsx` (export), `.../__tests__/edu-fee-batch-export.test.tsx` (nouveau, 5 tests), `shared/i18n/locales/{fr,en,ar,tr}.json` + catalogues générés.
+
+**Pourquoi c'est un scénario de test** : le guichet encaissait une charge à la fois et ne sortait rien du produit. À la rentrée, une classe entière règle le même jour — le caissier rouvrait la modale trente fois, et rien ne garantissait que le moyen de paiement ou la référence de bordereau fussent identiques d'une ligne à l'autre. Côté comptabilité, l'écran de rapprochement affichait un contrôle d'équilibre mais aucun fichier ne sortait : l'expert-comptable ne pouvait pas récupérer les lignes, et le contrôle n'était vérifiable qu'à l'œil, page par page.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| un lot de 3 lignes valides enregistre 3 encaissements et rend `summary.recorded`/`total_amount` | le guichet ne saurait pas ce qui a été encaissé |
+| les statuts suivent le cumul (soldé / partiel) et `remaining_amount` est juste par ligne | le solde affiché divergerait dès le premier règlement partiel |
+| une seule ligne en surdébit annule le lot ENTIER et rend 422 avec `errors[0].index` | un lot à moitié appliqué laisserait des écritures comptables orphelines et un état de caisse faux |
+| les refus métier (terminale, introuvable, doublon, devise) sont tous détectés AVANT écriture et indexés | le caissier chercherait laquelle, parmi trente, a échoué |
+| une charge d'un autre tenant rend `EDU_FEE_CHARGE_NOT_FOUND` et n'écrit rien | fuite inter-tenants par le lot |
+| rejouer le même `external_id` de lot ne double aucun encaissement | un rejeu de bordereau doublerait la caisse |
+| employé lambda 403, non authentifié 401 sur le lot | montants et PII d'élèves exposés hors périmètre |
+| l'export du journal porte BOM UTF-8, en-tête, lignes et ligne `TOTAL` | Excel lirait « Élève » en mojibake, et l'état de caisse serait sans total |
+| l'export du journal d'un tenant ne contient jamais les lignes d'un autre | une fuite par export serait invisible à l'écran |
+| l'export du rapprochement porte `TOTAL` ET `EQUILIBRE` (écart débit − crédit) | le contrôle d'équilibre ne survivrait pas à l'export |
+| les deux exports sont réservés à la direction | un employé lambda exporterait la comptabilité |
+| le sélecteur de moyen de paiement affiche « Espèces », pas `cash` | un caissier lirait un code technique |
+| la page de lot ne propose que les charges encore encaissables | le serveur refuserait les charges soldées, ligne par ligne |
+
+**Défaut révélé par le contrôle visuel** — le sélecteur de moyen de paiement affichait `cash`, `transfer`, `mobile_money` : des codes techniques en minuscules. Le défaut existait aussi sur la page de facturation livrée au tour précédent. Corrigé par une table de correspondance unique (`methodLabel`) partagée par les deux pages, avec libellés fr/en/ar/tr.
+
+**Couverture exécutée** — `php8.4 artisan test --filter=EduFeeBatchAndExportTest` → **9 passed (75 assertions)** ; `--filter=EduFeeTest` → **10 passed (114 assertions)** de non-régression ; `phpstan analyse -c phpstan-strict.neon app/Modules/EduManager` → **0 erreur** ; `pint --test` → 0 style issue ; `check-module-isolation.sh` → aucun nouvel import croisé ; `check-i18n-catalog-parity.sh` → parité OK (4 langues) ; `_local_governance_check.py` → PASS ; `tsc --noEmit` → 0 erreur ; `eslint --max-warnings 0` → 0 erreur ; `jest` → **20 passed** (dont 5 nouveaux).
+
+**Contrôle visuel navigateur** — Chromium réel, serveur Next.js local, API mockée : `/edu-manager/fee-charges/batch` (charges encaissables, solde restant, total du lot, « Espèces »), `/edu-manager/fee-charges` (bouton « Exporter en CSV » + « Encaisser en lot ») et `/edu-manager/fee-accounting-entries` (bouton d'export). 3/3 pages vertes, aucune erreur console.
+
+**Non couvert** — la suite Feature complète n'a pas été relancée (blocage de migration PostGIS dans le sandbox, cf. entrée précédente) : la mesure reste le run CI. Les états d'erreur des exports ne sont pas vus à l'écran (couverts par Jest).
+
+## 2026-11-22 — École : facturation et encaissement (PR #9792, #9790)
+
+Surface : `api/app/Modules/EduManager/Interfaces/Api/V1/Controllers/EduFeeChargeController.php` (index + show ajoutés), `.../EduFeePaymentController.php` (nouveau), `api/routes/modules/edu_manager.php` (`GET /fee-charges`, `GET /fee-charges/{charge}`, `GET /fee-payments`), `api/tests/Feature/EduManager/EduFeeTest.php` (3 tests), `front/web/src/app/(dashboard)/edu-manager/fee-charges/page.tsx` (nouveau), `.../fees/page.tsx` (nouveau), `.../fee-accounting-entries/page.tsx` (nouveau), `.../edu-manager/page.tsx` (raccourcis), `.../__tests__/edu-tools-journey.test.tsx` (5 tests), `shared/i18n/locales/{fr,en,ar,tr}.json` + catalogues générés.
+
+**Pourquoi c'est un scénario de test** : les endpoints de frais existaient (EDU-016, #5832) mais **seules les routes d'ÉCRITURE** étaient câblées — `POST /fee-charges`, `POST /fee-charges/{id}/payments`, `POST /fee-charges/{id}/waive`. Aucune lecture : l'écran de facturation ne pouvait ni lister les charges, ni connaître le solde restant d'une charge (le service ne l'expose nulle part), ni relire les encaissements du guichet. Un directeur pouvait donc facturer à l'aveugle, sans jamais vérifier ce qu'il restait à encaisser.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `GET /fee-charges` expose `paid_amount` et `remaining_amount` justes après un encaissement partiel | le guichet afficherait un solde faux dès le premier règlement partiel |
+| le solde est calculé en SQL (`withSum`), pas en PHP sur les paiements hydratés | une charge à 50 encaissements chargerait 50 lignes pour un seul chiffre |
+| les filtres `status` / `student_id` / `fee_type_id` / `academic_year_id` bornent la liste | un filtre absent obligerait à tout charger côté client |
+| `GET /fee-charges/{charge}` expose les encaissements de la charge | impossible de justifier un solde auprès d'un parent |
+| une charge d'un autre tenant rend 404 (jamais 403) sur `show` | on révélerait l'existence d'une facture d'une autre école |
+| `GET /fee-payments` liste et filtre les encaissements (charge, méthode, élève, période) | un caissier ne pourrait pas vérifier sa journée |
+| employé lambda 403, non authentifié 401 sur les trois routes | montants et PII d'élèves exposés hors périmètre |
+| `/edu-manager/fee-charges`, `/fees`, `/fee-accounting-entries` rendent leurs états vide/chargement/erreur | écrans inaccessibles ou muets |
+| le montant d'encaissement proposé par défaut est le solde restant | risque de surdébit systématique (422) |
+| le code métier `EDU_FEE_OVERPAYMENT` est traduit à l'écran | l'utilisateur verrait un code technique brut |
+| le rapprochement comptable signale l'équilibre débit/crédit | une écriture déséquilibrée passerait inaperçue |
+
+**Couverture exécutée** — `php8.4 artisan test --filter=EduFeeTest` → **10 passed (114 assertions)**, dont les 3 nouveaux scénarios de lecture ; `php8.4 vendor/bin/phpstan analyse -c phpstan-strict.neon app/Modules/EduManager` → **0 erreur** ; `pint --test` → 0 style issue ; `check-module-isolation.sh` → aucun nouvel import croisé ; `check-i18n-catalog-parity.sh` → parité OK (4 langues) ; `validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `tsc --noEmit` → 0 erreur ; `eslint --max-warnings 0` → 0 erreur ; `check-orphan-pages.mjs` → vert ; `jest --ci` → **15 passed** (dont 5 nouveaux).
+
+**Non couvert** — la suite Feature complète n'a pas été exécutée (blocage de migration PostGIS dans le sandbox, cf. entrée précédente) : la mesure reste le run CI. Le contrôle visuel navigateur des trois nouvelles pages n'a pas été refait dans ce tour.
+
+## 2026-11-22 — École : espace, collaborateurs, public, élèves (PR #9792, #9785 #9786 #9787 #9788 #9789)
+
+Surface : `front/web/src/app/(dashboard)/edu-manager/fee-types/page.tsx` (nouveau), `.../guardians/page.tsx` (nouveau), `.../reports/page.tsx` (nouveau), `.../edu-manager/page.tsx` (raccourcis), `front/web/src/app/business/ecole/page.tsx` (nouveau), `front/web/src/modules/vitrine/components/pack/PackLandingPage.tsx` (nouveau), `front/web/src/modules/vitrine/data/pack-pages.ts`, `front/web/src/modules/vitrine/domain/pack-signup.ts`, `front/web/src/modules/vitrine/components/Navbar.tsx`, `api/app/Modules/EduManager/Application/Actions/SeedMinimalEduManagerAction.php`, `api/app/Modules/EduManager/Infrastructure/Services/EduDemoDataKit.php` (nouveau), `api/app/Modules/EduManager/Infrastructure/Services/EduOnboardingStepPredicate.php` (nouveau), `api/app/Shared/Onboarding/StepPredicateRegistry.php` (nouveau), `api/lang/{fr,en,ar,tr}/edu.php` (nouveau).
+
+**Pourquoi c'est un scénario de test** : la promesse « une école crée son espace et dispose de tous ses outils » n'était tenue qu'à moitié — l'amorçage ne créait ni matière ni type de frais (une classe ne pouvait pas être affectée, aucune facture émise), trois étapes d'onboarding étaient purement déclaratives (le bouton « Suivant » les validait sans action réelle, faussant `go_live_ready`), et trois écrans existaient côté API sans page (tarifs, responsables légaux, rapports).
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| l'activation crée ≥ 6 matières et ≥ 4 types de frais, montants à 0, devise du tenant | sans matière, `edu_teacher_subjects` refuse l'affectation ; sans type de frais, `edu_fee_charges` refuse la facturation |
+| rejouer l'amorçage ne crée aucun doublon (matières, frais, campus) | un second passage dupliquerait le référentiel |
+| l'amorçage d'un tenant n'écrit rien chez un autre | fuite inter-tenants |
+| le kit de démo installe 3 classes, 6 élèves `DEMO-*`, 3 responsables, inscriptions et rattachements | l'espace reste vide : le directeur ne peut juger ni les classes ni le portail |
+| le kit est idempotent et strictement tenant-scoped | doublons au rejeu, fuite inter-tenants |
+| les élèves de démo portent tous un numéro `DEMO-` | aucune PII réelle ne doit entrer dans un espace de démonstration |
+| `edu_setup_campus` / `edu_setup_classes` / `edu_first_students` renvoient `false` sans donnée réelle, `true` avec | le bouton « Suivant » validait une étape sans action → `go_live_ready` faux |
+| une étape d'une autre verticale n'est pas capturée par le prédicat école | le registre partagé doit rester fail-closed |
+| `/edu-manager/fee-types`, `/guardians`, `/reports` et `/business/ecole` rendent leurs états vide/chargement/erreur | écrans inaccessibles ou muets |
+| le contact d'un responsable n'est jamais renvoyé en clair | donnée personnelle exposée |
+
+**Couverture exécutée** — `php -l` sur les fichiers PHP touchés (0 erreur) ; `pint --test` → 0 style issue ; `phpstan analyse -c phpstan-strict.neon app/Modules/EduManager` → **0 erreur** ; `check-module-isolation.sh` → aucun nouvel import croisé ; `check-i18n-catalog-parity.sh` → parité OK (4 langues) ; `validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `check-hardcoded-accented-messages.sh` → aucune nouvelle chaîne accentuée ; `check-tests-no-frozen-dates.sh` → aucune date figée ; `tsc --noEmit` → 0 erreur ; `eslint --max-warnings 0` → 0 erreur ; `jest --ci` → suites vertes.
+
+**Contrôle visuel navigateur** — les 4 pages ont été ouvertes dans Chromium (serveur Next.js local, API mockée) et leurs captures lues : `/edu-manager/fee-types` (tableau des 4 types de frais, colonnes Code/Libellé/Montant/Fréquence/Actions), `/edu-manager/guardians` (3 responsables, colonnes Nom/Lien de parenté/Contact/Actions, contact masqué), `/edu-manager/reports` (blocs Présence et Inscriptions remplis) et `/business/ecole` (vitrine pack école). Aucun défaut de rendu. Ce contrôle a révélé un défaut réel corrigé depuis : l'en-tête « Statut » s'affichait au-dessus d'une colonne vide sur les référentiels sans statut (`CrudPage`).
+
 ## 2026-11-22 — Trade OS : édition d'une contrepartie depuis l'écran vendeur (PR #9798, #9780)
 
 Surface : `front/web/src/app/(dashboard)/trade-os/components/CounterpartyForm.tsx`, `CounterpartyList.tsx`, `front/web/src/app/(dashboard)/trade-os/page.tsx`, `front/web/src/app/(dashboard)/trade-os/__tests__/counterparties.test.tsx`.

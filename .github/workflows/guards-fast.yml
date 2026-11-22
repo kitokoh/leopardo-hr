@@ -1,0 +1,493 @@
+name: Guards Fast (regroupées)
+
+# Issue #9827 (suite de #9035) — la file de runners GitHub grossissait de 2,4x.
+#
+# Constat mesuré le 2026-11-22 sur les 300 derniers runs :
+#   - 96 workflows, dont 70 mono-job, dont 44 déclenchés sur `pull_request` ;
+#   - 179 runs créés/h pour 76 terminés/h ;
+#   - file `queued` 99 -> 140 en 30 min, plus ancien en file 1,78 h ;
+#   - 0 runner self-hosted.
+#
+# Conséquence : les 3 checks requis portés par `architecture-check.yml` sont des
+# jobs `needs: detect-changes`. Tant que `detect-changes` n'obtient pas de
+# runner, ces checks n'EXISTENT PAS comme check-runs (`ABSENT`, pas `queued`),
+# et `main` a `enforce_admins: true` -> aucune PR ne peut être mergée.
+#
+# Ce workflow regroupe DIX gardes mono-job en un seul run. Chaque garde garde :
+#   - son NOM DE CHECK exact (aucun check requis ne disparaît — aucune des dix
+#     n'en porte, mais les noms restent stables pour le registre et les rapports) ;
+#   - ses FILTRES DE CHEMINS exacts (union des `paths:` d'origine, un filtre
+#     `dorny/paths-filter` par garde) ;
+#   - son AUTO-TEST quand elle en a un (une garde cassée ne peut pas passer
+#     pour un vert).
+#
+# Effet mesuré sur les 300 derniers runs : 41 runs -> 12 runs pour ces dix
+# gardes (-71 %), soit 13,7 % -> 4,0 % de la file.
+#
+# Les dix workflows d'origine sont supprimés dans le même commit : les garder
+# en place annulerait tout le bénéfice (double exécution).
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      # --- content-naming-guard ---
+      - "README.md"
+      - "front/web/src/app/layout.tsx"
+      - "front/web/src/app/manifest/route.ts"
+      - "front/web/src/lib/i18n.ts"
+      - "front/web/src/lib/i18n/locales/**"
+      - "front/web/src/modules/vitrine/**"
+      - "front/admin-dashboard/index.html"
+      - "front/admin-dashboard/src/i18n/locales/**"
+      - "site/gh-pages/index.html"
+      - "api/lang/**"
+      - "docs/REFERENTIEL_PRODUIT/MESSAGE.md"
+      - "docs/REFERENTIEL_PRODUIT/TERMES.md"
+      - "docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md"
+      - "dev-hub/tools/check-naming-drift.sh"
+      - "dev-hub/tools/naming-baseline.json"
+      # --- design-token-sync ---
+      - "docs/REFERENTIEL_PRODUIT/COULEURS.md"
+      - "front/mobile_apps/leopardo_core/lib/core/theme/**"
+      - "front/web/tailwind.config.ts"
+      - "front/admin-dashboard/tailwind.config.js"
+      - "dev-hub/tools/check-design-token-sync.*"
+      # --- docs-hygiene-guard ---
+      - "docs/**"
+      - "dev-hub/tools/check-docs-hygiene.sh"
+      - "dev-hub/tools/docs-root-allowlist.txt"
+      - "dev-hub/tools/check-root-hygiene.sh"
+      - "dev-hub/tools/tests/check-docs-hygiene.test.sh"
+      # --- front-shared-parity-guard ---
+      - "front/web/src/lib/backend-url.ts"
+      - "dev-hub/tools/check-front-shared-parity.sh"
+      # --- horizontal-tools-parity ---
+      - "api/app/Core/Tenant/Domain/Models/Company.php"
+      - "api/config/feature-flags.php"
+      - "front/web/src/lib/client-features.ts"
+      - "dev-hub/tools/check-horizontal-tools-parity.mjs"
+      # --- migration-duplication-guard ---
+      - "api/database/migrations/**"
+      - "dev-hub/tools/check-duplicate-schema-create.py"
+      - "dev-hub/tools/check-migration-destructive-down.py"
+      - "dev-hub/tools/migrations-destructive-down-allowlist.txt"
+      # --- notification-emitter-guard ---
+      - "api/app/**"
+      - "api/routes/**"
+      - "dev-hub/tools/check-notification-emitter-diff.sh"
+      - "dev-hub/tools/check-notification-emitter-diff-test.sh"
+      # --- phpunit-file-paths-guard ---
+      - "api/phpunit.xml"
+      - "api/dev-tools/generate-feature-shards.php"
+      - "api/tests/**"
+      - "dev-hub/tools/check-phpunit-file-paths.py"
+      # --- validation-catch-guard ---
+      - "api/app/**/*.php"
+      - "dev-hub/tools/check-validation-catch-guard.py"
+      # --- web-design-tokens ---
+      - "front/web/**"
+      - "front/admin-dashboard/**"
+      - "dev-hub/tools/check-web-design-tokens.sh"
+      - "dev-hub/tools/web-design-hex-allowlist.txt"
+      # --- le workflow lui-même ---
+      - ".github/workflows/guards-fast.yml"
+  push:
+    branches: [main]
+    paths:
+      - "front/web/src/modules/vitrine/**"
+      - "api/lang/**"
+      - "docs/REFERENTIEL_PRODUIT/COULEURS.md"
+      - "front/mobile_apps/leopardo_core/lib/core/theme/**"
+      - "front/web/tailwind.config.ts"
+      - "front/admin-dashboard/tailwind.config.js"
+      - "docs/**"
+      - "dev-hub/tools/check-docs-hygiene.sh"
+      - "dev-hub/tools/docs-root-allowlist.txt"
+      - "dev-hub/tools/tests/check-docs-hygiene.test.sh"
+      - "front/web/src/lib/backend-url.ts"
+      - "dev-hub/tools/check-front-shared-parity.sh"
+      - "api/app/Core/Tenant/Domain/Models/Company.php"
+      - "front/web/src/lib/client-features.ts"
+      - "api/database/migrations/**"
+      - "api/app/**"
+      - "api/routes/**"
+      - "api/phpunit.xml"
+      - "api/dev-tools/generate-feature-shards.php"
+      - "api/tests/**"
+      - "dev-hub/tools/check-phpunit-file-paths.py"
+      - "dev-hub/tools/check-validation-catch-guard.py"
+      - "front/web/**"
+      - "front/admin-dashboard/**"
+      - ".github/workflows/guards-fast.yml"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Mode d'exécution de la garde migrations"
+        type: choice
+        options:
+          - regression
+          - strict
+          - audit
+        default: regression
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+# Un seul groupe pour les dix gardes : un push ultérieur sur la même PR annule
+# le run précédent (même arbre, même verdict) et libère un runner. Jamais
+# d'annulation sur `main` (règle #2131).
+concurrency:
+  group: guards-fast-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Un seul checkout + un seul calcul de surfaces pour les dix gardes.
+  # ---------------------------------------------------------------------------
+  changes:
+    name: Detect changed paths (guards fast)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      naming: ${{ steps.filter.outputs.naming }}
+      design_tokens: ${{ steps.filter.outputs.design_tokens }}
+      docs: ${{ steps.filter.outputs.docs }}
+      front_parity: ${{ steps.filter.outputs.front_parity }}
+      horizontal: ${{ steps.filter.outputs.horizontal }}
+      migrations: ${{ steps.filter.outputs.migrations }}
+      notifications: ${{ steps.filter.outputs.notifications }}
+      phpunit_paths: ${{ steps.filter.outputs.phpunit_paths }}
+      validation_catch: ${{ steps.filter.outputs.validation_catch }}
+      web_tokens: ${{ steps.filter.outputs.web_tokens }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 0
+
+      - name: Compute changed surfaces
+        id: filter
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          filters: |
+            naming:
+              - "README.md"
+              - "front/web/src/app/layout.tsx"
+              - "front/web/src/app/manifest/route.ts"
+              - "front/web/src/lib/i18n.ts"
+              - "front/web/src/lib/i18n/locales/**"
+              - "front/web/src/modules/vitrine/**"
+              - "front/admin-dashboard/index.html"
+              - "front/admin-dashboard/src/i18n/locales/**"
+              - "site/gh-pages/index.html"
+              - "api/lang/**"
+              - "docs/REFERENTIEL_PRODUIT/MESSAGE.md"
+              - "docs/REFERENTIEL_PRODUIT/TERMES.md"
+              - "docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md"
+              - "dev-hub/tools/check-naming-drift.sh"
+              - "dev-hub/tools/naming-baseline.json"
+              - ".github/workflows/guards-fast.yml"
+            design_tokens:
+              - "docs/REFERENTIEL_PRODUIT/COULEURS.md"
+              - "front/mobile_apps/leopardo_core/lib/core/theme/**"
+              - "front/web/tailwind.config.ts"
+              - "front/admin-dashboard/tailwind.config.js"
+              - "dev-hub/tools/check-design-token-sync.*"
+              - ".github/workflows/guards-fast.yml"
+            docs:
+              - "docs/**"
+              - "dev-hub/tools/check-docs-hygiene.sh"
+              - "dev-hub/tools/docs-root-allowlist.txt"
+              - "dev-hub/tools/check-root-hygiene.sh"
+              - "dev-hub/tools/tests/check-docs-hygiene.test.sh"
+              - ".github/workflows/guards-fast.yml"
+            front_parity:
+              - "front/web/src/lib/backend-url.ts"
+              - "dev-hub/tools/check-front-shared-parity.sh"
+              - ".github/workflows/guards-fast.yml"
+            horizontal:
+              - "api/app/Core/Tenant/Domain/Models/Company.php"
+              - "api/config/feature-flags.php"
+              - "front/web/src/lib/client-features.ts"
+              - "dev-hub/tools/check-horizontal-tools-parity.mjs"
+              - ".github/workflows/guards-fast.yml"
+            migrations:
+              - "api/database/migrations/**"
+              - "dev-hub/tools/check-duplicate-schema-create.py"
+              - "dev-hub/tools/check-migration-destructive-down.py"
+              - "dev-hub/tools/migrations-destructive-down-allowlist.txt"
+              - ".github/workflows/guards-fast.yml"
+            notifications:
+              - "api/app/**"
+              - "api/routes/**"
+              - "dev-hub/tools/check-notification-emitter-diff.sh"
+              - "dev-hub/tools/check-notification-emitter-diff-test.sh"
+              - ".github/workflows/guards-fast.yml"
+            phpunit_paths:
+              - "api/phpunit.xml"
+              - "api/dev-tools/generate-feature-shards.php"
+              - "api/tests/**"
+              - "dev-hub/tools/check-phpunit-file-paths.py"
+              - ".github/workflows/guards-fast.yml"
+            validation_catch:
+              - "api/app/**/*.php"
+              - "dev-hub/tools/check-validation-catch-guard.py"
+              - ".github/workflows/guards-fast.yml"
+            web_tokens:
+              - "front/web/**"
+              - "front/admin-dashboard/**"
+              - "docs/REFERENTIEL_PRODUIT/COULEURS.md"
+              - "dev-hub/tools/check-web-design-tokens.sh"
+              - "dev-hub/tools/web-design-hex-allowlist.txt"
+              - ".github/workflows/guards-fast.yml"
+
+  # ---------------------------------------------------------------------------
+  # 1/10 — Nommage produit (ex content-naming-guard.yml)
+  # ---------------------------------------------------------------------------
+  naming:
+    name: Nommage produit — suite métier (#7428)
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.naming == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+          lfs: false
+      - name: Auto-test de la garde (détections et faux positifs)
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash dev-hub/tools/check-naming-drift.sh --self-test
+      - name: Vérifier la dérive de nommage
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash dev-hub/tools/check-naming-drift.sh
+      - name: Rappel du traitement de la dette
+        if: failure()
+        shell: bash
+        run: |
+          echo "::notice::Catégorie interdite dans une copie publique — règle et plan par étapes : docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md (issue #7428)."
+
+  # ---------------------------------------------------------------------------
+  # 2/10 — Synchronisation des tokens design (ex design-token-sync.yml)
+  # ---------------------------------------------------------------------------
+  design-token-sync:
+    name: check-sync
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.design_tokens == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Run design token sync guard
+        run: bash dev-hub/tools/check-design-token-sync.sh
+
+  # ---------------------------------------------------------------------------
+  # 3/10 — Propreté documentaire (ex docs-hygiene-guard.yml)
+  # ---------------------------------------------------------------------------
+  docs-hygiene:
+    name: Proprete documentaire (ADR + docs/) — issue #9772
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.docs == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+          fetch-depth: 1
+      - name: Auto-test de la garde (rouge -> vert)
+        shell: bash
+        run: bash dev-hub/tools/tests/check-docs-hygiene.test.sh
+      - name: Proprete documentaire (registre ADR, docs/, racine du depot)
+        shell: bash
+        run: bash dev-hub/tools/check-docs-hygiene.sh
+
+  # ---------------------------------------------------------------------------
+  # 4/10 — Parité des copies partagées front (ex front-shared-parity-guard.yml)
+  # ---------------------------------------------------------------------------
+  front-shared-parity:
+    name: Copies partagées front byte-identiques (#7964)
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.front_parity == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Run front shared parity guard
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          bash dev-hub/tools/check-front-shared-parity.sh
+
+  # ---------------------------------------------------------------------------
+  # 5/10 — Parité des outils horizontaux (ex horizontal-tools-parity.yml)
+  # ---------------------------------------------------------------------------
+  horizontal-tools-parity:
+    name: Catalogue des outils horizontaux (#7476)
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.horizontal == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 1
+          lfs: false
+      - name: Setup Node
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+      - name: Auto-test de la garde (détection + faux positif)
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          node dev-hub/tools/check-horizontal-tools-parity.mjs --self-test
+      - name: Vérifier la parité API ↔ web
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          node dev-hub/tools/check-horizontal-tools-parity.mjs
+      - name: Rappel du contrat
+        if: failure()
+        shell: bash
+        run: |
+          echo "::notice::Ajouter la clé aux TROIS endroits (Company::HORIZONTAL_TOOLS, SELF_ACTIVATABLE_MODULE_KEYS, CLIENT_MODULES avec href) et, si un flag plateforme existe, à HORIZONTAL_TOOL_FEATURES — cf. #7476."
+
+  # ---------------------------------------------------------------------------
+  # 6/10 — Une table, une migration (ex migration-duplication-guard.yml)
+  # ---------------------------------------------------------------------------
+  migration-duplication:
+    name: Une table, une migration (#7452)
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.migrations == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Run duplicate-schema guard
+        shell: bash
+        env:
+          MODE: ${{ inputs.mode || 'regression' }}
+        run: |
+          set -Eeuo pipefail
+          git fetch --no-tags origin main
+          case "${MODE}" in
+            audit)  python3 dev-hub/tools/check-duplicate-schema-create.py --audit ;;
+            strict) python3 dev-hub/tools/check-duplicate-schema-create.py --strict --fail-on-duplicate ;;
+            *)      python3 dev-hub/tools/check-duplicate-schema-create.py --base origin/main --strict --fail-on-duplicate ;;
+          esac
+      - name: Run destructive-down guard (#8207)
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          python3 dev-hub/tools/check-migration-destructive-down.py
+      - name: Rappel du traitement de la dette
+        if: failure()
+        shell: bash
+        run: |
+          echo "::notice::Dette de migrations dupliquées — inventaire : docs/audits/MIGRATIONS_DUPLIQUEES_TENANT.md (issues #7452, #7417, #7410)."
+          echo "::notice::Rollback destructeur cross-migration — règle #8207 : un down() ne détruit que ce que son up() a défini ; dette legacy inventoriée dans dev-hub/tools/migrations-destructive-down-allowlist.txt."
+
+  # ---------------------------------------------------------------------------
+  # 7/10 — Pas de nouvel émetteur legacy (ex notification-emitter-guard.yml)
+  # ---------------------------------------------------------------------------
+  notification-emitter:
+    name: ADR-0013 remplacée — pas de nouvel émetteur legacy (issue #7481)
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.notifications == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+      - name: Auto-test de la garde (fixtures)
+        run: bash dev-hub/tools/check-notification-emitter-diff-test.sh
+      - name: Pas de nouvel émetteur sur AppNotification (#7481)
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
+          HEAD="${{ github.event.pull_request.head.sha || github.sha }}"
+          if [[ -z "${BASE}" || "${BASE}" == "0000000000000000000000000000000000000000" ]]; then
+            echo "::notice::Pas de base comparables (premier push ou dispatch) — garde sautée explicitement."
+            exit 0
+          fi
+          git fetch --no-tags --depth=1 origin "${BASE}" || true
+          bash dev-hub/tools/check-notification-emitter-diff.sh "${BASE}" "${HEAD}"
+
+  # ---------------------------------------------------------------------------
+  # 8/10 — Chemins de phpunit.xml (ex phpunit-file-paths-guard.yml)
+  # ---------------------------------------------------------------------------
+  phpunit-file-paths:
+    name: Chaque <file> de phpunit.xml designe un fichier reel
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.phpunit_paths == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Autotest de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-phpunit-file-paths.py --self-test
+      - name: Run phpunit file paths guard
+        shell: bash
+        run: python3 dev-hub/tools/check-phpunit-file-paths.py --verbose
+
+  # ---------------------------------------------------------------------------
+  # 9/10 — Aucune ValidationException absorbée (ex validation-catch-guard.yml)
+  # ---------------------------------------------------------------------------
+  validation-catch:
+    name: Aucune ValidationException absorbee par un catch large
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.validation_catch == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Autotest de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-validation-catch-guard.py --self-test
+      - name: Run validation catch guard
+        shell: bash
+        run: python3 dev-hub/tools/check-validation-catch-guard.py --verbose
+
+  # ---------------------------------------------------------------------------
+  # 10/10 — Hex hors palette web/admin (ex web-design-tokens.yml)
+  # ---------------------------------------------------------------------------
+  web-design-tokens:
+    name: check-tokens
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.web_tokens == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Run web design tokens guard
+        run: bash dev-hub/tools/check-web-design-tokens.sh

@@ -321,6 +321,179 @@ class EduFeeTest extends TestCase
         ])->assertStatus(404);
     }
 
+    /**
+     * #9790 — la liste des charges expose le solde restant et se filtre.
+     *
+     * Sans `index`, l'écran de facturation n'avait aucun moyen de lister les
+     * charges : seules les routes d'écriture existaient. Le solde est calculé
+     * en SQL (`withSum`) — on vérifie qu'il est juste après un encaissement
+     * partiel, et que les filtres ne fuient pas hors du tenant.
+     */
+    public function test_charge_index_exposes_balance_and_filters(): void
+    {
+        $feeTypeId = $this->createFeeType();
+        $chargeId = $this->createCharge($feeTypeId, 'ext-charge-list');
+
+        Sanctum::actingAs($this->principalA);
+
+        // Avant tout encaissement : rien de payé, tout restant dû.
+        $this->getJson($this->baseUrl().'/fee-charges')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonPath('data.0.amount', 50000)
+            ->assertJsonPath('data.0.paid_amount', 0)
+            ->assertJsonPath('data.0.remaining_amount', 50000)
+            ->assertJsonPath('data.0.status', 'pending')
+            ->assertJsonPath('data.0.student.display_name', 'Lina Benali')
+            ->assertJsonPath('data.0.fee_type.code', 'TUITION');
+
+        // Encaissement partiel : le solde suit.
+        $this->postJson($this->baseUrl()."/fee-charges/{$chargeId}/payments", [
+            'amount' => 20000,
+            'method' => 'cash',
+            'external_id' => 'ext-pay-list',
+        ])->assertStatus(201);
+
+        $this->getJson($this->baseUrl().'/fee-charges')
+            ->assertOk()
+            ->assertJsonPath('data.0.paid_amount', 20000)
+            ->assertJsonPath('data.0.remaining_amount', 30000)
+            ->assertJsonPath('data.0.status', 'partial');
+
+        // Filtres : statut, élève, type de frais.
+        $this->getJson($this->baseUrl().'/fee-charges?status=partial')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1);
+
+        $this->getJson($this->baseUrl().'/fee-charges?status=paid')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 0);
+
+        $this->getJson($this->baseUrl().'/fee-charges?student_id='.(int) $this->studentA->getAttribute('id'))
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1);
+
+        $this->getJson($this->baseUrl().'/fee-charges?student_id=999999')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 0);
+
+        $this->getJson($this->baseUrl().'/fee-charges?fee_type_id='.$feeTypeId)
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1);
+
+        // RBAC : employé lambda 403, non authentifié 401.
+        Sanctum::actingAs($this->lambdaA);
+        $this->getJson($this->baseUrl().'/fee-charges')->assertStatus(403);
+
+        Auth::forgetGuards();
+        $this->getJson($this->baseUrl().'/fee-charges')->assertStatus(401);
+    }
+
+    /**
+     * #9790 — le détail d'une charge expose ses encaissements et reste borné
+     * au tenant (404, jamais 403 : on ne révèle pas l'existence d'une charge
+     * d'un autre tenant).
+     */
+    public function test_charge_show_exposes_payments_and_isolates_tenant(): void
+    {
+        $feeTypeId = $this->createFeeType();
+        $chargeId = $this->createCharge($feeTypeId, 'ext-charge-show');
+
+        Sanctum::actingAs($this->principalA);
+
+        $this->postJson($this->baseUrl()."/fee-charges/{$chargeId}/payments", [
+            'amount' => 15000,
+            'method' => 'transfer',
+            'reference' => 'VIR-001',
+            'external_id' => 'ext-pay-show',
+        ])->assertStatus(201);
+
+        $this->getJson($this->baseUrl()."/fee-charges/{$chargeId}")
+            ->assertOk()
+            ->assertJsonPath('data.id', $chargeId)
+            ->assertJsonPath('data.paid_amount', 15000)
+            ->assertJsonPath('data.remaining_amount', 35000)
+            ->assertJsonPath('data.payments.0.amount', 15000)
+            ->assertJsonPath('data.payments.0.method', 'transfer')
+            ->assertJsonPath('data.payments.0.reference', 'VIR-001');
+
+        // Charge inexistante : 404.
+        $this->getJson($this->baseUrl().'/fee-charges/999999')->assertStatus(404);
+
+        // Isolation : un manager du tenant B ne voit pas la charge A.
+        /** @var Employee $principalB */
+        $principalB = Employee::factory()->create([
+            'company_id' => $this->companyB->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+        ]);
+        Sanctum::actingAs($principalB);
+
+        $this->getJson($this->baseUrl()."/fee-charges/{$chargeId}")->assertStatus(404);
+        $this->getJson($this->baseUrl().'/fee-charges')->assertOk()->assertJsonPath('meta.total', 0);
+    }
+
+    /**
+     * #9790 — journal des encaissements : les paiements n'étaient lisibles
+     * qu'en détail d'une charge, jamais en travers du guichet.
+     */
+    public function test_fee_payments_journal_lists_and_filters(): void
+    {
+        $feeTypeId = $this->createFeeType();
+        $chargeId = $this->createCharge($feeTypeId, 'ext-charge-journal');
+
+        Sanctum::actingAs($this->principalA);
+
+        $this->postJson($this->baseUrl()."/fee-charges/{$chargeId}/payments", [
+            'amount' => 10000,
+            'method' => 'cash',
+            'external_id' => 'ext-pay-j1',
+        ])->assertStatus(201);
+
+        $this->postJson($this->baseUrl()."/fee-charges/{$chargeId}/payments", [
+            'amount' => 5000,
+            'method' => 'card',
+            'external_id' => 'ext-pay-j2',
+        ])->assertStatus(201);
+
+        $this->getJson($this->baseUrl().'/fee-payments')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 2)
+            ->assertJsonPath('data.0.student_id', (int) $this->studentA->getAttribute('id'));
+
+        // Filtres : charge, méthode, élève.
+        $this->getJson($this->baseUrl().'/fee-payments?fee_charge_id='.$chargeId)
+            ->assertOk()
+            ->assertJsonPath('meta.total', 2);
+
+        $this->getJson($this->baseUrl().'/fee-payments?method=card')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 1)
+            ->assertJsonPath('data.0.amount', 5000);
+
+        $this->getJson($this->baseUrl().'/fee-payments?student_id='.(int) $this->studentA->getAttribute('id'))
+            ->assertOk()
+            ->assertJsonPath('meta.total', 2);
+
+        $this->getJson($this->baseUrl().'/fee-payments?student_id=999999')
+            ->assertOk()
+            ->assertJsonPath('meta.total', 0);
+
+        // RBAC : employé lambda 403.
+        Sanctum::actingAs($this->lambdaA);
+        $this->getJson($this->baseUrl().'/fee-payments')->assertStatus(403);
+
+        // Isolation : le tenant B ne voit aucun encaissement.
+        /** @var Employee $principalB */
+        $principalB = Employee::factory()->create([
+            'company_id' => $this->companyB->id,
+            'role' => 'manager',
+            'manager_role' => 'principal',
+        ]);
+        Sanctum::actingAs($principalB);
+        $this->getJson($this->baseUrl().'/fee-payments')->assertOk()->assertJsonPath('meta.total', 0);
+    }
+
     private function createCharge(int $feeTypeId, string $externalId): int
     {
         Sanctum::actingAs($this->principalA);

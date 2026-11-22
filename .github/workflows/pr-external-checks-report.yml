@@ -45,11 +45,23 @@ on:
   workflow_run:
     # Rafraîchit le rapport quand les checks du dépôt terminent (un run
     # `pull_request` seul afficherait « N checks en cours »).
+    #
+    # Issue #9824 (suite de #9035) — mesure du 2026-11-22 : ce workflow était
+    # le PREMIER consommateur de runners du dépôt, avec 34 runs sur 2 h
+    # (179 runs/h créés au total, 99→147 en file). La cause n'était pas le
+    # `synchronize` (déjà retiré) mais le NOMBRE DE SOURCES : une entrée par
+    # workflow source terminé, soit jusqu'à 4 runs pour un seul commentaire de
+    # synthèse sur une branche active.
+    #
+    # Seule « Architecture Quality » est conservée : c'est le workflow
+    # PORTEUR DES 3 CHECKS REQUIS (PHPStan Strict, Module Structure, Frontend
+    # ESLint+TS). Son achèvement est le seul instant où le rapport change
+    # réellement de sens — les trois autres sources ne modifient que des
+    # checks non requis, déjà visibles dans l'onglet Checks de la PR.
+    # Le déclencheur `pull_request` (opened/reopened/ready_for_review) couvre
+    # le cas « PR ouverte avant que les checks aient tourné ».
     workflows:
       - "Architecture Quality"
-      - "Tests - Leopardo"
-      - "Web CI - Leopardo Admin"
-      - "Web CI - Leopardo Vitrine"
     types: [completed]
 
 permissions:

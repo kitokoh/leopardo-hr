@@ -1,6 +1,10 @@
 'use client';
 
 import { apiFetch } from '@/lib/api-client';
+import { Layers } from 'lucide-react';
+import Link from 'next/link';
+import { getPreferredLocale } from '@/lib/i18n';
+import { t } from '@/lib/i18n/locale-catalog';
 import CrudPage, { type CrudResource, type FieldOption } from '../_components/edu-crud';
 
 async function loadCampuses(): Promise<FieldOption[]> {
@@ -79,6 +83,25 @@ const resource: CrudResource = {
     },
     { key: 'teacher_id', header: 'edu.classes.teacher', render: (row) => <span className="text-slate-500">{row.teacher_id != null ? String(row.teacher_id) : '—'}</span> },
   ],
+  /**
+   * #9792 — « Encaisser en lot » depuis la classe.
+   *
+   * Le guichet part de l'effectif : à la rentrée, c'est la classe qui règle,
+   * pas une charge isolée. Le lien porte `class_id`, que la page de lot lit
+   * pour pré-sélectionner les élèves et leurs charges.
+   */
+  rowActions: (row) => {
+    const locale = getPreferredLocale();
+    return (
+      <Link
+        href={`/edu-manager/fee-charges/batch?class_id=${String(row.id)}`}
+        title={t(locale, 'edu.feeCharges.batchFromClass')}
+        className="rounded-lg p-1.5 text-emerald-600 hover:bg-emerald-50"
+      >
+        <Layers className="h-4 w-4" aria-hidden="true" />
+      </Link>
+    );
+  },
 };
 
 export default function ClassesPage() {
