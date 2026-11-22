@@ -211,6 +211,17 @@ jobs:
           DB_SEARCH_PATH: public,shared_tenants
         run: php artisan test --testsuite=Unit --log-junit=storage/test-results/unit.xml
 
+      - name: Run architecture layer rules (issue #9802)
+        id: backend_arch_tests
+        # `tests/Arch/LayerRulesTest.php` n'etait dans AUCUNE testsuite : les
+        # regles de couche PA2-ARCH-002 / ADR-0020 (Domain sans HTTP ni facade
+        # DB, Application sans Interfaces, pas d'import croise entre Domain de
+        # modules differents) n'etaient donc verifiees par aucune execution.
+        # Le fichier ne demande ni base ni bootstrap complet (il lit le disque
+        # via `__DIR__`), donc l'etape est courte et sans dependance de service.
+        working-directory: ./api
+        run: php artisan test --testsuite=Arch --log-junit=storage/test-results/arch.xml
+
       - name: Generate Feature suite split (issue #9098)
         # Mesure du 2026-11-14 (artefact `backend-test-reports`, run 43570213398,
         # feature.xml, 9137 testcases) : 92 tests pesent 19 751 s sur 23 938 s de
