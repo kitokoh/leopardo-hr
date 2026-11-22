@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Modules\TravelAgency\Domain\Enums\PaymentStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelPayment;
+use App\Modules\TravelAgency\Domain\Models\TravelSalesSettlement;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -64,6 +65,31 @@ final class TravelSalesSettlementService
         }
 
         foreach ($payloads as $payload) {
+            // #9741 — le règlement doit être PERSISTÉ, pas seulement publié.
+            // `TravelSalesSettlement` est la trace interrogeable par le
+            // back-office (« qu'a-t-on réglé pour la période X ? ») et par la
+            // réconciliation Accounting ; sans elle, la synthèse n'existait
+            // que dans l'outbox et disparaissait une fois l'événement consommé.
+            // `updateOrCreate` sur (company, période, devise) rend le rejeu
+            // idempotent : même période = même ligne, mêmes montants.
+            TravelSalesSettlement::query()->updateOrCreate(
+                [
+                    'company_id' => $companyId,
+                    'period_start' => $from,
+                    'period_end' => $to,
+                    'currency' => $payload['currency'],
+                ],
+                [
+                    'confirmed_payments_count' => $payload['confirmed_count'],
+                    'confirmed_amount_minor' => $payload['confirmed_amount_minor'],
+                    'refunded_count' => $payload['refunded_count'],
+                    'refunded_amount_minor' => $payload['refunded_amount_minor'],
+                    'net_amount_minor' => $payload['confirmed_amount_minor'] - $payload['refunded_amount_minor'],
+                    'status' => 'settled',
+                    'settled_at' => now(),
+                ],
+            );
+
             $this->outbox->publish(
                 $companyId,
                 self::EVENT_SALES_SETTLED,

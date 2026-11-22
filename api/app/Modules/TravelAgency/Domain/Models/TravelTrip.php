@@ -59,6 +59,11 @@ class TravelTrip extends Model
         'published_at',
         'created_by_user_id',
         'external_id',
+        // #9741 — même défaut que TravelRoute : sans ces deux colonnes dans
+        // $fillable, le rejeu de synchronisation ne retrouvait pas le trajet
+        // et en créait un doublon (ou échouait sur l'unicité).
+        'external_ref',
+        'external_carrier_code',
     ];
 
     protected $casts = [

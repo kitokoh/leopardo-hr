@@ -45,6 +45,7 @@ trait CreatesMvpSchema
                 $this->createPostSprintModuleTables();
                 $this->createVerticalParityTables();
                 $this->ensurePasRateRangeConstraint();
+                $this->ensurePlatformPublicTables();
                 $this->markMvpFixtureReady($preBuildTables);
             } else {
                 // Isolation : purge les lignes laissées par le test précédent
@@ -60,6 +61,9 @@ trait CreatesMvpSchema
                 // suite échoue sur `column "resume_text" does not exist`
                 // jusqu'à ce que quelqu'un pense à recréer la base.
                 $this->ensureApplicantResumeTextColumns();
+                // #9741 — même raison : une base marquée prête avant l'ajout
+                // de `failed_jobs` / `platform_support_tickets` ne les a pas.
+                $this->ensurePlatformPublicTables();
             }
 
             return;
@@ -1571,6 +1575,178 @@ trait CreatesMvpSchema
             Schema::table($table, function (Blueprint $blueprint): void {
                 $blueprint->timestampTz('resume_text_extracted_at')->nullable();
             });
+        }
+    }
+
+    /**
+     * #9741 — tables PUBLIQUES que la fixture ne crée pas mais que le code
+     * applicatif interroge en dur.
+     *
+     * La fixture est construite UNE fois par base puis mise en cache
+     * (`__mvp_fixture_ready`, #6928) : une table ajoutée par une migration
+     * APRÈS la construction n'existe jamais dans une base de test déjà
+     * marquée prête. C'est exactement ce qui cassait le cockpit super-admin :
+     * `PlatformAdminStatsService` lit `public.failed_jobs` et
+     * `public.platform_support_tickets`, absentes de la fixture → 42P01 →
+     * `reportDashboardFailure()` → 503 sur `/admin/dashboard/*`.
+     *
+     * Même contrat que `ensureApplicantResumeTextColumns()` : idempotent,
+     * appelé à la construction ET à chaque réutilisation d'une base déjà
+     * construite. Miroir exact des migrations
+     * `public/2026_07_23_000001_create_failed_jobs_table.php` et
+     * `public/2026_07_25_000002_create_platform_support_tickets_table.php`.
+     */
+    private function ensurePlatformPublicTables(): void
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return;
+        }
+
+        $created = [];
+
+        if (! Schema::hasTable('public.failed_jobs')) {
+            Schema::create('public.failed_jobs', function (Blueprint $table): void {
+                $table->id();
+                $table->string('uuid')->unique();
+                $table->text('connection');
+                $table->text('queue');
+                $table->longText('payload');
+                $table->longText('exception');
+                $table->timestampTz('failed_at')->useCurrent();
+            });
+        }
+
+        if (! Schema::hasTable('public.platform_support_tickets')) {
+            Schema::create('public.platform_support_tickets', function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id');
+                $table->unsignedInteger('created_by_employee_id');
+                $table->string('subject', 200);
+                $table->string('category', 30)->default('general');
+                $table->string('priority', 20)->default('normal');
+                $table->string('status', 20)->default('open');
+                $table->unsignedInteger('assigned_super_admin_id')->nullable();
+                $table->timestampTz('last_message_at')->nullable();
+                $table->timestampTz('resolved_at')->nullable();
+                $table->timestamps();
+
+                $table->index('company_id');
+                $table->index('status');
+                $table->index('priority');
+                $table->index('last_message_at');
+            });
+        }
+
+        if (! Schema::hasTable('public.platform_support_messages')) {
+            Schema::create('public.platform_support_messages', function (Blueprint $table): void {
+                $table->id();
+                $table->foreignId('platform_support_ticket_id')
+                    ->references('id')
+                    ->on('public.platform_support_tickets')
+                    ->cascadeOnDelete();
+                $table->unsignedInteger('author_employee_id')->nullable();
+                $table->unsignedInteger('author_super_admin_id')->nullable();
+                $table->text('body');
+                $table->timestampTz('created_at')->nullable();
+
+                $table->index('platform_support_ticket_id');
+            });
+        }
+
+        // Référentiel RestaurantManager amorcé par
+        // `ActivateRestaurantManagerAction` → `RestaurantReferentialSeederService`
+        // dès qu'une solution `restaurant` est activée (provisioning plateforme
+        // ou console). Ces 4 tables manquaient à la fixture : l'activation
+        // échouait en 42P01 et faisait tomber le provisioning en 500.
+        // Miroir des migrations tenant 2026_08_30_001519_6166 (branches),
+        // 2026_08_30_001521_6167 (catégories) et 2026_08_30_001522_6168
+        // (unités, taux de TVA).
+        if (! Schema::hasTable($this->moduleTable('restaurant_branches'))) {
+            Schema::create($this->moduleTable('restaurant_branches'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 40);
+                $table->string('name', 150);
+                $table->string('address', 255)->nullable();
+                $table->string('city', 120)->nullable();
+                $table->string('phone', 40)->nullable();
+                $table->string('timezone', 50)->default('UTC');
+                $table->char('currency', 3)->default('DZD');
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'restaurant_branches_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('restaurant_units'))) {
+            Schema::create($this->moduleTable('restaurant_units'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 20);
+                $table->string('label', 80);
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'restaurant_units_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('restaurant_tax_rates'))) {
+            Schema::create($this->moduleTable('restaurant_tax_rates'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('code', 20);
+                $table->string('label', 80);
+                $table->unsignedInteger('rate_bps')->default(0);
+                $table->boolean('is_default')->default(false);
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'code'], 'restaurant_tax_rates_company_code_unique');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('restaurant_categories'))) {
+            Schema::create($this->moduleTable('restaurant_categories'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('branch_id')->nullable();
+                $table->string('name', 120);
+                $table->string('color', 7)->nullable();
+                $table->smallInteger('sort_order')->default(0);
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'branch_id', 'name'], 'restaurant_categories_company_branch_name_unique');
+            });
+        }
+
+        // #9741 — une table créée APRÈS `markMvpFixtureReady()` n'est pas dans
+        // `__mvp_fixture_ready`, donc `resetMvpFixtureTables()` ne la tronque
+        // jamais : les lignes d'un test fuient dans le suivant (un ticket de
+        // support créé par un test faisait répondre 404 au suivant, qui
+        // tombait sur le ticket d'une AUTRE société). On enregistre donc les
+        // tables de cette garde dans le marqueur, comme le fait la
+        // construction initiale.
+        if (Schema::hasTable('shared_tenants.__mvp_fixture_ready')) {
+            foreach ([
+                'public.failed_jobs',
+                'public.platform_support_tickets',
+                'public.platform_support_messages',
+                $this->moduleTable('restaurant_branches'),
+                $this->moduleTable('restaurant_units'),
+                $this->moduleTable('restaurant_tax_rates'),
+                $this->moduleTable('restaurant_categories'),
+            ] as $qualified) {
+                if (! Schema::hasTable($qualified)) {
+                    continue;
+                }
+
+                DB::table('shared_tenants.__mvp_fixture_ready')->insertOrIgnore([
+                    'table_name' => $qualified,
+                ]);
+            }
         }
     }
 

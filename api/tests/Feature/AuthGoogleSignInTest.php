@@ -155,6 +155,15 @@ class AuthGoogleSignInTest extends TestCase
             'services.google.redirect' => 'https://example.com/api/v1/auth/google/callback',
         ]);
 
+        // #9741 — le test affirmait « Socialite casse » sans jamais le faire
+        // casser : en environnement de test Socialite construit l'URL de
+        // redirection sans reseau, donc le controleur renvoyait un 302 (non
+        // JSON) et `$response->json()` levait « Invalid JSON was returned ».
+        // Le scenario vise est bien l'ECHEC de Socialite : on le provoque.
+        Socialite::shouldReceive('driver')
+            ->with('google')
+            ->andThrow(new \RuntimeException('socialite unavailable'));
+
         $response = $this->getJson('/api/v1/auth/google');
 
         $this->assertNotEquals(500, $response->getStatusCode(), 'échec Socialite ne doit jamais être un 500');

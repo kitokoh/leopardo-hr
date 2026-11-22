@@ -64,6 +64,13 @@ final class Countries
             'CF' => ['name' => 'Central African Republic', 'iso3' => 'CAF', 'phone_code' => 236],
             'TD' => ['name' => 'Chad', 'iso3' => 'TCD', 'phone_code' => 235],
             'CL' => ['name' => 'Chile', 'iso3' => 'CHL', 'phone_code' => 56],
+            // #9741 — la Côte d'Ivoire manquait au dump alors que 4 villes du
+            // référentiel (Abidjan, Bouaké, Yamoussoukro, San-Pédro) la
+            // référencent : elles devenaient orphelines au seed, donc
+            // invisibles dans toute recherche de ville et inutilisables pour
+            // créer un trajet. Le pays est un marché interurbain majeur de la
+            // verticale — l'oubli était une régression du dump, pas un choix.
+            'CI' => ['name' => "Côte d'Ivoire", 'iso3' => 'CIV', 'phone_code' => 225],
             'CN' => ['name' => 'China', 'iso3' => 'CHN', 'phone_code' => 86],
             'CO' => ['name' => 'Colombia', 'iso3' => 'COL', 'phone_code' => 57],
             'KM' => ['name' => 'Comoros', 'iso3' => 'COM', 'phone_code' => 269],

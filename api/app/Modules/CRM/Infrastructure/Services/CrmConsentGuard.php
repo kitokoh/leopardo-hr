@@ -31,6 +31,15 @@ final class CrmConsentGuard
             return;
         }
 
+        // #9741 — `crm_consents.contact_id` est un `unsignedBigInteger`. Un
+        // identifiant non numérique (« contact-9 ») n'a donc AUCUN
+        // consentement possible : sans ce garde, Postgres levait
+        // `22P02 invalid input syntax for type bigint` et l'appelant recevait
+        // un 500 au lieu du refus métier 422. On refuse explicitement.
+        if (! ctype_digit($contactId)) {
+            throw new CrmConsentRequiredException;
+        }
+
         if (! $this->consentsTableExists()) {
             $fallback = (string) config('crm.channels.consent_fallback', 'deny');
             if ($fallback === 'allow') {

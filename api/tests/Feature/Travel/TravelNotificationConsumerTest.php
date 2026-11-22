@@ -8,7 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use App\Mail\CommunicationMail;
-use App\Modules\Notification\Domain\Models\AppNotification;
+use App\Modules\Notification\Domain\Models\Notification;
 use App\Modules\TravelAgency\Domain\Enums\BookingStatus;
 use App\Modules\TravelAgency\Domain\Exceptions\PermanentOutboxException;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
@@ -132,8 +132,15 @@ class TravelNotificationConsumerTest extends TestCase
 
         $this->consumer->handle('travel.booking.confirmed.v1', ['booking_reference' => $booking->reference]);
 
+        // #9741 — le store in-app canonique est `notifications`
+        // (`Notification`, colonne `employee_id`), celui que sert
+        // `GET /notifications`. `AppNotification` / `app_notifications` est
+        // DÉPRÉCIÉ depuis #7481 : plus aucun code applicatif n'y écrit.
+        // Le test vérifiait donc la mauvaise table et échouait alors que la
+        // notification était bien créée — un faux négatif qui masquait le
+        // vrai contrat.
         $this->assertTrue(
-            AppNotification::query()->where('user_id', $employee->id)->exists(),
+            Notification::query()->where('employee_id', $employee->id)->exists(),
             'notification in-app créée via BC-13 pour l\'employé ayant créé la réservation',
         );
     }

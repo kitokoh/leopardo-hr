@@ -84,7 +84,21 @@ class TravelTouristSiteController extends Controller
             'status' => $request->validated('status') ?? TravelRecordStatus::ACTIVE->value,
         ]);
 
-        return response()->json(['data' => ['id' => $site->id]], 201);
+        // #9741 — `store` ne renvoyait que `{id}`. Un client ne pouvait donc
+        // pas confirmer ce qu'il venait de créer (nom, ville, statut) sans un
+        // second GET, et toute UI qui affiche la réponse affichait un objet
+        // vide. On renvoie la même représentation que `show`, ce qui rend
+        // `POST` et `GET` interchangeables côté consommateur.
+        return response()->json(['data' => [
+            'id' => $site->id,
+            'name' => $site->name,
+            'description' => $site->description_redacted,
+            'city_id' => $site->city_id,
+            'latitude' => $site->latitude,
+            'longitude' => $site->longitude,
+            'image_asset_id' => $site->image_asset_id,
+            'status' => $site->status->value,
+        ]], 201);
     }
 
     public function update(UpdateTravelTouristSiteRequest $request, TravelTouristSite $travelTouristSite): JsonResponse

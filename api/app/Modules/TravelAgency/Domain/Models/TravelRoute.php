@@ -46,6 +46,15 @@ class TravelRoute extends Model
         'status',
         'carrier_id',
         'external_id',
+        // #9741 — la synchronisation transporteur (TRAVEL-807) identifie une
+        // route par (company_id, external_ref, external_carrier_code). Ces
+        // deux colonnes existent en base mais n'étaient pas mass-assignables :
+        // `create($attributes)` les IGNORAIT silencieusement, donc le rejeu ne
+        // retrouvait jamais la route créée et retombait sur une violation
+        // d'unicité (company_id, code) — la synchronisation n'était pas
+        // rejouable, contrairement à son contrat d'idempotence.
+        'external_ref',
+        'external_carrier_code',
     ];
 
     protected $casts = [

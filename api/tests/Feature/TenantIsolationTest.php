@@ -73,9 +73,17 @@ class TenantIsolationTest extends TestCase
             'email' => 'b.employee@test.local',
             'password_hash' => bcrypt('secret'),
         ]);
-        $sensitiveEmployee0->forceFill([
-            'company_id' => $companyB->id,
-        ])->save();
+
+        // #9741 — `forceFill(['company_id' => …])->save()` ne déplace PLUS la
+        // ligne : le hook `updating` de BelongsToCompany (#7646) restaure
+        // `company_id` dès qu'un tenant est actif, ce qui est exactement le
+        // comportement voulu en production. La fixture doit donc écrire la
+        // ligne de l'AUTRE tenant hors Eloquent, sinon elle ne crée pas la
+        // donnée qu'elle prétend tester et l'assertion passe pour la mauvaise
+        // raison (elle ne prouve plus rien).
+        \DB::table('employees')
+            ->where('id', $sensitiveEmployee0->id)
+            ->update(['company_id' => $companyB->id]);
 
         $visibleEmails = Employee::query()->pluck('email')->all();
 

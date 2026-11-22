@@ -2,7 +2,11 @@
 
 namespace Tests\Feature;
 
+use App\Core\Tenant\Domain\Models\SuperAdmin;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Str;
+use Laravel\Sanctum\Sanctum;
 use RuntimeException;
 use Tests\TestCase;
 
@@ -20,6 +24,24 @@ use Tests\TestCase;
  */
 class HealthReadyCriticalDepsTest extends TestCase
 {
+    /**
+     * #9741 — la matrice `checks` est reservee aux super admins plateforme
+     * depuis #8125 (elle cartographierait la stack pour un attaquant). Le
+     * dernier test de cette classe asserte `checks.redis.ok` : il doit donc
+     * s'authentifier, sinon il lit la surface publique minimale (sans
+     * `checks`) et compare `null` a `false`.
+     */
+    private function actingAsSuperAdmin(): void
+    {
+        $superAdmin = new SuperAdmin([
+            'name' => 'Platform Admin',
+            'email' => 'admin-ready-'.Str::random(12).'@leopardo.test',
+        ]);
+        $superAdmin->forceFill(['password_hash' => Hash::make('password123')])->save();
+
+        Sanctum::actingAs($superAdmin, ['*'], 'super_admin_api');
+    }
+
     public function test_ready_reports_redis_outage_as_failure(): void
     {
         config([
@@ -95,6 +117,8 @@ class HealthReadyCriticalDepsTest extends TestCase
             'queue.default' => 'sync',
         ]);
         Redis::shouldReceive('connection')->andThrow(new RuntimeException('redis down'));
+
+        $this->actingAsSuperAdmin();
 
         $this->getJson('/api/v1/health')
             ->assertOk()

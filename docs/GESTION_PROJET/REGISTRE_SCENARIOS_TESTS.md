@@ -1,6 +1,8 @@
-## 2026-11-21 — Fixture de promotion déterministe : la factory n'impose plus aucune contrainte métier (issue #9744)
+## 2026-11-21 — Fixture de promotion déterministe : une garde fige le contrat de la factory (issue #9744)
 
-Surface : `api/database/factories/RestaurantPromotionFactory.php`, `api/tests/Feature/Restaurant/RestaurantPromotionTest.php`. Aucune route, aucune migration, aucun contrat d'API modifié.
+Surface : `api/database/factories/RestaurantPromotionFactory.php` (correctif livré en parallèle par #9761 — cette tranche en apporte la **garde**) et `api/tests/Feature/Restaurant/RestaurantPromotionTest.php`. Aucune route, aucune migration, aucun contrat d'API modifié.
+
+**Ce que la garde empêche** : que le correctif se défasse. `RestaurantPromotionFactory` ne doit tirer aucune contrainte métier au hasard ; réintroduire un `optional()` sur `min_order_minor`, `max_uses`, `starts_at` ou `ends_at` rend `test_factory_imposes_no_business_constraint` rouge immédiatement, au lieu de laisser le flake revenir dans un test sans rapport avec la fixture.
 
 **Pourquoi c'est un scénario de test** : l'instabilité était dans la **fixture**, pas dans le produit — et elle frappait un test qui n'avait jamais fixé le seuil qu'il subissait.
 
@@ -15,6 +17,34 @@ Surface : `api/database/factories/RestaurantPromotionFactory.php`, `api/tests/Fe
 | un test qui veut un seuil, un plafond ou une fenêtre le déclare explicitement | un test de refus (expirée, épuisée, sous le minimum) qui s'appuierait sur un tirage aléatoire ne testerait pas le cas qu'il annonce |
 
 **Couverture exécutée** — `php -l` sur les fichiers touchés. **Non couvert** — exécution locale de PHPUnit (pas de PostgreSQL dans l'espace de travail, `api/vendor` symlinké) : la mesure est le run CI.
+## 2026-11-21 — Dette backend : Audit, Platform, Support, Travel, doublons de listeners (PR #9750, #9741)
+
+Surface : `api/routes/modules/hr_extended.php` (redéclarations `GET /audit-logs` et `/audit-logs/{id}` supprimées), `api/app/Core/Auth/Interfaces/Api/V1/Controllers/AuditLogController.php` + `Requests/AuditLogIndexRequest.php` + `Requests/AuditLogExportRequest.php`, `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformCompanyFeatureController.php` + `Requests/UpdateCompanyFeaturesRequest.php`, `api/app/Modules/Platform/Infrastructure/Services/WebhookEventRegistry.php`, `api/app/Http/Middleware/Travel/TravelPartnerAuthMiddleware.php`, `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/TradeCompanyProfileController.php`, `api/app/Modules/CRM/Infrastructure/Services/CrmConsentGuard.php`, `api/app/Providers/EventServiceProvider.php`, `api/bootstrap/app.php`.
+
+**Pourquoi c'est un scénario de test** : quatre causes racines qui ne se voient pas dans un diff de test, plus une qui touchait la production en silence.
+
+1. **Redéclaration de route.** `hr_extended.php` redéclarait `GET /audit-logs` et `/audit-logs/{id}`. Laravel indexe par `(méthodes, uri)` : la dernière déclaration gagne. L'implémentation Core — détail, `meta.retention_months`, filtre `?module=`, policy manager RH — était donc morte, et le détail répondait 404.
+2. **Découverte d'événements doublée.** `Application::configure()` active la découverte par défaut (Laravel 11) alors que le dépôt enregistre tous ses listeners dans `$listen` : **12 listeners s'exécutaient deux fois** — deux reçus de paiement par facture payée, deux commissions, deux leads CRM pour une demande de contact publique.
+3. **Scope tenant sur le chemin d'authentification.** `TravelPartnerAuthMiddleware` lisait la clé API via un modèle `BelongsToCompany` : le global scope exigeait un contexte tenant que la clé sert justement à résoudre. **401 sur tout appel transporteur.**
+4. **Ordre du spread.** `TradeCompanyProfileController` plaçait `...$attributes` APRÈS les valeurs de repli : un `hq_country` absent écrasait `'DZ'` par `null` sur une colonne NOT NULL → 500.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `GET /audit-logs/{id}` renvoie le détail et `meta.retention_months` | la route était écrasée par une redéclaration : 404 |
+| `GET /audit-logs?module=payroll` filtre | le filtre n'existait que dans l'implémentation morte |
+| un manager RH autorisé par l'ancien contrôleur garde l'accès | la policy Core le refusait |
+| une facture payée n'envoie **qu'un** reçu | la découverte doublait le listener |
+| une demande de contact publique crée **un** lead CRM | idem, deux leads par demande |
+| un transporteur s'authentifie avec sa clé API | le scope tenant rendait la clé illisible : 401 |
+| créer un profil Trade sans `hq_country` répond 201 avec `DZ` | le spread écrasait le repli : 500 |
+| un `public_slug` déjà pris dans un AUTRE tenant répond 422 | la vérification était scopée au tenant, la contrainte est globale |
+| un `contact_id` non numérique répond 422, pas 500 | Postgres levait `22P02` sur une colonne bigint |
+| le rejeu d'un webhook porte `replayed: true` | `replayBody()` renvoyait le corps d'origine sans les clés de contexte |
+
+**Couverture exécutée** — `tests/Feature/Audit` **29 passed (82 assertions)** ; `AuditLogExportTest` + `PlatformCompanyFeatureApiTest` **10 passed (46 assertions)** ; `tests/Feature/Travel` **772 passed** ; `TradeCompanyProfileTest` **11 passed** ; `PaymentWebhookControllerTest` + `QueuedListenersTest` **17 passed** ; `TenantIsolationTest`, `LeavePendingReservationTest`, `CrmChannelAdapterTest`, `MarketingOsPlatformTest` verts ; PHPStan Strict sur les fichiers touchés **0 erreur** ; `check-form-request-guard.py` exit 0 (baseline 437 → 434) ; `check-without-global-scope.sh` exit 0.
+
+**Non couvert** — suite Feature complète (dépasse la mémoire du sandbox) ; la mesure de référence est le run CI. Restent en échec, hors périmètre de cette passe : `HealthEndpointTest` (APP_KEY retirée en cours de test), `HealthReadyCriticalDepsTest`, `AuthGoogleSignInTest`, `SSOOidcFlowTest` (RS384), `WebhookRetryAndDeactivationTest` (DNS), `ProvisionDemoTenantJobTest`, `ApiFrLiteralsCatalogedTest`, `CrmMigrationsTest`, `MigrationSchemaPlacementTest`.
+
 ## 2026-11-21 — Marketing découpé par ressource, sondes Health extraites, garde FormRequest (PR #9731, #9732)
 
 Surface : `api/routes/api.php` (routes marketing réenregistrées vers 4 contrôleurs dédiés, chemins et méthodes inchangés), `api/app/Modules/Marketing/Interfaces/Api/V1/Controllers/` (`MarketingCampaignsController`, `MarketingAssetsController`, `MarketingPublicationsController`, `MarketingVisibilityController`, trait `ResolvesMarketingTenant`), `api/app/Modules/Platform/Infrastructure/Services/HealthProbeService.php`, `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/HealthController.php`, `dev-hub/tools/check-form-request-guard.py` + `form-request-guard-baseline.txt`.
