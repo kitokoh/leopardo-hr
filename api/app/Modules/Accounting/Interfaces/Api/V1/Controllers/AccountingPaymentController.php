@@ -11,6 +11,7 @@ use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingPayment;
 use App\Modules\Accounting\Infrastructure\Services\PaymentRegistrationService;
 use App\Modules\Accounting\Infrastructure\Services\PaymentReminderService;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\Concerns\ResolvesAccountingActor;
 use App\Modules\Accounting\Interfaces\Api\V1\Requests\PaymentRegisterRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,6 +23,8 @@ use Illuminate\Support\Carbon;
  */
 final class AccountingPaymentController extends Controller
 {
+    use ResolvesAccountingActor;
+
     public function __construct(
         private readonly PaymentRegistrationService $payments,
         private readonly PaymentReminderService $reminders,
@@ -94,14 +97,8 @@ final class AccountingPaymentController extends Controller
      */
     private function actor(Request $request): Employee
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if (! $actor->isManager()) {
-            abort(403);
-        }
-
-        return $actor;
+        // #9763 — manager historique OU grant `accounting` (délégation #7761).
+        return $this->accountingActor($request);
     }
 
     /**

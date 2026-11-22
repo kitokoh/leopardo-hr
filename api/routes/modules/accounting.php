@@ -73,6 +73,11 @@ ModuleRoutes::tenantModule('accounting', function (): void {
         // (Chargily DZ / Stripe), routée par pays de l'entreprise (ADR-0017).
         Route::post('/documents/{document}/checkout', [AccountingCheckoutController::class, 'store'])->whereNumber('document');
 
+        // #9765 — création d'un partage tokenisé (le modèle, le service et le
+        // portail public existaient, mais AUCUNE route ne créait le jeton :
+        // le vendeur ne pouvait jamais envoyer un devis/facture à son client).
+        Route::post('/documents/{document}/share', [AccountingDocumentController::class, 'share'])->whereNumber('document');
+
         // #5522 — RGPD : audit des accès au portail client (qui a consulté
         // / téléchargé un document partagé, quand, depuis quelle IP).
         Route::get('/documents/shared/{document}/accesses', [ShareAccessController::class, 'index'])->whereNumber('document');

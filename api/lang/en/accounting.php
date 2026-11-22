@@ -80,6 +80,10 @@ return [
         'bank_reference_required' => 'The import reference is required.',
         'bank_payment_required' => 'The payment to reconcile is required.',
         'bank_payment_exists' => 'The selected payment does not exist.',
+        // Document sharing (#9765)
+        'share_email_invalid' => 'The recipient email address is invalid.',
+        'share_expiry_min' => 'A share must be valid for at least 1 day.',
+        'share_expiry_max' => 'A share cannot exceed 365 days.',
     ],
 
     // Journal nature labels (#9370)

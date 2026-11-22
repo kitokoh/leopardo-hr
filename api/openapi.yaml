@@ -29176,6 +29176,77 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /accounting/documents/{document}/share:
+    post:
+      operationId: api_post_accounting_documents_by_document_share
+      tags:
+      - Accounting
+      summary: Creer un partage tokenise du document (#9765)
+      description: |
+        Genere un jeton de partage pour un devis ou une facture et renvoie
+        l'URL du portail client. Le jeton n'est expose qu'ici (creation) ;
+        l'audit des acces ne le revele jamais. Expiration par defaut 14 jours,
+        bornee entre 1 et 365 jours.
+      parameters:
+      - name: document
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  maxLength: 255
+                  description: Adresse du destinataire (facultative).
+                expires_in_days:
+                  type: integer
+                  minimum: 1
+                  maximum: 365
+                  description: Duree de validite en jours (defaut 14).
+      responses:
+        '201':
+          description: Partage cree
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      document_id:
+                        type: integer
+                      share_token:
+                        type: string
+                        description: Jeton de 64 caracteres.
+                      shared_with_email:
+                        type: string
+                        nullable: true
+                      expires_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      portal_url:
+                        type: string
+                      download_url:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Validation422'
   /accounting/documents/{document}/credit-note:
     post:
       operationId: api_post_accounting_documents_by_document_credit_note

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Modules\Accounting\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\AuditLog;
-use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\V1\AuditLogResource;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Domain\Models\AccountingDocumentShare;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\Concerns\ResolvesAccountingActor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,6 +27,8 @@ use Illuminate\Http\Request;
  */
 final class ShareAccessController extends Controller
 {
+    use ResolvesAccountingActor;
+
     /**
      * GET /api/v1/accounting/documents/shared/{document}/accesses
      *
@@ -38,11 +40,8 @@ final class ShareAccessController extends Controller
      */
     public function index(Request $request, int $document): JsonResponse
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-        if (! $actor->isManager()) {
-            abort(403);
-        }
+        // #9763 — manager historique OU grant `accounting` (délégation #7761).
+        $actor = $this->accountingActor($request);
 
         $validated = $request->validate([
             'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
