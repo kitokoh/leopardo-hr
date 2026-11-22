@@ -1,0 +1,74 @@
+name: Platform MFA Coverage Guard
+
+# Garde #9810 — tout groupe `auth:super_admin_api` doit porter `platform.mfa`.
+#
+# ## Pourquoi
+#
+# `EnsurePlatformMfaEnrolled` (#9096) impose la MFA aux comptes de plateforme et
+# est annonce comme une garde GLOBALE. Il n'est applique que la ou on l'ecrit
+# dans les routes. Mesure sur `main` avant ce correctif :
+#
+#     routes/api.php              675  MFA=OUI  prefix=platform
+#     routes/api.php              903  MFA=OUI  prefix=admin
+#     routes/modules/billing.php  144  MFA=NON  prefix=platform/growth
+#
+# Le troisieme groupe porte des actes FINANCIERS (taux de commission, statut de
+# versement) : un super-admin sans second facteur y passait avec un mot de passe
+# seul.
+#
+# ## Ce qu'elle refuse
+#
+# Tout appel `Route::middleware([...])` / `->middleware([...])` contenant
+# `auth:super_admin_api` mais pas `platform.mfa`, sauf exemption EXPLICITE et
+# motivee dans `EXEMPTIONS` (une seule aujourd'hui : `GET /metrics`, consomme
+# par la supervision machine, ou un code TOTP est impossible).
+#
+# ## Cout
+#
+# Python pur, aucune dependance, aucun `composer install` : moins de 5 secondes.
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'api/routes/**'
+      - 'api/bootstrap/app.php'
+      - 'dev-hub/tools/check-platform-mfa-coverage.py'
+      - '.github/workflows/platform-mfa-coverage-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'api/routes/**'
+      - 'api/bootstrap/app.php'
+      - 'dev-hub/tools/check-platform-mfa-coverage.py'
+      - '.github/workflows/platform-mfa-coverage-guard.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+concurrency:
+  group: platform-mfa-coverage-guard-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  platform-mfa-coverage-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: Tout groupe super_admin porte platform.mfa
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Autotest de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-platform-mfa-coverage.py --self-test
+
+      - name: Run platform MFA coverage guard
+        shell: bash
+        run: python3 dev-hub/tools/check-platform-mfa-coverage.py --verbose

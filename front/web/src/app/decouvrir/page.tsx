@@ -1,6 +1,16 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, Building2, Car, Hotel, Store, UtensilsCrossed } from 'lucide-react';
+import {
+  ArrowRight,
+  Briefcase,
+  Building2,
+  Car,
+  Hotel,
+  Pill,
+  Store,
+  Ticket,
+  UtensilsCrossed,
+} from 'lucide-react';
 import { normalizeLocale } from '@/lib/i18n';
 import { SITE_URL } from '@/lib/site-url';
 import { searchPublicDiscovery } from '@/lib/public-discovery-api';
@@ -69,13 +79,16 @@ export async function generateMetadata({ searchParams }: DiscoveryPageProps): Pr
   };
 }
 
-/** Accès direct par verticale — miroir des annuaires réellement servis. */
+/** Accès direct par verticale — l'ensemble des 8 vitrines réellement servies (#9618 #9594). */
 const VERTICALS = [
   { href: '/restaurants', icon: UtensilsCrossed, key: 'restaurants' },
   { href: '/boutiques', icon: Store, key: 'shops' },
-  { href: '/operateurs', icon: Car, key: 'operators' },
-  { href: '/entreprises', icon: Building2, key: 'companies' },
   { href: '/stay', icon: Hotel, key: 'stays' },
+  { href: '/entreprises', icon: Building2, key: 'companies' },
+  { href: '/billets', icon: Ticket, key: 'tickets' },
+  { href: '/pharmacies', icon: Pill, key: 'pharmacies' },
+  { href: '/operateurs', icon: Car, key: 'operators' },
+  { href: '/emploi', icon: Briefcase, key: 'jobs' },
 ] as const;
 
 export default async function DiscoveryPage({ searchParams }: DiscoveryPageProps) {
@@ -124,18 +137,18 @@ export default async function DiscoveryPage({ searchParams }: DiscoveryPageProps
           </h2>
           <p className="mt-1 text-sm text-slate-500">{copy.home.categoriesSubtitle}</p>
 
-          <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {VERTICALS.map(({ href, icon: Icon, key }) => (
               <li key={href}>
                 <Link
                   href={href}
-                  className="flex min-h-[64px] items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-colors hover:border-emerald-300 hover:bg-emerald-50/40"
+                  className="flex min-h-[64px] items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-400 hover:bg-emerald-50/40 hover:shadow-md"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
                     <Icon className="h-5 w-5" aria-hidden />
                   </span>
                   <span className="text-sm font-bold text-slate-900">{copy.chrome[key]}</span>
-                  <ArrowRight className="ml-auto h-4 w-4 text-slate-400" aria-hidden />
+                  <ArrowRight className="ml-auto h-4 w-4 text-slate-400 transition-transform group-hover:translate-x-0.5" aria-hidden />
                 </Link>
               </li>
             ))}

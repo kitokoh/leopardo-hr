@@ -35,6 +35,23 @@ enum PlatformPermission: string
     case UsersManage = 'users.manage';
     case Impersonate = 'impersonate';
 
+    /**
+     * #9815 — bannir un compte (couper TOUS ses jetons, immédiatement).
+     *
+     * Volontairement DISTINCTE de `users.manage` : suspendre un utilisateur
+     * (`status = suspended`) est un geste de gestion de compte, réversible par
+     * le même écran ; bannir est un geste de SÉCURITÉ qui coupe l'accès d'un
+     * compte compromis sans toucher à ses données. Les confondre obligerait à
+     * donner le droit de couper un accès à quiconque doit seulement activer ou
+     * suspendre un compte — exactement le défaut corrigé sur les offres
+     * (#7973) et sur les Pages (#8729).
+     *
+     * Portée par : `super_admin` et `admin` (par la matrice `allExcept`),
+     * `support` (il traite les signalements d'abus) et `ops` (exploitation).
+     * Ni `finance` ni `marketing` : ils n'ont aucune raison de couper un accès.
+     */
+    case AccountsBan = 'accounts.ban';
+
     case KillSwitchManage = 'killswitch.manage';
     case ObservabilityView = 'observability.view';
     case MetricsView = 'metrics.view';
@@ -189,6 +206,7 @@ enum PlatformPermission: string
             self::UsersView => 'Consulter les utilisateurs des entreprises',
             self::UsersManage => 'Activer/suspendre un utilisateur d’entreprise',
             self::Impersonate => 'Ouvrir une session d’impersonation',
+            self::AccountsBan => 'Bannir un compte (couper tous ses accès immédiatement)',
             self::KillSwitchManage => 'Activer un kill switch de module',
             self::ObservabilityView => 'Consulter l’observabilité (files, notifications)',
             self::MetricsView => 'Consulter les métriques et alertes plateforme',

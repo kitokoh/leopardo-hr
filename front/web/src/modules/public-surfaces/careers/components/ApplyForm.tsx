@@ -144,14 +144,14 @@ export function ApplyForm({
           background: `${identity.palette.accent}14`,
         }}
       >
-        <strong style={{ display: 'block', fontSize: '0.95rem' }}>{shared.bookable}</strong>
+        <strong style={{ display: 'block', fontSize: '0.95rem' }}>{shared.applicationSent}</strong>
         {reference ? (
           <p style={{ margin: '0.4rem 0 0', fontSize: '0.85rem', fontFamily: 'monospace' }}>
             {reference}
           </p>
         ) : null}
         <p style={{ margin: '0.4rem 0 0', fontSize: '0.82rem', color: identity.palette.muted }}>
-          {shared.company}
+          {shared.applicationSentHint}
         </p>
       </div>
     );
@@ -173,7 +173,7 @@ export function ApplyForm({
       <div style={{ display: 'grid', gap: '0.75rem', gridTemplateColumns: '1fr 1fr' }}>
         <div>
           <label style={labelStyle} htmlFor="apply-first-name">
-            {shared.product}
+            {shared.firstName}
           </label>
           <input
             id="apply-first-name"
@@ -186,7 +186,7 @@ export function ApplyForm({
 
         <div>
           <label style={labelStyle} htmlFor="apply-last-name">
-            {shared.product}
+            {shared.lastName}
           </label>
           <input
             id="apply-last-name"
@@ -200,7 +200,7 @@ export function ApplyForm({
 
       <div>
         <label style={labelStyle} htmlFor="apply-email">
-          {shared.company}
+          {shared.emailLabel}
         </label>
         <input
           id="apply-email"
@@ -214,7 +214,7 @@ export function ApplyForm({
 
       <div>
         <label style={labelStyle} htmlFor="apply-phone">
-          {shared.shop}
+          {shared.phoneLabel}
         </label>
         <input
           id="apply-phone"
@@ -227,7 +227,7 @@ export function ApplyForm({
 
       <div>
         <label style={labelStyle} htmlFor="apply-cover">
-          {shared.trip}
+          {shared.coverLetterLabel}
         </label>
         <textarea
           id="apply-cover"
@@ -239,7 +239,7 @@ export function ApplyForm({
 
       <div>
         <label style={labelStyle} htmlFor="apply-resume">
-          {shared.place}
+          {shared.resumeLabel}
         </label>
         <input
           id="apply-resume"
@@ -276,12 +276,12 @@ export function ApplyForm({
           aria-invalid={errors.consent ? true : undefined}
           style={{ marginTop: '0.2rem' }}
         />
-        <span>{shared.company}</span>
+        <span>{shared.consentLabel}</span>
       </label>
 
       {phase === 'already' ? (
         <p role="alert" style={{ margin: 0, fontSize: '0.85rem', color: identity.palette.primary }}>
-          {shared.bookable}
+          {shared.alreadyApplied}
         </p>
       ) : null}
 
@@ -313,7 +313,7 @@ export function ApplyForm({
           opacity: phase === 'sending' ? 0.7 : 1,
         }}
       >
-        {phase === 'sending' ? '…' : shared.bookable}
+        {phase === 'sending' ? '…' : shared.applySubmit}
       </button>
     </form>
   );

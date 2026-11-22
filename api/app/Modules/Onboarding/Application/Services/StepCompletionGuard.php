@@ -9,6 +9,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Attendance\Domain\Models\AttendanceKiosk;
 use App\Modules\HR\Domain\Models\Department;
 use App\Modules\HR\Domain\Models\UserInvitation;
+use App\Shared\Onboarding\StepPredicateRegistry;
 
 /**
  * #7261 — vérifie qu'une étape d'onboarding correspond à une action RÉELLE
@@ -39,12 +40,25 @@ use App\Modules\HR\Domain\Models\UserInvitation;
  */
 final class StepCompletionGuard
 {
+    public function __construct(
+        private readonly StepPredicateRegistry $predicates,
+    ) {}
+
     /**
      * @return bool|null `true` = action constatée, `false` = action absente,
      *                   `null` = étape sans prédicat (déclarative).
      */
     public function isSatisfied(string $companyId, string $stepKey): ?bool
     {
+        // #9787 — les étapes propres à une verticale (ex. `edu_setup_campus`)
+        // sont évaluées par le module propriétaire, enregistré dans le registre
+        // partagé (inversion de dépendance : aucun import inter-modules).
+        $external = $this->predicates->resolve($stepKey);
+
+        if ($external !== null) {
+            return $external->isSatisfied($stepKey, $companyId);
+        }
+
         return match ($stepKey) {
             'first_department' => Department::query()
                 ->where('company_id', $companyId)

@@ -111,6 +111,21 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
           ],
         },
         {
+          // #9811 — nos choix d'authentification, rendus publics. Chaque
+          // affirmation correspond a une valeur du code, citee ici pour la
+          // revue : session.encrypt (config/session.php), session.secure
+          // (defaut true depuis #9345), http_only, same_site, sanctum.expiration
+          // = 720 min (#9344), authenticateAccessTokensUsing (#9808/#9809).
+          title: 'Session et cookies d authentification',
+          body: [
+            'Votre identite est portee par un cookie de session pose par le serveur. Aucun jeton d authentification n est stocke dans le stockage local du navigateur ni transmis dans l adresse d une page : un script injecte dans la page ne peut donc pas lire votre session, et un lien partage ne transporte jamais votre acces.',
+            'Ce cookie porte trois attributs stricts. HttpOnly : il est invisible pour JavaScript. Secure : il n est jamais envoye sur une connexion non chiffree. SameSite=Lax : il n accompagne pas les requetes declenchees par un autre site, ce qui bloque les attaques de type CSRF. Son contenu est en outre chiffre avant d etre ecrit, y compris lorsque la session est stockee sur disque : le lire directement ne revele ni votre identite ni votre entreprise.',
+            'Nos sessions sont sans etat cote serveur : la validite est verifiee a chaque requete, sans identifiant de session a maintenir en memoire. Une session interactive dure 12 heures et se prolonge tant que vous travaillez : un utilisateur actif n est jamais deconnecte en pleine tache. Une duree de 30 jours n est accordee qu aux appareils enroles explicitement par votre entreprise — une borne de pointage, un noeud de synchronisation — jamais a un navigateur, et jamais sur simple demande du client.',
+            'Nous pouvons couper un acces immediatement, sans attendre l expiration : a la deconnexion, apres un changement de mot de passe, en cas de perte d appareil, ou lorsqu un compte est suspendu ou banni par un administrateur. La coupure prend effet a la requete suivante ; elle est journalisee avec son motif et son auteur, et elle est reversible pour une suspension temporaire.',
+            'Enfin, ce que vous pouvez voir depend de deux filtres successifs. Le premier est votre role : salarie, manager, responsable RH, administrateur, client, ou membre de l equipe plateforme — chacun avec ses droits propres. Le second est votre perimetre : dans les modules qui gerent plusieurs sites, agences, vehicules ou boites mail, un collaborateur ne voit que les ressources qui lui sont explicitement assignees. Un role ne suffit donc pas a ouvrir un acces, et une ressource non assignee reste invisible.',
+          ],
+        },
+        {
           title: 'Exercice des droits et réclamation',
           body: [
             'Vous pouvez exercer vos droits (accès, rectification, effacement, limitation, opposition, portabilité) en écrivant à privacy@leopardo-rh.com ; nous répondons dans un délai d\'un mois. Vous pouvez également saisir l\'autorité de protection des données compétente : en Algérie, l\'ANPDP ; dans l\'Union européenne, l\'autorité de votre pays de résidence.',
@@ -295,6 +310,17 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
           title: 'Cookies and analytics',
           body: [
             'Necessary cookies (session, language, security) are always active. Analytics and marketing personalisation are enabled only after your consent, and you can change that choice at any time via “Manage my cookies” in the footer. Your choice is stored for 6 months.',
+          ],
+        },
+        {
+          // #9811 — meme contenu que la version FR, adapte (pas traduit mot a mot).
+          title: 'Session and authentication cookies',
+          body: [
+            'Your identity is carried by a session cookie issued by the server. No authentication token is stored in the browser local storage, and none is carried in a page address: a script injected into the page cannot read your session, and a shared link never transports your access.',
+            'That cookie carries three strict attributes. HttpOnly: JavaScript cannot see it. Secure: it is never sent over an unencrypted connection. SameSite=Lax: it is not attached to requests triggered by another site, which blocks cross-site request forgery. Its content is also encrypted before being written, including when the session is stored on disk: reading it directly reveals neither your identity nor your company.',
+            'Our sessions are stateless on the server: validity is checked on every request, with no session identifier held in memory. An interactive session lasts 12 hours and extends while you work, so an active user is never signed out mid-task. A 30-day lifetime is granted only to devices explicitly enrolled by your company — an attendance terminal, a synchronisation node — never to a browser, and never merely because the client asks for it.',
+            'We can cut an access immediately, without waiting for expiry: on sign-out, after a password change, when a device is lost, or when an administrator suspends or bans an account. The cut applies from the next request; it is logged with its reason and author, and it is reversible for a temporary suspension.',
+            'Finally, what you can see depends on two successive filters. The first is your role: employee, manager, HR lead, administrator, customer, or platform team member — each with its own rights. The second is your scope: in modules that manage several sites, agencies, vehicles or mailboxes, a collaborator sees only the resources explicitly assigned to them. A role alone therefore never opens an access, and an unassigned resource stays invisible.',
           ],
         },
         {
@@ -485,6 +511,17 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
           ],
         },
         {
+          // #9811 — TR, meme contenu.
+          title: 'Oturum ve kimlik doğrulama çerezleri',
+          body: [
+            'Kimliğiniz sunucu tarafından yerleştirilen bir oturum çereziyle taşınır. Hiçbir kimlik doğrulama jetonu tarayıcının yerel depolamasında saklanmaz ve hiçbiri bir sayfa adresinde taşınmaz: sayfaya enjekte edilen bir betik oturumunuzu okuyamaz ve paylaşılan bir bağlantı erişiminizi asla taşımaz.',
+            'Bu çerez üç katı bir nitelik taşır. HttpOnly: JavaScript onu göremez. Secure: şifrelenmemiş bir bağlantı üzerinden asla gönderilmez. SameSite=Lax: başka bir site tarafından tetiklenen isteklere eklenmez, bu da siteler arası istek sahtekârlığını (CSRF) engeller. İçeriği ayrıca yazılmadan önce şifrelenir; oturum diskte saklansa bile: doğrudan okumak ne kimliğinizi ne de şirketinizi açığa çıkarır.',
+            'Oturumlarımız sunucu tarafında durumsuzdur: geçerlilik her istekte kontrol edilir, bellekte tutulan bir oturum tanımlayıcısı yoktur. Etkileşimli bir oturum 12 saat sürer ve çalıştıkça uzar; etkin bir kullanıcı iş ortasında asla oturumdan atılmaz. 30 günlük süre yalnızca şirketinizin açıkça kaydettiği cihazlara — bir devam terminali, bir eşitleme düğümü — verilir; bir tarayıcıya asla ve yalnızca istemci talep ettiği için asla.',
+            'Bir erişimi sona ermeyi beklemeden derhal kesebiliriz: çıkışta, parola değişikliğinden sonra, cihaz kaybolduğunda veya bir yönetici bir hesabı askıya aldığında ya da yasakladığında. Kesme bir sonraki istekten itibaren geçerli olur; nedeni ve kim tarafından yapıldığıyla birlikte kaydedilir ve geçici askıya alma için geri alınabilir.',
+            'Son olarak, ne görebileceğiniz birbirini izleyen iki süzgece bağlıdır. Birincisi rolünüzdür: çalışan, yönetici, İK sorumlusu, yönetici, müşteri veya platform ekibi üyesi — her biri kendi haklarıyla. İkincisi kapsamınızdır: birden çok şube, acente, araç veya posta kutusu yöneten modüllerde bir çalışan yalnızca kendisine açıkça atanan kaynakları görür. Bu nedenle tek başına bir rol erişim açmaz ve atanmamış bir kaynak görünmez kalır.',
+          ],
+        },
+        {
           title: 'Hakların kullanılması ve şikâyet',
           body: [
             'Haklarınızı (erişim, düzeltme, silme, kısıtlama, itiraz, taşınabilirlik) privacy@leopardo-rh.com adresine yazarak kullanabilirsiniz; bir ay içinde yanıt veririz. Yetkili veri koruma kurumuna da başvurabilirsiniz: Cezayir\'de ANPDP; Avrupa Birliği\'nde ikamet ettiğiniz ülkenin kurumu.',
@@ -669,6 +706,17 @@ const legalPages: Record<AppLocale, Record<LegalPageKind, LegalPageCopy>> = {
           title: 'ملفات تعريف الارتباط والقياس',
           body: [
             'الملفات الضرورية (الجلسة واللغة والأمان) مفعّلة دائماً. أما قياس الزيارات والتخصيص التسويقي فلا يُفعّلان إلا بموافقتكم، ويمكنكم تغيير اختياركم في أي وقت عبر «إدارة ملفات تعريف الارتباط» أسفل الصفحة. يُحفظ الاختيار ستة أشهر.',
+          ],
+        },
+        {
+          // #9811 — AR (RTL), meme contenu.
+          title: 'الجلسة وملفات تعريف الارتباط الخاصة بالمصادقة',
+          body: [
+            'يُحملت هويتكم بواسطة ملف تعريف جلسة يضعه الخادم. لا يُخزّن أي رمز مصادقة في التخزين المحلي للمتصفّح، ولا يُنقل أي منها في عنوان صفحة: فالنص البرمجي المحقون في الصفحة لا يستطيع قراءة جلستكم، والرابط المشارك لا ينقل صلاحية الوصول أبداً.',
+            'يحمل هذا الملف ثلاث سمات صارمة. HttpOnly: جافاسكريبت لا يراه. Secure: لا يُرسَل أبداً عبر اتصال غير مشفّر. SameSite=Lax: لا يُرفَق بالطلبات التي يطلقها موقع آخر، وهو ما يمنع هجمات تزوير الطلبات عبر المواقع. كما يُشفّر محتواه قبل كتابته، حتى عندما تُخزّن الجلسة على القرص: قراءته مباشرة لا تكشف هويتكم ولا شركتكم.',
+            'جلساتنا بدون حالة على الخادم: يُتحقّق من الصلاحية في كل طلب، دون معرّف جلسة يُبقى في الذاكرة. تدوم الجلسة التفاعلية 12 ساعة وتتمدّد ما دمتم تعملون؛ فالمستخدم النشط لا يُفصل أبداً وسط مهمته. ولا تُمنح مدة 30 يوماً إلا للأجهزة المسجّلة صراحة من شركتكم — جهاز حضور أو عقدة مزامنة — ولا لمتصفّح أبداً، ولا مجرّد طلب من العميل.',
+            'يمكننا قطع الوصول فوراً دون انتظار الانتهاء: عند تسجيل الخروج، وبعد تغيير كلمة المرور، وعند فقدان جهاز، وعندما يعلّق مسؤول حساباً أو يحظره. يسري القطع من الطلب التالي، ويُسجّل مع سببه ومن قام به، ويُمكن الرجوع عنه في حالة التعليق المؤقت.',
+            'أخيراً، ما يمكنكم رؤيته يخضع لمرشّحين متتاليين. الأول هو دوركم: موظّف، مدير، مسؤول موارد بشرية، مسؤول نظام، عميل، أو عضو فريق المنصّة — لكلّ منهم حقوقه. والثاني هو نطاقكم: في الوحدات التي تدير عدة مواقع أو وكالات أو مركبات أو صناديق بريد، لا يرى المتعاون إلا الموارد المُسندة إليه صراحة. وبالتالي فالدور وحده لا يفتح أي وصول، والمورد غير المُسند يبقى غير مرئي.',
           ],
         },
         {

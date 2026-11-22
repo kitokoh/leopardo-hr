@@ -18,6 +18,7 @@ use App\Core\AI\Infrastructure\Adapters\UnavailableSpeechToTextAdapter;
 use App\Core\Auth\Domain\Contracts\InvitationActivationContract;
 use App\Core\Auth\Domain\Contracts\SmsCodeSenderContract;
 use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Auth\Infrastructure\Services\AccountStatusGuard;
 use App\Core\Auth\Infrastructure\Sms\LogOnlySmsCodeSender;
 use App\Core\Notifications\Contracts\InAppNotifier;
 use App\Core\Outbox\Contracts\OutboxPublisher;
@@ -64,6 +65,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\PersonalAccessToken;
+use Laravel\Sanctum\Sanctum;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -272,6 +275,39 @@ class AppServiceProvider extends ServiceProvider
                     : null,
             );
         }
+
+        // Issue #9808 / #9809 — la validité d'un jeton est décidée ICI, une
+        // fois, pour TOUS les guards à jeton (employé, public, travel,
+        // super-admin, mobile, kiosque).
+        //
+        // `authenticateAccessTokensUsing` est le hook officiel de Sanctum : il
+        // remplace la résolution par défaut (`PersonalAccessToken::findToken`)
+        // sans réécrire le guard. On garde la résolution standard puis on
+        // ajoute les deux refus que Sanctum ne connaît pas :
+        //   - jeton révoqué (liste de révocation, #9808) ;
+        //   - compte banni ou non `active` (#9808 / #9809).
+        //
+        // Fail-closed : si la vérification lève (cache injoignable), on renvoie
+        // `null` — Sanctum répond 401. Un cache muet ne prouve pas qu'un jeton
+        // est valide.
+        Sanctum::authenticateAccessTokensUsing(
+            static function (PersonalAccessToken $token, bool $isValid): bool {
+                if (! $isValid) {
+                    return false;
+                }
+
+                try {
+                    return app(AccountStatusGuard::class)->tokenIsUsable($token);
+                } catch (\Throwable $e) {
+                    Log::channel('structured')->error('auth.token_check_failed', [
+                        'token_id' => $token->id,
+                        'error' => $e->getMessage(),
+                    ]);
+
+                    return false;
+                }
+            }
+        );
 
         // PA2-ARCH-008 : point d'enregistrement unique. Tous les Gate::policy(...)
         // vivent exclusivement dans AuthServiceProvider::boot() (y compris

@@ -12,6 +12,7 @@ use App\Http\Middleware\Cameras\EnsureCameraModuleMiddleware;
 use App\Http\Middleware\Communication\EnsureCommunicationModuleMiddleware;
 use App\Http\Middleware\CompressResponse;
 use App\Http\Middleware\Delivery\EnsureDeliveryModuleMiddleware;
+use App\Http\Middleware\EnsureAccountIsActive;
 use App\Http\Middleware\EnsureApiManagerMiddleware;
 use App\Http\Middleware\EnsureAppContextMiddleware;
 use App\Http\Middleware\EnsureKioskSearchPathReset;
@@ -203,6 +204,7 @@ return Application::configure(basePath: dirname(__DIR__))
             // #7761 — grant de module OU manager (ex. tickets support délégables).
             'api.module.grant' => \App\Http\Middleware\EnsureModuleGrantMiddleware::class,
             'app.context' => EnsureAppContextMiddleware::class,
+            'account.active' => EnsureAccountIsActive::class,
             'token.refresh' => TokenAutoRefreshMiddleware::class,
             // MULTI-PAYS (#1867) : pays légal du tenant obligatoire et supporté
             // avant toute opération RH/paie sensible.
