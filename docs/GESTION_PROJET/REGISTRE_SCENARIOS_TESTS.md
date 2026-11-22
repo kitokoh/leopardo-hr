@@ -15,6 +15,24 @@ Surface : `api/tests/Feature/Security/ApiVersionAndPlanRateLimitTest.php` unique
 
 **Non couvert** — exécution locale de PHPUnit ; contrôle négatif (retrait de `freezeTime()`, ou `pilot_per_minute` modifié sans toucher au test) à faire sur un poste outillé.
 
+## 2026-11-22 — Login super-admin : le canal `structured` est partagé, la mesure du test ne l'était pas (issue #9794)
+
+Surface : `api/tests/Feature/PlatformWebAuthValidationContractTest.php` uniquement. Aucun changement de produit, de route ni de contrat d'API.
+
+**Pourquoi c'est un scénario de test** : le contrat vérifié (#9698 — une `ValidationException` doit remonter, pas être absorbée par le `catch (\Throwable)` du contrôleur) était bon ; la **mesure** ne l'était pas. Le test comparait `filesize()` du fichier `structured-<date>.log` avant et après l'appel. Or `structured` est un canal `daily` (`api/config/logging.php`) : un seul fichier par jour, écrit par tous les processus de la suite (`tenant.context.missing`, `TenantEventDispatcher`, `CrmConsentGate`…). Un worker paratest qui écrit entre les deux lectures fait croître le fichier et le test accuse le contrôleur — exactement le piège « mesure d'un état global pour prouver un comportement local ».
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| le canal est isolé dans `structured-test-<uuid>.log` (`single`) | la taille du fichier quotidien partagé bouge sans rapport avec l'endpoint |
+| `LogManager::forgetChannel('structured')` après la surcharge | le canal déjà résolu garde l'ancien chemin et le test mesure le mauvais fichier |
+| le fichier isolé ne contient pas `platform.login.unexpected_error.web` | une saisie invalide absorbe de nouveau la `ValidationException` (#9698) |
+| e-mail vide → `errors` sur `email` et `password`, sans `INTERNAL_ERROR` | le message de champ est remplacé par une erreur interne |
+
+**Couverture exécutée** — `php -l` sur le fichier de test ; la mesure est le run CI (pas de `vendor/` ni de PostgreSQL dans l'espace de travail, `api/vendor` symlinké).
+
+**Non couvert** — exécution locale de PHPUnit ; contrôle négatif (réintroduire un `catch (\Throwable)` avant le rethrow ciblé) à faire sur un poste outillé.
+
+
 ## 2026-11-22 — Trade : catalogue produits B2B (API interne + catalogue public + UI vendeur) (PR #9769, #9767, #9768)
 
 Surface : `api/routes/modules/trade.php` (`GET|POST /v1/trade/products`, `GET|PUT /v1/trade/products/{product}`, `POST /v1/trade/products/{product}/archive`), `api/routes/modules/trade_public.php` (`GET /v1/public/trade/companies/{slug}/products`), `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/TradeProductController.php`, `TradePublicProfileController::products()`, `Requests/StoreTradeProductRequest.php`, `Requests/UpdateTradeProductRequest.php`, `Resources/TradeProductResource.php`, `Resources/PublicTradeProductResource.php`, `front/web/src/app/(dashboard)/trade-os/page.tsx` (onglet Catalogue), `front/web/src/app/entreprises/[slug]/page.tsx` (section Produits), `front/web/src/lib/trade-public-api.ts`.
