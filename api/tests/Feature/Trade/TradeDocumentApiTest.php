@@ -156,6 +156,7 @@ class TradeDocumentApiTest extends TestCase
             'path' => '../../etc/passwd',
         ])->assertStatus(201);
 
+        /** @var TradeDocument $document */
         $document = TradeDocument::query()->findOrFail($response->json('data.id'));
 
         self::assertSame('private', $document->disk);
@@ -199,6 +200,7 @@ class TradeDocumentApiTest extends TestCase
             'trade_order_id' => $orderId,
         ])->json('data.id');
 
+        /** @var TradeDocument $document */
         $document = TradeDocument::query()->findOrFail($documentId);
         $path = $document->path;
         Storage::disk('private')->assertExists($path);

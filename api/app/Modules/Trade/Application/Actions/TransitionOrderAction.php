@@ -8,6 +8,7 @@ use App\Modules\Trade\Domain\Enums\TradeOrderStatus;
 use App\Modules\Trade\Domain\Models\TradeOrder;
 use App\Modules\Trade\Domain\Support\TradeOrderStateMachine;
 use Illuminate\Database\DatabaseManager;
+use Illuminate\Support\Carbon;
 
 /**
  * Transition de statut d'une commande — BC-36 TRADE, #9779.
@@ -72,7 +73,10 @@ final class TransitionOrderAction
             }
 
             if (isset($payload['expected_delivery_at'])) {
-                $locked->expected_delivery_at = $payload['expected_delivery_at'];
+                // La requete valide une DATE (chaine ISO) ; la colonne est un
+                // `datetime`. Assigner la chaine brute laissait PHPStan (et un
+                // cast implicite) decider du format : on parse explicitement.
+                $locked->expected_delivery_at = Carbon::parse($payload['expected_delivery_at']);
             }
 
             $locked->save();

@@ -40,9 +40,9 @@ final class TradeCounterpartyResource extends JsonResource
             'phone' => $this->phone,
             'website' => $this->website,
             'roles' => $this->roles ?? [],
-            'verification_status' => $this->verification_status instanceof \BackedEnum
-                ? $this->verification_status->value
-                : $this->verification_status,
+            // Le cast du modele garantit l'enum : le test `instanceof` etait
+            // toujours vrai et ne protegeait rien.
+            'verification_status' => $this->verification_status->value,
             // Uniquement la DATE de verification, jamais l'identifiant de
             // l'employe qui l'a faite : l'audit interne n'a pas a circuler
             // dans une charge utile de liste.

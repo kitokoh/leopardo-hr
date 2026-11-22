@@ -61,7 +61,10 @@ class CrmOpportunityController extends Controller
         /** @var Employee $actor */
         $actor = $request->user();
 
-        $updated = $action->execute($opportunity, $request->validated(), $actor);
+        /** @var array{stage: string, lost_reason?: string|null, amount?: mixed, expected_close_date?: string|null, notes?: string|null} $data */
+        $data = $request->validated();
+
+        $updated = $action->execute($opportunity, $data, $actor);
 
         return (new CrmOpportunityResource($updated))->response();
     }

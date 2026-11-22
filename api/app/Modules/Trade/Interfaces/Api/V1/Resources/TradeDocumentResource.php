@@ -35,17 +35,17 @@ final class TradeDocumentResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'type' => $this->type instanceof \BackedEnum ? $this->type->value : $this->type,
+            // Le cast du modele garantit l'enum : les tests `instanceof`
+            // etaient toujours vrais et ne protegeaient rien.
+            'type' => $this->type->value,
             // Le libelle vient de l'enum, pas du client : un document ne peut
             // pas s'auto-nommer « Facture commerciale » s'il est un brouillon.
-            'type_label' => $this->type instanceof \App\Modules\Trade\Domain\Enums\TradeDocumentType
-                ? $this->type->label()
-                : null,
+            'type_label' => $this->type->label(),
             'title' => $this->title,
             'original_name' => $this->original_name,
             'mime_type' => $this->mime_type,
             'size_bytes' => $this->size_bytes,
-            'status' => $this->status instanceof \BackedEnum ? $this->status->value : $this->status,
+            'status' => $this->status->value,
             'trade_order_id' => $this->trade_order_id,
             'trade_quote_id' => $this->trade_quote_id,
             'trade_rfq_id' => $this->trade_rfq_id,

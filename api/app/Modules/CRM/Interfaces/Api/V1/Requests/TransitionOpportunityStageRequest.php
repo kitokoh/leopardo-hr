@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Modules\CRM\Interfaces\Api\V1\Requests;
 
 use App\Modules\CRM\Domain\Models\CrmOpportunity;
-use Closure;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
