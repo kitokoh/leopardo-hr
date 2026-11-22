@@ -21,9 +21,18 @@ name: Trade B2B CI
 #
 # PORTEE
 #   tests/Feature/Trade/                       (dont TradeProductApiTest, #9778)
+#   tests/Feature/CRM/CrmOpportunityStageTest.php   (#9790)
 #   tests/Unit/Trade/
 #   tests/Feature/Security/TradeTenantIsolationTest.php
 #   tests/Feature/LeopardoPublic/TradePublicPublicationTest.php
+#
+# POURQUOI LE CRM EST ICI (#9790)
+# ------------------------------
+# Le pipeline commercial est l'outil qui rend une vente SUIVIE plutot
+# qu'isolee : c'est un outil vendeur, pas un outil d'administration. Le
+# fichier de test du deplacement d'etape est rattache a ce perimetre pour
+# qu'il soit execute a chaque changement de la verticale vendeur — sinon
+# il rejoindrait la longue liste des tests ecrits et jamais lances.
 #
 # Hors portee : le reste de la suite, cf. tests.yml.
 
@@ -33,7 +42,12 @@ on:
     branches: [main]
     paths:
       - 'api/app/Modules/Trade/**'
+      - 'api/app/Modules/CRM/Interfaces/Api/V1/Controllers/CrmOpportunityController.php'
+      - 'api/app/Modules/CRM/Interfaces/Api/V1/Requests/TransitionOpportunityStageRequest.php'
+      - 'api/app/Modules/CRM/Application/Actions/TransitionOpportunityStageAction.php'
+      - 'api/tests/Feature/CRM/CrmOpportunityStageTest.php'
       - 'api/routes/modules/trade.php'
+      - 'api/routes/modules/crm.php'
       - 'api/routes/modules/trade_public.php'
       - 'api/tests/Feature/Trade/**'
       - 'api/tests/Unit/Trade/**'
@@ -47,7 +61,12 @@ on:
     branches: [main]
     paths:
       - 'api/app/Modules/Trade/**'
+      - 'api/app/Modules/CRM/Interfaces/Api/V1/Controllers/CrmOpportunityController.php'
+      - 'api/app/Modules/CRM/Interfaces/Api/V1/Requests/TransitionOpportunityStageRequest.php'
+      - 'api/app/Modules/CRM/Application/Actions/TransitionOpportunityStageAction.php'
+      - 'api/tests/Feature/CRM/CrmOpportunityStageTest.php'
       - 'api/routes/modules/trade.php'
+      - 'api/routes/modules/crm.php'
       - 'api/routes/modules/trade_public.php'
       - 'api/tests/Feature/Trade/**'
       - 'api/tests/Unit/Trade/**'
@@ -143,6 +162,21 @@ jobs:
           fi
           echo "OK - tous les fichiers de test Feature/Trade sont enregistres."
 
+      - name: Assert the CRM opportunity stage test is registered in phpunit.xml
+        # #9790 — meme trou que #9778, autre verticale : un fichier de test
+        # ecrit, commite, et jamais execute parce qu'aucune suite nommee ne le
+        # reference. On le verifie ici pour que le test du pipeline ne
+        # rejoigne pas la liste des garanties illusoires.
+        working-directory: ./api
+        run: |
+          set -euo pipefail
+          f=tests/Feature/CRM/CrmOpportunityStageTest.php
+          if ! grep -q "<file>${f}</file>" phpunit.xml; then
+            echo "::error file=api/${f}::${f} n'est declare dans aucune testsuite de api/phpunit.xml (#9790)."
+            exit 1
+          fi
+          echo "OK - ${f} est enregistre."
+
       - name: Run Trade tests
         id: trade_tests
         working-directory: ./api
@@ -153,6 +187,7 @@ jobs:
           mkdir -p storage/test-results
           php artisan test \
             tests/Feature/Trade \
+            tests/Feature/CRM/CrmOpportunityStageTest.php \
             tests/Unit/Trade \
             tests/Feature/Security/TradeTenantIsolationTest.php \
             tests/Feature/LeopardoPublic/TradePublicPublicationTest.php \
@@ -167,7 +202,8 @@ jobs:
             echo ""
             echo "- Verdict: ${{ steps.trade_tests.outcome }}"
             echo "- Stack: PHP 8.4 / PostgreSQL 16 (PostGIS) / Redis 7"
-            echo "- Scope: tests/Feature/Trade, tests/Unit/Trade, isolation tenant, vitrine publique"
+            echo "- Scope: tests/Feature/Trade, CRM opportunity stage (#9790), "
+            echo "  tests/Unit/Trade, isolation tenant, vitrine publique"
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload JUnit report
