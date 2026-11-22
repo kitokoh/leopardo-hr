@@ -8,6 +8,7 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\TenantManager;
 use Database\Seeders\Concerns\GuardsPilotSeeding;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
@@ -94,7 +95,18 @@ class RestaurantUatSeeder extends Seeder
             'country' => 'CM',
             'currency' => 'XAF',
             'status' => 'active',
-            'features' => ['rh' => true, 'restaurantmanager' => true],
+            // Modules requis par le manifest RestaurantManager
+            // (`requiredModules()` = rh, documents, notifications, crm) : sans
+            // eux, `SolutionActivator::activate()` refuse la verticale et les
+            // routes `/api/v1/crm/*` répondent 403.
+            'features' => [
+                'rh' => true,
+                'documents' => true,
+                'notifications' => true,
+                'crm' => true,
+                'attendance' => true,
+                'restaurantmanager' => true,
+            ],
         ]);
 
         app(TenantManager::class)->withinTenant($company, function () use ($company): void {
@@ -113,10 +125,107 @@ class RestaurantUatSeeder extends Seeder
         $hash = Hash::make(self::DEMO_PASSWORD);
 
         // ── Équipe ─────────────────────────────────────────────────────────
-        $principalId = $this->employee($companyId, $hash, 'Amina', 'Directrice', 'principal@', 'manager', 'principal', $now);
-        $managerId = $this->employee($companyId, $hash, 'Karim', 'Gerant', 'gerant@', 'manager', 'rh', $now);
-        $serverId = $this->employee($companyId, $hash, 'Awa', 'Serveuse', 'serveur@', 'employee', null, $now);
-        $riderEmployeeId = $this->employee($companyId, $hash, 'Moussa', 'Livreur', 'livreur@', 'employee', null, $now);
+        // ── Structure RH : départements, postes, horaire, site ────────────
+        $departmentIds = [];
+        foreach ([
+            'ADM' => 'Administration',
+            'CUISINE' => 'Cuisine',
+            'SALLE' => 'Salle',
+            'CAISSE' => 'Caisse',
+            'LIVRAISON' => 'Livraison',
+        ] as $code => $name) {
+            $departmentIds[$code] = $this->insert('departments', [
+                'company_id' => $companyId,
+                'name' => $name,
+                'created_at' => $now,
+            ]);
+        }
+
+        $positionIds = [];
+        foreach ([
+            'DIRECTEUR' => ['Directeur de restaurant', 'ADM'],
+            'RH' => ['Responsable RH', 'ADM'],
+            'COMPTABLE' => ['Comptable', 'ADM'],
+            'CHEF' => ['Chef cuisinier', 'CUISINE'],
+            'SUPERVISEUR' => ['Superviseur de salle', 'SALLE'],
+            'SERVEUR' => ['Serveur', 'SALLE'],
+            'CAISSIER' => ['Caissier', 'CAISSE'],
+            'LIVREUR' => ['Livreur', 'LIVRAISON'],
+        ] as $code => [$name, $department]) {
+            $positionIds[$code] = $this->insert('positions', [
+                'company_id' => $companyId,
+                'name' => $name,
+                'department_id' => $departmentIds[$department],
+                'created_at' => $now,
+            ]);
+        }
+
+        $scheduleId = $this->insert('schedules', [
+            'company_id' => $companyId,
+            'name' => 'Service restaurant (10h-22h)',
+            'start_time' => '10:00:00',
+            'end_time' => '22:00:00',
+            'break_minutes' => 90,
+            'work_days' => json_encode([1, 2, 3, 4, 5, 6]),
+            'late_tolerance_minutes' => 10,
+            'overtime_threshold_daily' => 8.00,
+            'overtime_threshold_weekly' => 48.00,
+            'is_default' => true,
+            'created_at' => $now,
+        ]);
+
+        $siteId = $this->insert('sites', [
+            'company_id' => $companyId,
+            'name' => 'Chez Leo — Centre',
+            'address' => '12 avenue de la Recette, Douala',
+            'gps_lat' => 4.0511,
+            'gps_lng' => 9.7679,
+            'gps_radius_m' => 120,
+            'status' => 'active',
+            'created_at' => $now,
+        ]);
+
+        // ── Équipe : 8 profils couvrant tous les rôles de la matrice ──────
+        $principalId = $this->employee($companyId, $hash, 'RST-EMP-001', 'Amina', 'Directrice', 'principal@', 'manager', 'principal', $departmentIds['ADM'], $positionIds['DIRECTEUR'], $scheduleId, $siteId, null, 900000, $now);
+        $managerId = $this->employee($companyId, $hash, 'RST-EMP-002', 'Karim', 'Gerant', 'gerant@', 'manager', 'rh', $departmentIds['ADM'], $positionIds['RH'], $scheduleId, $siteId, $principalId, 650000, $now);
+        $accountantId = $this->employee($companyId, $hash, 'RST-EMP-003', 'Serge', 'Ekotto', 'comptable@', 'manager', 'comptable', $departmentIds['ADM'], $positionIds['COMPTABLE'], $scheduleId, $siteId, $principalId, 550000, $now);
+        $supervisorId = $this->employee($companyId, $hash, 'RST-EMP-004', 'Estelle', 'Ngo', 'superviseur@', 'manager', 'superviseur', $departmentIds['SALLE'], $positionIds['SUPERVISEUR'], $scheduleId, $siteId, $managerId, 420000, $now);
+        $chefId = $this->employee($companyId, $hash, 'RST-EMP-005', 'Paul', 'Mbarga', 'chef@', 'employee', null, $departmentIds['CUISINE'], $positionIds['CHEF'], $scheduleId, $siteId, $managerId, 400000, $now);
+        $serverId = $this->employee($companyId, $hash, 'RST-EMP-006', 'Awa', 'Serveuse', 'serveur@', 'employee', null, $departmentIds['SALLE'], $positionIds['SERVEUR'], $scheduleId, $siteId, $supervisorId, 220000, $now);
+        $cashierId = $this->employee($companyId, $hash, 'RST-EMP-007', 'Nadia', 'Fotso', 'caisse@', 'employee', null, $departmentIds['CAISSE'], $positionIds['CAISSIER'], $scheduleId, $siteId, $accountantId, 240000, $now);
+        $riderEmployeeId = $this->employee($companyId, $hash, 'RST-EMP-008', 'Moussa', 'Livreur', 'livreur@', 'employee', null, $departmentIds['LIVRAISON'], $positionIds['LIVREUR'], $scheduleId, $siteId, $supervisorId, 200000, $now);
+
+        $allEmployeeIds = [$principalId, $managerId, $accountantId, $supervisorId, $chefId, $serverId, $cashierId, $riderEmployeeId];
+
+        // Chaque département est piloté par son responsable.
+        foreach (['ADM' => $principalId, 'CUISINE' => $chefId, 'SALLE' => $supervisorId, 'CAISSE' => $accountantId, 'LIVRAISON' => $supervisorId] as $code => $managerEmployeeId) {
+            DB::table('departments')->where('id', $departmentIds[$code])->update(['manager_id' => $managerEmployeeId]);
+        }
+
+        // `user_lookups` (schéma public) : sans ces lignes, la connexion
+        // échoue — le seeder d'origine ne les créait pas.
+        foreach ([
+            'principal@' => [$principalId, 'manager'],
+            'gerant@' => [$managerId, 'manager'],
+            'comptable@' => [$accountantId, 'manager'],
+            'superviseur@' => [$supervisorId, 'manager'],
+            'chef@' => [$chefId, 'employee'],
+            'serveur@' => [$serverId, 'employee'],
+            'caisse@' => [$cashierId, 'employee'],
+            'livreur@' => [$riderEmployeeId, 'employee'],
+        ] as $prefix => [$employeeId, $role]) {
+            DB::table('public.user_lookups')->insert([
+                'email' => $prefix.self::DOMAIN,
+                'company_id' => $companyId,
+                'schema_name' => self::SHARED_SCHEMA,
+                'employee_id' => $employeeId,
+                'role' => $role,
+            ]);
+        }
+
+        $this->seedHrData($companyId, $allEmployeeIds, $principalId, $managerId, $now);
+        $this->seedCrmData($companyId, $principalId, $managerId, $now);
+        $this->seedDocuments($companyId, $allEmployeeIds, $managerId, $now);
 
         // ── Succursales ────────────────────────────────────────────────────
         $branchId = $this->insert('restaurant_branches', [
@@ -224,7 +333,9 @@ class RestaurantUatSeeder extends Seeder
                 'capacity' => $capacity,
                 'min_covers' => 1,
                 'is_mergeable' => $mergeable,
-                'status' => 'available',
+                // `RestaurantRecordStatus` n'accepte que `active|disabled` :
+                // `available` faisait échouer `GET /restaurant/tables` en 500.
+                'status' => 'active',
                 'created_at' => $now,
                 'updated_at' => $now,
             ]);
@@ -442,7 +553,9 @@ class RestaurantUatSeeder extends Seeder
                 'line_total_minor' => 750000,
                 'tax_rate_id' => $taxId,
                 'tax_minor' => 144375,
-                'status' => 'served',
+                // `OrderItemStatus` n'accepte que `active|cancelled` : `served`
+                // faisait échouer `GET /restaurant/orders` en 500.
+                'status' => 'active',
                 'line_index' => 1,
                 'created_at' => $createdAt,
                 'updated_at' => $createdAt,
@@ -602,6 +715,37 @@ class RestaurantUatSeeder extends Seeder
             ]);
         }
 
+        // ── Portée ressource (issue #7599) ────────────────────────────────
+        // L'autorisation Restaurant est ressource-scopée sur
+        // `restaurant_branch` : sans assignation, `canWriteBranchResource()`
+        // retombe sur le comportement historique (principal/rh seulement) et
+        // un caissier, un chef ou un serveur reçoit 403 sur l'ouverture de
+        // caisse, la cuisine et le paiement. On assigne donc chaque profil au
+        // niveau correspondant à son métier, sur la succursale PUBLIQUE.
+        $assignments = [
+            [$principalId, 'manage'],
+            [$managerId, 'manage'],
+            [$accountantId, 'manage'],
+            [$supervisorId, 'manage'],
+            [$chefId, 'manage'],
+            [$serverId, 'operate'],
+            [$cashierId, 'operate'],
+            [$riderEmployeeId, 'view'],
+        ];
+
+        foreach ($assignments as [$employeeId, $level]) {
+            DB::table('employee_resource_assignments')->insertOrIgnore([
+                'company_id' => $companyId,
+                'employee_id' => $employeeId,
+                'resource_type' => 'restaurant_branch',
+                'resource_id' => $branchId,
+                'access_level' => $level,
+                'created_by' => $principalId,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+
         // La succursale privée reste sans assignation : elle sert à vérifier
         // le cloisonnement (R9) — un gérant de la publique ne la voit pas.
         unset($privateBranchId, $principalId, $unitId);
@@ -610,31 +754,408 @@ class RestaurantUatSeeder extends Seeder
     private function employee(
         string $companyId,
         string $hash,
+        string $matricule,
         string $firstName,
         string $lastName,
         string $emailPrefix,
         string $role,
         ?string $managerRole,
+        int $departmentId,
+        int $positionId,
+        int $scheduleId,
+        int $siteId,
+        ?int $managerId,
+        int $salaryBase,
         \Illuminate\Support\Carbon $now,
     ): int {
         return $this->insert('employees', [
             'company_id' => $companyId,
+            'matricule' => $matricule,
             'first_name' => $firstName,
             'last_name' => $lastName,
             'email' => $emailPrefix.self::DOMAIN,
             'password_hash' => $hash,
             'role' => $role,
             'manager_role' => $managerRole,
+            'department_id' => $departmentId,
+            'position_id' => $positionId,
+            'schedule_id' => $scheduleId,
+            'site_id' => $siteId,
+            'manager_id' => $managerId,
             'contract_type' => 'CDI',
             'contract_start' => $now->copy()->subYear()->toDateString(),
-            'salary_base' => 0,
+            'salary_base' => $salaryBase,
             'salary_type' => 'fixed',
             'payment_method' => 'bank_transfer',
-            'leave_balance' => 0,
+            'leave_balance' => 18,
             'status' => 'active',
             'created_at' => $now,
             'updated_at' => $now,
         ]);
+    }
+
+    /**
+     * Données RH du tenant restaurateur : structures salariales, pointage,
+     * congés, paie, notifications. Sans ce bloc, le tenant n'a que des
+     * employés « coquilles vides » et les écrans RH sont vides.
+     *
+     * @param  list<int>  $employeeIds
+     */
+    private function seedHrData(string $companyId, array $employeeIds, int $principalId, int $hrId, \Illuminate\Support\Carbon $now): void
+    {
+        // Structures salariales : le moteur de paie ignore un employé qui n'en
+        // a pas (0 bulletin produit en silence).
+        $employees = DB::table('employees')
+            ->where('company_id', $companyId)
+            ->whereIn('id', $employeeIds)
+            ->get(['id', 'salary_base']);
+
+        foreach ($employees as $employee) {
+            $structureId = $this->insert('salary_structures', [
+                'company_id' => $companyId,
+                'name' => 'Structure CM employe #'.$employee->id,
+                'base_salary' => (float) $employee->salary_base,
+                'currency' => 'XAF',
+                'country_code' => 'CM',
+                'frequency' => 'monthly',
+                'active' => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+            $this->insert('salary_components', [
+                'company_id' => $companyId,
+                'salary_structure_id' => $structureId,
+                'name' => 'Prime de service',
+                'code' => 'PRIME_SERVICE',
+                'type' => 'earning',
+                'calculation_type' => 'percentage_of_base',
+                'amount' => 0,
+                'percentage' => 5,
+                'formula' => null,
+                'is_taxable' => true,
+                'is_recurring' => true,
+                'order' => 1,
+                'active' => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+            DB::table('employees')->where('id', $employee->id)->update(['salary_structure_id' => $structureId]);
+        }
+
+        // Pointage : 20 derniers jours ouvrés, service 10h-22h, quelques
+        // retards et heures supplémentaires (réaliste pour un restaurant).
+        $days = [];
+        $cursor = $now->copy()->startOfDay();
+        while (count($days) < 20) {
+            if ($cursor->dayOfWeek !== 0) {
+                $days[] = $cursor->copy();
+            }
+            $cursor->subDay();
+        }
+
+        foreach ($employeeIds as $employeeIndex => $employeeId) {
+            foreach ($days as $dayIndex => $day) {
+                if (($dayIndex + $employeeIndex) % 13 === 0) {
+                    continue; // jour de repos / absence
+                }
+
+                $isLate = ($dayIndex + $employeeIndex) % 7 === 0;
+                $checkIn = $day->copy()->setTime(10, $isLate ? 22 : 2, 0);
+                $checkOut = $day->copy()->setTime(22, $dayIndex % 5 === 0 ? 40 : 5, 0);
+                $hours = round($checkOut->diffInMinutes($checkIn) / 60, 2);
+
+                DB::table('attendance_logs')->insertOrIgnore([
+                    'company_id' => $companyId,
+                    'employee_id' => $employeeId,
+                    'date' => $day->format('Y-m-d'),
+                    'session_number' => 1,
+                    'check_in' => $checkIn->toIso8601String(),
+                    'check_out' => $checkOut->toIso8601String(),
+                    'method' => 'mobile',
+                    'status' => $isLate ? 'late' : 'ontime',
+                    'hours_worked' => $hours,
+                    'overtime_hours' => max(0, round($hours - 8, 2)),
+                    'late_minutes' => $isLate ? 22 : 0,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]);
+            }
+        }
+
+        // Types d'absence + soldes de congés.
+        $absenceTypeIds = [];
+        foreach ([
+            'annual' => ['Congé annuel', 'CA_RST', true, true, false],
+            'sick' => ['Congé maladie', 'CM_RST', true, false, true],
+            'unpaid' => ['Absence non payée', 'ANP_RST', false, false, false],
+        ] as $key => [$name, $code, $isPaid, $deducts, $proof]) {
+            $absenceTypeIds[$key] = $this->insert('absence_types', [
+                'company_id' => $companyId,
+                'name' => $name,
+                'code' => $code,
+                'is_paid' => $isPaid,
+                'deducts_leave' => $deducts,
+                'requires_proof' => $proof,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+
+        foreach ($employeeIds as $employeeId) {
+            foreach ($absenceTypeIds as $absenceTypeId) {
+                $this->insert('leave_balances', [
+                    'company_id' => $companyId,
+                    'employee_id' => $employeeId,
+                    'absence_type_id' => $absenceTypeId,
+                    'balance' => 18,
+                    'used' => 0,
+                    'pending' => 0,
+                    'year' => (int) $now->format('Y'),
+                    'updated_at' => $now,
+                ]);
+            }
+        }
+
+        // Une demande approuvée + une en attente (file de validation non vide).
+        $this->insert('absences', [
+            'company_id' => $companyId,
+            'employee_id' => $employeeIds[5] ?? $employeeIds[0],
+            'absence_type_id' => $absenceTypeIds['annual'],
+            'start_date' => $now->copy()->addDays(10)->toDateString(),
+            'end_date' => $now->copy()->addDays(14)->toDateString(),
+            'days_count' => 5,
+            'status' => 'approved',
+            'reason' => 'Congés annuels',
+            'approved_by' => $hrId,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+        $this->insert('absences', [
+            'company_id' => $companyId,
+            'employee_id' => $employeeIds[6] ?? $employeeIds[0],
+            'absence_type_id' => $absenceTypeIds['sick'],
+            'start_date' => $now->copy()->addDays(2)->toDateString(),
+            'end_date' => $now->copy()->addDays(3)->toDateString(),
+            'days_count' => 2,
+            'status' => 'pending',
+            'reason' => 'Certificat médical à fournir',
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+
+        // Paie du mois précédent : 7 bulletins validés + 1 brouillon.
+        $periodMonth = (int) $now->copy()->subMonth()->format('m');
+        $periodYear = (int) $now->copy()->subMonth()->format('Y');
+
+        foreach (array_values($employeeIds) as $index => $employeeId) {
+            $base = (float) DB::table('employees')->where('id', $employeeId)->value('salary_base');
+            $overtime = $index % 3 === 0 ? round($base * 0.04, 2) : 0.0;
+            $advance = $index === 2 ? round($base * 0.05, 2) : 0.0;
+            $absence = $index === 4 ? round($base * 0.03, 2) : 0.0;
+            $ir = round($base * 0.07, 2);
+            $net = $base + $overtime - $advance - $absence - $ir;
+            $isDraft = $index === count($employeeIds) - 1;
+
+            $this->insert('payrolls', [
+                'company_id' => $companyId,
+                'employee_id' => $employeeId,
+                'period_month' => $periodMonth,
+                'period_year' => $periodYear,
+                'gross_salary' => $base,
+                'overtime_amount' => $overtime,
+                'bonuses' => json_encode($index === 0 ? [['label' => 'Prime performance', 'amount' => round($base * 0.06, 2)]] : []),
+                'deductions' => json_encode($absence > 0 ? [['label' => 'Absence non justifiée', 'amount' => $absence]] : []),
+                'cotisations' => json_encode([['label' => 'CNPS', 'amount' => round($base * 0.09, 2)]]),
+                'ir_amount' => $ir,
+                'advance_deduction' => $advance,
+                'absence_deduction' => $absence,
+                'penalty_deduction' => 0,
+                'net_salary' => round($net, 2),
+                'status' => $isDraft ? 'draft' : 'validated',
+                'validated_by' => $isDraft ? null : $principalId,
+                'validated_at' => $isDraft ? null : $now->copy()->subDays(5),
+                'created_at' => $now->copy()->subDays(7),
+                'updated_at' => $now->copy()->subDays($isDraft ? 1 : 5),
+            ]);
+        }
+
+        // Notifications (cloche non vide pour chaque profil).
+        foreach ($employeeIds as $index => $employeeId) {
+            $this->insert('notifications', [
+                'company_id' => $companyId,
+                'employee_id' => $employeeId,
+                'type' => $index % 2 === 0 ? 'payroll' : 'attendance',
+                'title' => $index % 2 === 0 ? 'Bulletin de paie disponible' : 'Pointage à valider',
+                'body' => $index % 2 === 0
+                    ? 'Votre bulletin du mois dernier est disponible.'
+                    : 'Une anomalie de pointage a été détectée sur votre service.',
+                'data' => json_encode(['source' => 'recette']),
+                'is_read' => $index > 3,
+                'read_at' => $index > 3 ? $now : null,
+                'created_at' => $now->copy()->subDays($index),
+            ]);
+        }
+    }
+
+    /**
+     * CRM du tenant restaurateur : pipeline, comptes (clients B2B), contacts,
+     * opportunités et tâches — le module `crm` est requis par le manifest.
+     */
+    private function seedCrmData(string $companyId, int $principalId, int $hrId, \Illuminate\Support\Carbon $now): void
+    {
+        $pipelineId = $this->insert('crm_pipelines', [
+            'company_id' => $companyId,
+            'name' => 'Traiteur & événements',
+            'is_default' => true,
+            'description' => 'Pipeline B2B : prestations traiteur, séminaires, mariages.',
+            'created_by' => $principalId,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+
+        $stages = [
+            ['Nouveau', 1, false, false],
+            ['Qualifié', 2, false, false],
+            ['Devis envoyé', 3, false, false],
+            ['Gagné', 4, true, false],
+            ['Perdu', 5, false, true],
+        ];
+        foreach ($stages as [$name, $position, $isWon, $isLost]) {
+            $this->insert('crm_pipeline_stages', [
+                'company_id' => $companyId,
+                'pipeline_id' => $pipelineId,
+                'name' => $name,
+                'position' => $position,
+                'is_won' => $isWon,
+                'is_lost' => $isLost,
+                'created_by' => $principalId,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+
+        $accountSpecs = [
+            ['Hôtel Sawa', 'hotellerie', 'Douala', 'contact@hotel-sawa.example.com'],
+            ['Groupe Scolaire Bilingue', 'education', 'Douala', 'direction@gsb.example.com'],
+            ['TotalEnergies Douala', 'energie', 'Douala', 'achats@total-douala.example.com'],
+        ];
+        $accountIds = [];
+        foreach ($accountSpecs as [$name, $industry, $city, $email]) {
+            $accountIds[$name] = $this->insert('crm_accounts', [
+                'company_id' => $companyId,
+                'name' => $name,
+                'status' => 'active',
+                'owner_id' => $principalId,
+                'email' => $email,
+                'industry' => $industry,
+                'city' => $city,
+                'country' => 'CM',
+                'source' => 'recette',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+
+        $contactSpecs = [
+            ['Hôtel Sawa', 'Bertrand', 'Ewane', 'Responsable restauration', 'bertrand.ewane@hotel-sawa.example.com'],
+            ['Groupe Scolaire Bilingue', 'Chantal', 'Mballa', 'Intendante', 'chantal.mballa@gsb.example.com'],
+            ['TotalEnergies Douala', 'Didier', 'Nkoulou', 'Responsable achats', 'didier.nkoulou@total-douala.example.com'],
+        ];
+        foreach ($contactSpecs as $contactIndex => [$account, $firstName, $lastName, $title, $email]) {
+            $this->insert('crm_contacts', [
+                'company_id' => $companyId,
+                'account_id' => $accountIds[$account],
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                // `CrmContact` caste `email`/`phone` en `encrypted` : insérer
+                // du clair fait échouer la lecture (`DecryptException` → 500
+                // sur `GET /crm/contacts`). On chiffre donc explicitement.
+                'email' => Crypt::encryptString($email),
+                'phone' => Crypt::encryptString('+2376000000'.str_pad((string) ($contactIndex + 1), 2, '0', STR_PAD_LEFT)),
+                'title' => $title,
+                'status' => 'active',
+                'owner_id' => $principalId,
+                'is_primary' => true,
+                'opt_in_email' => true,
+                'opt_in_sms' => false,
+                'opt_in_whatsapp' => true,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+
+        $opportunitySpecs = [
+            ['Hôtel Sawa', 'Contrat traiteur mensuel', 'Devis envoyé', 2400000, 'open'],
+            ['Groupe Scolaire Bilingue', 'Cantine scolaire 2027', 'Qualifié', 9600000, 'open'],
+            ['TotalEnergies Douala', 'Séminaire annuel 120 couverts', 'Gagné', 1800000, 'won'],
+        ];
+        foreach ($opportunitySpecs as [$account, $name, $stage, $amount, $status]) {
+            $this->insert('crm_opportunities', [
+                'company_id' => $companyId,
+                'pipeline_id' => $pipelineId,
+                'account_id' => $accountIds[$account],
+                'owner_id' => $principalId,
+                'name' => $name,
+                'stage' => $stage,
+                'amount' => $amount,
+                'currency' => 'XAF',
+                'expected_close_date' => $now->copy()->addDays(30)->toDateString(),
+                'status' => $status,
+                'source' => 'recette',
+                'won_at' => $status === 'won' ? $now->copy()->subDays(3) : null,
+                'created_by' => $principalId,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+
+        foreach ([
+            ['Rappeler Hôtel Sawa pour le devis', 'high', false],
+            ['Préparer la dégustation cantine', 'medium', false],
+            ['Envoyer la facture du séminaire', 'high', true],
+        ] as $index => [$title, $priority, $done]) {
+            $this->insert('crm_tasks', [
+                'company_id' => $companyId,
+                'title' => $title,
+                'description' => 'Tâche de recette CRM.',
+                'due_at' => $now->copy()->addDays($index + 1),
+                'assignee_id' => $index === 2 ? $hrId : $principalId,
+                'done' => $done,
+                'status' => $done ? 'done' : 'open',
+                'priority' => $priority,
+                'created_by' => $principalId,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
+    }
+
+    /**
+     * Documents RH du tenant (contrats, fiches de poste, attestations).
+     *
+     * @param  list<int>  $employeeIds
+     */
+    private function seedDocuments(string $companyId, array $employeeIds, int $uploadedBy, \Illuminate\Support\Carbon $now): void
+    {
+        $types = ['contract', 'job_description', 'certificate', 'id_card'];
+
+        foreach ($employeeIds as $index => $employeeId) {
+            $this->insert('employee_documents', [
+                'company_id' => $companyId,
+                'employee_id' => $employeeId,
+                'type' => $types[$index % count($types)],
+                'status' => 'valid',
+                'document_date' => $now->copy()->subMonths(3)->toDateString(),
+                'reference' => 'DOC-RST-'.str_pad((string) ($index + 1), 3, '0', STR_PAD_LEFT),
+                'url' => 'documents/recette/employe-'.$employeeId.'.pdf',
+                'notes' => 'Document de recette (données synthétiques).',
+                'uploaded_by' => $uploadedBy,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+        }
     }
 
     /**
