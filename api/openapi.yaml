@@ -1210,7 +1210,8 @@ paths:
                   maxLength: 20
                 moq_quantity:
                   type: number
-                  exclusiveMinimum: 0
+                  minimum: 0
+                  exclusiveMinimum: true
                 indicative_unit_price_minor:
                   type: integer
                   minimum: 0
@@ -1298,7 +1299,8 @@ paths:
                   maxLength: 20
                 moq_quantity:
                   type: number
-                  exclusiveMinimum: 0
+                  minimum: 0
+                  exclusiveMinimum: true
                 indicative_unit_price_minor:
                   type: integer
                   minimum: 0
