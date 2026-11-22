@@ -1,3 +1,26 @@
+## 2026-11-22 — École : espace, collaborateurs, public, élèves (PR #9792, #9785 #9786 #9787 #9788 #9789)
+
+Surface : `front/web/src/app/(dashboard)/edu-manager/fee-types/page.tsx` (nouveau), `.../guardians/page.tsx` (nouveau), `.../reports/page.tsx` (nouveau), `.../edu-manager/page.tsx` (raccourcis), `front/web/src/app/business/ecole/page.tsx` (nouveau), `front/web/src/modules/vitrine/components/pack/PackLandingPage.tsx` (nouveau), `front/web/src/modules/vitrine/data/pack-pages.ts`, `front/web/src/modules/vitrine/domain/pack-signup.ts`, `front/web/src/modules/vitrine/components/Navbar.tsx`, `api/app/Modules/EduManager/Application/Actions/SeedMinimalEduManagerAction.php`, `api/app/Modules/EduManager/Infrastructure/Services/EduDemoDataKit.php` (nouveau), `api/app/Modules/EduManager/Infrastructure/Services/EduOnboardingStepPredicate.php` (nouveau), `api/app/Shared/Onboarding/StepPredicateRegistry.php` (nouveau), `api/lang/{fr,en,ar,tr}/edu.php` (nouveau).
+
+**Pourquoi c'est un scénario de test** : la promesse « une école crée son espace et dispose de tous ses outils » n'était tenue qu'à moitié — l'amorçage ne créait ni matière ni type de frais (une classe ne pouvait pas être affectée, aucune facture émise), trois étapes d'onboarding étaient purement déclaratives (le bouton « Suivant » les validait sans action réelle, faussant `go_live_ready`), et trois écrans existaient côté API sans page (tarifs, responsables légaux, rapports).
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| l'activation crée ≥ 6 matières et ≥ 4 types de frais, montants à 0, devise du tenant | sans matière, `edu_teacher_subjects` refuse l'affectation ; sans type de frais, `edu_fee_charges` refuse la facturation |
+| rejouer l'amorçage ne crée aucun doublon (matières, frais, campus) | un second passage dupliquerait le référentiel |
+| l'amorçage d'un tenant n'écrit rien chez un autre | fuite inter-tenants |
+| le kit de démo installe 3 classes, 6 élèves `DEMO-*`, 3 responsables, inscriptions et rattachements | l'espace reste vide : le directeur ne peut juger ni les classes ni le portail |
+| le kit est idempotent et strictement tenant-scoped | doublons au rejeu, fuite inter-tenants |
+| les élèves de démo portent tous un numéro `DEMO-` | aucune PII réelle ne doit entrer dans un espace de démonstration |
+| `edu_setup_campus` / `edu_setup_classes` / `edu_first_students` renvoient `false` sans donnée réelle, `true` avec | le bouton « Suivant » validait une étape sans action → `go_live_ready` faux |
+| une étape d'une autre verticale n'est pas capturée par le prédicat école | le registre partagé doit rester fail-closed |
+| `/edu-manager/fee-types`, `/guardians`, `/reports` et `/business/ecole` rendent leurs états vide/chargement/erreur | écrans inaccessibles ou muets |
+| le contact d'un responsable n'est jamais renvoyé en clair | donnée personnelle exposée |
+
+**Couverture exécutée** — `php -l` sur les fichiers PHP touchés (0 erreur) ; `pint --test` → 0 style issue ; `phpstan analyse -c phpstan-strict.neon app/Modules/EduManager` → **0 erreur** ; `check-module-isolation.sh` → aucun nouvel import croisé ; `check-i18n-catalog-parity.sh` → parité OK (4 langues) ; `validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `check-hardcoded-accented-messages.sh` → aucune nouvelle chaîne accentuée ; `check-tests-no-frozen-dates.sh` → aucune date figée ; `tsc --noEmit` → 0 erreur ; `eslint --max-warnings 0` → 0 erreur ; `jest --ci` → suites vertes.
+
+**Non couvert** — le rendu navigateur réel des 4 pages n'est pas ouvert par ce lot ; la mesure reste le run CI.
+
 ## 2026-11-22 — Trade : catalogue produits B2B (API interne + catalogue public + UI vendeur) (PR #9769, #9767, #9768)
 
 Surface : `api/routes/modules/trade.php` (`GET|POST /v1/trade/products`, `GET|PUT /v1/trade/products/{product}`, `POST /v1/trade/products/{product}/archive`), `api/routes/modules/trade_public.php` (`GET /v1/public/trade/companies/{slug}/products`), `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/TradeProductController.php`, `TradePublicProfileController::products()`, `Requests/StoreTradeProductRequest.php`, `Requests/UpdateTradeProductRequest.php`, `Resources/TradeProductResource.php`, `Resources/PublicTradeProductResource.php`, `front/web/src/app/(dashboard)/trade-os/page.tsx` (onglet Catalogue), `front/web/src/app/entreprises/[slug]/page.tsx` (section Produits), `front/web/src/lib/trade-public-api.ts`.
