@@ -12,6 +12,7 @@ use App\Modules\Accounting\Domain\Enums\DocumentType;
 use App\Modules\Accounting\Domain\Exceptions\DocumentWorkflowException;
 use App\Modules\Accounting\Domain\Models\AccountingDocument;
 use App\Modules\Accounting\Infrastructure\Services\DocumentNumberingService;
+use App\Modules\Accounting\Interfaces\Api\V1\Controllers\Concerns\ResolvesAccountingActor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -25,6 +26,8 @@ use Illuminate\Http\Request;
  */
 class AccountingDocumentController extends Controller
 {
+    use ResolvesAccountingActor;
+
     public function __construct(
         private readonly DocumentWorkflowService $workflow,
         private readonly DocumentNumberingService $numbering,
@@ -238,14 +241,8 @@ class AccountingDocumentController extends Controller
 
     private function actor(Request $request): Employee
     {
-        /** @var Employee $actor */
-        $actor = $request->user();
-
-        if (! $actor->isManager()) {
-            abort(403);
-        }
-
-        return $actor;
+        // #9763 — manager historique OU grant `accounting` (délégation #7761).
+        return $this->accountingActor($request);
     }
 
     private function assertTenant(Request $request, AccountingDocument $document): void
