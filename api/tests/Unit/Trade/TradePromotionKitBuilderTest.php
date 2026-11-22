@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Trade;
 
-use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Trade\Domain\Models\TradeCompanyProfile;
 use App\Modules\Trade\Domain\Models\TradeProduct;
 use App\Modules\Trade\Infrastructure\Services\TradePromotionKitBuilder;
@@ -27,16 +26,9 @@ use PHPUnit\Framework\TestCase;
  */
 class TradePromotionKitBuilderTest extends TestCase
 {
-    private function company(string $name = 'Acier Nord SARL'): Company
-    {
-        $company = new Company;
-        $company->name = $name;
-        $company->country = 'FR';
-        $company->currency = 'EUR';
-
-        return $company;
-    }
-
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function profile(array $attributes = []): TradeCompanyProfile
     {
         $profile = new TradeCompanyProfile;
@@ -235,11 +227,12 @@ class TradePromotionKitBuilderTest extends TestCase
         $profile = $this->profile();
         $before = $profile->getAttributes();
 
-        $this->builder()->build($profile);
+        $kit = $this->builder()->build($profile);
 
         // Un kit de LECTURE qui écrit serait un piège : la publication reste
         // l'acte séparé `PUT /trade/profile/publication`.
         $this->assertSame($before, $profile->getAttributes());
+        $this->assertArrayHasKey('publication', $kit);
     }
 
     public function test_kit_states_it_publishes_nothing(): void
