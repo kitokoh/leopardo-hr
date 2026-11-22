@@ -1,3 +1,27 @@
+## 2026-11-22 — Trade : catalogue produits B2B (API interne + catalogue public + UI vendeur) (PR #9769, #9767, #9768)
+
+Surface : `api/routes/modules/trade.php` (`GET|POST /v1/trade/products`, `GET|PUT /v1/trade/products/{product}`, `POST /v1/trade/products/{product}/archive`), `api/routes/modules/trade_public.php` (`GET /v1/public/trade/companies/{slug}/products`), `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/TradeProductController.php`, `TradePublicProfileController::products()`, `Requests/StoreTradeProductRequest.php`, `Requests/UpdateTradeProductRequest.php`, `Resources/TradeProductResource.php`, `Resources/PublicTradeProductResource.php`, `front/web/src/app/(dashboard)/trade-os/page.tsx` (onglet Catalogue), `front/web/src/app/entreprises/[slug]/page.tsx` (section Produits), `front/web/src/lib/trade-public-api.ts`.
+
+**Pourquoi c'est un scénario de test** : `TradeProduct`, sa table (`2026_10_14_000102_8477`) et sa factory existaient depuis TRADE-002/#8477, mais **aucune route ne les exposait** — un modèle orphelin. Un vendeur activé sur la verticale `trade` pouvait émettre des offres et répondre à des RFQ sans jamais pouvoir créer un produit, et les lignes de RFQ/offres acceptent un `trade_product_id` qui ne pouvait jamais être renseigné. Côté public, la fiche n'affichait que des **catégories** : un acheteur professionnel ne voyait jamais ce que le vendeur vend.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `POST /v1/trade/products` sans `hs_code` répond 201 avec `hs_code: null` | le système ne doit **jamais deviner** un classement douanier : une valeur inventée ferait croire à une conformité qui n'existe pas |
+| `hs_code: "090"` (3 chiffres) répond 422 | un code à 3 chiffres est un **chapitre**, pas un classement ; sans la règle 6–10, un code invalide entrait en base |
+| `PUT /v1/trade/products/{id}` avec `status: "archived"` laisse le produit `active` | archiver est un **acte distinct** ; un `PUT` ne doit pas pouvoir archiver par inadvertance |
+| `POST /v1/trade/products/{id}/archive` deux fois répond 200 les deux fois | l'archivage est idempotent : l'écran peut réessayer sans risque |
+| le produit d'un AUTRE tenant répond **404**, jamais 403 | l'API ne doit pas révéler l'existence d'une ressource d'un autre tenant |
+| `GET /v1/public/trade/companies/{slug}/products` ne sérialise jamais `hs_code` ni `status` | `hs_code` est une donnée de conformité interne, pas un argument de vente |
+| un produit `archived` est absent du catalogue public | un produit retiré du catalogue ne doit pas rester visible |
+| un profil non publié répond **404 uniforme** | impossible de distinguer « slug inexistant » de « dépublié » (anti-énumération) |
+| le catalogue public lit le schéma du tenant **propriétaire du slug** | `trade_products` est une table TENANT : sans bascule de `search_path`, la lecture renvoyait 0 ligne (ou les produits d'un autre tenant) |
+| `q=100%` ne ramène pas tout le catalogue | un `%` saisi était un joker `LIKE` non échappé |
+| la fiche `/entreprises/{slug}` n'affiche **aucun** bouton de commande | `TradeDiscoverableProvider::supportedActions()` ne déclare que `contact` |
+
+**Couverture exécutée** — `php -l` sur les 9 fichiers PHP (0 erreur) ; `check-openapi-route-coverage.py --strict-staleness` → **0 nouvelle route non couverte** ; `yaml.safe_load(api/openapi.yaml)` OK ; `tsc --noEmit` sur la fiche, le dashboard et le client API → 0 erreur ; `jest src/app/entreprises` → **10 passed** ; `validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `check-i18n-catalog-parity.sh` → parité OK ; gardes `search_path` (dette 0), `form-request` (434 figées), `without-global-scope` (253) → exit 0.
+
+**Non couvert** — `php artisan test` (pas de `vendor/` ni de PostgreSQL dans le sandbox) : `TradeProductApiTest` (8 cas) est écrit et sera la mesure du run CI. Le rendu navigateur réel de la fiche n'a pas été ouvert.
+
 ## 2026-11-21 — Dette backend : Audit, Platform, Support, Travel, doublons de listeners (PR #9750, #9741)
 
 Surface : `api/routes/modules/hr_extended.php` (redéclarations `GET /audit-logs` et `/audit-logs/{id}` supprimées), `api/app/Core/Auth/Interfaces/Api/V1/Controllers/AuditLogController.php` + `Requests/AuditLogIndexRequest.php` + `Requests/AuditLogExportRequest.php`, `api/app/Modules/Platform/Interfaces/Api/V1/Controllers/PlatformCompanyFeatureController.php` + `Requests/UpdateCompanyFeaturesRequest.php`, `api/app/Modules/Platform/Infrastructure/Services/WebhookEventRegistry.php`, `api/app/Http/Middleware/Travel/TravelPartnerAuthMiddleware.php`, `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/TradeCompanyProfileController.php`, `api/app/Modules/CRM/Infrastructure/Services/CrmConsentGuard.php`, `api/app/Providers/EventServiceProvider.php`, `api/bootstrap/app.php`.

@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, Globe2, RefreshCw, ShoppingCart, Store, Truck } from 'lucide-react';
+import { AlertTriangle, Globe2, Package, RefreshCw, ShoppingCart, Store, Truck } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
@@ -31,7 +31,50 @@ import { Button } from '@/components/ui/Button';
  * INDISPONIBLE. Aucune donnée n'est simulée pour combler un adaptateur absent.
  */
 
-type TradeTab = 'overview' | 'sourcing' | 'sales' | 'costs';
+type TradeTab = 'overview' | 'sourcing' | 'sales' | 'catalog' | 'costs';
+
+/**
+ * Produit du catalogue B2B (#9767).
+ *
+ * `indicative_unit_price_minor` est un entier en minor units : le catalogue
+ * n'est pas une offre commerciale, il ne porte ni remise ni total. Un prix
+ * ferme n'existe que dans une offre (`TradeQuote`), où le serveur recalcule
+ * les totaux depuis les lignes.
+ */
+type TradeProduct = {
+  id: number | string;
+  name: string;
+  description?: string | null;
+  category?: string | null;
+  hs_code?: string | null;
+  origin_country?: string | null;
+  unit?: string | null;
+  moq_quantity?: string | number | null;
+  indicative_unit_price_minor?: number | null;
+  currency?: string | null;
+  status?: string;
+};
+
+/** Brouillon du formulaire de création — tout est texte, converti à l'envoi. */
+type ProductDraft = {
+  name: string;
+  category: string;
+  unit: string;
+  moq: string;
+  price: string;
+  origin: string;
+  hsCode: string;
+};
+
+const EMPTY_DRAFT: ProductDraft = {
+  name: '',
+  category: '',
+  unit: '',
+  moq: '',
+  price: '',
+  origin: '',
+  hsCode: '',
+};
 
 type TradeRow = {
   id?: string | number;
@@ -57,6 +100,9 @@ const TABS: { key: TradeTab; labelKey: string; icon: typeof Globe2 }[] = [
   { key: 'overview', labelKey: 'trade.overview.title', icon: Globe2 },
   { key: 'sourcing', labelKey: 'trade.sourcing.title', icon: ShoppingCart },
   { key: 'sales', labelKey: 'trade.sales.title', icon: Store },
+  // Le catalogue est l'outil du VENDEUR : sans lui, il ne peut pas alimenter
+  // les lignes de ses offres (`trade_product_id` restait vide).
+  { key: 'catalog', labelKey: 'trade.catalog.title', icon: Package },
   { key: 'costs', labelKey: 'trade.costs.title', icon: Truck },
 ];
 
@@ -74,6 +120,14 @@ export default function TradeDashboardPage() {
   const [integrations, setIntegrations] = useState<TradeIntegration[]>([]);
   const [degraded, setDegraded] = useState(false);
 
+  // ── Catalogue produits (#9767) ───────────────────────────────────────────
+  const [products, setProducts] = useState<TradeProduct[]>([]);
+  const [draft, setDraft] = useState<ProductDraft>(EMPTY_DRAFT);
+  const [formOpen, setFormOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+
   const load = useCallback(async () => {
     setError(null);
     setLoading(true);
@@ -82,11 +136,12 @@ export default function TradeDashboardPage() {
       // Chaque appel est indépendant : un module partiellement déployé ne doit
       // pas vider tout l'écran. On tolère l'absence d'une source (404/403) et
       // on affiche « aucune donnée » plutôt qu'une erreur globale.
-      const [rfqRes, quoteRes, costRes, metaRes] = await Promise.allSettled([
+      const [rfqRes, quoteRes, costRes, metaRes, productRes] = await Promise.allSettled([
         apiFetch('/trade/rfqs'),
         apiFetch('/trade/quotes'),
         apiFetch('/trade/cost-estimates'),
         apiFetch('/trade/meta/integrations'),
+        apiFetch('/trade/products'),
       ]);
 
       const firstRejection = [rfqRes, quoteRes, costRes, metaRes].find(
@@ -114,6 +169,19 @@ export default function TradeDashboardPage() {
       setRfqs(await readList(rfqRes));
       setQuotes(await readList(quoteRes));
       setCostEstimates(await readList(costRes));
+
+      // Le catalogue est une source INDÉPENDANTE : un 403/404 sur les autres
+      // listes ne doit pas vider l'onglet Catalogue, et inversement.
+      if (productRes.status === 'fulfilled') {
+        try {
+          const payload = await productRes.value.json();
+          setProducts(Array.isArray(payload?.data) ? (payload.data as TradeProduct[]) : []);
+        } catch {
+          setProducts([]);
+        }
+      } else {
+        setProducts([]);
+      }
 
       if (metaRes.status === 'fulfilled') {
         try {
@@ -144,6 +212,102 @@ export default function TradeDashboardPage() {
     () => integrations.filter((i) => !(i.configured && i.available)),
     [integrations],
   );
+
+  /**
+   * Création d'un produit (#9767).
+   *
+   * ## Ce que le formulaire refuse de faire
+   *
+   * Il n'envoie **jamais** de `hs_code` inventé : vide = `null`, et le serveur
+   * ne le déduit pas non plus. Un code douanier faux ferait croire à une
+   * conformité qui n'existe pas.
+   *
+   * Le prix saisi est converti en **minor units entiers** (`Math.round`) :
+   * aucun flottant ne part vers l'API pour représenter de l'argent.
+   */
+  const submitProduct = async () => {
+    setFormError(null);
+    setNotice(null);
+
+    const name = draft.name.trim();
+    if (!name) {
+      setFormError(t(locale, 'trade.catalog.nameRequired'));
+      return;
+    }
+
+    const hsCode = draft.hsCode.trim();
+    if (hsCode && !/^[0-9]{6,10}$/.test(hsCode)) {
+      setFormError(t(locale, 'trade.catalog.hsInvalid'));
+      return;
+    }
+
+    const price = draft.price.trim();
+    const moq = draft.moq.trim();
+
+    setSaving(true);
+    try {
+      const response = await apiFetch('/trade/products', {
+        method: 'POST',
+        body: JSON.stringify({
+          name,
+          category: draft.category.trim() || null,
+          unit: draft.unit.trim() || null,
+          origin_country: draft.origin.trim().toUpperCase() || null,
+          moq_quantity: moq ? moq : null,
+          // Saisie en unité majeure → minor units entiers.
+          indicative_unit_price_minor: price ? Math.round(Number(price) * 100) : null,
+          hs_code: hsCode || null,
+        }),
+      });
+
+      const payload = await response.json().catch(() => null);
+      const created = payload?.data as TradeProduct | undefined;
+
+      if (created) {
+        setProducts((current) => [created, ...current]);
+      }
+      setDraft(EMPTY_DRAFT);
+      setFormOpen(false);
+      setNotice(t(locale, 'trade.catalog.saved'));
+    } catch {
+      setFormError(t(locale, 'trade.catalog.error'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  /**
+   * Archivage logique — jamais de suppression : les offres passées référencent
+   * le produit, un `DELETE` casserait leur historique.
+   */
+  const archiveProduct = async (product: TradeProduct) => {
+    setFormError(null);
+    setNotice(null);
+
+    try {
+      const response = await apiFetch(`/trade/products/${product.id}/archive`, {
+        method: 'POST',
+      });
+      const payload = await response.json().catch(() => null);
+      const updated = payload?.data as TradeProduct | undefined;
+
+      setProducts((current) =>
+        current.map((item) =>
+          item.id === product.id ? { ...item, status: updated?.status ?? 'archived' } : item,
+        ),
+      );
+    } catch {
+      setFormError(t(locale, 'trade.catalog.error'));
+    }
+  };
+
+  const formatPrice = (product: TradeProduct): string => {
+    if (product.indicative_unit_price_minor === null || product.indicative_unit_price_minor === undefined) {
+      return t(locale, 'trade.catalog.priceOnRequest');
+    }
+    const amount = (product.indicative_unit_price_minor / 100).toLocaleString(locale);
+    return `${t(locale, 'trade.catalog.priceIndicative')} — ${amount}${product.currency ? ` ${product.currency}` : ''}`;
+  };
 
   const renderTable = (rows: TradeRow[], emptyKey: string) => {
     if (!rows.length) {
@@ -338,6 +502,212 @@ export default function TradeDashboardPage() {
               </h2>
               <p className="mt-1 text-xs text-slate-500">{t(locale, 'trade.sales.subtitle')}</p>
               <div className="mt-3">{renderTable(quotes, 'trade-quotes-empty')}</div>
+            </div>
+          ) : null}
+
+          {tab === 'catalog' ? (
+            <div className="rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-slate-200">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="text-sm font-semibold text-slate-900">
+                    {t(locale, 'trade.catalog.title')}
+                  </h2>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {t(locale, 'trade.catalog.subtitle')}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setFormOpen((open) => !open);
+                    setFormError(null);
+                    setNotice(null);
+                  }}
+                >
+                  <Package className="h-4 w-4" />
+                  {t(locale, 'trade.catalog.new')}
+                </Button>
+              </div>
+
+              {notice ? (
+                <p className="mt-3 rounded-xl bg-emerald-50 px-4 py-2 text-xs text-emerald-800">
+                  {notice}
+                </p>
+              ) : null}
+
+              {formError ? (
+                <p className="mt-3 rounded-xl bg-rose-50 px-4 py-2 text-xs text-rose-700">
+                  {formError}
+                </p>
+              ) : null}
+
+              {formOpen ? (
+                <form
+                  className="mt-4 grid gap-3 rounded-xl bg-slate-50 p-4 sm:grid-cols-2"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    void submitProduct();
+                  }}
+                >
+                  <label className="text-xs font-medium text-slate-700 sm:col-span-2">
+                    {t(locale, 'trade.catalog.name')}
+                    <input
+                      required
+                      value={draft.name}
+                      onChange={(e) => setDraft({ ...draft, name: e.target.value })}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.catalog.category')}
+                    <input
+                      value={draft.category}
+                      onChange={(e) => setDraft({ ...draft, category: e.target.value })}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.catalog.unit')}
+                    <input
+                      value={draft.unit}
+                      onChange={(e) => setDraft({ ...draft, unit: e.target.value })}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.catalog.moq')}
+                    <input
+                      type="number"
+                      min="0"
+                      step="any"
+                      value={draft.moq}
+                      onChange={(e) => setDraft({ ...draft, moq: e.target.value })}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.catalog.price')}
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={draft.price}
+                      onChange={(e) => setDraft({ ...draft, price: e.target.value })}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.catalog.origin')}
+                    <input
+                      maxLength={2}
+                      value={draft.origin}
+                      onChange={(e) => setDraft({ ...draft, origin: e.target.value })}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm uppercase"
+                    />
+                  </label>
+
+                  <label className="text-xs font-medium text-slate-700">
+                    {t(locale, 'trade.catalog.hsCode')}
+                    <input
+                      inputMode="numeric"
+                      value={draft.hsCode}
+                      onChange={(e) => setDraft({ ...draft, hsCode: e.target.value })}
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                    />
+                    {/* Le code n'est JAMAIS deviné : on le dit à l'écran. */}
+                    <span className="mt-1 block text-[11px] font-normal text-slate-500">
+                      {t(locale, 'trade.catalog.hsHint')}
+                    </span>
+                  </label>
+
+                  <div className="flex items-end gap-2 sm:col-span-2">
+                    <Button type="submit" size="sm" disabled={saving}>
+                      {t(locale, 'trade.catalog.save')}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setFormOpen(false);
+                        setDraft(EMPTY_DRAFT);
+                        setFormError(null);
+                      }}
+                    >
+                      {t(locale, 'trade.catalog.cancel')}
+                    </Button>
+                  </div>
+                </form>
+              ) : null}
+
+              {products.length === 0 ? (
+                <p className="px-1 py-6 text-sm text-slate-500">
+                  {t(locale, 'trade.catalog.empty')}
+                </p>
+              ) : (
+                <ul className="mt-4 space-y-2">
+                  {products.map((product) => {
+                    const archived = product.status === 'archived';
+                    const meta = [
+                      product.category,
+                      product.origin_country,
+                      product.moq_quantity
+                        ? `${t(locale, 'trade.catalog.moq')}: ${product.moq_quantity}${product.unit ? ` ${product.unit}` : ''}`
+                        : null,
+                    ].filter((part): part is string => typeof part === 'string' && part !== '');
+
+                    return (
+                      <li
+                        key={String(product.id)}
+                        className="flex flex-wrap items-start justify-between gap-3 border-t border-slate-100 pt-3"
+                      >
+                        <div className="min-w-0">
+                          <p className="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-900">
+                            {product.name}
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                                archived
+                                  ? 'bg-slate-200 text-slate-700'
+                                  : 'bg-emerald-100 text-emerald-800'
+                              }`}
+                            >
+                              {archived
+                                ? t(locale, 'trade.catalog.archived')
+                                : t(locale, 'trade.catalog.active')}
+                            </span>
+                          </p>
+                          {meta.length ? (
+                            <p className="mt-1 text-xs text-slate-500">{meta.join(' · ')}</p>
+                          ) : null}
+                          <p className="mt-1 text-xs font-medium text-sky-700">
+                            {formatPrice(product)}
+                          </p>
+                        </div>
+
+                        {!archived ? (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              if (window.confirm(t(locale, 'trade.catalog.archiveConfirm'))) {
+                                void archiveProduct(product);
+                              }
+                            }}
+                          >
+                            {t(locale, 'trade.catalog.archive')}
+                          </Button>
+                        ) : null}
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
             </div>
           ) : null}
 

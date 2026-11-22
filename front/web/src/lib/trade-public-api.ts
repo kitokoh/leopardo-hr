@@ -60,3 +60,50 @@ export async function getPublicTradeCompany(
     return null;
   }
 }
+
+/**
+ * #9768 — un produit du catalogue public d'une entreprise.
+ *
+ * Périmètre volontairement réduit : ni `hs_code` (donnée de conformité
+ * interne), ni identifiant tenant. Le prix est **indicatif** — le catalogue
+ * n'est pas une offre ferme.
+ */
+export interface PublicTradeProduct {
+  name: string;
+  description: string | null;
+  category: string | null;
+  origin_country: string | null;
+  unit: string | null;
+  moq_quantity: string | null;
+  indicative_unit_price_minor: number | null;
+  currency: string | null;
+  specs: Record<string, unknown>;
+}
+
+/**
+ * Catalogue public d'une entreprise — `null` = 404 fail-closed (profil non
+ * publiable) ou API indisponible. La page traite alors l'absence comme « pas
+ * de produits », jamais comme une erreur visible.
+ */
+export async function getPublicTradeCompanyProducts(
+  slug: string,
+): Promise<PublicTradeProduct[] | null> {
+  try {
+    const response = await fetch(
+      `${resolveBackendBaseUrl()}/public/trade/companies/${encodeURIComponent(slug)}/products`,
+      {
+        headers: { Accept: 'application/json' },
+        next: { revalidate: 60 },
+      },
+    );
+
+    if (!response.ok) {
+      return null;
+    }
+
+    const payload = (await response.json()) as { data?: PublicTradeProduct[] };
+    return payload.data ?? null;
+  } catch {
+    return null;
+  }
+}
