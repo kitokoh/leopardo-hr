@@ -282,6 +282,114 @@ les 8 profils : **201** pour `principal` et `rh`, **403** pour `comptable` et
 est alignée sur le code et le contrôle de couverture ne signale aucun nouveau
 drift.
 
+## 10 · Chantiers v4 — vérification en conditions réelles
+
+Branche `eval/leopardo-hr-recette-2026-11-22`, commit `86da7594a`.
+
+### 1 · Routes de statistiques homogénéisées
+
+**Cause racine :** les trois chemins n'existaient pas. `/employees/stats` et
+`/crm/activities` étaient documentés (matrice CRM §2.5) mais jamais routés ;
+`/planning` n'exposait que ses deux sous-chemins d'optimisation. Le 404 n'était
+pas une incohérence de nommage mais une absence de route, alors que
+`/absences/stats`, `/expense/stats`, `/recruitment/stats` et `/library/stats`
+existaient déjà.
+
+| Route | Avant | Après | Convention alignée |
+|---|---|---|---|
+| `GET /employees/stats` | 404 | **200** | `from`/`to`, enveloppe `data`, RBAC `employees.view` |
+| `GET /crm/activities` | 404 | **200** | pagination `per_page`/`page`, filtres typés |
+| `POST /crm/activities` | 404 | **201** | append-only, ancrage métier obligatoire |
+| `GET /planning` | 404 | **200** | agrégat + `links` vers les endpoints d'optimisation |
+
+**Matrice RBAC vérifiée sur l'instance (8 profils) :**
+
+| Profil | /employees/stats | /crm/activities | /planning |
+|---|---|---|---|
+| principal | 200 | 200 | 200 |
+| gérant | 200 | 200 | 200 |
+| comptable | 200 | 403 | 200 |
+| superviseur | 200 | 403 | 200 |
+| chef / serveur / caissier / livreur | 403 | 403 | 403 |
+
+**Point de conception notable :** `/employees/stats` applique le périmètre
+« équipe » de l'acteur. Le superviseur obtient **3 employés sur 8** — exactement
+ce qu'il voit dans la liste. Sans ce garde-fou, les statistiques auraient été
+une fuite d'information latérale. Le service est **fail-closed** : un acteur
+team-scoped sans périmètre assigné voit un effectif vide, pas celui de toute la
+société.
+
+**Détail métier :** la masse salariale n'additionne que les contrats
+**mensuels** et expose `headcount_with_salary` — mélanger un horaire et un
+mensuel produirait un total dénué de sens.
+
+### 2 · Payloads de verticales exposés dans l'OpenAPI
+
+**Cause racine :** les FormRequest de la verticale restaurant sont très stricts
+(`Rule::exists(...)->where(company_id)`, énumérations fermées, montants en unité
+mineure) mais **aucun `requestBody`** n'apparaissait dans la spec. Un client
+généré depuis l'OpenAPI ne pouvait pas construire une requête valide.
+
+| Ajout | Volume |
+|---|---|
+| Chemins restaurant documentés (branches, zones, tables, catégories, produits, ingrédients, unités, TVA, menus, horaires, fournisseurs, POS, commandes, lignes, paiement, réservations, stock, mouvements, achats, livreurs, zones de livraison) | **19 chemins** |
+| Schémas d'entrée miroirs des FormRequest | **20 schémas** |
+| Schémas `CrmActivity` / `CrmActivityInput` | **2 schémas** |
+| `RestaurantPrintJob` — `$ref` cassée (préexistante, jamais résolue) | **1 schéma réparé** |
+| Entrées d'allowlist devenues obsolètes | **38 purgées** |
+
+Les schémas documentent les pièges qui coûtent des heures d'intégration :
+`price_minor` en **unité mineure** (jamais de décimal), `rate_bps` en **points de
+base** (2000 = 20 %), `table_id` obligatoire pour `dine_in`, `idempotency_key`
+sur commande/paiement/réservation, et le fait qu'un identifiant d'un autre
+tenant renvoie **422** (pas 403 — pas de fuite d'existence).
+
+**Contrôle automatisé :** `check-openapi-route-coverage.py --strict-staleness`
+→ `new_uncovered: 0`, `new_param_drift: 0`, `new_reverse_drift: 0`,
+`staleness: 0`. Aucune référence `$ref` cassée (vérification programmatique sur
+les 464 schémas).
+
+### 3 · Test Feature de bout en bout du bridge d'impression
+
+**Ce qui manquait :** `RestaurantPrintBridgeTest` couvrait la surface du bridge
+*prise isolément*, en fabriquant directement des travaux en base. Personne ne
+testait la **couture** entre la mise en file côté application (Sanctum) et la
+récupération côté poste cuisine (jeton partagé) — précisément l'endroit qui
+casse en production.
+
+`RestaurantPrintBridgeEndToEndTest` — **6 tests, 51 assertions** :
+
+| Test | Ce qu'il verrouille |
+|---|---|
+| `the_full_print_cycle_from_enqueue_to_acknowledgement` | enqueue → jobs → claim → payload → ack ; le `payload_sha256` du bridge est **identique** au `payload_hash` calculé à la mise en file ; aucune impression réputée réussie sans accusé ; le travail imprimé sort de la file |
+| `a_requeue_creates_a_new_revision_the_bridge_can_pick_up` | réimpression = **nouvelle révision** (2), jamais un rejeu |
+| `enqueue_is_idempotent_for_the_same_order` | double clic serveur / retry réseau → même travail, 1 seule ligne en base |
+| `an_ordinary_employee_cannot_enqueue_a_print_job` | 403 + aucun travail créé |
+| `the_bridge_cannot_claim_a_job_enqueued_by_another_tenant` | 404, travail toujours `pending` |
+| `the_bridge_cannot_ack_a_job_of_another_tenant` | 404, travail toujours `pending` |
+
+**Résultat :** `6 passed (51 assertions)` en 3,94 s. Non-régressions :
+`RestaurantPrintBridgeTest`, `RestaurantCatalogueCrudTest`,
+`RestaurantGoldenJourneyTest`, `OrgReferentialCrudTest` → **23 passed
+(107 assertions)**.
+
+### Bilan v4
+
+Les trois chantiers sont **livrés, testés et poussés**. Les routes de
+statistiques répondent avec la même convention que le reste de l'API et
+respectent le cloisonnement par équipe ; les payloads de la verticale restaurant
+sont documentés au niveau de détail des FormRequest ; le bridge d'impression est
+couvert de bout en bout, y compris l'égalité de hash entre mise en file et
+impression réelle.
+
+**Note de la verticale restaurant : 4,5 → 4,8 / 5.** Les trois points ouverts de
+la recette v2 sont fermés. Restent des manques mineurs, hors périmètre :
+`travelagency` (214 routes) et `edu_manager` (88 routes) ne sont pas encore
+documentées dans l'OpenAPI, et le bridge d'impression reste inaccessible aux
+profils humains par conception (jeton d'appareil).
+
+---
+
 ---
 
 *Tests réalisés sur une instance locale réelle (PHP 8.4 · PostgreSQL 15 +
