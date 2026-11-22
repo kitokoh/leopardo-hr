@@ -5068,7 +5068,10 @@
       "teacherSpace": "Espace enseignant",
       "manageFeeTypes": "Types de frais",
       "manageGuardians": "Responsables légaux",
-      "manageReports": "Rapports"
+      "manageReports": "Rapports",
+      "manageFeeCharges": "Facturation & encaissement",
+      "manageFees": "Frais scolaires",
+      "manageAccountingEntries": "Rapprochement comptable"
     },
     "campuses": {
       "title": "Campus",
@@ -5274,6 +5277,77 @@
       "results": "Résultats",
       "capacity": "Occupation des classes",
       "empty": "Aucune donnée sur la période."
+    },
+    "feeCharges": {
+      "title": "Facturation & encaissement",
+      "subtitle": "Facturer un élève, encaisser un règlement (partiel ou soldé) et suivre les soldes restants.",
+      "empty": "Aucune charge de frais. Facturez le premier élève pour ouvrir le guichet.",
+      "create": "Nouvelle facturation",
+      "student": "Élève",
+      "feeType": "Type de frais",
+      "academicYear": "Année scolaire",
+      "amount": "Montant",
+      "amountHint": "Laisser vide pour appliquer le tarif du type de frais.",
+      "amountPlaceholder": "Tarif du type",
+      "paid": "Déjà payé",
+      "remaining": "Solde restant",
+      "dueDate": "Échéance",
+      "status": "Statut",
+      "allStatuses": "Tous les statuts",
+      "collect": "Encaisser",
+      "collectTitle": "Encaisser un règlement",
+      "waive": "Abandonner",
+      "waiveConfirm": "Abandonner le solde restant de cette facturation ?",
+      "method": "Moyen de paiement",
+      "reference": "Référence",
+      "charge": "Facturation",
+      "paidAt": "Encaissé le",
+      "journal": "Journal des encaissements",
+      "journalSubtitle": "Les derniers règlements enregistrés au guichet.",
+      "journalEmpty": "Aucun encaissement enregistré.",
+      "errors": {
+        "EDU_FEE_OVERPAYMENT": "Le montant dépasse le solde restant de la facturation.",
+        "EDU_FEE_TERMINAL": "Cette facturation est soldée ou abandonnée : plus aucun encaissement n'est possible.",
+        "EDU_FEE_CURRENCY_MISMATCH": "La devise de l'encaissement ne correspond pas à celle de la facturation."
+      }
+    },
+    "fees": {
+      "title": "Frais scolaires",
+      "subtitle": "Frais du flux historique, consommés par la comptabilité (règlement, annulation, remise).",
+      "empty": "Aucun frais enregistré.",
+      "create": "Nouveau frais",
+      "student": "Élève",
+      "label": "Libellé",
+      "amount": "Montant",
+      "dueDate": "Échéance",
+      "status": "Statut",
+      "allStatuses": "Tous les statuts",
+      "paidAt": "Réglé le",
+      "pay": "Régler",
+      "waive": "Remiser",
+      "cancel": "Annuler",
+      "waiveConfirm": "Remiser ce frais ?",
+      "cancelConfirm": "Annuler ce frais ?",
+      "errors": {
+        "EDU_FEE_TERMINAL": "Ce frais est déjà réglé, remisé ou annulé."
+      }
+    },
+    "accountingEntries": {
+      "title": "Rapprochement comptable",
+      "subtitle": "Lignes équilibrées publiées par la facturation scolaire, consommées par le module comptable.",
+      "empty": "Aucune écriture comptable.",
+      "date": "Date",
+      "source": "Source",
+      "allSources": "Toutes les sources",
+      "account": "Compte",
+      "debit": "Débit",
+      "credit": "Crédit",
+      "reference": "Référence",
+      "balance": "Équilibre",
+      "balanceSubtitle": "Le total des débits doit égaler le total des crédits.",
+      "state": "État",
+      "balanced": "Équilibré",
+      "unbalanced": "Déséquilibré"
     }
   },
   "travel": {

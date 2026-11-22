@@ -28,6 +28,7 @@ use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduCourseSlotController
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduDashboardController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeChargeController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeController;
+use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeePaymentController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduFeeTypeController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduGuardianController;
 use App\Modules\EduManager\Interfaces\Api\V1\Controllers\EduGuardianPortalController;
@@ -180,9 +181,17 @@ ModuleRoutes::tenantModule('', function (): void {
     // EDU-016 (#5832) — facturation détaillée au guichet + rapprochement
     // comptable. Service, modèles, requêtes et tables existaient : aucune
     // route ne les servait (404 sur les 5 scénarios de `EduFeeTest`).
+    // #9790 — lecture : seules les routes d'écriture existaient, donc l'écran
+    // de facturation ne pouvait ni lister les charges ni lire le solde restant
+    // d'une charge (le service ne l'expose nulle part).
+    Route::get('/edu-manager/fee-charges', [EduFeeChargeController::class, 'index']);
+    Route::get('/edu-manager/fee-charges/{charge}', [EduFeeChargeController::class, 'show'])->whereNumber('charge');
     Route::post('/edu-manager/fee-charges', [EduFeeChargeController::class, 'store']);
     Route::post('/edu-manager/fee-charges/{charge}/payments', [EduFeeChargeController::class, 'payment'])->whereNumber('charge');
     Route::post('/edu-manager/fee-charges/{charge}/waive', [EduFeeChargeController::class, 'waive'])->whereNumber('charge');
+    // #9790 — journal des encaissements (guichet) : les paiements n'étaient
+    // lisibles qu'en détail d'une charge, jamais en travers du guichet.
+    Route::get('/edu-manager/fee-payments', [EduFeePaymentController::class, 'index']);
     Route::get('/edu-manager/fee-accounting-entries', [EduAccountingEntryController::class, 'index']);
 
     Route::post('/edu-manager/fees', [EduFeeController::class, 'store']);

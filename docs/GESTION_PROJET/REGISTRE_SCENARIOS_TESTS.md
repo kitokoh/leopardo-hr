@@ -1,3 +1,27 @@
+## 2026-11-22 — École : facturation et encaissement (PR #9792, #9790)
+
+Surface : `api/app/Modules/EduManager/Interfaces/Api/V1/Controllers/EduFeeChargeController.php` (index + show ajoutés), `.../EduFeePaymentController.php` (nouveau), `api/routes/modules/edu_manager.php` (`GET /fee-charges`, `GET /fee-charges/{charge}`, `GET /fee-payments`), `api/tests/Feature/EduManager/EduFeeTest.php` (3 tests), `front/web/src/app/(dashboard)/edu-manager/fee-charges/page.tsx` (nouveau), `.../fees/page.tsx` (nouveau), `.../fee-accounting-entries/page.tsx` (nouveau), `.../edu-manager/page.tsx` (raccourcis), `.../__tests__/edu-tools-journey.test.tsx` (5 tests), `shared/i18n/locales/{fr,en,ar,tr}.json` + catalogues générés.
+
+**Pourquoi c'est un scénario de test** : les endpoints de frais existaient (EDU-016, #5832) mais **seules les routes d'ÉCRITURE** étaient câblées — `POST /fee-charges`, `POST /fee-charges/{id}/payments`, `POST /fee-charges/{id}/waive`. Aucune lecture : l'écran de facturation ne pouvait ni lister les charges, ni connaître le solde restant d'une charge (le service ne l'expose nulle part), ni relire les encaissements du guichet. Un directeur pouvait donc facturer à l'aveugle, sans jamais vérifier ce qu'il restait à encaisser.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `GET /fee-charges` expose `paid_amount` et `remaining_amount` justes après un encaissement partiel | le guichet afficherait un solde faux dès le premier règlement partiel |
+| le solde est calculé en SQL (`withSum`), pas en PHP sur les paiements hydratés | une charge à 50 encaissements chargerait 50 lignes pour un seul chiffre |
+| les filtres `status` / `student_id` / `fee_type_id` / `academic_year_id` bornent la liste | un filtre absent obligerait à tout charger côté client |
+| `GET /fee-charges/{charge}` expose les encaissements de la charge | impossible de justifier un solde auprès d'un parent |
+| une charge d'un autre tenant rend 404 (jamais 403) sur `show` | on révélerait l'existence d'une facture d'une autre école |
+| `GET /fee-payments` liste et filtre les encaissements (charge, méthode, élève, période) | un caissier ne pourrait pas vérifier sa journée |
+| employé lambda 403, non authentifié 401 sur les trois routes | montants et PII d'élèves exposés hors périmètre |
+| `/edu-manager/fee-charges`, `/fees`, `/fee-accounting-entries` rendent leurs états vide/chargement/erreur | écrans inaccessibles ou muets |
+| le montant d'encaissement proposé par défaut est le solde restant | risque de surdébit systématique (422) |
+| le code métier `EDU_FEE_OVERPAYMENT` est traduit à l'écran | l'utilisateur verrait un code technique brut |
+| le rapprochement comptable signale l'équilibre débit/crédit | une écriture déséquilibrée passerait inaperçue |
+
+**Couverture exécutée** — `php8.4 artisan test --filter=EduFeeTest` → **10 passed (114 assertions)**, dont les 3 nouveaux scénarios de lecture ; `php8.4 vendor/bin/phpstan analyse -c phpstan-strict.neon app/Modules/EduManager` → **0 erreur** ; `pint --test` → 0 style issue ; `check-module-isolation.sh` → aucun nouvel import croisé ; `check-i18n-catalog-parity.sh` → parité OK (4 langues) ; `validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `tsc --noEmit` → 0 erreur ; `eslint --max-warnings 0` → 0 erreur ; `check-orphan-pages.mjs` → vert ; `jest --ci` → **15 passed** (dont 5 nouveaux).
+
+**Non couvert** — la suite Feature complète n'a pas été exécutée (blocage de migration PostGIS dans le sandbox, cf. entrée précédente) : la mesure reste le run CI. Le contrôle visuel navigateur des trois nouvelles pages n'a pas été refait dans ce tour.
+
 ## 2026-11-22 — École : espace, collaborateurs, public, élèves (PR #9792, #9785 #9786 #9787 #9788 #9789)
 
 Surface : `front/web/src/app/(dashboard)/edu-manager/fee-types/page.tsx` (nouveau), `.../guardians/page.tsx` (nouveau), `.../reports/page.tsx` (nouveau), `.../edu-manager/page.tsx` (raccourcis), `front/web/src/app/business/ecole/page.tsx` (nouveau), `front/web/src/modules/vitrine/components/pack/PackLandingPage.tsx` (nouveau), `front/web/src/modules/vitrine/data/pack-pages.ts`, `front/web/src/modules/vitrine/domain/pack-signup.ts`, `front/web/src/modules/vitrine/components/Navbar.tsx`, `api/app/Modules/EduManager/Application/Actions/SeedMinimalEduManagerAction.php`, `api/app/Modules/EduManager/Infrastructure/Services/EduDemoDataKit.php` (nouveau), `api/app/Modules/EduManager/Infrastructure/Services/EduOnboardingStepPredicate.php` (nouveau), `api/app/Shared/Onboarding/StepPredicateRegistry.php` (nouveau), `api/lang/{fr,en,ar,tr}/edu.php` (nouveau).

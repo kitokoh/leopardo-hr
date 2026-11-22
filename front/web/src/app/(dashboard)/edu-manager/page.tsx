@@ -3,14 +3,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
+  Banknote,
   BarChart3,
   Building2,
   CalendarRange,
   ClipboardCheck,
   GraduationCap,
+  HandCoins,
   Layers,
   ListChecks,
   Receipt,
+  Scale,
   School,
   UserPlus,
   Users,
@@ -108,6 +111,11 @@ export default function EduManagerHomePage() {
     // #9789 — frais scolaires, responsables légaux et rapports : l'API existait
     // mais ces outils n'avaient aucune entrée de navigation.
     { label: t(locale, 'edu.home.manageFeeTypes'), href: '/edu-manager/fee-types', icon: Receipt },
+    // #9790 — facturation, encaissement et rapprochement comptable : les
+    // endpoints existaient, aucune page ne les servait.
+    { label: t(locale, 'edu.home.manageFeeCharges'), href: '/edu-manager/fee-charges', icon: HandCoins },
+    { label: t(locale, 'edu.home.manageFees'), href: '/edu-manager/fees', icon: Banknote },
+    { label: t(locale, 'edu.home.manageAccountingEntries'), href: '/edu-manager/fee-accounting-entries', icon: Scale },
     { label: t(locale, 'edu.home.manageGuardians'), href: '/edu-manager/guardians', icon: Users },
     { label: t(locale, 'edu.home.manageReports'), href: '/edu-manager/reports', icon: BarChart3 },
   ];

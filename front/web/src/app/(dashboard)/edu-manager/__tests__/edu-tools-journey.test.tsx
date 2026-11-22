@@ -2,7 +2,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { apiFetch } from '@/lib/api-client';
 import EduManagerHomePage from '../page';
+import AccountingEntriesPage from '../fee-accounting-entries/page';
+import FeeChargesPage from '../fee-charges/page';
 import FeeTypesPage from '../fee-types/page';
+import FeesPage from '../fees/page';
 import GuardiansPage from '../guardians/page';
 import ReportsPage from '../reports/page';
 
@@ -222,5 +225,221 @@ describe('EduManager home — outils de gestion (#9789)', () => {
     expect(await screen.findByText('Types de frais')).toBeInTheDocument();
     expect(screen.getByText('Responsables légaux')).toBeInTheDocument();
     expect(screen.getByText('Rapports')).toBeInTheDocument();
+  });
+});
+
+describe('EduManager fee charges — facturation & encaissement (#9790)', () => {
+  it('liste les charges avec le solde restant calculé côté serveur', async () => {
+    mockedApiFetch
+      .mockResolvedValueOnce(
+        jsonResponse({
+          data: [
+            {
+              id: 11,
+              student_id: 42,
+              student: { id: 42, student_number: 'STU-0001', display_name: 'Lina Benali' },
+              fee_type_id: 3,
+              fee_type: { id: 3, code: 'TUITION', label: 'Scolarité' },
+              amount: 50000,
+              paid_amount: 20000,
+              remaining_amount: 30000,
+              currency: 'DZD',
+              status: 'partial',
+              due_date: '2026-12-31',
+            },
+          ],
+          meta: { total: 1 },
+        }),
+      )
+      .mockResolvedValueOnce(jsonResponse({ data: [], meta: { total: 0 } }));
+
+    render(<FeeChargesPage />);
+
+    expect(await screen.findByText('Lina Benali')).toBeInTheDocument();
+    expect(screen.getByText('Scolarité')).toBeInTheDocument();
+    // Le solde affiché est celui du serveur, jamais recomposé côté client.
+    // Le séparateur de milliers suit la locale du navigateur : on tolère les
+    // deux formes plutôt que de figer un format d'environnement.
+    expect(screen.getByText(/30[.,\s]?000 DZD/)).toBeInTheDocument();
+    expect(screen.getByText(/20[.,\s]?000 DZD/)).toBeInTheDocument();
+
+    expect(mockedApiFetch).toHaveBeenCalledWith(
+      '/edu-manager/fee-charges?per_page=200',
+      expect.objectContaining({ _cacheBust: true }),
+    );
+    expect(mockedApiFetch).toHaveBeenCalledWith(
+      '/edu-manager/fee-payments?per_page=50',
+      expect.objectContaining({ _cacheBust: true }),
+    );
+  });
+
+  it('encaisse un règlement via POST /fee-charges/{id}/payments', async () => {
+    mockedApiFetch
+      .mockResolvedValueOnce(
+        jsonResponse({
+          data: [
+            {
+              id: 11,
+              student_id: 42,
+              student: { id: 42, display_name: 'Lina Benali' },
+              fee_type: { id: 3, label: 'Scolarité' },
+              amount: 50000,
+              paid_amount: 0,
+              remaining_amount: 50000,
+              currency: 'DZD',
+              status: 'pending',
+            },
+          ],
+          meta: { total: 1 },
+        }),
+      )
+      .mockResolvedValueOnce(jsonResponse({ data: [], meta: { total: 0 } }));
+
+    render(<FeeChargesPage />);
+
+    await screen.findByText('Lina Benali');
+
+    await userEvent.click(screen.getByTitle('Encaisser'));
+
+    // Le montant proposé par défaut est le solde restant.
+    const amountInput = screen.getByLabelText('Montant');
+    expect(amountInput).toHaveValue(50000);
+
+    mockedApiFetch.mockResolvedValueOnce(jsonResponse({ data: { id: 1 } }, 201));
+    mockedApiFetch.mockResolvedValueOnce(jsonResponse({ data: [], meta: { total: 1 } }));
+    mockedApiFetch.mockResolvedValueOnce(jsonResponse({ data: [], meta: { total: 1 } }));
+
+    const collectButtons = screen.getAllByRole('button', { name: 'Encaisser' });
+    await userEvent.click(collectButtons[collectButtons.length - 1]);
+
+    await waitFor(() => {
+      expect(mockedApiFetch).toHaveBeenCalledWith(
+        '/edu-manager/fee-charges/11/payments',
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('"amount":50000'),
+        }),
+      );
+    });
+  });
+
+  it('affiche le code métier traduit quand le serveur refuse un surdébit', async () => {
+    mockedApiFetch
+      .mockResolvedValueOnce(
+        jsonResponse({
+          data: [
+            {
+              id: 11,
+              student: { id: 42, display_name: 'Lina Benali' },
+              fee_type: { id: 3, label: 'Scolarité' },
+              amount: 50000,
+              paid_amount: 0,
+              remaining_amount: 50000,
+              currency: 'DZD',
+              status: 'pending',
+            },
+          ],
+          meta: { total: 1 },
+        }),
+      )
+      .mockResolvedValueOnce(jsonResponse({ data: [], meta: { total: 0 } }));
+
+    render(<FeeChargesPage />);
+
+    await screen.findByText('Lina Benali');
+    await userEvent.click(screen.getByTitle('Encaisser'));
+
+    mockedApiFetch.mockResolvedValueOnce(
+      jsonResponse({ error: 'EDU_FEE_OVERPAYMENT' }, 422),
+    );
+
+    const collectButtons = screen.getAllByRole('button', { name: 'Encaisser' });
+    await userEvent.click(collectButtons[collectButtons.length - 1]);
+
+    expect(
+      await screen.findByText('Le montant dépasse le solde restant de la facturation.'),
+    ).toBeInTheDocument();
+  });
+});
+
+describe('EduManager fees — read model hérité (#9790)', () => {
+  it('liste les frais et déclenche le règlement', async () => {
+    mockedApiFetch.mockResolvedValueOnce(
+      jsonResponse({
+        data: [
+          {
+            id: 5,
+            student_id: 42,
+            student: { id: 42, display_name: 'Lina Benali' },
+            label: 'Scolarité T1',
+            amount: 15000,
+            due_date: '2026-10-01',
+            status: 'pending',
+            paid_at: null,
+          },
+        ],
+        meta: { total: 1 },
+      }),
+    );
+
+    render(<FeesPage />);
+
+    expect(await screen.findByText('Scolarité T1')).toBeInTheDocument();
+
+    mockedApiFetch.mockResolvedValueOnce(jsonResponse({ data: { id: 5, status: 'paid' } }));
+    mockedApiFetch.mockResolvedValueOnce(jsonResponse({ data: [], meta: { total: 0 } }));
+
+    await userEvent.click(screen.getByTitle('Régler'));
+
+    await waitFor(() => {
+      expect(mockedApiFetch).toHaveBeenCalledWith(
+        '/edu-manager/fees/5/pay',
+        expect.objectContaining({ method: 'POST' }),
+      );
+    });
+  });
+});
+
+describe('EduManager accounting entries — rapprochement (#9790)', () => {
+  it('affiche les lignes et signale l’équilibre débit/crédit', async () => {
+    mockedApiFetch.mockResolvedValueOnce(
+      jsonResponse({
+        data: [
+          {
+            id: 1,
+            source_type: 'fee_charge',
+            source_id: 11,
+            entry_date: '2026-11-01',
+            account_code: '411000',
+            account_label: 'Élèves',
+            debit: 50000,
+            credit: 0,
+            reference: 'CHG-11',
+          },
+          {
+            id: 2,
+            source_type: 'fee_charge',
+            source_id: 11,
+            entry_date: '2026-11-01',
+            account_code: '706000',
+            account_label: 'Produits scolarité',
+            debit: 0,
+            credit: 50000,
+            reference: 'CHG-11',
+          },
+        ],
+        meta: { total: 2 },
+      }),
+    );
+
+    render(<AccountingEntriesPage />);
+
+    expect(await screen.findByText('411000')).toBeInTheDocument();
+    expect(screen.getByText('Équilibré')).toBeInTheDocument();
+
+    expect(mockedApiFetch).toHaveBeenCalledWith(
+      '/edu-manager/fee-accounting-entries?per_page=200',
+      expect.objectContaining({ _cacheBust: true }),
+    );
   });
 });

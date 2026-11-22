@@ -5601,7 +5601,10 @@
       "teacherSpace": "Öğretmen alanı",
       "manageFeeTypes": "Ücret türleri",
       "manageGuardians": "Veliler",
-      "manageReports": "Raporlar"
+      "manageReports": "Raporlar",
+      "manageFeeCharges": "Faturalama ve tahsilat",
+      "manageFees": "Okul ücretleri",
+      "manageAccountingEntries": "Muhasebe mutabakatı"
     },
     "campuses": {
       "title": "Kampüsler",
@@ -5807,6 +5810,77 @@
       "results": "Sonuçlar",
       "capacity": "Sınıf doluluğu",
       "empty": "Bu dönem için veri yok."
+    },
+    "feeCharges": {
+      "title": "Faturalama ve tahsilat",
+      "subtitle": "Öğrenciyi faturalandır, ödemeyi tahsil et (kısmi veya tam) ve kalan bakiyeleri izle.",
+      "empty": "Henüz ücret kaydı yok. Gişeyi açmak için ilk öğrenciyi faturalandır.",
+      "create": "Yeni fatura",
+      "student": "Öğrenci",
+      "feeType": "Ücret türü",
+      "academicYear": "Eğitim yılı",
+      "amount": "Tutar",
+      "amountHint": "Ücret türünün tarifesini uygulamak için boş bırakın.",
+      "amountPlaceholder": "Tür tarifesi",
+      "paid": "Ödenen",
+      "remaining": "Kalan bakiye",
+      "dueDate": "Vade",
+      "status": "Durum",
+      "allStatuses": "Tüm durumlar",
+      "collect": "Tahsil et",
+      "collectTitle": "Ödeme tahsil et",
+      "waive": "Vazgeç",
+      "waiveConfirm": "Bu faturanın kalan bakiyesinden vazgeçilsin mi?",
+      "method": "Ödeme yöntemi",
+      "reference": "Referans",
+      "charge": "Fatura",
+      "paidAt": "Tahsil tarihi",
+      "journal": "Tahsilat günlüğü",
+      "journalSubtitle": "Gişede kaydedilen son ödemeler.",
+      "journalEmpty": "Kayıtlı ödeme yok.",
+      "errors": {
+        "EDU_FEE_OVERPAYMENT": "Tutar, faturanın kalan bakiyesini aşıyor.",
+        "EDU_FEE_TERMINAL": "Bu fatura kapatıldı veya vazgeçildi: başka ödeme alınamaz.",
+        "EDU_FEE_CURRENCY_MISMATCH": "Ödeme para birimi faturanın para birimiyle uyuşmuyor."
+      }
+    },
+    "fees": {
+      "title": "Okul ücretleri",
+      "subtitle": "Muhasebe tarafından tüketilen eski akışın ücretleri (ödeme, iptal, vazgeçme).",
+      "empty": "Kayıtlı ücret yok.",
+      "create": "Yeni ücret",
+      "student": "Öğrenci",
+      "label": "Etiket",
+      "amount": "Tutar",
+      "dueDate": "Vade",
+      "status": "Durum",
+      "allStatuses": "Tüm durumlar",
+      "paidAt": "Ödeme tarihi",
+      "pay": "Öde",
+      "waive": "Vazgeç",
+      "cancel": "İptal",
+      "waiveConfirm": "Bu ücretten vazgeçilsin mi?",
+      "cancelConfirm": "Bu ücret iptal edilsin mi?",
+      "errors": {
+        "EDU_FEE_TERMINAL": "Bu ücret zaten ödendi, vazgeçildi veya iptal edildi."
+      }
+    },
+    "accountingEntries": {
+      "title": "Muhasebe mutabakatı",
+      "subtitle": "Okul faturalamasının yayımladığı, muhasebe modülünün tükettiği dengeli satırlar.",
+      "empty": "Muhasebe kaydı yok.",
+      "date": "Tarih",
+      "source": "Kaynak",
+      "allSources": "Tüm kaynaklar",
+      "account": "Hesap",
+      "debit": "Borç",
+      "credit": "Alacak",
+      "reference": "Referans",
+      "balance": "Denge",
+      "balanceSubtitle": "Toplam borç, toplam alacağa eşit olmalıdır.",
+      "state": "Durum",
+      "balanced": "Dengeli",
+      "unbalanced": "Dengesiz"
     }
   },
   "travel": {

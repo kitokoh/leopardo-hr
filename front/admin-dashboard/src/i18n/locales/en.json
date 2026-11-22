@@ -5601,7 +5601,10 @@
       "teacherSpace": "Teacher space",
       "manageFeeTypes": "Fee types",
       "manageGuardians": "Legal guardians",
-      "manageReports": "Reports"
+      "manageReports": "Reports",
+      "manageFeeCharges": "Billing & collection",
+      "manageFees": "School fees",
+      "manageAccountingEntries": "Accounting reconciliation"
     },
     "campuses": {
       "title": "Campuses",
@@ -5807,6 +5810,77 @@
       "results": "Results",
       "capacity": "Class capacity",
       "empty": "No data for this period."
+    },
+    "feeCharges": {
+      "title": "Billing & collection",
+      "subtitle": "Bill a student, collect a payment (partial or settled) and track outstanding balances.",
+      "empty": "No fee charge yet. Bill the first student to open the desk.",
+      "create": "New charge",
+      "student": "Student",
+      "feeType": "Fee type",
+      "academicYear": "Academic year",
+      "amount": "Amount",
+      "amountHint": "Leave empty to apply the fee type rate.",
+      "amountPlaceholder": "Fee type rate",
+      "paid": "Paid",
+      "remaining": "Outstanding",
+      "dueDate": "Due date",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "collect": "Collect",
+      "collectTitle": "Collect a payment",
+      "waive": "Waive",
+      "waiveConfirm": "Waive the outstanding balance of this charge?",
+      "method": "Payment method",
+      "reference": "Reference",
+      "charge": "Charge",
+      "paidAt": "Collected at",
+      "journal": "Collection journal",
+      "journalSubtitle": "The latest payments recorded at the desk.",
+      "journalEmpty": "No payment recorded yet.",
+      "errors": {
+        "EDU_FEE_OVERPAYMENT": "The amount exceeds the outstanding balance of this charge.",
+        "EDU_FEE_TERMINAL": "This charge is settled or waived: no further payment is possible.",
+        "EDU_FEE_CURRENCY_MISMATCH": "The payment currency does not match the charge currency."
+      }
+    },
+    "fees": {
+      "title": "School fees",
+      "subtitle": "Fees from the legacy flow, consumed by accounting (settle, cancel, waive).",
+      "empty": "No fee recorded.",
+      "create": "New fee",
+      "student": "Student",
+      "label": "Label",
+      "amount": "Amount",
+      "dueDate": "Due date",
+      "status": "Status",
+      "allStatuses": "All statuses",
+      "paidAt": "Settled at",
+      "pay": "Settle",
+      "waive": "Waive",
+      "cancel": "Cancel",
+      "waiveConfirm": "Waive this fee?",
+      "cancelConfirm": "Cancel this fee?",
+      "errors": {
+        "EDU_FEE_TERMINAL": "This fee is already settled, waived or cancelled."
+      }
+    },
+    "accountingEntries": {
+      "title": "Accounting reconciliation",
+      "subtitle": "Balanced lines published by school billing and consumed by the accounting module.",
+      "empty": "No accounting entry.",
+      "date": "Date",
+      "source": "Source",
+      "allSources": "All sources",
+      "account": "Account",
+      "debit": "Debit",
+      "credit": "Credit",
+      "reference": "Reference",
+      "balance": "Balance",
+      "balanceSubtitle": "Total debits must equal total credits.",
+      "state": "State",
+      "balanced": "Balanced",
+      "unbalanced": "Unbalanced"
     }
   },
   "travel": {

@@ -34,6 +34,13 @@ use Illuminate\Http\Request;
  * Isolation : la résolution de route borne `{charge}` au tenant de l'acteur
  * (une charge d'un autre tenant → 404, jamais 403 : on ne révèle pas son
  * existence).
+ *
+ * #9790 — lecture (liste + détail) : seules les routes d'ÉCRITURE existaient,
+ * donc l'écran de facturation n'avait aucun moyen de lister les charges ni de
+ * connaître le solde restant d'une charge (le service ne l'expose nulle part).
+ * `index` et `show` comblent ce trou ; le solde est calculé en SQL
+ * (`sum(payments.amount)`) pour rester juste quel que soit le nombre
+ * d'encaissements, sans hydrater les paiements.
  */
 class EduFeeChargeController extends Controller
 {
@@ -44,6 +51,85 @@ class EduFeeChargeController extends Controller
         private readonly RecordEduFeePaymentAction $recordPayment,
         private readonly WaiveEduFeeChargeAction $waiveCharge,
     ) {}
+
+    public function index(Request $request): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->assertAdmin($actor);
+
+        $query = EduFeeCharge::query()
+            ->where('company_id', $actor->company_id)
+            ->with([
+                'student:id,student_number,display_name',
+                'feeType:id,code,label',
+            ]);
+
+        if ($request->filled('status')) {
+            $query->where('status', (string) $request->input('status'));
+        }
+
+        if ($request->filled('student_id')) {
+            $query->where('student_id', (int) $request->input('student_id'));
+        }
+
+        if ($request->filled('fee_type_id')) {
+            $query->where('fee_type_id', (int) $request->input('fee_type_id'));
+        }
+
+        if ($request->filled('academic_year_id')) {
+            $query->where('academic_year_id', (int) $request->input('academic_year_id'));
+        }
+
+        // Solde restant calculé en base : `withSum` évite d'hydrater les
+        // paiements (une charge peut en porter des dizaines) tout en restant
+        // exact — la somme est faite par PostgreSQL, pas en PHP.
+        $query->withSum('payments as paid_amount', 'amount');
+
+        $charges = $query->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate((int) ($request->input('per_page') ?? 15));
+
+        return response()->json([
+            'data' => collect($charges->items())
+                ->map(fn (EduFeeCharge $charge): array => $this->chargePayload($charge))
+                ->values(),
+            'meta' => [
+                'current_page' => $charges->currentPage(),
+                'per_page' => $charges->perPage(),
+                'total' => $charges->total(),
+            ],
+        ]);
+    }
+
+    public function show(Request $request, int $charge): JsonResponse
+    {
+        $this->assertSolutionActive();
+
+        /** @var Employee $actor */
+        $actor = $request->user();
+        $this->assertAdmin($actor);
+
+        $model = $this->resolveCharge($actor, $charge);
+
+        $model->load([
+            'student:id,student_number,display_name',
+            'feeType:id,code,label',
+            'payments',
+        ]);
+
+        $payments = $model->payments
+            ->sortByDesc('paid_at')
+            ->values()
+            ->map(fn (EduFeePayment $payment): array => $this->paymentPayload($payment))
+            ->all();
+
+        return response()->json([
+            'data' => array_merge($this->chargePayload($model), ['payments' => $payments]),
+        ]);
+    }
 
     public function store(StoreEduFeeChargeRequest $request): JsonResponse
     {
@@ -119,14 +205,42 @@ class EduFeeChargeController extends Controller
      */
     private function chargePayload(EduFeeCharge $charge): array
     {
+        $amount = $this->numeric($charge->amount);
+
+        // `paid_amount` vient de `withSum` (liste) ou de la relation chargée
+        // (détail) : les deux chemins donnent le même solde.
+        $paid = $charge->getAttribute('paid_amount');
+        if ($paid === null && $charge->relationLoaded('payments')) {
+            $paid = $charge->payments->sum('amount');
+        }
+        $paid = $this->numeric($paid ?? 0) ?? 0;
+
+        $remaining = is_numeric($amount) ? round((float) $amount - (float) $paid, 2) : null;
+
         return [
             'id' => (int) $charge->getAttribute('id'),
             'student_id' => (int) $charge->student_id,
+            'student' => $charge->relationLoaded('student') && $charge->student !== null
+                ? [
+                    'id' => (int) $charge->student->getAttribute('id'),
+                    'student_number' => $charge->student->student_number,
+                    'display_name' => $charge->student->display_name,
+                ]
+                : null,
             'fee_type_id' => (int) $charge->fee_type_id,
+            'fee_type' => $charge->relationLoaded('feeType') && $charge->feeType !== null
+                ? [
+                    'id' => (int) $charge->feeType->getAttribute('id'),
+                    'code' => (string) $charge->feeType->code,
+                    'label' => (string) $charge->feeType->label,
+                ]
+                : null,
             'academic_year_id' => (int) $charge->academic_year_id,
             // `decimal` PostgreSQL remonte en chaîne : normalisé en nombre
             // pour les clients web/mobile (contrat JSON).
-            'amount' => $this->numeric($charge->amount),
+            'amount' => $amount,
+            'paid_amount' => $paid,
+            'remaining_amount' => $remaining,
             'currency' => (string) $charge->currency,
             'status' => (string) $charge->status,
             'due_date' => $charge->due_date?->toDateString(),
