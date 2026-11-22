@@ -49,13 +49,17 @@ class CompanyIntegrationRequestTest extends TestCase
             'GET /user/company-integration-requests doit résoudre vers index (employé)'
         );
 
+        // #6566 — la GET collection manager a été déplacée vers un chemin
+        // dédié `/manage` : la GET employé `/user/company-integration-requests`
+        // occupait la même méthode + URI et gagnait en Laravel, rendant
+        // `managerIndex` inatteignable. Ce test vérifiait encore l'ancienne URI.
         $managerRoute = $router->match(
-            app('request')->create('/api/v1/company-integration-requests', 'GET')
+            app('request')->create('/api/v1/company-integration-requests/manage', 'GET')
         );
         $this->assertSame(
             CompanyIntegrationRequestController::class.'@managerIndex',
             $managerRoute->getActionName(),
-            'GET /company-integration-requests doit résoudre vers managerIndex (manager) — jamais masquée'
+            'GET /company-integration-requests/manage doit résoudre vers managerIndex (manager) — jamais masquée'
         );
 
         // Aucun doublon de (méthode, URI) pour CES DEUX endpoints (le scan est

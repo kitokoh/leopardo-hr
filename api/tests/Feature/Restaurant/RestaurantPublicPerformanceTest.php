@@ -178,6 +178,16 @@ class RestaurantPublicPerformanceTest extends TestCase
         [$singleReference, $singleSecret] = $reference([$ctx['codes'][0]]);
         [$manyReference, $manySecret] = $reference($ctx['codes']);
 
+        // Pré-chauffage : la PREMIÈRE requête de suivi paie des lectures
+        // uniques (résolution du jeton boutique, du tenant, de la commande)
+        // que les suivantes réutilisent. Sans ce warm-up, le cas mono-article
+        // mesuré en premier comptait 1 requête de plus que le cas 5 articles
+        // et l'assertion « nombre CONSTANT » échouait — alors qu'il n'y a
+        // aucun N+1 (l'eager loading `items.product` est bien en place).
+        $this->withHeader('X-Restaurant-Shop-Token', $ctx['token'])
+            ->getJson('/api/v1/public/restaurant/shop/orders/'.$singleReference.'?secret='.$singleSecret)
+            ->assertOk();
+
         $oneItem = $this->queryCount(function () use ($ctx, $singleReference, $singleSecret): void {
             $this->withHeader('X-Restaurant-Shop-Token', $ctx['token'])
                 ->getJson('/api/v1/public/restaurant/shop/orders/'.$singleReference.'?secret='.$singleSecret)
