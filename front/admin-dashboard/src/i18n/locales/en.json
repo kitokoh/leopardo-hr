@@ -8807,7 +8807,8 @@
       "status": "Status",
       "createdAt": "Created on",
       "destination": "Destination",
-      "incoterm": "Incoterm"
+      "incoterm": "Incoterm",
+      "actions": "Actions"
     },
     "common": {
       "retry": "Retry",
@@ -8866,6 +8867,15 @@
         "expired": "Expired",
         "withdrawn": "Withdrawn"
       }
+    },
+    "transition": {
+      "awarded": "Award",
+      "closed": "Close",
+      "cancelled": "Cancel",
+      "rejected": "Reject",
+      "withdrawn": "Withdraw",
+      "refused": "Transition refused: this state does not allow it.",
+      "failed": "The transition failed. Please retry."
     }
   },
   "vtc": {

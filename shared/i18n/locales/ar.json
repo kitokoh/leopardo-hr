@@ -7885,7 +7885,8 @@
       "status": "الحالة",
       "createdAt": "تاريخ الإنشاء",
       "destination": "الوجهة",
-      "incoterm": "إنكوترمز"
+      "incoterm": "إنكوترمز",
+      "actions": "إجراءات"
     },
     "counterparties": {
       "title": "الأطراف التجارية",
@@ -7931,6 +7932,15 @@
         "expired": "منتهية",
         "withdrawn": "مسحوبة"
       }
+    },
+    "transition": {
+      "awarded": "إرساء",
+      "closed": "إغلاق",
+      "cancelled": "إلغاء",
+      "rejected": "رفض",
+      "withdrawn": "سحب",
+      "refused": "تم رفض الانتقال: هذه الحالة لا تسمح به.",
+      "failed": "فشل الانتقال. أعد المحاولة."
     }
   },
   "vtc": {

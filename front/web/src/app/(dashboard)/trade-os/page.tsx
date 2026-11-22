@@ -159,6 +159,15 @@ export default function TradeDashboardPage() {
   const [integrations, setIntegrations] = useState<TradeIntegration[]>([]);
   const [degraded, setDegraded] = useState(false);
 
+  // ── Transitions de cycle de vie (#9779) ────────────────────────────────
+  //
+  // Les routes `POST /trade/rfqs/{id}/transition` et
+  // `POST /trade/quotes/{id}/transition` existaient sans AUCUN point d'entree
+  // dans l'ecran : le vendeur ne pouvait donc pas s'en servir. Une route sans
+  // interface n'est pas un outil, c'est une capacite latente.
+  const [transitioning, setTransitioning] = useState<string | null>(null);
+  const [transitionError, setTransitionError] = useState<string | null>(null);
+
   // ── Commandes & contreparties (#9779) ──────────────────────────────────
   const [orders, setOrders] = useState<TradeOrderRow[]>([]);
   const [counterparties, setCounterparties] = useState<TradeCounterpartyRow[]>([]);
@@ -389,6 +398,66 @@ export default function TradeDashboardPage() {
     return t(locale, `trade.${namespace}.status.${value}`, value);
   };
 
+  /**
+   * Fait avancer une RFQ ou une offre (#9779).
+   *
+   * Le serveur reste seul juge : une transition interdite revient en 422
+   * `INVALID_STATUS_TRANSITION` et on affiche le refus tel quel. On ne
+   * duplique PAS la table de transitions ici — deux verites divergeraient au
+   * premier changement de regle metier.
+   *
+   * On recharge apres succes : le statut affiche doit venir du serveur, pas
+   * d'une mise a jour optimiste qui pourrait mentir si la transition a ete
+   * refusee par une regle qu'on ne connait pas.
+   */
+  const runTransition = async (
+    kind: 'rfqs' | 'quotes',
+    id: number | string,
+    status: string,
+  ) => {
+    const key = `${kind}:${id}:${status}`;
+    setTransitioning(key);
+    setTransitionError(null);
+
+    try {
+      await apiFetch(`/trade/${kind}/${id}/transition`, {
+        method: 'POST',
+        body: JSON.stringify({ status }),
+      });
+      await load();
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 422) {
+        setTransitionError(t(locale, 'trade.transition.refused'));
+      } else {
+        setTransitionError(t(locale, 'trade.transition.failed'));
+      }
+    } finally {
+      setTransitioning(null);
+    }
+  };
+
+  /**
+   * Actions proposees pour une ligne, selon son statut.
+   *
+   * On n'affiche QUE les cibles plausibles : proposer « attribuer » sur une
+   * RFQ en brouillon produirait un 422 a chaque clic. Le serveur reste
+   * l'autorite, mais l'ecran ne doit pas inviter a l'erreur.
+   */
+  const actionsFor = (kind: 'rfqs' | 'quotes', status?: string | null): string[] => {
+    if (kind === 'rfqs') {
+      if (status === 'open') return ['awarded', 'closed', 'cancelled'];
+      if (status === 'draft') return ['cancelled'];
+      return [];
+    }
+
+    if (status === 'submitted' || status === 'under_review' || status === 'negotiating') {
+      return ['rejected', 'withdrawn'];
+    }
+    if (status === 'draft') return ['withdrawn'];
+
+    return [];
+  };
+
   const renderTable = (rows: TradeRow[], emptyKey: string, statusNamespace: string) => {
     if (!rows.length) {
       return (
@@ -406,6 +475,7 @@ export default function TradeDashboardPage() {
               <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.status')}</th>
               <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.destination')}</th>
               <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.incoterm')}</th>
+              <th scope="col" className="px-3 py-2">{t(locale, 'trade.columns.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -418,6 +488,26 @@ export default function TradeDashboardPage() {
                 <td className="px-3 py-3 text-slate-600">{statusLabel(statusNamespace, row.status)}</td>
                 <td className="px-3 py-3 text-slate-600">{row.destination ?? '—'}</td>
                 <td className="px-3 py-3 text-slate-600">{row.incoterm ?? '—'}</td>
+                <td className="px-3 py-3">
+                  <div className="flex flex-wrap gap-1.5">
+                    {actionsFor(statusNamespace as 'rfqs' | 'quotes', row.status).map((target) => {
+                      const rowId = row.id;
+                      if (rowId === undefined) return null;
+                      const key = `${statusNamespace}:${rowId}:${target}`;
+                      return (
+                        <button
+                          key={target}
+                          type="button"
+                          disabled={transitioning === key}
+                          onClick={() => void runTransition(statusNamespace as 'rfqs' | 'quotes', rowId, target)}
+                          className="rounded-lg border border-slate-200 px-2 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                        >
+                          {t(locale, `trade.transition.${target}`, target)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -483,6 +573,12 @@ export default function TradeDashboardPage() {
           <Button variant="outline" size="sm" className="mt-3" onClick={() => void load()}>
             {t(locale, 'trade.retry')}
           </Button>
+        </div>
+      ) : null}
+
+      {transitionError ? (
+        <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-5 py-3 text-sm text-rose-800" role="alert">
+          <p className="font-medium">{transitionError}</p>
         </div>
       ) : null}
 

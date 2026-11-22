@@ -8807,7 +8807,8 @@
       "status": "Durum",
       "createdAt": "Oluşturulma",
       "destination": "Varış",
-      "incoterm": "Incoterm"
+      "incoterm": "Incoterm",
+      "actions": "Islemler"
     },
     "common": {
       "retry": "Yeniden dene",
@@ -8866,6 +8867,15 @@
         "expired": "Süresi doldu",
         "withdrawn": "Geri çekildi"
       }
+    },
+    "transition": {
+      "awarded": "Ver",
+      "closed": "Kapat",
+      "cancelled": "Iptal et",
+      "rejected": "Reddet",
+      "withdrawn": "Geri cek",
+      "refused": "Gecis reddedildi: bu durum buna izin vermiyor.",
+      "failed": "Gecis basarisiz oldu. Tekrar deneyin."
     }
   },
   "vtc": {
