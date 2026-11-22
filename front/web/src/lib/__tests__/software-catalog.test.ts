@@ -10,6 +10,8 @@ import type { StoredAuthUser } from '@/lib/i18n';
 import {
   MOBILE_DISTRIBUTION_STATUS,
   isDistributionFailed,
+  isDistributionHealthy,
+  isDistributionUnknown,
 } from '@/lib/mobile-distribution-status';
 
 /**
@@ -139,8 +141,18 @@ describe('software-catalog (#8447)', () => {
     .filter(([, state]) => state === 'failed')
     .map(([slug]) => slug);
 
+  // #9492 — un canal `unknown` (app pas encore enregistrée côté Firebase) est
+  // traité EXACTEMENT comme `failed` : fail-closed, jamais annoncé. Sans cette
+  // liste, une table qui ne contient que des `unknown` rendrait les deux tests
+  // ci-dessous vides et ils ne prouveraient plus rien.
+  const unknownSlugs = Object.entries(MOBILE_DISTRIBUTION_STATUS)
+    .filter(([, state]) => state === 'unknown')
+    .map(([slug]) => slug);
+
+  const unannouncableSlugs = [...failedSlugs, ...unknownSlugs];
+
   it('tout canal déclaré en échec est requalifié en not_distributed', () => {
-    for (const slug of failedSlugs) {
+    for (const slug of unannouncableSlugs) {
       const app = TENANT_SOFTWARE.find((candidate) => candidate.slug === slug);
       // Un slug absent du catalogue TENANT n'est pas une incohérence : la
       // table couvre aussi des apps PLATEFORME (`platform-admin`), qui ne
@@ -154,7 +166,7 @@ describe('software-catalog (#8447)', () => {
   });
 
   it('un canal en échec ne porte aucun href d’installation', () => {
-    for (const slug of failedSlugs) {
+    for (const slug of unannouncableSlugs) {
       const app = TENANT_SOFTWARE.find((candidate) => candidate.slug === slug);
       if (!app) {
         continue;
@@ -177,6 +189,17 @@ describe('software-catalog (#8447)', () => {
     // Un slug inconnu n'est jamais « en échec » (fail-open sur l'absence,
     // fail-closed sur `unknown` — voir isDistributionUnknown).
     expect(isDistributionFailed('slug-inexistant')).toBe(false);
+  });
+
+  it('un canal `unknown` est fail-closed : ni publié, ni cliquable (#9492)', () => {
+    // `unknown` n'est pas `failed` — le canal n'est pas cassé, il n'existe pas
+    // encore. Mais il ne doit JAMAIS être annoncé : c'est la même exigence
+    // d'honnêteté (#6697), et c'est ce que `isDistributionHealthy` garantit.
+    for (const slug of unknownSlugs) {
+      expect(isDistributionFailed(slug)).toBe(false);
+      expect(isDistributionUnknown(slug)).toBe(true);
+      expect(isDistributionHealthy(slug)).toBe(false);
+    }
   });
 
   it('la requalification ne touche pas les apps servies par un simple lien web', () => {

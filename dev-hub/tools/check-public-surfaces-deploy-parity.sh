@@ -159,6 +159,37 @@ if [[ -f "${DOMAINS_DOC}" ]]; then
   done <<< "${CODE_VERTICALS}"
 fi
 
+# --- 6. Verticales en attente de provisionnement Vercel (#9384) ----------------
+# `PENDING_VERCEL_SURFACES` existe pour qu'une vitrine non provisionnée ne rende
+# pas `main` rouge en permanence. Le risque de cette liste est qu'elle pourrisse :
+# une verticale dont les secrets ont FINI d'être posés resterait « en attente »
+# et ne serait plus jamais déployée — silencieusement. Cette section l'interdit.
+#
+# Elle vérifie deux choses, sans réseau (les secrets ne sont pas lisibles ici) :
+#   1. chaque entrée est une verticale connue du détecteur (pas de faute de frappe
+#      qui ne matcherait jamais et laisserait la vraie verticale échouer) ;
+#   2. chaque entrée est documentée dans le runbook avec son issue de
+#      provisionnement — une entrée non documentée est une dette invisible.
+PENDING_BLOCK="$(sed -n '/^PENDING_VERCEL_SURFACES=(/,/^)/p' "${DETECTOR}")"
+if [[ -n "${PENDING_BLOCK}" ]]; then
+  PENDING_VERTICALS="$(
+    grep -oE "\\\$'[a-z_]+'" <<< "${PENDING_BLOCK}" | sed "s/\\\$'//; s/'//" | sort -u
+  )"
+  RUNBOOK="docs/ops/PUBLIC_SURFACES_DEPLOY.md"
+
+  while IFS= read -r vertical; do
+    [[ -z "${vertical}" ]] && continue
+
+    if ! grep -qx "${vertical}" <<< "${DETECTOR_VERTICALS}"; then
+      fail "PENDING_VERCEL_SURFACES contient '${vertical}', absent de la table SURFACES — faute de frappe : la vraie verticale échouerait toujours sur push main (#9384)"
+    fi
+
+    if [[ -f "${RUNBOOK}" ]] && ! grep -qF "${vertical}" "${RUNBOOK}"; then
+      fail "verticale '${vertical}' déclarée EN ATTENTE de provisionnement mais absente de ${RUNBOOK} — le retard doit être documenté, pas seulement codé (#9384)"
+    fi
+  done <<< "${PENDING_VERTICALS}"
+fi
+
 if [[ "${errors}" -gt 0 ]]; then
   echo ""
   echo "Parité vitrines ↔ déploiement : ${errors} écart(s) (#9591)."
