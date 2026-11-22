@@ -141,7 +141,12 @@ Route::prefix('growth')->group(function () {
 // `billing.*` est portée par finance / admin / super_admin et par AUCUN des
 // rôles support / ops / marketing : c'est le bon périmètre, car un taux de
 // commission et un versement sont des actes financiers.
-Route::middleware(['auth:super_admin_api', 'throttle:platform-sensitive'])->prefix('platform/growth')->group(function () {
+// Issue #9810 — `platform.mfa` était ABSENT de ce groupe alors que les deux
+// groupes `platform` et `admin` de `routes/api.php` le portent. Un super-admin
+// sans second facteur passait donc ici — sur des actes FINANCIERS (taux de
+// commission, statut de versement). La garde `check-platform-mfa-coverage.py`
+// empêche désormais la récidive sur tout nouveau groupe `auth:super_admin_api`.
+Route::middleware(['auth:super_admin_api', 'platform.mfa', 'throttle:platform-sensitive'])->prefix('platform/growth')->group(function () {
     Route::get('/partners', [GrowthAdminController::class, 'partners'])->middleware('platform.permission:billing.view');
     Route::patch('/partners/{partner}/rate', [GrowthAdminController::class, 'updateRate'])->middleware('platform.permission:billing.manage');
     Route::patch('/partners/{partner}/application', [GrowthAdminController::class, 'updateApplicationStatus'])->middleware('platform.permission:billing.manage');
