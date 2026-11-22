@@ -38,5 +38,13 @@ return [
         'title_required' => 'Give the document a title.',
         'link_required' => 'Attach the document to an order, quote, request or deal.',
     ],
+    // #9779 — RFQ and quote lifecycles.
+    'rfqs' => [
+        'awarded_quote_required' => 'Name the winning quote: awarding without saying which one is not a decision.',
+        'awarded_quote_invalid' => 'That quote does not belong to this request for quotation.',
+    ],
+    'quotes' => [
+        'accept_has_its_own_route' => 'Accepting a quote creates an order: use the accept action, not a status change.',
+    ],
     'search_query_too_short' => 'The search must contain at least :min characters.',
 ];

@@ -57085,6 +57085,127 @@ paths:
         '403':
           $ref: '#/components/responses/Error403'
 
+  /v1/trade/rfqs/{rfq}/transition:
+    post:
+      operationId: api_post_trade_rfq_transition
+      tags:
+      - Trade
+      summary: Faire avancer une demande de prix (#9779)
+      description: >-
+        Cycle : draft -> open -> (awarded | closed | cancelled).
+
+        `TradeRfqStateMachine` implementait deja tout le cycle, mais seule la
+        diffusion (`draft -> open`) etait branchee : une RFQ diffusee restait
+        `open` pour toujours. Le vendeur pouvait demander des prix et recevoir
+        des offres, mais jamais designer le gagnant ni clore — le sourcing
+        s'arretait au moment de decider.
+
+        Le client envoie la CIBLE ; le verdict appartient a
+        `TradeRfqStateMachine` — aucune regle de transition n'est dupliquee
+        dans le controleur. Un statut inconnu est une 422 de validation, une
+        transition interdite une 422 `INVALID_STATUS_TRANSITION` qui nomme
+        `from` et `to`.
+
+        `awarded_quote_id` est EXIGE pour `awarded` et doit appartenir a CETTE
+        RFQ : attribuer sans designer l'offre gagnante produirait un etat qui
+        affirme une decision sans la nommer.
+
+        Cette route ne cree AUCUNE commande : attribuer designe une offre
+        gagnante, l'accepter reste `POST /v1/trade/quotes/{quote}/accept`.
+      parameters:
+      - name: rfq
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [draft, open, closed, awarded, cancelled]
+                awarded_quote_id:
+                  type: integer
+                  minimum: 1
+                  description: Exige quand `status` vaut `awarded` ; doit appartenir a cette RFQ
+                close_reason:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: RFQ a son nouveau statut
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role purchase/admin
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/quotes/{quote}/transition:
+    post:
+      operationId: api_post_trade_quote_transition
+      tags:
+      - Trade
+      summary: Faire avancer une offre commerciale (#9779)
+      description: >-
+        Cycle : draft -> submitted -> under_review -> negotiating ->
+        (accepted | rejected | withdrawn | expired).
+
+        Seuls `draft -> submitted` et `-> accepted` etaient branches. Un
+        vendeur pouvait donc emettre une offre et l'accepter, mais pas la
+        refuser, la retirer ni la constater expiree — precisement les trois
+        issues les plus frequentes. Une offre refusee restait `submitted`
+        indefiniment et polluait le pipeline : le vendeur voyait « en attente »
+        des affaires deja mortes.
+
+        `accepted` est VOLONTAIREMENT absent de l'enum : accepter cree une
+        commande, c'est `POST /v1/trade/quotes/{quote}/accept`. L'autoriser ici
+        produirait une offre « acceptee » sans commande — un etat qui ment sur
+        ce qui s'est passe.
+
+        Le verdict appartient a `TradeQuoteStateMachine`.
+      parameters:
+      - name: quote
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [draft, submitted, under_review, negotiating, rejected, expired, withdrawn]
+                reason:
+                  type: string
+                  maxLength: 500
+                  description: Conserve dans les notes de l'offre
+      responses:
+        '200':
+          description: Offre a son nouveau statut
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role sales/admin
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /v1/trade/orders:
     get:
       operationId: api_get_trade_orders

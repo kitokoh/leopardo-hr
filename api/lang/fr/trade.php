@@ -38,5 +38,13 @@ return [
         'title_required' => 'Donnez un titre au document.',
         'link_required' => 'Rattachez le document à une commande, une offre, une demande ou une transaction.',
     ],
+    // #9779 — cycle de vie des consultations et des offres.
+    'rfqs' => [
+        'awarded_quote_required' => 'Désignez l\'offre gagnante : attribuer sans dire laquelle n\'est pas une décision.',
+        'awarded_quote_invalid' => 'Cette offre n\'appartient pas à cette demande de prix.',
+    ],
+    'quotes' => [
+        'accept_has_its_own_route' => 'Accepter une offre crée une commande : utilisez l\'action d\'acceptation, pas un changement de statut.',
+    ],
     'search_query_too_short' => 'La recherche doit contenir au moins :min caractères.',
 ];

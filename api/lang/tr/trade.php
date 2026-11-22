@@ -38,5 +38,13 @@ return [
         'title_required' => 'Belgeye bir baslik verin.',
         'link_required' => 'Belgeyi bir siparise, teklife, talebe veya isleme baglayin.',
     ],
+    // #9779 — teklif talebi ve teklif yasam donguleri.
+    'rfqs' => [
+        'awarded_quote_required' => 'Kazanan teklifi belirtin: hangisi oldugunu soylemeden vermek bir karar degildir.',
+        'awarded_quote_invalid' => 'Bu teklif bu teklif talebine ait degil.',
+    ],
+    'quotes' => [
+        'accept_has_its_own_route' => 'Teklifi kabul etmek siparis olusturur: durum degisikligi degil, kabul islemini kullanin.',
+    ],
     'search_query_too_short' => 'Arama en az :min karakter icermelidir.',
 ];

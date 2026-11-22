@@ -64,6 +64,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::post('/rfqs', [TradeRfqController::class, 'store']);
             // Diffuser la RFQ : génère les liens de réponse (retournés une fois).
             Route::post('/rfqs/{rfq}/send', [TradeRfqController::class, 'send']);
+            // Faire avancer la consultation : `open -> awarded | closed |
+            // cancelled`. Sans cette route, une RFQ diffusée restait `open`
+            // pour toujours : le vendeur pouvait demander des prix et recevoir
+            // des offres, mais jamais désigner le gagnant ni clore. Le
+            // sourcing s'arrêtait au moment de décider.
+            Route::post('/rfqs/{rfq}/transition', [TradeRfqController::class, 'transition']);
         });
 
         // Le VENDEUR consulte la RFQ sur laquelle il est invité : même objet,
@@ -82,6 +88,12 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // opération d'ACHAT (l'engagement est pris par l'acheteur).
         Route::middleware('trade.role:sales,admin')->group(function (): void {
             Route::post('/quotes', [TradeQuoteController::class, 'store']);
+            // Faire avancer l'offre : `rejected | withdrawn | expired |
+            // under_review | negotiating`. `accepted` est exclu — accepter crée
+            // une commande, c'est la route `accept` ci-dessous. Sans cette
+            // route, une offre refusée restait `submitted` indéfiniment et le
+            // vendeur voyait « en attente » des affaires déjà mortes.
+            Route::post('/quotes/{quote}/transition', [TradeQuoteController::class, 'transition']);
         });
 
         Route::middleware('trade.role:purchase,admin')->group(function (): void {

@@ -6,10 +6,13 @@ namespace App\Modules\Trade\Interfaces\Api\V1\Controllers;
 
 use App\Modules\Trade\Application\Actions\CreateRfqAction;
 use App\Modules\Trade\Application\Actions\SendRfqAction;
+use App\Modules\Trade\Application\Actions\TransitionRfqAction;
+use App\Modules\Trade\Domain\Enums\TradeRfqStatus;
 use App\Modules\Trade\Domain\Exceptions\InvalidTradeStateTransitionException;
 use App\Modules\Trade\Domain\Models\TradeRfq;
 use App\Modules\Trade\Interfaces\Api\V1\Requests\RfqSendRequest;
 use App\Modules\Trade\Interfaces\Api\V1\Requests\RfqStoreRequest;
+use App\Modules\Trade\Interfaces\Api\V1\Requests\RfqTransitionRequest;
 use App\Modules\Trade\Interfaces\Api\V1\Resources\TradeRfqResource;
 use App\Shared\Enums\ApiError;
 use Illuminate\Http\JsonResponse;
@@ -28,6 +31,7 @@ final class TradeRfqController
     public function __construct(
         private readonly CreateRfqAction $createRfq,
         private readonly SendRfqAction $sendRfq,
+        private readonly TransitionRfqAction $transitionRfq,
     ) {}
 
     /**
@@ -124,5 +128,42 @@ final class TradeRfqController
             ),
             'notice' => 'Ces liens de reponse ne sont affiches qu\'une fois. Conservez-les avant de fermer cette page.',
         ]);
+    }
+
+    /**
+     * Fait avancer la RFQ : `open -> awarded | closed | cancelled`.
+     *
+     * Sans cette route, une consultation diffusee restait `open` pour
+     * toujours : le vendeur pouvait demander des prix et recevoir des offres,
+     * mais jamais designer le gagnant ni clore. Le sourcing s'arretait au
+     * moment de decider.
+     *
+     * Le verdict reste a `TradeRfqStateMachine` : une transition interdite est
+     * un 422 metier, pas une erreur serveur.
+     */
+    public function transition(RfqTransitionRequest $request, TradeRfq $rfq): JsonResponse
+    {
+        /** @var string $status */
+        $status = $request->validated('status');
+
+        try {
+            $updated = $this->transitionRfq->execute(
+                $rfq,
+                TradeRfqStatus::from($status),
+                [
+                    'awarded_quote_id' => $request->validated('awarded_quote_id'),
+                    'close_reason' => $request->validated('close_reason'),
+                ],
+            );
+        } catch (InvalidTradeStateTransitionException $exception) {
+            return ApiError::INVALID_STATUS_TRANSITION->response([
+                'from' => $exception->from,
+                'to' => $exception->to,
+            ]);
+        }
+
+        $updated->load(['lines.product', 'invitations', 'quotes']);
+
+        return new JsonResponse(['data' => TradeRfqResource::make($updated)->resolve()]);
     }
 }
