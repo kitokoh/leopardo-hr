@@ -253,7 +253,7 @@ final class TradePromotionKitBuilder
 
     private function disclaimer(): string
     {
-        return "Ce kit propose un brouillon construit à partir des informations déjà enregistrées dans votre profil : "
+        return 'Ce kit propose un brouillon construit à partir des informations déjà enregistrées dans votre profil : '
             ."il ne publie rien et n'ajoute aucune affirmation que vous n'ayez saisie. "
             .'La publication reste une action distincte, et vous en restez responsable.';
     }
