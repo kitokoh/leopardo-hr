@@ -133,9 +133,13 @@ class TradeOrderApiTest extends TestCase
         // que l'ecran puisse expliquer le refus.
         $this->postJson("/api/v1/trade/orders/{$orderId}/transition", ['status' => 'delivered'])
             ->assertStatus(422)
-            ->assertJsonPath('error.code', 'INVALID_STATUS_TRANSITION')
-            ->assertJsonPath('error.details.from', 'confirmed')
-            ->assertJsonPath('error.details.to', 'delivered');
+            // Format reel d'`ApiError::response()` : `error` est le CODE et
+            // `message` l'explication ; les details sont ajoutes a la RACINE,
+            // pas sous `error.details`. Le test precedent attendait une forme
+            // qui n'existe nulle part dans l'API (la CI l'a revele).
+            ->assertJsonPath('error', 'INVALID_STATUS_TRANSITION')
+            ->assertJsonPath('from', 'confirmed')
+            ->assertJsonPath('to', 'delivered');
     }
 
     public function test_an_unknown_status_is_a_validation_error_not_a_transition_error(): void

@@ -52,8 +52,13 @@ class TradeDocumentApiTest extends TestCase
 
         $orderId = $this->createConfirmedOrder();
 
+        // 4 Ko exactement : `fake()->create()` prend des KILOOCTETS, et
+        // l'assertion porte sur la taille CONSTATEE (getSize()), en octets.
+        $file = $this->pdf('facture.pdf', 4);
+        $expectedBytes = (int) $file->getSize();
+
         $response = $this->postJson('/api/v1/trade/documents', [
-            'file' => $this->pdf('facture.pdf', 4_096),
+            'file' => $file,
             'type' => 'commercial_invoice',
             'title' => 'Facture commerciale - lot 1',
             'trade_order_id' => $orderId,
@@ -63,8 +68,8 @@ class TradeDocumentApiTest extends TestCase
             ->assertJsonPath('data.type_label', 'Facture commerciale')
             ->assertJsonPath('data.title', 'Facture commerciale - lot 1')
             ->assertJsonPath('data.original_name', 'facture.pdf')
-            // Taille CONSTATEE depuis le fichier recu.
-            ->assertJsonPath('data.size_bytes', 4_096)
+            // Taille CONSTATEE depuis le fichier recu, jamais declaree.
+            ->assertJsonPath('data.size_bytes', $expectedBytes)
             ->assertJsonPath('data.status', 'draft');
 
         // Ni le chemin de stockage ni le disque ne sortent de l'API.
@@ -208,11 +213,20 @@ class TradeDocumentApiTest extends TestCase
 
     // ── Fixtures ──────────────────────────────────────────────────────────
 
-    private function pdf(string $name, int $kilobytes): UploadedFile
+    /**
+     * Faux PDF d'exactement `$bytes` octets.
+     *
+     * ATTENTION : `UploadedFile::fake()->create($name, $kilobytes)` prend des
+     * KILOOCTETS. La CI a revele l'ecart — 4_096 demandes en « Ko » produisaient
+     * 4 194 304 octets, et le test comparait a 4 096 : l'echec venait de
+     * l'ecart d'unite, pas du code teste. On fixe ici la taille en octets et on
+     * la donne au helper dans son unite reelle, pour que l'assertion porte sur
+     * le COMPORTEMENT (taille constatee depuis le fichier recu) et non sur une
+     * conversion.
+     */
+    private function pdf(string $name, int $bytes): UploadedFile
     {
-        // `create()` genere un faux fichier de la taille demandee ; le contenu
-        // n'a pas d'importance, seule la taille CONSTATEE compte ici.
-        return UploadedFile::fake()->create($name, $kilobytes, 'application/pdf');
+        return UploadedFile::fake()->create($name, max(1, intdiv($bytes, 1024)), 'application/pdf');
     }
 
     private function createConfirmedOrder(): int
