@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Modules\CRM\Application\Services;
 
-use App\Modules\CRM\Domain\Enums\CrmOpportunityStage;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -44,22 +41,6 @@ use Illuminate\Support\Facades\Schema;
  */
 class CrmDashboardReadModel
 {
-    /**
-     * Libellés des étapes de repli (quand `stage_id` est NULL). Alignés sur
-     * les noms seedés par `CrmPipelineStagesSeeder` pour que le dashboard et
-     * le kanban affichent les mêmes libellés.
-     *
-     * @var array<string, string>
-     */
-    private const STAGE_LABELS = [
-        'prospecting' => 'Prospection',
-        'qualification' => 'Qualification',
-        'proposal' => 'Proposition',
-        'negotiation' => 'Négociation',
-        'won' => 'Gagné',
-        'lost' => 'Perdu',
-    ];
-
     /**
      * @return array<string, mixed>
      */
@@ -159,7 +140,7 @@ class CrmDashboardReadModel
      * l'alias `eff` (sous-requête : les colonnes calculées ne sont pas
      * référençables directement dans le FROM).
      */
-    private function effectiveStage(string $companyId): Builder
+    private function effectiveStage(string $companyId): \Illuminate\Database\Query\Builder
     {
         return DB::query()->fromSub($this->effectiveStageSubquery($companyId), 'eff');
     }
@@ -173,7 +154,7 @@ class CrmDashboardReadModel
      * Colonnes exposées : `id`, `amount`, `owner_id`, `account_id`,
      * `stage_id`, `stage_name`, `stage_position`, `is_won`, `is_lost`.
      */
-    private function effectiveStageSubquery(string $companyId): Builder
+    private function effectiveStageSubquery(string $companyId): \Illuminate\Database\Query\Builder
     {
         $hasStageId = Schema::hasColumn('crm_opportunities', 'stage_id');
 
@@ -225,7 +206,7 @@ class CrmDashboardReadModel
     {
         $cases = [];
 
-        foreach (CrmOpportunityStage::cases() as $index => $case) {
+        foreach (\App\Modules\CRM\Domain\Enums\CrmOpportunityStage::cases() as $index => $case) {
             $cases[] = sprintf("WHEN '%s' THEN %d", $case->value, $index);
         }
 
@@ -309,8 +290,8 @@ class CrmDashboardReadModel
         ];
     }
 
-    /** @return Collection<int, mixed> */
-    private function distinctOwners(string $table, string $companyId): Collection
+    /** @return \Illuminate\Support\Collection<int, mixed> */
+    private function distinctOwners(string $table, string $companyId): \Illuminate\Support\Collection
     {
         if (! Schema::hasColumn($table, 'owner_id')) {
             return collect();

@@ -66,7 +66,7 @@ class CrmPipelineStagesSeeder extends Seeder
         $companies = Company::query()->where('status', 'active')->get();
 
         if ($companies->isEmpty()) {
-            $this->command?->warn('CrmPipelineStagesSeeder : aucun tenant actif.');
+            $this->command->warn('CrmPipelineStagesSeeder : aucun tenant actif.');
 
             return;
         }
@@ -89,12 +89,12 @@ class CrmPipelineStagesSeeder extends Seeder
         }
 
         if ($seeded === 0) {
-            $this->command?->warn('CrmPipelineStagesSeeder skipped : tables CRM absentes.');
+            $this->command->warn('CrmPipelineStagesSeeder skipped : tables CRM absentes.');
 
             return;
         }
 
-        $this->command?->info("CrmPipelineStagesSeeder : {$seeded} tenant(s) trait\u00e9(s).");
+        $this->command->info("CrmPipelineStagesSeeder : {$seeded} tenant(s) trait\u00e9(s).");
     }
 
     /**
@@ -138,9 +138,9 @@ class CrmPipelineStagesSeeder extends Seeder
             DB::table('crm_pipeline_stages')->insert([
                 'company_id' => $companyId,
                 'pipeline_id' => $pipelineId,
-                'name' => self::LABELS[$stage->value] ?? $stage->value,
+                'name' => self::LABELS[$stage->value],
                 'position' => $position,
-                'color' => self::COLORS[$stage->value] ?? null,
+                'color' => self::COLORS[$stage->value],
                 'is_won' => $stage === CrmOpportunityStage::Won,
                 'is_lost' => $stage === CrmOpportunityStage::Lost,
                 'created_at' => now(),
