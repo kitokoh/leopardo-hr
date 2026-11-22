@@ -187,7 +187,7 @@ class TradeProductApiTest extends TestCase
     public function test_public_catalogue_lists_only_active_products_and_hides_hs_code(): void
     {
         $company = $this->createCompany();
-        $employee = $this->actingAsEmployee($company);
+        $this->actingAsEmployee($company);
 
         // Profil publié + un produit actif (avec HS) + un produit archivé.
         TradeCompanyProfile::query()->create([
@@ -214,8 +214,6 @@ class TradeProductApiTest extends TestCase
             'name' => 'Archivé',
             'status' => 'archived',
         ]);
-
-        $this->assertNotNull($employee);
 
         $response = $this->getJson('/api/v1/public/trade/companies/cafe-cameroun/products')
             ->assertStatus(200)
