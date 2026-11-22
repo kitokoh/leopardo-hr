@@ -1,3 +1,24 @@
+## 2026-11-23 — Trade OS : vérifier et archiver une contrepartie depuis l'écran vendeur (PR #9798, #9780)
+
+Surface : `front/web/src/app/(dashboard)/trade-os/components/CounterpartyList.tsx`, `types.ts`, `front/web/src/app/(dashboard)/trade-os/page.tsx`, `front/web/src/app/(dashboard)/trade-os/__tests__/counterparties.test.tsx`, `shared/i18n/locales/{fr,en,tr,ar}.json`.
+
+**Pourquoi c'est un scénario de test** : deux opérations existaient côté API sans aucun point d'entrée à l'écran. `POST /v1/trade/counterparties/{id}/verify` est derrière `trade.role:admin` et exige un motif — le bouton était monté pour personne (`canVerify={false}` en dur). Et l'action de la liste s'appelait « Supprimer » alors que le serveur fait une suppression **douce** (`deleted_at`) : le mot promettait une destruction qui n'a pas lieu.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| un manager `dept` ne voit **pas** le bouton « Vérifier » | il cliquerait et recevrait 403 — l'écran promettrait ce qu'il ne peut pas tenir |
+| un manager `principal` voit le bouton « Vérifier » | l'admin de la verticale n'aurait aucun moyen de vérifier une fiche |
+| un employé portant le grant `trade.admin` voit le bouton | la délégation BOS-013 serait inopérante à l'écran |
+| cliquer « Vérifier » envoie `POST /trade/counterparties/{id}/verify` avec `status: verified` et le motif saisi | la décision ne serait pas tracée avec son auteur et sa date |
+| annuler le prompt de motif n'envoie **aucune** requête | une vérification sans motif serait enregistrée, ou une décision vide |
+| refuser la confirmation d'archivage n'envoie **aucun** `DELETE` | une contrepartie quitterait le répertoire sur un clic de trop |
+| confirmer l'archivage envoie `DELETE /trade/counterparties/{id}` | la fiche resterait dans le répertoire malgré la confirmation |
+| après archivage, la fiche quitte la liste et les autres sont intactes | l'écran mentirait sur l'état du répertoire, ou retirerait la mauvaise ligne |
+| le message d'archivage parle d'archivage, pas de suppression définitive | l'utilisateur croirait avoir détruit l'historique des dossiers |
+| un archivage en échec affiche l'erreur et **garde** la fiche | l'écran afficherait une disparition qui n'a pas eu lieu |
+
+**Non couvert** — le rendu navigateur réel des deux boutons : la mesure est le run CI.
+
 ## 2026-11-22 — Trade OS : édition d'une contrepartie depuis l'écran vendeur (PR #9798, #9780)
 
 Surface : `front/web/src/app/(dashboard)/trade-os/components/CounterpartyForm.tsx`, `CounterpartyList.tsx`, `front/web/src/app/(dashboard)/trade-os/page.tsx`, `front/web/src/app/(dashboard)/trade-os/__tests__/counterparties.test.tsx`.

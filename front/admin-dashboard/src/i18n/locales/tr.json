@@ -8853,7 +8853,10 @@
         "forwarder": "Forwarder",
         "customs_broker": "Gümrük müşaviri",
         "inspector": "Denetçi"
-      }
+      },
+      "archive": "Arşivle",
+      "archiveConfirm": "Bu karşı taraf arşivlensin mi? Dizinden çıkar ama dosya ve teklif geçmişinde kalır.",
+      "archived": "Karşı taraf arşivlendi."
     }
   },
   "vtc": {
