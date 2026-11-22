@@ -21,4 +21,21 @@ return [
         'product_invalid' => 'Ce produit n\'existe pas dans votre catalogue, ou appartient à une autre entreprise.',
         'product_archived' => 'Ce produit est archivé : il ne peut pas être ajouté à une nouvelle ligne.',
     ],
+    // #9779 — contreparties (annuaire clients/fournisseurs).
+    'counterparties' => [
+        'roles_required' => 'Déclarez au moins un rôle : on ne peut pas acheter ni vendre à quelqu\'un sans savoir dans quel sens.',
+        'verification_not_self_assertable' => 'La vérification est faite par un membre de votre équipe, elle ne peut pas être déclarée ici.',
+    ],
+
+    // #9779 — commandes.
+    'orders' => [
+        'cancel_reason_required' => 'Indiquez le motif de l\'annulation : sans lui, la commande reste inexplicable plus tard.',
+    ],
+
+    // #9779 — documents commerciaux.
+    'documents' => [
+        'type_invalid' => 'Ce type de document ne fait pas partie de la liste réglementaire.',
+        'title_required' => 'Donnez un titre au document.',
+        'link_required' => 'Rattachez le document à une commande, une offre, une demande ou une transaction.',
+    ],
 ];

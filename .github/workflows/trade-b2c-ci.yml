@@ -111,15 +111,22 @@ jobs:
       - name: Setup backend (PHP + Composer + multi-tenant DB)
         uses: ./.github/actions/setup-backend-db
 
-      - name: Assert every Trade test file is registered in phpunit.xml
+      - name: Assert every Trade FEATURE test file is registered in phpunit.xml
         # #9778 — LE point de recidive. `tests.yml` lance des TESTSUITES NOMMEES
-        # (`--testsuite=FeatureRest`), pas les repertoires : un fichier absent de
-        # phpunit.xml n'est donc execute par RIEN, sans que rien ne le signale.
+        # (`--testsuite=FeatureRest`, `FeatureMvpFixture`, `Unit`), pas des
+        # repertoires.
+        #
+        # Pourquoi FEATURE seulement, et pas Unit : la testsuite `Unit` declare
+        # `<directory>tests/Unit</directory>` — tout fichier y est decouvert
+        # automatiquement, un fichier ne peut pas y etre orphelin. Les shards
+        # Feature, eux, listent des `<file>` explicites (seul mecanisme que
+        # paratest honore, cf. en-tete de generate-feature-shards.php) : un
+        # fichier absent de la liste n'est execute par AUCUNE suite nommee.
+        # C'est exactement par ce trou que TradeProductApiTest est passe.
+        #
         # La garde #9707 couvre le chemin mort (une entree qui ne correspond a
         # aucun fichier) mais pas le fichier orphelin (un fichier que rien ne
-        # reference) — c'est exactement par ce trou que TradeProductApiTest est
-        # passe pendant deux tours. Cette etape ferme le trou, pas seulement
-        # l'instance.
+        # reference). Cette etape ferme le trou, pas seulement l'instance.
         working-directory: ./api
         run: |
           set -euo pipefail
@@ -129,12 +136,12 @@ jobs:
               echo "::error file=api/${f}::${f} n'est declare dans aucune testsuite de api/phpunit.xml (#9778)."
               missing=1
             fi
-          done < <(find tests/Feature/Trade tests/Unit/Trade -name '*Test.php' | sort)
+          done < <(find tests/Feature/Trade -name '*Test.php' | sort)
           if [ "$missing" -ne 0 ]; then
             echo "Ajoutez chaque fichier a la testsuite Trade ET a l'agregat FeatureRest."
             exit 1
           fi
-          echo "OK — tous les fichiers de test Trade sont enregistres."
+          echo "OK - tous les fichiers de test Feature/Trade sont enregistres."
 
       - name: Run Trade tests
         id: trade_tests

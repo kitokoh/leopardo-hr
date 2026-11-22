@@ -21,4 +21,21 @@ return [
         'product_invalid' => 'This product does not exist in your catalogue, or belongs to another company.',
         'product_archived' => 'This product is archived and cannot be added to a new line.',
     ],
+    // #9779 — counterparties (customer/supplier directory).
+    'counterparties' => [
+        'roles_required' => 'Declare at least one role: you cannot buy from or sell to someone without knowing which way it goes.',
+        'verification_not_self_assertable' => 'Verification is done by a member of your team and cannot be declared here.',
+    ],
+
+    // #9779 — orders.
+    'orders' => [
+        'cancel_reason_required' => 'Give the cancellation reason: without it the order is unexplainable later.',
+    ],
+
+    // #9779 — commercial documents.
+    'documents' => [
+        'type_invalid' => 'This document type is not part of the regulatory list.',
+        'title_required' => 'Give the document a title.',
+        'link_required' => 'Attach the document to an order, quote, request or deal.',
+    ],
 ];

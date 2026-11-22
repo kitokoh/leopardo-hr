@@ -21,4 +21,21 @@ return [
         'product_invalid' => 'Bu urun kataloğunuzda yok veya başka bir şirkete ait.',
         'product_archived' => 'Bu urun arşivlenmiş: yeni bir satıra eklenemez.',
     ],
+    // #9779 — karsilastrilar (musteri/tedarikci dizini).
+    'counterparties' => [
+        'roles_required' => 'En az bir rol belirtin: yonu bilmeden bir tarafla alim-satim yapilamaz.',
+        'verification_not_self_assertable' => 'Dogrulama ekibinizden bir uye tarafindan yapilir, burada beyan edilemez.',
+    ],
+
+    // #9779 — siparisler.
+    'orders' => [
+        'cancel_reason_required' => 'Iptal gerekcesini belirtin: olmadan siparis sonradan aciklanamaz.',
+    ],
+
+    // #9779 — ticari belgeler.
+    'documents' => [
+        'type_invalid' => 'Bu belge tipi duzenleyici listede yer almiyor.',
+        'title_required' => 'Belgeye bir baslik verin.',
+        'link_required' => 'Belgeyi bir siparise, teklife, talebe veya isleme baglayin.',
+    ],
 ];
