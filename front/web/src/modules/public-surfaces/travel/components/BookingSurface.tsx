@@ -41,8 +41,14 @@ import {
   type SeatStatusValue,
 } from '../domain/seat-layout';
 import { reconcileSeatSelection } from '../domain/seat-selection';
-import { createBooking } from '../infrastructure/booking-gateway';
-import { TRAVEL_BOOKING_COPY as C } from '../../copy/retail-copy';
+import {
+  createBooking,
+  initiatePayment,
+  ONLINE_PAYMENT_PROVIDERS,
+  type InitiatedPayment,
+  type OnlinePaymentProvider,
+} from '../infrastructure/booking-gateway';
+import { TRAVEL_BOOKING_COPY as C, PAYMENT_PROVIDER_LABELS } from '../../copy/retail-copy';
 import { SEAT_LABELS } from '../../copy/seat-labels';
 
 /** Intervalle de rafraîchissement de l'inventaire (ms). */
@@ -94,9 +100,19 @@ export function BookingSurface({
   const [seatNotice, setSeatNotice] = useState<string | null>(null);
   const [created, setCreated] = useState<CreatedBooking | null>(null);
 
+  // Paiement en ligne (TRAVEL-1002) — la réservation seule ne vaut pas billet :
+  // tant que le paiement n'est pas initié, le voyageur n'a qu'une option.
+  const [provider, setProvider] = useState<OnlinePaymentProvider>('momo');
+  const [payment, setPayment] = useState<InitiatedPayment | null>(null);
+  const [paying, setPaying] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+
   // Une clé par session de checkout : un rejeu réseau ne crée jamais deux
   // réservations. Elle est conservée jusqu'au succès.
   const idempotencyKey = useRef<string>(newIdempotencyKey());
+  // Clé distincte de celle de la réservation : deux opérations serveur
+  // différentes ne doivent pas partager un identifiant d'idempotence.
+  const paymentIdempotencyKey = useRef<string>(newIdempotencyKey());
 
   const freeSeats = useMemo(() => selectableSeatNumbers(liveSeats), [liveSeats]);
   const selectedSeats = useMemo(
@@ -226,6 +242,29 @@ export function BookingSurface({
   };
 
   if (created !== null) {
+    const pay = async () => {
+      if (paying) {
+        return;
+      }
+
+      setPaying(true);
+      setPaymentError(null);
+
+      try {
+        const initiated = await initiatePayment({
+          bookingReference: created.reference,
+          provider,
+          idempotencyKey: paymentIdempotencyKey.current,
+        });
+
+        setPayment(initiated);
+      } catch (caught) {
+        setPaymentError(caught instanceof Error ? caught.message : C.paymentFailed);
+      } finally {
+        setPaying(false);
+      }
+    };
+
     return (
       <SurfaceCard identity={identity}>
         <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Réservation confirmée</h2>
@@ -237,9 +276,61 @@ export function BookingSurface({
           {created.passengerCount} passager{created.passengerCount > 1 ? 's' : ''} ·{' '}
           {formatPrice(created.totalMinor, created.currency)}
         </p>
-        <p style={{ margin: '0.5rem 0 0', fontSize: '0.8rem', color: '#78716C' }}>
-          Conservez cette référence : elle suffit à suivre votre réservation.
-        </p>
+
+        {payment === null ? (
+          <>
+            <p style={{ margin: '0.75rem 0 0.4rem', fontSize: '0.85rem', fontWeight: 600 }}>
+              Payer maintenant
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <select
+                aria-label="Moyen de paiement"
+                value={provider}
+                onChange={(event) => setProvider(event.target.value as OnlinePaymentProvider)}
+                style={{ ...INPUT_STYLE, width: 'auto', minWidth: '10rem' }}
+              >
+                {ONLINE_PAYMENT_PROVIDERS.map((code) => (
+                  <option key={code} value={code}>
+                    {PAYMENT_PROVIDER_LABELS[code]}
+                  </option>
+                ))}
+              </select>
+
+              <button
+                type="button"
+                onClick={() => void pay()}
+                disabled={paying}
+                style={{
+                  padding: '0.7rem 1.2rem',
+                  borderRadius: '0.6rem',
+                  border: 'none',
+                  background: identity.palette.primary,
+                  color: identity.palette.onPrimary,
+                  fontWeight: 700,
+                  cursor: paying ? 'not-allowed' : 'pointer',
+                  opacity: paying ? 0.6 : 1,
+                }}
+              >
+                {paying ? C.paymentPending : C.pay}
+              </button>
+            </div>
+            <p style={{ margin: '0.5rem 0 0', fontSize: '0.78rem', color: '#A8A29E' }}>
+              Conservez cette référence : elle suffit à suivre votre réservation.
+            </p>
+          </>
+        ) : (
+          <SurfaceNotice identity={identity}>
+            Paiement {payment.status} — référence {payment.reference}. Votre réservation{' '}
+            {created.reference} est enregistrée ; le billet est émis dès confirmation du
+            paiement.
+          </SurfaceNotice>
+        )}
+
+        {paymentError !== null ? (
+          <SurfaceNotice identity={identity} alert>
+            {paymentError}
+          </SurfaceNotice>
+        ) : null}
       </SurfaceCard>
     );
   }

@@ -17,7 +17,7 @@ import { useState, type FormEvent } from 'react';
 import { SurfaceBadge, SurfaceCard, SurfaceNotice } from '../../kernel/components/SurfacePrimitives';
 import type { SurfaceIdentity } from '../../kernel/domain/surface-identity';
 import { formatPrice } from '../../kernel/domain/money';
-import { trackBooking, type TrackedBooking } from '../infrastructure/booking-gateway';
+import { trackBooking, fetchTicketPdf, type TrackedBooking } from '../infrastructure/booking-gateway';
 import { TRAVEL_BOOKING_COPY as C } from '../../copy/retail-copy';
 
 const INPUT_STYLE = {
@@ -35,6 +35,37 @@ export function BookingTrackingSurface({ identity }: { identity: SurfaceIdentity
   const [pending, setPending] = useState(false);
   const [booking, setBooking] = useState<TrackedBooking | null>(null);
   const [notFound, setNotFound] = useState(false);
+  // Téléchargement de l'e-billet : l'URL signée est demandée à la volée (elle
+  // expire), jamais stockée. `downloadingId` borne un seul appel à la fois.
+  const [downloadingId, setDownloadingId] = useState<number | null>(null);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
+
+  const downloadTicket = async (ticketId: number) => {
+    if (downloadingId !== null) {
+      return;
+    }
+
+    setDownloadingId(ticketId);
+    setDownloadError(null);
+
+    try {
+      const link = await fetchTicketPdf(ticketId, code.trim());
+
+      if (link.pdfUrl === '') {
+        setDownloadError(C.ticketDownloadFailed);
+
+        return;
+      }
+
+      // `noopener` : l'URL signée est une ressource tierce, elle ne doit pas
+      // obtenir de référence sur cette fenêtre.
+      window.open(link.pdfUrl, '_blank', 'noopener,noreferrer');
+    } catch {
+      setDownloadError(C.ticketDownloadFailed);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -138,12 +169,49 @@ export function BookingTrackingSurface({ identity }: { identity: SurfaceIdentity
           {booking.tickets.length > 0 ? (
             <ul style={{ margin: '0.5rem 0 0', padding: 0, listStyle: 'none' }}>
               {booking.tickets.map((ticket) => (
-                <li key={ticket.id} style={{ fontSize: '0.82rem', color: '#57534E' }}>
-                  Billet {ticket.number}
-                  {ticket.status !== '' ? ` — ${ticket.status}` : ''}
+                <li
+                  key={ticket.id}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '0.5rem',
+                    fontSize: '0.82rem',
+                    color: '#57534E',
+                  }}
+                >
+                  <span>
+                    Billet {ticket.number}
+                    {ticket.status !== '' ? ` — ${ticket.status}` : ''}
+                  </span>
+
+                  <button
+                    type="button"
+                    onClick={() => void downloadTicket(ticket.id)}
+                    disabled={downloadingId !== null}
+                    style={{
+                      padding: '0.3rem 0.7rem',
+                      borderRadius: '0.5rem',
+                      border: `1px solid ${identity.palette.primary}`,
+                      background: 'transparent',
+                      color: identity.palette.primary,
+                      fontSize: '0.78rem',
+                      fontWeight: 600,
+                      cursor: downloadingId !== null ? 'not-allowed' : 'pointer',
+                      opacity: downloadingId !== null ? 0.6 : 1,
+                    }}
+                  >
+                    {downloadingId === ticket.id ? C.submitting : C.downloadTicket}
+                  </button>
                 </li>
               ))}
             </ul>
+          ) : null}
+
+          {downloadError !== null ? (
+            <SurfaceNotice identity={identity} alert>
+              {downloadError}
+            </SurfaceNotice>
           ) : null}
 
           {booking.expiresAt !== null ? (
