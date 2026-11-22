@@ -39,4 +39,10 @@ return [
         'process_sends_summary' => 'crm:process-campaign-sends — المستحقة: :due، الجارية: :running، المرسلة: :dispatched، الإخفاقات: :failed.',
     ],
 
+    'opportunities' => [
+        'stage_invalid' => 'هذه المرحلة غير موجودة في خط البيع.',
+        'stage_terminal' => 'الصفقة الرابحة أو الخاسرة نهائية. أنشئ فرصة جديدة للبدء من جديد.',
+        'lost_reason_required' => 'اذكر سبب خسارة الصفقة: بدون سبب يصعب تفسير المراجعة الربعية.',
+        'activity_stage_changed' => 'تم تغيير المرحلة',
+    ],
 ];

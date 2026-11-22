@@ -60,17 +60,7 @@
       "team": "Mon équipe"
     },
     "presences": "Présences",
-    "tasks": "Tâches",
-    "creating": "Création de compte en cours...",
-    "first": {
-      "name": "Prénom"
-    },
-    "min": {
-      "chars": "8 caractères minimum"
-    },
-    "password": "Mot de passe",
-    "required": "Obligatoire",
-    "submit": "Créer mon compte"
+    "tasks": "Tâches"
   },
   "auth": {
     "login": {
@@ -110,31 +100,7 @@
         "visibility": "Afficher ou masquer le mot de passe"
       }
     },
-    "platform_admin_only": "Accès réservé aux administrateurs de la plateforme.",
-    "access_key_label": "Mot de passe",
-    "access_key_required": "Le mot de passe est requis.",
-    "connection_error": "Erreur de connexion.",
-    "disable_two_fa_failed": "La désactivation du 2FA a échoué.",
-    "hide_password": "Masquer le mot de passe",
-    "incomplete_response": "La réponse de connexion est incomplète.",
-    "loading": "Authentification…",
-    "login_placeholder_email": "admin@leopardo-rh.com",
-    "login_submit": "Se connecter",
-    "login_subtitle": "Connectez-vous à votre espace",
-    "password_change_failed": "Le changement de mot de passe a échoué.",
-    "profile_update_failed": "La mise à jour du profil a échoué.",
-    "remember_me": "Se souvenir de moi",
-    "show_password": "Afficher le mot de passe",
-    "two_fa_invalid": "Le code 2FA fourni est invalide.",
-    "two_fa_label": "Code 2FA",
-    "two_fa_required_msg": "Un code de vérification est requis.",
-    "two_fa_setup_failed": "La génération du secret 2FA a échoué.",
-    "unexpected_error": "Une erreur inattendue est survenue.",
-    "demo_panel_title": "Accès démo — choisir un profil",
-    "demo_panel_hint": "Environnement de démonstration : sélectionnez un profil pour vous connecter immédiatement. Désactivé en production.",
-    "demo_badge_platform": "Plateforme",
-    "demo_access": "Utiliser un compte démo",
-    "demo_super_admin_label": "Super Administrateur"
+    "platform_admin_only": "Accès réservé aux administrateurs de la plateforme."
   },
   "common": {
     "language": {
@@ -177,15 +143,7 @@
     "required": "Requis",
     "dismiss": "Fermer",
     "actions": "Actions",
-    "edit": "Modifier",
-    "delete": "Supprimer",
-    "confirm": "Confirmer",
-    "busy": "Chargement…",
-    "cancel": "Annuler",
-    "noResults": "Aucun résultat trouvé.",
-    "reload": "Recharger",
-    "search": "Rechercher…",
-    "previousPage": "Page précédente"
+    "edit": "Modifier"
   },
   "modules": {
     "attendance": "Pointage",
@@ -381,9 +339,7 @@
       "deactivate": "Desactiver",
       "suspend": "Suspendre",
       "export": "Exporter",
-      "cancel": "Annuler",
-      "deactivateConfirmTitle": "Désactiver les utilisateurs sélectionnés ?",
-      "deactivateConfirmBody": "Cette action désactivera :count utilisateur(s) sélectionné(s). Ils ne pourront plus se connecter tant que leur compte n'est pas réactivé."
+      "cancel": "Annuler"
     },
     "toast": {
       "loadError": "Erreur lors du chargement des utilisateurs",
@@ -403,8 +359,7 @@
       "bulkDone": "Mise à jour effectuée"
     },
     "confirm": {
-      "delete": "Etes-vous sur de vouloir supprimer :name ?",
-      "title": "Supprimer cet utilisateur ?"
+      "delete": "Etes-vous sur de vouloir supprimer :name ?"
     },
     "errors": {
       "name_required": "Le nom complet est requis.",
@@ -429,29 +384,12 @@
       "created": "Session d'impersonation créée",
       "error": "Erreur lors de la création de la session d'impersonation",
       "done": "Terminé",
-      "employee": "Employé #:id",
-      "copyFailed": "Copie impossible."
+      "employee": "Employé #:id"
     },
     "edit": {
       "title": "Modifier l'utilisateur",
       "status": "Statut",
       "save": "Mettre à jour"
-    },
-    "table": {
-      "loading": "Chargement des utilisateurs...",
-      "empty": "Aucun utilisateur",
-      "emptyHint": "Aucun utilisateur ne correspond aux critères de recherche.",
-      "viewDetails": "Voir les détails",
-      "company": "Entreprise",
-      "createdAt": "Inscription",
-      "name": "Utilisateur",
-      "status": "Statut"
-    },
-    "status": {
-      "active": "Actif",
-      "inactive": "Inactif",
-      "pending": "Attente",
-      "suspended": "Suspendu"
     }
   },
   "dashboard": {
@@ -573,24 +511,7 @@
     "leave_balance_available": "{days} j disponibles",
     "leave_balance_used": "{days} utilisés",
     "see_absences": "Voir mes absences",
-    "leave_balance_unknown": "Congés",
-    "activeCompanies": "Entreprises actives",
-    "badgeRisks": ":count risques",
-    "badgeTenants": ":count tenants",
-    "badgeToProcess": ":count à traiter",
-    "cards": {
-      "checkSystemDesc": "Contrôler santé API, configuration, logs, sauvegardes et signaux d'incident.",
-      "createClientDesc": "Qualifier une entreprise, ouvrir son tenant et vérifier son statut de lancement.",
-      "manageSubscriptionsDesc": "Contrôler MRR, impayés, plans actifs et trajectoire commerciale de la plateforme.",
-      "monitorAtRiskDesc": "Identifier les comptes faibles en adoption, pointage ou santé opérationnelle.",
-      "prepareIntegrationsDesc": "Suivre webhooks, exports, rapports et surfaces API nécessaires aux intégrateurs.",
-      "processRequestsDesc": "Suivre les demandes d'essai, prioriser les leads et éviter les prospects bloqués."
-    },
-    "criticalAlerts": "Alertes critiques",
-    "details": "Détails",
-    "pendingRequestsTitle": "Demandes en attente",
-    "platformMrr": "MRR Plateforme",
-    "processRequests": "Traiter les demandes"
+    "leave_balance_unknown": "Congés"
   },
   "marketing": {
     "oauth": {
@@ -861,21 +782,7 @@
       }
     },
     "sessions": "Sessions",
-    "break_minutes": "{minutes} min",
-    "payroll_ready": {
-      "subject": "Votre bulletin de paie est disponible",
-      "greeting": "Bonjour :name,",
-      "body": "Votre bulletin de paie pour :period est pret. Vous pouvez le consulter dans Leopardo.",
-      "action": "Voir mon bulletin",
-      "footer": "Merci de verifier vos informations avant export comptable."
-    },
-    "absence_approved": {
-      "subject": "Votre absence a ete approuvee",
-      "greeting": "Bonjour :name,",
-      "body": "Votre demande d absence pour :period a ete approuvee.",
-      "action": "Voir la demande",
-      "footer": "Le planning equipe a ete mis a jour."
-    }
+    "break_minutes": "{minutes} min"
   },
   "holidays": {
     "page": {
@@ -989,9 +896,7 @@
       "save_error": "Erreur lors de l'enregistrement.",
       "confirm_error": "Erreur lors de la confirmation des dates.",
       "confirm_year_success": "{count} date(s) confirmée(s).",
-      "delete_confirm_dialog": "Supprimer « {name} » ?",
-      "confirm_title": "Confirmer l'année ?",
-      "delete_confirm_title": "Supprimer ce jour férié ?"
+      "delete_confirm_dialog": "Supprimer « {name} » ?"
     }
   },
   "tax_rates": {
@@ -1098,9 +1003,7 @@
     "reset_done": "Barème réinitialisé.",
     "reset_error": "Réinitialisation impossible.",
     "default_name": "{country} tranche légale",
-    "sim_error": "Simulation impossible.",
-    "delete_confirm_title": "Supprimer ce barème ?",
-    "reset_confirm_title": "Réinitialiser les barèmes ?"
+    "sim_error": "Simulation impossible."
   },
   "social_contrib": {
     "title": "Cotisations sociales par pays",
@@ -1140,8 +1043,7 @@
     "created": "Cotisation créée.",
     "deleted": "Cotisation supprimée.",
     "delete_error": "Suppression impossible.",
-    "delete_confirm": "Supprimer « {name} » ?",
-    "delete_confirm_title": "Supprimer cette cotisation ?"
+    "delete_confirm": "Supprimer « {name} » ?"
   },
   "payroll": {
     "confidence": {
@@ -1607,6 +1509,7 @@
     "copyLink": "Copier le lien",
     "linkCopied": "Lien copié !",
     "linkEmailed": "Votre lien d'accès a également été envoyé par email.",
+    "activateElsewhere": "Définir mon mot de passe sur une autre page",
     "failedTitle": "Création interrompue",
     "failedBody": "Une erreur est survenue pendant la création de votre espace. Réessayez : la création repart de zéro en quelques secondes. Si le problème se reproduit, contactez le support.",
     "timeoutTitle": "Création toujours en cours",
@@ -1670,8 +1573,7 @@
     "otpResent": "Nouveau code envoyé. Pensez à vérifier vos spams.",
     "otpResendError": "Le renvoi n'a pas abouti. Réessayez dans un instant ou contactez le support.",
     "preparingLonger": "C'est un peu plus long que d'habitude — votre espace arrive. Inutile de recharger la page.",
-    "supportCta": "Contacter le support",
-    "activateElsewhere": "Définir mon mot de passe sur une autre page"
+    "supportCta": "Contacter le support"
   },
   "companies": {
     "toast": {
@@ -1731,48 +1633,7 @@
       "statusCompleted": "Terminée",
       "statusRefused": "Refusée",
       "statusFailed": "Échouée"
-    },
-    "activeUnit": "actifs",
-    "createClient": "Créer le client",
-    "createError": "Impossible de creer ce client.",
-    "created": "Client créé et invitation manager envoyée.",
-    "loadError": "Impossible de charger le cockpit clients.",
-    "logsUnit": "logs",
-    "newClient": "Nouveau Client",
-    "noPlan": "SANS PLAN",
-    "open": "Ouvrir",
-    "portfolioSub": "Adoption, risque, revenus récurrents et prochaine action par entreprise.",
-    "provisioning": "Provisionnement...",
-    "provisioningTitle": "Provisionnement Client",
-    "ras": "RAS",
-    "refresh": "Actualiser",
-    "statsActive": "Clients Actifs",
-    "statsFollowed": "Clients Suivis",
-    "statsGlobalMrr": "MRR Global",
-    "statsRiskAlert": "Alerte Risque",
-    "searchLabel": "Rechercher",
-    "searchPlaceholder": "Nom, e-mail, pays ou ville…",
-    "statusLabel": "Statut",
-    "statusAll": "Tous",
-    "statusActive": "Actif",
-    "statusTrial": "Essai",
-    "statusSuspended": "Suspendu",
-    "statusExpired": "Expiré",
-    "empty": "Aucune société dans le portefeuille pour le moment.",
-    "emptySearch": "Aucune société ne correspond à cette recherche.",
-    "resetFilters": "Réinitialiser la recherche",
-    "previousPage": "Précédent",
-    "nextPage": "Suivant",
-    "pageOf": "Page :current sur :total",
-    "totalCount": ":count sociétés",
-    "suspend": "Suspendre",
-    "activate": "Activer",
-    "suspendConfirmTitle": "Suspendre cette société ?",
-    "suspendConfirmBody": "La société :name perdra l’accès à son espace tant qu’elle n’est pas réactivée.",
-    "suspended": "Société suspendue.",
-    "activated": "Société activée.",
-    "statusError": "Échec de la mise à jour du statut.",
-    "statusPlanMissing": "Aucun plan associé à cette société : ouvrez sa fiche pour en définir un."
+    }
   },
   "seo": {
     "pricing": {
@@ -1816,10 +1677,7 @@
     "title": "Assistant IA Leopardo",
     "unavailableBadge": "Indisponible",
     "unavailableBody": "Le chat IA n’est pas activé pour la console super-admin. Utilisez un espace entreprise pris en charge pour accéder à cet assistant.",
-    "unavailableTitle": "Assistant IA indisponible au niveau plateforme",
-    "historyError": "Impossible de charger les conversations.",
-    "messagesError": "Impossible de charger les messages.",
-    "retry": "Réessayer"
+    "unavailableTitle": "Assistant IA indisponible au niveau plateforme"
   },
   "consent": {
     "title": "Cookies et mesure d'audience",
@@ -1884,97 +1742,10 @@
     "emailTemplates": "E-mails",
     "settings": "Paramètres",
     "messaging": "Messagerie",
-    "provisioning": "Provisionnement",
-    "searchIntel": "Growth & Search Intelligence",
-    "searchIntelOverview": "Vue d'ensemble",
-    "searchIntelSeo": "SEO",
-    "searchIntelSea": "SEA",
-    "searchIntelAeo": "AEO",
-    "searchIntelGeo": "GEO",
-    "searchIntelContent": "Contenu",
-    "searchIntelCompetitors": "Concurrents",
-    "searchIntelIntegrations": "Integrations",
-    "accounting": "Comptabilité",
-    "accountingActivation": "Comptabilité — Démarrer",
-    "accountingBank": "Banque & rapprochement",
-    "accountingChart": "Plan comptable",
-    "accountingDashboard": "Comptabilité — Tableau de bord",
-    "accountingDocuments": "Documents & factures",
-    "accountingFiscalYears": "Exercices & clôture",
-    "accountingLedger": "Grand livre & journal",
-    "accountingLettering": "Lettrage",
-    "accountingSettings": "Comptabilité — Paramétrage",
-    "accountingStatements": "TVA & états financiers",
-    "acquisitionFunnel": "Funnel d'acquisition",
-    "aiAssistant": "Assistant IA",
-    "equityInterests": "Prendre des parts",
-    "fuelStation": "Stations-service",
-    "fuelStationOperations": "Opérations stations-service",
-    "marketingOs": "Marketing OS",
-    "showcase": "Site vitrine",
-    "surveyStats": "Surveys de solutions",
-    "team": "Équipe plateforme",
-    "trade": "Commerce international",
-    "groups": {
-      "entreprise": "Entreprises clientes",
-      "facturationOffres": "Facturation & offres",
-      "pilotage": "Pilotage",
-      "plateforme": "Plateforme",
-      "referentielsPaie": "Référentiels paie",
-      "rhPaie": "RH & Paie",
-      "systeme": "Système",
-      "metier": "Métier plateforme",
-      "parametres": "Paramètres"
-    },
-    "fundraising": "Cagnottes solidaires",
-    "solutionSurveys": "Surveys de solutions",
-    "travel": "Agence de voyage",
-    "systemHealth": "Santé de la plateforme",
-    "healthStatus": "Statut",
-    "onlineUsers": "Utilisateurs en ligne",
-    "alerts": "Alertes",
-    "accountingStart": "Démarrer",
-    "accountingOverview": "Tableau de bord",
-    "accountingConfig": "Paramétrage",
-    "fuelStationHub": "Hub stations-service",
-    "fuelStationOps": "Opérations",
-    "discoverySettings": "Découverte publique",
-    "forbidden": "Accès refusé",
-    "forbiddenTitle": "Vous n’avez pas accès à cet écran",
-    "forbiddenText": "Votre compte ne dispose pas de la permission requise. Demandez l’accès à un administrateur, ou revenez au tableau de bord.",
-    "forbiddenBack": "Retour au tableau de bord"
+    "discoverySettings": "Découverte publique"
   },
   "webhooks": {
-    "confirm_delete": "Supprimer ce webhook ?",
-    "active": "Actif",
-    "cancel": "Annuler",
-    "companiesLoadError": "Impossible de charger les entreprises.",
-    "company": "Entreprise",
-    "confirmDeleteHint": "Cette action est irréversible.",
-    "delete": "Supprimer",
-    "deleteError": "Suppression impossible.",
-    "deleted": "Webhook supprimé.",
-    "edit": "Modifier",
-    "events": "Événements",
-    "inactive": "Inactif",
-    "lastTriggered": "Dernier déclenchement",
-    "loadError": "Impossible de charger les webhooks.",
-    "never": "Jamais",
-    "retry": "Réessayer",
-    "save": "Enregistrer",
-    "saveError": "L'enregistrement a échoué.",
-    "saved": "Webhook enregistré.",
-    "saving": "Enregistrement...",
-    "searchPlaceholder": "Rechercher un webhook...",
-    "selectCompany": "Sélectionner une entreprise",
-    "status": "Statut",
-    "subtitle": "Recevez les événements de vos entreprises en temps réel.",
-    "test": "Tester",
-    "testError": "Le test a échoué.",
-    "tested": "Test envoyé.",
-    "titleEdit": "Modifier le webhook",
-    "titleNew": "Nouveau webhook",
-    "url": "URL"
+    "confirm_delete": "Supprimer ce webhook ?"
   },
   "a11y": {
     "skip_to_content": "Aller au contenu principal",
@@ -1999,13 +1770,7 @@
     "home": "Accueil",
     "attendance": "Pointage",
     "absences": "Absences",
-    "approvals": "Validations",
-    "systemAlerts": "Alertes système",
-    "refreshData": "Actualiser les données",
-    "themeLight": "Mode clair",
-    "themeDark": "Mode sombre",
-    "enableLight": "Activer le mode clair",
-    "enableDark": "Activer le mode sombre"
+    "approvals": "Validations"
   },
   "exports": {
     "reportEmployees": "Employes",
@@ -2036,33 +1801,7 @@
     "statusInProgress": "En cours",
     "statusFailed": "Echec",
     "download": "Telecharger",
-    "downloading": "Telechargement...",
-    "colDate": "Date",
-    "colFormat": "Format",
-    "colRequestedBy": "Demande par",
-    "colStatus": "Statut",
-    "colType": "Type",
-    "downloadError": "Erreur lors du téléchargement du rapport",
-    "historyEmpty": "Aucun export recent.",
-    "historySearchPlaceholder": "Rechercher dans l'historique...",
-    "hrReportUnavailable": "Impossible de générer le rapport HR (endpoint indisponible).",
-    "clientSpaceNote": "Les exports sont disponibles dans l'espace client.",
-    "historyClientOnly": "Historique visible uniquement pour les clients.",
-    "historyError": "Impossible de charger l'historique.",
-    "colLicense": "Licence",
-    "colLastSync": "Dernière sync",
-    "colActions": "Actions",
-    "sync": "Sync",
-    "syncing": "Sync…",
-    "details": "Détails",
-    "revoke": "Révoquer",
-    "revokeConfirm": "Confirmer la révocation ?",
-    "revoking": "Révoquer…",
-    "loadError": "Erreur lors du chargement des nodes Edge.",
-    "syncError": "Erreur lors du déclenchement de la synchronisation.",
-    "syncSuccess": "Synchronisation lancée pour {name}",
-    "revokeSuccess": "Licence révoquée pour {name}",
-    "revokeError": "Erreur lors de la révocation de la licence."
+    "downloading": "Telechargement..."
   },
   "companyDetail": {
     "features": {
@@ -2082,8 +1821,7 @@
       "restaurant": "Restauration",
       "travelagency": "Agence de voyage",
       "accounting": "Comptabilité",
-      "company_showcase": "Site vitrine",
-      "fundraising": "Cagnottes solidaires"
+      "company_showcase": "Site vitrine"
     },
     "analyzing": "Analyse des données client...",
     "retry": "Réessayer",
@@ -2119,38 +1857,7 @@
     "verticals": "Verticales & outils de cette entreprise",
     "openVertical": "Ouvrir",
     "noVerticalSurface": "Aucune surface admin dédiée",
-    "noVertical": "Aucune verticale activée pour cette entreprise.",
-    "activateClient": "Activer client",
-    "backToPortfolio": "Retour au portefeuille",
-    "endDate": "Fin",
-    "featuresSaved": "Configuration des modules enregistrée.",
-    "loadFailed": "Impossible de charger le detail entreprise. Verifiez que l'UUID est valide.",
-    "loading": "Chargement...",
-    "messagePlural": "messages",
-    "messageSingular": "message",
-    "moduleActive": "Module Actif",
-    "moduleDisabled": "Module Désactivé",
-    "modulesConfigHint": "Activez ou désactivez les fonctionnalités spécifiques pour ce client.",
-    "noPunch": "Aucun pointage",
-    "notesPlaceholder": "Détails sur la négociation, remises, etc.",
-    "openPlural": "ouverts",
-    "openSingular": "ouvert",
-    "planMissing": "Plan client manquant.",
-    "priorityActions": "Actions Prioritaires",
-    "refresh": "Actualiser",
-    "revenueMrr": "Revenu (MRR)",
-    "riskLevel": "Niveau de risque :",
-    "saveConfig": "Sauvegarder la configuration",
-    "saving": "Enregistrement...",
-    "scoreHealth": "Score Santé",
-    "subscription": "Abonnement",
-    "subscriptionUpdated": "Abonnement mis à jour avec succès.",
-    "subtitle": "Santé opérationnelle, abonnement et configuration des modules.",
-    "support": "Support",
-    "teamActive": "Équipe Active",
-    "updateSubscription": "Mettre à jour l'abonnement",
-    "updating": "Mise à jour...",
-    "viewAllTickets": "Voir tous les tickets"
+    "noVertical": "Aucune verticale activée pour cette entreprise."
   },
   "reports": {
     "attendance_title": "Résumé Présences",
@@ -2434,18 +2141,6 @@
     "twoFactorSubtitle": "Ajoutez une couche de sécurité supplémentaire à votre compte de super-administrateur.",
     "twoFactorTitle": "Authentification à deux facteurs (2FA)",
     "updatePassword": "Mettre à jour le mot de passe",
-    "bankingError": "Erreur lors de l'enregistrement des coordonnées bancaires.",
-    "bankingSubtitle": "IBAN et BIC de votre entreprise requis pour l'export SEPA des virements.",
-    "bankingTitle": "Coordonnées Bancaires SEPA",
-    "bankingUpdated": "Coordonnées bancaires enregistrées.",
-    "bankingWarning": "L'export SEPA retournera une erreur 422 tant que l'IBAN de l'entreprise n'est pas configuré.",
-    "companyBic": "BIC / SWIFT (optionnel)",
-    "companyIban": "IBAN de l'entreprise",
-    "ibanHint": "Format IBAN ISO 13616 (majuscules, sans espaces). Les espaces sont ignorés automatiquement.",
-    "ibanPlaceholderDZ": "IBAN ou RIB algérien (20 chiffres)",
-    "saveBanking": "Enregistrer les coordonnées",
-    "sepaNotReady": "SEPA non configuré",
-    "sepaReady": "SEPA prêt",
     "mobile": {
       "title": "Applications mobiles",
       "subtitle": "Emportez votre espace de travail sur mobile : scannez, saisissez et consultez depuis votre téléphone.",
@@ -2559,46 +2254,7 @@
     "titlePlaceholder": "Titre *",
     "durationPlaceholder": "Duree (h)",
     "maxParticipantsPlaceholder": "Participants max",
-    "online": "En ligne",
-    "tabCatalog": "Catalogue",
-    "tabEnrollments": "Inscriptions",
-    "activeCourses": "Cours actifs",
-    "category": "Catégorie",
-    "completionRate": "Taux de complétion",
-    "costPerParticipant": "Coût / participant",
-    "course": "Cours",
-    "description": "Description",
-    "duration": "Durée",
-    "employee": "Employé",
-    "endDate": "Date de fin",
-    "enrollments": "Inscriptions",
-    "hoursUnit": "h",
-    "instructor": "Formateur",
-    "loadError": "Impossible de charger les formations.",
-    "loading": "Chargement des formations...",
-    "location": "Lieu",
-    "maxPlaces": "Places max",
-    "noCourses": "Aucun cours trouvé.",
-    "noDescription": "Aucune description.",
-    "perParticipant": "/ participant",
-    "progress": "Progression",
-    "provider": "Organisme",
-    "searchEnrollmentPlaceholder": "Rechercher une inscription...",
-    "searchSessionPlaceholder": "Rechercher une session...",
-    "session": "Session",
-    "sessions": "Sessions",
-    "sessionsUnit": "sessions",
-    "startDate": "Date de début",
-    "status": "Statut",
-    "statusCancelled": "Annulé",
-    "statusCompleted": "Terminé",
-    "statusDropped": "Abandonné",
-    "statusEnrolled": "Inscrit",
-    "statusInProgress": "En cours",
-    "statusPlanned": "Planifié",
-    "type": "Type",
-    "uncategorized": "Non catégorisé",
-    "upcomingSessions": "Sessions à venir"
+    "online": "En ligne"
   },
   "access": {
     "denied": {
@@ -2784,39 +2440,6 @@
       "detected": "Détectée",
       "pending": "En validation",
       "rejected": "Rejetée"
-    },
-    "settings": {
-      "title": "Paramètres comptables",
-      "subtitle": "Société, TVA, numérotation et modèles de documents.",
-      "load_error": "Impossible de charger les paramètres comptables.",
-      "save": "Enregistrer",
-      "saved": "Paramètres enregistrés.",
-      "save_error": "L'enregistrement a échoué.",
-      "reload": "Recharger",
-      "company_title": "Informations société",
-      "company_subtitle": "Nom, adresse et identifiants fiscaux.",
-      "series_title": "Numérotation",
-      "series_subtitle": "Suffixe et point de départ des séries de factures.",
-      "mentions_title": "Mentions légales",
-      "mentions_subtitle": "Texte affiché en pied de facture.",
-      "mentions_placeholder": "Ex. : TVA non applicable, article 87 du CGI…",
-      "tva_title": "TVA par défaut",
-      "tva_subtitle": "Taux appliqué aux nouvelles factures.",
-      "add_rate": "Ajouter un taux",
-      "remove_rate": "Supprimer",
-      "rate_label": "Libellé",
-      "rate_default_label": "TVA standard",
-      "rate_value": "Taux (%)",
-      "currency": "Devise",
-      "document_language": "Langue des documents",
-      "lang_fr": "Français",
-      "lang_en": "Anglais",
-      "lang_ar": "Arabe",
-      "lang_tr": "Turc",
-      "payment_terms": "Délai de paiement (jours)",
-      "template_style": "Modèle de facture",
-      "template_classic": "Classique",
-      "template_modern": "Moderne"
     }
   },
   "session": {
@@ -2971,18 +2594,7 @@
     "language": {
       "saved": "Langue enregistrée.",
       "subtitle": "La langue choisie pilote aussi les notifications et textes futurs.",
-      "title": "Langue",
-      "label": "Langue",
-      "variants": {
-        "fr-FR": "Français (France)",
-        "fr-BE": "Français (Belgique)",
-        "fr-CA": "Français (Canada)",
-        "ar-SA": "Arabe (Arabie saoudite)",
-        "ar-MA": "Arabe (Maroc)",
-        "tr-TR": "Turc (Turquie)",
-        "en-US": "Anglais (Etats-Unis)",
-        "en-GB": "Anglais (Royaume-Uni)"
-      }
+      "title": "Langue"
     },
     "last": {
       "name": {
@@ -3071,30 +2683,6 @@
     "team": {
       "drive": "Pilotage équipe",
       "drive_hint": "Profil, rôle et permissions restent lisibles pour les actions RH."
-    },
-    "or": "ou",
-    "countries": {
-      "BF": "Burkina Faso",
-      "BJ": "Bénin",
-      "CA": "Canada",
-      "CF": "République centrafricaine",
-      "CG": "Congo",
-      "CI": "Côte d'Ivoire",
-      "CM": "Cameroun",
-      "DZ": "Algérie",
-      "FR": "France",
-      "GA": "Gabon",
-      "GB": "Royaume-Uni",
-      "GQ": "Guinée équatoriale",
-      "MA": "Maroc",
-      "ML": "Mali",
-      "NE": "Niger",
-      "SN": "Sénégal",
-      "TD": "Tchad",
-      "TG": "Togo",
-      "TN": "Tunisie",
-      "TR": "Turquie",
-      "US": "États-Unis"
     }
   },
   "cabinet": {
@@ -3242,48 +2830,6 @@
       "sim": {
         "compare": "Salaire à comparer"
       }
-    },
-    "enable": {
-      "auto": {
-        "gps": "Activer le GPS automatique"
-      }
-    },
-    "forced": "Imposé",
-    "gps": {
-      "zone": {
-        "not": {
-          "configured": "La zone GPS de votre entreprise n'est pas encore configurée."
-        }
-      }
-    },
-    "permission": {
-      "denied": "Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance."
-    },
-    "presence": {
-      "in": {
-        "progress": "Présence en cours depuis {time}"
-      }
-    },
-    "recent": {
-      "sessions": "Sessions récentes"
-    },
-    "rejected": "Rejetées",
-    "sessions": {
-      "load": {
-        "error": "Impossible de charger les sessions GPS. Vérifiez votre connexion."
-      }
-    },
-    "start": {
-      "monitoring": {
-        "error": "Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez."
-      }
-    },
-    "status": {
-      "approved": "Approuvée",
-      "cancelled": "Annulée",
-      "detected": "Détectée",
-      "pending": "En validation",
-      "rejected": "Rejetée"
     }
   },
   "team": {
@@ -3342,62 +2888,6 @@
       "profile_hint": "Coordonnées, poste, salaire, horaire",
       "tasks": "Tâches",
       "tasks_hint": "Voir ou assigner des tâches terrain"
-    },
-    "platform": {
-      "title": "Équipe plateforme",
-      "subtitle": "Comptes internes de la plateforme — rôles et permissions",
-      "create": "Créer un compte",
-      "createTitle": "Nouveau compte plateforme",
-      "name": "Nom",
-      "email": "E-mail",
-      "password": "Mot de passe initial",
-      "passwordHint": "12 caractères minimum",
-      "role": "Rôle",
-      "changeRole": "Changer le rôle",
-      "selfRoleLocked": "Vous ne pouvez pas modifier votre propre rôle",
-      "status": "Statut",
-      "lastLogin": "Dernière connexion",
-      "never": "Jamais connecté",
-      "you": "vous",
-      "searchPlaceholder": "Rechercher un compte",
-      "empty": "Aucun compte interne",
-      "total": "{count} comptes",
-      "activeSuperAdmins": "{count} super administrateur(s) actif(s)",
-      "save": "Créer le compte",
-      "saving": "Création…",
-      "cancel": "Annuler",
-      "activate": "Activer",
-      "deactivate": "Désactiver",
-      "confirmActivateTitle": "Activer ce compte ?",
-      "confirmActivateHint": "Le compte pourra à nouveau se connecter à l’administration plateforme.",
-      "confirmDeactivateTitle": "Désactiver ce compte ?",
-      "confirmDeactivateHint": "Ses sessions en cours seront révoquées immédiatement.",
-      "passwordTooShort": "Le mot de passe doit contenir au moins 12 caractères.",
-      "loadError": "Impossible de charger l’équipe plateforme.",
-      "createSuccess": "Compte plateforme créé.",
-      "createError": "La création du compte a échoué.",
-      "roleUpdated": "Rôle mis à jour.",
-      "roleUpdateError": "Le changement de rôle a échoué.",
-      "activated": "Compte activé.",
-      "deactivated": "Compte désactivé.",
-      "actionError": "L’action sur le compte a échoué.",
-      "errorOwnRole": "Vous ne pouvez pas modifier votre propre rôle.",
-      "errorOwnAccount": "Vous ne pouvez pas désactiver votre propre compte.",
-      "errorLastSuperAdmin": "Impossible : il doit rester au moins un super administrateur actif.",
-      "errorPermissionRequired": "Votre rôle ne permet pas de gérer l’équipe plateforme.",
-      "errorPlatformAccountRequired": "Un compte plateforme est requis.",
-      "statusActive": "Actif",
-      "statusDeactivated": "Désactivé",
-      "statusSuspended": "Suspendu",
-      "statusUnknown": "Inconnu",
-      "roles": {
-        "super_admin": "Super administrateur",
-        "admin": "Administrateur plateforme",
-        "support": "Support",
-        "finance": "Finance",
-        "ops": "Opérations",
-        "marketing": "Marketing"
-      }
     }
   },
   "teamRoles": {
@@ -3436,6 +2926,12 @@
     "invitationExpired": "Expirée",
     "invitationNone": "Aucune invitation",
     "invitationSentAt": "Envoyée le {date}",
+    "activationLinkTitle": "Le courriel d'invitation n'a pas pu partir",
+    "activationLinkBody": "Transmettez ce lien au collaborateur : il lui permet de définir son mot de passe et d'activer son compte. Il expire le {date}.",
+    "activationLinkCopy": "Copier le lien",
+    "activationLinkCopied": "Lien copié.",
+    "activationLinkCopyFailed": "Copie impossible : sélectionnez le lien et copiez-le manuellement.",
+    "mailNotDelivered": "Non envoyé par e-mail",
     "expiresAt": "Expire le {date}",
     "resend": "Renvoyer l'invitation",
     "resendSuccess": "Invitation renvoyée.",
@@ -3479,13 +2975,7 @@
     "moduleCrm": "CRM",
     "moduleShowcase": "Site vitrine",
     "moduleHr": "RH (équipe, pointage, paie)",
-    "moduleBillingView": "Facturation (lecture)",
-    "activationLinkTitle": "Le courriel d'invitation n'a pas pu partir",
-    "activationLinkBody": "Transmettez ce lien au collaborateur : il lui permet de définir son mot de passe et d'activer son compte. Il expire le {date}.",
-    "activationLinkCopy": "Copier le lien",
-    "activationLinkCopied": "Lien copié.",
-    "activationLinkCopyFailed": "Copie impossible : sélectionnez le lien et copiez-le manuellement.",
-    "mailNotDelivered": "Non envoyé par e-mail"
+    "moduleBillingView": "Facturation (lecture)"
   },
   "attendanceBreakFailure": "Pause non confirmée",
   "attendanceBreakHint": "Ferme la session et marque une pause",
@@ -4380,10 +3870,7 @@
     "itemCrm": "CRM",
     "itemCrmDesc": "Pipeline CRM",
     "itemToggleDark": "Basculer mode sombre",
-    "itemToggleDarkDesc": "Changer le thème",
-    "itemProvisioningDesc": "Suivre l'onboarding et les blocages de provisionnement des tenants",
-    "itemSearchIntelDesc": "Pilotez le SEO, le SEA, l'AEO, le GEO et la production de contenu.",
-    "title": "Palette de commandes"
+    "itemToggleDarkDesc": "Changer le thème"
   },
   "bankRecon": {
     "title": "Rapprochement bancaire",
@@ -4825,62 +4312,6 @@
         "negotiation": "Négociation",
         "won": "Gagné",
         "lost": "Perdu"
-      }
-    },
-    "loadError": "Impossible de charger le pipeline CRM.",
-    "activeBadge": "Actif",
-    "columnActive": "Clients Actifs",
-    "columnRejected": "Rejetés / Expirés",
-    "columnTrials": "En Essai (Trial)",
-    "daysLeft": "j restants",
-    "leadToClientRate": "Taux lead → client",
-    "leadToTrialRate": "Taux lead → essai",
-    "leadsIncoming": "Leads entrants",
-    "leadsTotal": "Leads totaux",
-    "noClient": "Aucun client actif.",
-    "noHistory": "Aucun historique.",
-    "noLead": "Aucun lead.",
-    "noTrial": "Aucun essai en cours.",
-    "sourceContact": "Contact",
-    "sourceDemo": "Demande de démo",
-    "sourceDirect": "Direct",
-    "sourceManager": "Demande manager",
-    "sourceNewsletter": "Newsletter",
-    "sourceSelfService": "Essai self-service",
-    "sourceSignup": "Inscription",
-    "enable": {
-      "auto": {
-        "gps": "Activer le GPS automatique"
-      }
-    },
-    "forced": "Imposé",
-    "gps": {
-      "zone": {
-        "not": {
-          "configured": "La zone GPS de votre entreprise n'est pas encore configurée."
-        }
-      }
-    },
-    "permission": {
-      "denied": "Autorisation de localisation refusée. Activez le GPS dans les réglages pour activer la surveillance."
-    },
-    "presence": {
-      "in": {
-        "progress": "Présence en cours depuis {time}"
-      }
-    },
-    "recent": {
-      "sessions": "Sessions récentes"
-    },
-    "rejected": "Rejetées",
-    "sessions": {
-      "load": {
-        "error": "Impossible de charger les sessions GPS. Vérifiez votre connexion."
-      }
-    },
-    "start": {
-      "monitoring": {
-        "error": "Impossible de démarrer la surveillance GPS. Vérifiez les permissions de localisation et réessayez."
       }
     }
   },
@@ -6343,9 +5774,7 @@
       "issued": "Émis",
       "checkedIn": "Embarqué",
       "revoked": "Révoqué",
-      "unknown": "Inconnu",
-      "checked_in": "Enregistré",
-      "void": "Annulé"
+      "unknown": "Inconnu"
     },
     "routes": {
       "title": "Lignes & itinéraires",
@@ -6383,26 +5812,7 @@
       "subtitle": "Réservations guichet : confirmation, annulation, remboursement et billets.",
       "refundPassenger": "Rembourser le passager",
       "contact": "Contact",
-      "source": "Canal",
-      "reference": "Référence",
-      "referencePlaceholder": "Ex. GV-2026-0001…",
-      "detail": "Détail",
-      "confirm": "Confirmer",
-      "cancel": "Annuler",
-      "refund": "Rembourser",
-      "issueTickets": "Émettre billet",
-      "paymentStatus": "Paiement",
-      "trip": "Trajet",
-      "passengerCount": "Passagers",
-      "total": "Total",
-      "seat": "Siège",
-      "noTickets": "Aucun billet émis",
-      "confirmTitle": "Confirmer la réservation",
-      "confirmBody": "Confirmer la réservation {ref} ? Les sièges seront marqués vendus.",
-      "issueTicketsTitle": "Émettre les billets",
-      "issueTicketsBody": "Émettre un billet nominatif pour chaque passager de {ref} ?",
-      "cancelTitle": "Annuler la réservation",
-      "refundTitle": "Rembourser la réservation"
+      "source": "Canal"
     },
     "checkin": {
       "selectTrip": "Sélectionner un trajet",
@@ -6415,17 +5825,7 @@
       "checkIn": "Embarquer",
       "checkedIn": "Embarqué ✓",
       "emptyManifest": "Aucun passager sur ce trajet.",
-      "noTicket": "Aucun billet associé à ce passager.",
-      "title": "Check-in & manifeste",
-      "subtitle": "Embarquement par trajet et compteur de passagers.",
-      "trip": "Trajet",
-      "seat": "Siège",
-      "passenger": "Passager",
-      "age": "Âge",
-      "class": "Classe",
-      "ticket": "Billet",
-      "action": "Embarquement",
-      "done": "Embarqué"
+      "noTicket": "Aucun billet associé à ce passager."
     },
     "tickets": {
       "title": "Billetterie",
@@ -6435,10 +5835,7 @@
       "downloadPdf": "PDF",
       "revoke": "Révoquer",
       "revokeTitle": "Motif de révocation",
-      "pdfError": "Téléchargement impossible.",
-      "subtitle": "Consultation, téléchargement PDF et révocation.",
-      "download": "PDF",
-      "revokeBody": "Révoquer le billet {number} ? Le PDF deviendra invalide et le billet passera au statut annulé."
+      "pdfError": "Téléchargement impossible."
     },
     "reports": {
       "tabsLabel": "Rapports",
@@ -6457,34 +5854,7 @@
       "confirmedAmount": "Encaissé",
       "refundedAmount": "Remboursé",
       "exportPending": "Export en cours…",
-      "download": "Télécharger le CSV",
-      "title": "Rapports",
-      "from": "Du",
-      "to": "Au",
-      "apply": "Appliquer",
-      "export": "Exporter CSV",
-      "kpiSales": "Ventes",
-      "kpiBookings": "Réservations",
-      "kpiOccupancy": "Occupation",
-      "kpiCancellations": "Annulations",
-      "salesCount": "Ventes",
-      "salesPassengers": "Passagers",
-      "salesAmount": "Montant",
-      "tabSales": "Ventes",
-      "tabOccupancy": "Occupation",
-      "tabRevenue": "Recettes",
-      "tabCancellations": "Annulations",
-      "sold": "Vendus",
-      "reserved": "Réservés",
-      "free": "Libres",
-      "revenueConfirmed": "Confirmé",
-      "revenueRefunded": "Remboursé",
-      "revenueNet": "Net",
-      "cancellationsCount": "Annulations",
-      "cancellationsRate": "Taux",
-      "cancellationsTotal": "Réservations finales",
-      "byReason": "Par motif",
-      "count": "Nombre"
+      "download": "Télécharger le CSV"
     },
     "rentals": {
       "vehicles": "Véhicules de location",
@@ -6681,12 +6051,7 @@
       "reportsDesc": "Ventes, occupation, recettes, annulations et exports CSV.",
       "portal": "Portail voyageur",
       "portalDesc": "Recherche de trajets et réservation côté client.",
-      "staffDesc": "Affectations chauffeur, guichetier, contrôleur et chef de bureau.",
-      "title": "Agence de voyage",
-      "subtitle": "Gestion de la verticale TravelAgency : réseau, ventes, billetterie et pilotage.",
-      "flagActive": "Module actif",
-      "flowTitle": "Flux métier",
-      "flowBody": "Référentiel & réseau → programmation des trajets → publication → vente au guichet → billetterie & check-in → rapports."
+      "staffDesc": "Affectations chauffeur, guichetier, contrôleur et chef de bureau."
     },
     "ageCategory": {
       "infant": "Bébé",
@@ -6743,170 +6108,7 @@
     "travel.seats.state.blocked": "Bloqué",
     "travel.seats.state.unavailable": "Indisponible",
     "travel.seats.state.aisle": "Couloir",
-    "travel.seats.state.seat": "Siège",
-    "common": {
-      "retry": "Réessayer",
-      "featureDisabledTitle": "Module Agence de voyage inactif",
-      "featureDisabledBody": "Le flag travelagency n’est pas activé pour le tenant connecté. Contactez un administrateur plateforme pour l’activer.",
-      "tenantRequiredTitle": "Contexte tenant requis",
-      "tenantRequiredBody": "Les données de l’agence de voyage sont accessibles avec une session tenant (impersonation ou compte manager).",
-      "loadErrorTitle": "Chargement impossible",
-      "loadErrorBody": "Une erreur est survenue en interrogeant l’API travel.",
-      "create": "Créer",
-      "edit": "Modifier",
-      "delete": "Supprimer",
-      "cancel": "Annuler",
-      "save": "Enregistrer",
-      "close": "Fermer",
-      "search": "Rechercher",
-      "actions": "Actions",
-      "confirmDeleteTitle": "Supprimer cet élément ?",
-      "confirmDeleteBody": "Cette action est irréversible. Voulez-vous vraiment supprimer « {name} » ?",
-      "status": "Statut",
-      "active": "Actif",
-      "disabled": "Inactif",
-      "loading": "Chargement…",
-      "noData": "Aucune donnée",
-      "createdAt": "Créé le",
-      "updatedAt": "Modifié le",
-      "reason": "Motif",
-      "reasonRequired": "Le motif est obligatoire.",
-      "previous": "Précédent",
-      "next": "Suivant",
-      "all": "Tous",
-      "export": "Exporter",
-      "yes": "Oui",
-      "no": "Non",
-      "perPage": "par page",
-      "city": "Ville",
-      "carrier": "Compagnie",
-      "saving": "Enregistrement…",
-      "selectPlaceholder": "— Sélectionner —",
-      "actionError": "L'action a échoué. Réessayez."
-    },
-    "referential": {
-      "title": "Référentiel",
-      "subtitle": "Pays, villes, gares, bureaux, compagnies, classes et véhicules.",
-      "tabs": "Sections du référentiel",
-      "countries": "Pays",
-      "cities": "Villes",
-      "stations": "Gares & terminaux",
-      "offices": "Bureaux de vente",
-      "carriers": "Compagnies",
-      "classes": "Classes de service",
-      "vehicles": "Véhicules"
-    },
-    "network": {
-      "title": "Routes & trajets",
-      "subtitle": "Lignes, étapes, programmation, tarifs et publication.",
-      "tabs": "Sections réseau",
-      "routes": "Routes & étapes",
-      "trips": "Trajets & tarifs",
-      "publish": "Publier",
-      "cancelTrip": "Annuler le trajet",
-      "stops": "Étapes",
-      "routeStopsTitle": "Étapes de la route",
-      "addStop": "Ajouter une étape",
-      "prices": "Tarifs",
-      "tripPricesTitle": "Tarifs du trajet",
-      "addPrice": "Ajouter un tarif",
-      "origin": "Origine",
-      "destination": "Destination",
-      "distance": "Distance (km)",
-      "duration": "Durée (min)",
-      "rank": "Rang",
-      "stopover": "Escale",
-      "minDuration": "Durée min (min)",
-      "route": "Route",
-      "departure": "Départ",
-      "arrival": "Arrivée",
-      "means": "Moyen",
-      "class": "Classe",
-      "adultPrice": "Tarif adulte",
-      "childPrice": "Tarif enfant",
-      "currency": "Devise",
-      "routeCode": "Code route",
-      "tripCode": "Code trajet",
-      "vehicle": "Véhicule",
-      "departureDate": "Date de départ",
-      "departureTime": "Heure de départ",
-      "arrivalDate": "Date d'arrivée",
-      "arrivalTime": "Heure d'arrivée"
-    },
-    "catalog": {
-      "title": "Intitulé",
-      "subtitle": "Véhicules en location, réservations et catalogue hôtelier.",
-      "tabRentals": "Véhicules en location",
-      "tabRentalBookings": "Réservations location",
-      "tabHotels": "Hôtels",
-      "images": "Images",
-      "rentalImagesTitle": "Images du véhicule",
-      "noImages": "Aucune image",
-      "rooms": "Chambres",
-      "hotelRoomsTitle": "Chambres de l’hôtel",
-      "addRoom": "Ajouter une chambre",
-      "priceDay": "Prix / jour",
-      "start": "Début",
-      "end": "Fin",
-      "hotelName": "Nom",
-      "classification": "Classification",
-      "roomType": "Type",
-      "roomNumber": "N°",
-      "capacity": "Capacité",
-      "priceNight": "Prix / nuit",
-      "code": "Code",
-      "availableFrom": "Disponible du",
-      "availableUntil": "Disponible jusqu'au",
-      "owner": "Propriétaire",
-      "description": "Description",
-      "confirmDeleteImage": "Supprimer cette image ? Elle sera retirée de la galerie du véhicule."
-    },
-    "countries": {
-      "name": "Nom",
-      "phoneCode": "Indicatif"
-    },
-    "cities": {
-      "name": "Ville",
-      "country": "Pays",
-      "region": "Région"
-    },
-    "stations": {
-      "name": "Nom",
-      "phone": "Téléphone",
-      "address": "Adresse",
-      "timezone": "Fuseau horaire",
-      "isTerminal": "Terminal",
-      "code": "Code"
-    },
-    "offices": {
-      "name": "Nom",
-      "phone": "Téléphone",
-      "address": "Adresse"
-    },
-    "carriers": {
-      "name": "Nom",
-      "type": "Type",
-      "phone": "Téléphone",
-      "code": "Code"
-    },
-    "classes": {
-      "label": "Libellé",
-      "color": "Couleur",
-      "priority": "Priorité",
-      "code": "Code"
-    },
-    "vehicles": {
-      "registration": "Immatriculation",
-      "seats": "Places",
-      "code": "Code",
-      "notes": "Notes"
-    },
-    "carrierTypes": {
-      "bus": "Bus",
-      "train": "Train",
-      "plane": "Avion",
-      "boat": "Bateau"
-    }
+    "travel.seats.state.seat": "Siège"
   },
   "travelPortal": {
     "title": "Portail voyageur",
@@ -7129,52 +6331,7 @@
       "empty": "Aucune vente enregistrée.",
       "quantity": "Quantité",
       "amount": "Montant"
-    },
-    "statStations": "Stations",
-    "statOpenIncidents": "Incidents ouverts",
-    "statPendingReconciliations": "Rapprochements à revoir",
-    "statVariance": "Écarts à expliquer",
-    "tabsStations": "Stations",
-    "tabsIncidents": "Incidents",
-    "tabsReconciliations": "Rapprochements",
-    "searchStation": "Rechercher une station...",
-    "searchIncident": "Rechercher un incident...",
-    "searchReconciliation": "Rechercher un rapport...",
-    "colCode": "Code",
-    "colName": "Nom",
-    "colTimezone": "Fuseau",
-    "colStatus": "Statut",
-    "colDate": "Créé le",
-    "colTitle": "Titre",
-    "colStation": "Station",
-    "colEquipmentType": "Équipement",
-    "colPriority": "Priorité",
-    "colReportDate": "Jour",
-    "colExpected": "Attendu",
-    "colClosing": "Clôture",
-    "colVariance": "Écart",
-    "stationActive": "Active",
-    "stationInactive": "Inactive",
-    "stationArchived": "Archivée",
-    "incidentReported": "Signalé",
-    "incidentAssigned": "Assigné",
-    "incidentInProgress": "En cours",
-    "incidentResolved": "Résolu",
-    "incidentClosed": "Clos",
-    "priorityLow": "Faible",
-    "priorityMedium": "Moyen",
-    "priorityHigh": "Élevé",
-    "priorityCritical": "Critique",
-    "reconcilPending": "À revoir",
-    "reconcilReviewed": "Revu",
-    "reconcilApproved": "Approuvé",
-    "errStations": "Impossible de charger les stations.",
-    "errIncidents": "Impossible de charger les incidents.",
-    "errReconciliations": "Impossible de charger les rapprochements.",
-    "stationsCaption": "Stations de la flotte",
-    "incidentsCaption": "Incidents signalés",
-    "reconciliationsCaption": "Rapports de rapprochement",
-    "apiUnavailable": "L'API FuelStation (référentiel stations, incidents, rapprochements) n'est pas encore livrée — la page sera opérationnelle avec le batch BC-15 (#6373)."
+    }
   },
   "trial": {
     "trialBadge": "Essai",
@@ -7195,13 +6352,7 @@
     "stepsTitle": "Votre inscription en 3 temps",
     "step1": "Vous indiquez votre e-mail et le nom de votre entreprise.",
     "step2": "Vous recevez un code à 6 chiffres par e-mail.",
-    "step3": "Vous entrez directement dans votre espace, sans mot de passe à créer.",
-    "proof1Title": "Interface sur mesure",
-    "proof1Desc": "Entreprise ou indépendant : le menu s'adapte à votre activité.",
-    "proof2Title": "Vos outils, votre métier",
-    "proof2Desc": "Vous cochez les modules utiles et déclarez votre secteur.",
-    "proof3Title": "14 jours, sans carte",
-    "proof3Desc": "L'application affiche les jours restants et le passage à Pro."
+    "step3": "Vous entrez directement dans votre espace, sans mot de passe à créer."
   },
   "showcase": {
     "title": "Site vitrine",
@@ -7254,44 +6405,7 @@
     "sectionProducts": "Produits",
     "sectionContact": "Contact",
     "sectionFooter": "Pied de page",
-    "notFoundTitle": "Page introuvable",
-    "published": "Publié",
-    "draft": "Brouillon",
-    "empty": "Aucune vitrine pour le moment. Créez-la pour composer votre site public.",
-    "create": "Créer ma vitrine",
-    "created": "Vitrine créée.",
-    "preview_link": "Lien d’aperçu privé",
-    "generate_preview": "Générer un lien d’aperçu",
-    "preview_generated": "Lien d’aperçu généré.",
-    "open_preview": "Ouvrir l’aperçu",
-    "settings": "Apparence et mentions",
-    "settings_saved": "Réglages enregistrés.",
-    "theme": "Thème",
-    "brand_name": "Nom de marque",
-    "tagline": "Slogan",
-    "legal_notice": "Mentions légales",
-    "legal_privacy": "Politique de confidentialité",
-    "save_settings": "Enregistrer les réglages",
-    "sections": "Sections de la page",
-    "add_section": "Ajouter une section",
-    "no_sections": "Aucune section — ajoutez-en une pour commencer.",
-    "section_saved": "Section enregistrée.",
-    "section_deleted": "Section supprimée.",
-    "invalid_json": "Contenu JSON invalide — corrigez avant d’enregistrer.",
-    "section_type": "Type de section",
-    "media_logo": "Logo",
-    "media_logo_hint": "PNG, JPEG, WebP ou SVG — 2 Mo max. Le SVG n’est accepté que pour le logo.",
-    "media_section_images": "Images de la section",
-    "media_section_hint": "PNG, JPEG ou WebP — 5 Mo max.",
-    "media_upload": "Téléverser une image",
-    "media_uploading": "Envoi…",
-    "media_uploaded": "Média téléversé.",
-    "media_deleted": "Média supprimé.",
-    "media_delete": "Supprimer",
-    "media_empty": "Aucun média pour l’instant.",
-    "media_error": "Le téléversement a échoué — vérifiez le type et la taille du fichier.",
-    "delete_section_title": "Supprimer cette section ?",
-    "delete_section_body": "La section et son contenu seront supprimés définitivement."
+    "notFoundTitle": "Page introuvable"
   },
   "cameras": {
     "title": "Mur de caméras",
@@ -7440,8 +6554,7 @@
     "overridden": "personnalisé",
     "preview": "Aperçu",
     "previewFailed": "Aperçu indisponible",
-    "loadFailed": "Chargement impossible",
-    "emptyList": "Aucun modèle d'e-mail disponible."
+    "loadFailed": "Chargement impossible"
   },
   "fleet": {
     "locate": "Localiser",
@@ -7484,32 +6597,7 @@
     "distance": "Distance",
     "purpose": "Motif",
     "notFound": "Véhicule introuvable",
-    "loading": "Chargement…",
-    "tabsMap": "Carte",
-    "tabsList": "Liste",
-    "tabsAlerts": "Alertes",
-    "statVehicles": "Véhicules",
-    "statInService": "En service",
-    "statMaintenanceDue": "Maintenance due",
-    "statAlerts": "Alertes",
-    "colPlate": "Immatriculation",
-    "colBrand": "Marque",
-    "colModel": "Modèle",
-    "colAssignedTo": "Assigné à",
-    "colKm": "Km",
-    "colStatus": "Statut",
-    "colVehicle": "Véhicule",
-    "colType": "Type",
-    "colSeverity": "Sévérité",
-    "colMessage": "Message",
-    "colDate": "Date",
-    "statusInactive": "Inactif",
-    "severityLow": "Faible",
-    "severityMedium": "Moyen",
-    "severityHigh": "Élevé",
-    "severityCritical": "Critique",
-    "searchVehicle": "Rechercher un véhicule...",
-    "searchAlert": "Rechercher une alerte..."
+    "loading": "Chargement…"
   },
   "subscriptions": {
     "features": {
@@ -7524,41 +6612,6 @@
       "api_public": "API publique",
       "evaluations": "Évaluations",
       "schema_isolation": "Isolation des données"
-    },
-    "title": "Abonnements",
-    "subtitle": "Plans, santé du portefeuille et risques de désabonnement des entreprises clientes.",
-    "refresh": "Actualiser",
-    "kpi": {
-      "portfolioMrr": "MRR portefeuille",
-      "activeSubscriptions": "Abonnements actifs",
-      "pastDue": "En retard",
-      "totalOverdue": "Impayés total",
-      "arr": "ARR",
-      "collected30d": "Encaissé 30 j",
-      "totalSubscribers": "Abonnés total",
-      "trials": "Essais"
-    },
-    "catalogTitle": "Catalogue des plans",
-    "catalogSub": "Offres commerciales et limites associées.",
-    "retry": "Réessayer",
-    "public": "Public",
-    "archived": "Archivé",
-    "perMonth": "/ mois",
-    "billedAnnually": "facturé annuellement",
-    "healthTitle": "Santé du portefeuille",
-    "retentionTitle": "Risques de désabonnement",
-    "noPlan": "Plan inconnu",
-    "manage": "Gérer",
-    "noRisk": "Aucun risque détecté",
-    "loadError": "Erreur lors du chargement des abonnements.",
-    "employees": "employés",
-    "unlimited": "Illimité",
-    "trialDays": "jours d'essai",
-    "trialUnit": "jours",
-    "risk": {
-      "high": "Risque élevé",
-      "medium": "Risque moyen",
-      "low": "Risque faible"
     }
   },
   "plans": {
@@ -7834,6 +6887,14 @@
       "ctaContact": "Contacter le support",
       "mascotAlt": "Illustration : un leopard debranche, page introuvable"
     },
+    "forbidden": {
+      "kicker": "Erreur 403",
+      "title": "Acces refuse",
+      "body": "Votre role ne permet pas cette action. Si vous pensez qu'il s'agit d'une erreur, demandez l'acces a un administrateur.",
+      "ctaHome": "Retour a l'accueil",
+      "ctaSupport": "Demander l'acces",
+      "mascotAlt": "Illustration : un leopard devant une porte fermee, acces refuse"
+    },
     "error": {
       "kicker": "Erreur inattendue",
       "title": "Quelque chose s'est mal passé",
@@ -7884,8 +6945,7 @@
     "hero3d": {
       "demo": "Démo",
       "cagnottes": "Cagnottes",
-      "freeTrial": "Essai gratuit",
-      "hint": "Cliquez sur un module pour explorer"
+      "freeTrial": "Essai gratuit"
     },
     "trade": {
       "badge": "Leopardo Trade",
@@ -7926,14 +6986,6 @@
       "profile_both": "Importateur & exportateur",
       "profile_wholesaler": "Grossiste",
       "profile_retailer": "Détaillant"
-    },
-    "forbidden": {
-      "kicker": "Erreur 403",
-      "title": "Acces refuse",
-      "body": "Votre role ne permet pas cette action. Si vous pensez qu'il s'agit d'une erreur, demandez l'acces a un administrateur.",
-      "ctaHome": "Retour a l'accueil",
-      "ctaSupport": "Demander l'acces",
-      "mascotAlt": "Illustration : un leopard devant une porte fermee, acces refuse"
     }
   },
   "commerce": {
@@ -8879,24 +7931,14 @@
       "quotes": "Offres en attente",
       "orders": "Commandes en cours",
       "integrations": "Intégrations",
-      "integrationsDegraded": "Certaines fonctions dépendent d'adaptateurs non configurés et restent indisponibles.",
-      "scopeNotice": "Compteurs uniquement : les prix, offres, messages et documents des clients ne sont pas exposés à l'administration plateforme.",
-      "loadError": "Impossible de charger le suivi de la verticale.",
-      "companiesScanned": "Entreprises analysées",
-      "companiesWithTrade": "Avec la verticale Trade",
-      "companiesWithActivity": "Avec activité commerciale",
-      "integrationsUnconfigured": "Intégrations non configurées"
+      "integrationsDegraded": "Certaines fonctions dépendent d'adaptateurs non configurés et restent indisponibles."
     },
     "integrations": {
       "title": "Intégrations externes",
       "notice": "Une intégration non configurée est présentée comme indisponible : aucune donnée n'est simulée.",
       "stateOperational": "Opérationnelle",
       "stateUnconfigured": "Non configurée",
-      "configured": "configurées",
-      "colKey": "Intégration",
-      "colMode": "Mode",
-      "colState": "État",
-      "colReason": "Détail"
+      "configured": "configurées"
     },
     "sourcing": {
       "title": "Sourcing & demandes de prix",
@@ -8908,7 +7950,17 @@
     },
     "orders": {
       "title": "Commandes & expéditions",
-      "subtitle": "Commandes d'achat et de vente, expéditions et transitions."
+      "subtitle": "Commandes d'achat et de vente, expéditions et transitions.",
+      "status": {
+        "draft": "Brouillon",
+        "confirmed": "Confirmée",
+        "preparing": "En préparation",
+        "ready": "Prête",
+        "shipped": "Expédiée",
+        "delivered": "Livrée",
+        "closed": "Clôturée",
+        "cancelled": "Annulée"
+      }
     },
     "transport": {
       "title": "Transport",
@@ -8917,7 +7969,12 @@
     "costs": {
       "title": "Coûts & douane",
       "subtitle": "Coût total rendu par poste et préparation documentaire.",
-      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité."
+      "disclaimer": "Estimation indicative — ni déclaration douanière officielle ni garantie de conformité.",
+      "status": {
+        "draft": "Brouillon",
+        "finalized": "Finalisé",
+        "archived": "Archivé"
+      }
     },
     "catalog": {
       "title": "Catalogue produits",
@@ -8955,20 +8012,8 @@
       "status": "Statut",
       "createdAt": "Créé le",
       "destination": "Destination",
-      "incoterm": "Incoterm"
-    },
-    "common": {
-      "retry": "Réessayer",
-      "noData": "Aucune donnée"
-    },
-    "counts": {
-      "deals": "Dossiers (deals)",
-      "rfqs": "Demandes de prix (RFQ)",
-      "quotes": "Offres commerciales",
-      "orders": "Commandes"
-    },
-    "roles": {
-      "title": "Rôles métier Trade"
+      "incoterm": "Incoterm",
+      "actions": "Actions"
     },
     "counterparties": {
       "title": "Contreparties",
@@ -8999,6 +8044,9 @@
       "verifiedBy": "Vérifié par l’équipe le",
       "saved": "Contrepartie enregistrée.",
       "deleted": "Contrepartie retirée du répertoire.",
+      "archive": "Archiver",
+      "archiveConfirm": "Archiver cette contrepartie ? Elle quittera le répertoire mais restera dans l'historique des dossiers et offres.",
+      "archived": "Contrepartie archivée.",
       "verified": "Contrepartie vérifiée.",
       "error": "Opération impossible. Vérifiez les champs et réessayez.",
       "nameRequired": "Le nom de la contrepartie est obligatoire.",
@@ -9023,10 +8071,132 @@
         "forwarder": "Transitaire",
         "customs_broker": "Courtier en douane",
         "inspector": "Inspecteur"
-      },
-      "archive": "Archiver",
-      "archiveConfirm": "Archiver cette contrepartie ? Elle quittera le répertoire mais restera dans l'historique des dossiers et offres.",
-      "archived": "Contrepartie archivée."
+      }
+    },
+    "transition": {
+      "awarded": "Attribuer",
+      "closed": "Clore",
+      "cancelled": "Annuler",
+      "rejected": "Refuser",
+      "withdrawn": "Retirer",
+      "refused": "Transition refusée : cet état ne le permet pas.",
+      "failed": "La transition a échoué. Réessayez."
+    },
+    "rfqs": {
+      "status": {
+        "draft": "Brouillon",
+        "open": "Diffusée",
+        "closed": "Clôturée",
+        "awarded": "Attribuée",
+        "cancelled": "Annulée"
+      }
+    },
+    "quotes": {
+      "status": {
+        "draft": "Brouillon",
+        "submitted": "Soumise",
+        "under_review": "En revue",
+        "negotiating": "En négociation",
+        "accepted": "Acceptée",
+        "rejected": "Refusée",
+        "expired": "Expirée",
+        "withdrawn": "Retirée"
+      }
+    },
+    "profile": {
+      "title": "Profil commercial",
+      "subtitle": "Ce que votre entreprise declare faire : directions, marches, conditions par defaut.",
+      "empty": "Aucun profil commercial enregistre. Renseignez-le pour apparaitre dans l'annuaire.",
+      "importEnabled": "Import",
+      "exportEnabled": "Export",
+      "domesticScope": "Marche domestique",
+      "hqCountry": "Pays du siege",
+      "marketsServed": "Marches desservis",
+      "productCategories": "Categories de produits",
+      "defaultCurrency": "Devise par defaut",
+      "defaultIncoterm": "Incoterm par defaut",
+      "notes": "Notes internes",
+      "listHint": "Separez les valeurs par une virgule.",
+      "save": "Enregistrer le profil",
+      "saved": "Profil enregistre.",
+      "error": "L'enregistrement du profil a echoue.",
+      "directionRequired": "Activez au moins une direction : import, export ou marche domestique.",
+      "publicationTitle": "Vitrine publique",
+      "publicationSubtitle": "Apparaitre dans l'annuaire /entreprises. C'est un acte distinct de l'enregistrement du profil.",
+      "isPublic": "Publier ma fiche dans l'annuaire",
+      "publicSlug": "Identifiant d'URL",
+      "publicName": "Nom commercial publie",
+      "publicDescription": "Description publique",
+      "publicCity": "Ville",
+      "slugHint": "Minuscules, chiffres et tirets. Unique et definitif.",
+      "publish": "Publier",
+      "unpublish": "Depublier",
+      "published": "Fiche publiee.",
+      "unpublished": "Fiche depubliee.",
+      "publishError": "La publication a echoue.",
+      "slugTaken": "Cet identifiant est deja pris par une autre entreprise.",
+      "slugRequired": "Un identifiant et un nom commercial sont requis pour publier.",
+      "profileRequiredBeforePublish": "Enregistrez d'abord votre profil commercial.",
+      "publicUrl": "Voir ma fiche publique",
+      "notPublished": "Non publiee"
+    },
+    "documents": {
+      "title": "Documents commerciaux",
+      "subtitle": "Factures, connaissements, certificats : ce que la checklist douaniere vous demande.",
+      "empty": "Aucun document depose.",
+      "new": "Deposer un document",
+      "type": "Type de document",
+      "titleField": "Intitule",
+      "file": "Fichier",
+      "upload": "Deposer",
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "deleteConfirm": "Supprimer definitivement ce document ?",
+      "download": "Telecharger",
+      "saved": "Document depose.",
+      "deleted": "Document supprime.",
+      "error": "L'operation a echoue.",
+      "typeRequired": "Choisissez un type de document.",
+      "titleRequired": "Donnez un intitule au document.",
+      "fileRequired": "Selectionnez un fichier.",
+      "linkRequired": "Rattachez le document a une commande, une offre ou une RFQ.",
+      "linkTo": "Rattacher a",
+      "noLink": "Aucun rattachement",
+      "size": "Taille",
+      "uploadedAt": "Depose le",
+      "linkedTo": "Rattache a",
+      "maxSize": "20 Mo maximum.",
+      "types": {
+        "proforma_invoice": "Facture proforma",
+        "commercial_invoice": "Facture commerciale",
+        "packing_list": "Liste de colisage",
+        "bill_of_lading": "Connaissement maritime",
+        "airway_bill": "Lettre de transport aerien",
+        "certificate_of_origin": "Certificat d'origine",
+        "certificate_of_conformity": "Certificat de conformite",
+        "insurance_certificate": "Attestation d'assurance",
+        "customs_declaration": "Declaration en douane",
+        "contract": "Contrat",
+        "other": "Autre"
+      }
+    },
+    "promotion": {
+      "title": "Kit de promotion",
+      "subtitle": "Ce qui manque a votre fiche publique, et un brouillon adosse a vos donnees reelles.",
+      "checklist": "Points a completer",
+      "draft": "Brouillon propose",
+      "headline": "Accroche",
+      "summary": "Resume",
+      "highlights": "Points forts",
+      "publication": "Etat de publication",
+      "published": "Publiee",
+      "notPublished": "Non publiee",
+      "openPublicPage": "Ouvrir ma fiche publique",
+      "disclaimer": "Ce kit ne publie rien : il propose. La publication reste votre decision, dans l'onglet Profil.",
+      "empty": "Aucun brouillon disponible : renseignez d'abord votre profil commercial.",
+      "done": "Fait",
+      "todo": "A completer",
+      "loadError": "Le kit de promotion n'a pas pu etre charge."
     }
   },
   "vtc": {
@@ -9814,6 +8984,7 @@
     "geoUnsupported": "La géolocalisation n'est pas disponible sur cet appareil.",
     "noResults": "Aucun professionnel ne correspond à votre recherche.",
     "loadError": "Impossible de charger les résultats. Réessayez.",
+    "offlineCacheNotice": "Réseau indisponible — voici votre dernière recherche. Les résultats peuvent être périmés.",
     "retry": "Réessayer",
     "loading": "Chargement…",
     "previous": "Précédent",
@@ -9849,6 +9020,12 @@
     "companyImport": "Import",
     "companyExport": "Export",
     "companyDomestic": "Marché national",
+    "companyProductsTitle": "Produits",
+    "companyProductsEmpty": "Aucun produit publié pour le moment.",
+    "companyProductMoq": "MOQ",
+    "companyProductOrigin": "Origine",
+    "companyProductPriceIndicative": "Prix indicatif",
+    "companyProductPriceOnRequest": "Prix sur demande",
     "companyNotFoundTitle": "Entreprise introuvable",
     "contact": "Contacter",
     "contactTitle": "Contacter ce professionnel",
@@ -9887,14 +9064,7 @@
     "conversationBack": "Retour",
     "conversationStart": "Démarrer une conversation",
     "conversationStarted": "Votre message a été envoyé au professionnel.",
-    "conversationStartBody": "Bonjour, je souhaite vous contacter.",
-    "offlineCacheNotice": "Réseau indisponible — voici votre dernière recherche. Les résultats peuvent être périmés.",
-    "companyProductsTitle": "Produits",
-    "companyProductsEmpty": "Aucun produit publié pour le moment.",
-    "companyProductMoq": "MOQ",
-    "companyProductOrigin": "Origine",
-    "companyProductPriceIndicative": "Prix indicatif",
-    "companyProductPriceOnRequest": "Prix sur demande"
+    "conversationStartBody": "Bonjour, je souhaite vous contacter."
   },
   "publicInbox": {
     "pageTitle": "Demandes publiques",

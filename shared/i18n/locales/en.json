@@ -7986,7 +7986,17 @@
     },
     "orders": {
       "title": "Orders & shipments",
-      "subtitle": "Purchase and sales orders, shipments and transitions."
+      "subtitle": "Purchase and sales orders, shipments and transitions.",
+      "status": {
+        "draft": "Draft",
+        "confirmed": "Confirmed",
+        "preparing": "Preparing",
+        "ready": "Ready",
+        "shipped": "Shipped",
+        "delivered": "Delivered",
+        "closed": "Closed",
+        "cancelled": "Cancelled"
+      }
     },
     "transport": {
       "title": "Transport",
@@ -7995,7 +8005,12 @@
     "costs": {
       "title": "Costs & customs",
       "subtitle": "Landed cost per line item and documentary preparation.",
-      "disclaimer": "Indicative estimate — neither an official customs declaration nor a compliance guarantee."
+      "disclaimer": "Indicative estimate — neither an official customs declaration nor a compliance guarantee.",
+      "status": {
+        "draft": "Draft",
+        "finalized": "Finalized",
+        "archived": "Archived"
+      }
     },
     "catalog": {
       "title": "Product catalogue",
@@ -8033,7 +8048,8 @@
       "status": "Status",
       "createdAt": "Created on",
       "destination": "Destination",
-      "incoterm": "Incoterm"
+      "incoterm": "Incoterm",
+      "actions": "Actions"
     },
     "counterparties": {
       "title": "Counterparties",
@@ -8092,6 +8108,131 @@
         "customs_broker": "Customs broker",
         "inspector": "Inspector"
       }
+    },
+    "transition": {
+      "awarded": "Award",
+      "closed": "Close",
+      "cancelled": "Cancel",
+      "rejected": "Reject",
+      "withdrawn": "Withdraw",
+      "refused": "Transition refused: this state does not allow it.",
+      "failed": "The transition failed. Please retry."
+    },
+    "rfqs": {
+      "status": {
+        "draft": "Draft",
+        "open": "Open",
+        "closed": "Closed",
+        "awarded": "Awarded",
+        "cancelled": "Cancelled"
+      }
+    },
+    "quotes": {
+      "status": {
+        "draft": "Draft",
+        "submitted": "Submitted",
+        "under_review": "Under review",
+        "negotiating": "Negotiating",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "expired": "Expired",
+        "withdrawn": "Withdrawn"
+      }
+    },
+    "profile": {
+      "title": "Commercial profile",
+      "subtitle": "What your company declares it does: directions, markets, default terms.",
+      "empty": "No commercial profile yet. Fill it in to appear in the directory.",
+      "importEnabled": "Import",
+      "exportEnabled": "Export",
+      "domesticScope": "Domestic market",
+      "hqCountry": "Head office country",
+      "marketsServed": "Markets served",
+      "productCategories": "Product categories",
+      "defaultCurrency": "Default currency",
+      "defaultIncoterm": "Default incoterm",
+      "notes": "Internal notes",
+      "listHint": "Separate values with a comma.",
+      "save": "Save profile",
+      "saved": "Profile saved.",
+      "error": "Saving the profile failed.",
+      "directionRequired": "Enable at least one direction: import, export or domestic market.",
+      "publicationTitle": "Public storefront",
+      "publicationSubtitle": "Appear in the /entreprises directory. This is a separate act from saving the profile.",
+      "isPublic": "Publish my page in the directory",
+      "publicSlug": "URL identifier",
+      "publicName": "Published business name",
+      "publicDescription": "Public description",
+      "publicCity": "City",
+      "slugHint": "Lowercase letters, digits and hyphens. Unique and permanent.",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "published": "Page published.",
+      "unpublished": "Page unpublished.",
+      "publishError": "Publishing failed.",
+      "slugTaken": "This identifier is already taken by another company.",
+      "slugRequired": "An identifier and a business name are required to publish.",
+      "profileRequiredBeforePublish": "Save your commercial profile first.",
+      "publicUrl": "View my public page",
+      "notPublished": "Not published"
+    },
+    "documents": {
+      "title": "Commercial documents",
+      "subtitle": "Invoices, bills of lading, certificates: what the customs checklist asks for.",
+      "empty": "No document uploaded.",
+      "new": "Upload a document",
+      "type": "Document type",
+      "titleField": "Title",
+      "file": "File",
+      "upload": "Upload",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "deleteConfirm": "Permanently delete this document?",
+      "download": "Download",
+      "saved": "Document uploaded.",
+      "deleted": "Document deleted.",
+      "error": "The operation failed.",
+      "typeRequired": "Choose a document type.",
+      "titleRequired": "Give the document a title.",
+      "fileRequired": "Select a file.",
+      "linkRequired": "Attach the document to an order, a quote or an RFQ.",
+      "linkTo": "Attach to",
+      "noLink": "No attachment",
+      "size": "Size",
+      "uploadedAt": "Uploaded on",
+      "linkedTo": "Attached to",
+      "maxSize": "20 MB maximum.",
+      "types": {
+        "proforma_invoice": "Proforma invoice",
+        "commercial_invoice": "Commercial invoice",
+        "packing_list": "Packing list",
+        "bill_of_lading": "Bill of lading",
+        "airway_bill": "Airway bill",
+        "certificate_of_origin": "Certificate of origin",
+        "certificate_of_conformity": "Certificate of conformity",
+        "insurance_certificate": "Insurance certificate",
+        "customs_declaration": "Customs declaration",
+        "contract": "Contract",
+        "other": "Other"
+      }
+    },
+    "promotion": {
+      "title": "Promotion kit",
+      "subtitle": "What your public page is missing, and a draft built from your real data.",
+      "checklist": "Points to complete",
+      "draft": "Suggested draft",
+      "headline": "Headline",
+      "summary": "Summary",
+      "highlights": "Highlights",
+      "publication": "Publication status",
+      "published": "Published",
+      "notPublished": "Not published",
+      "openPublicPage": "Open my public page",
+      "disclaimer": "This kit publishes nothing: it suggests. Publishing stays your decision, in the Profile tab.",
+      "empty": "No draft available: fill in your commercial profile first.",
+      "done": "Done",
+      "todo": "To complete",
+      "loadError": "The promotion kit could not be loaded."
     }
   },
   "vtc": {

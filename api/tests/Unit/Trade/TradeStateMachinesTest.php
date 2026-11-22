@@ -29,6 +29,13 @@ final class TradeStateMachinesTest extends TestCase
     {
         $machine = new TradeRfqStateMachine;
 
+        // `assertCanTransitionTo` n'echoue que par exception : sans assertion
+        // positive, PHPUnit marque le test « risky » (aucune assertion) et le
+        // vert ne prouve rien. On affirme donc les deux verdicts, PUIS on
+        // verifie que l'appel ne leve pas.
+        $this->assertTrue($machine->canTransitionTo(TradeRfqStatus::Draft, TradeRfqStatus::Open));
+        $this->assertTrue($machine->canTransitionTo(TradeRfqStatus::Open, TradeRfqStatus::Awarded));
+
         $machine->assertCanTransitionTo(TradeRfqStatus::Draft, TradeRfqStatus::Open);
         $machine->assertCanTransitionTo(TradeRfqStatus::Open, TradeRfqStatus::Awarded);
     }
@@ -59,6 +66,12 @@ final class TradeStateMachinesTest extends TestCase
     {
         $machine = new TradeQuoteStateMachine;
 
+        // Assertions positives : cf. commentaire du test RFQ ci-dessus.
+        $this->assertTrue($machine->canTransitionTo(TradeQuoteStatus::Draft, TradeQuoteStatus::Submitted));
+        $this->assertTrue($machine->canTransitionTo(TradeQuoteStatus::Submitted, TradeQuoteStatus::Negotiating));
+        $this->assertTrue($machine->canTransitionTo(TradeQuoteStatus::Negotiating, TradeQuoteStatus::UnderReview));
+        $this->assertTrue($machine->canTransitionTo(TradeQuoteStatus::UnderReview, TradeQuoteStatus::Accepted));
+
         $machine->assertCanTransitionTo(TradeQuoteStatus::Draft, TradeQuoteStatus::Submitted);
         $machine->assertCanTransitionTo(TradeQuoteStatus::Submitted, TradeQuoteStatus::Negotiating);
         $machine->assertCanTransitionTo(TradeQuoteStatus::Negotiating, TradeQuoteStatus::UnderReview);
@@ -85,6 +98,14 @@ final class TradeStateMachinesTest extends TestCase
     public function test_order_follows_the_logistics_lifecycle(): void
     {
         $machine = new TradeOrderStateMachine;
+
+        // Assertions positives : cf. commentaire du test RFQ ci-dessus.
+        $this->assertTrue($machine->canTransitionTo(TradeOrderStatus::Draft, TradeOrderStatus::Confirmed));
+        $this->assertTrue($machine->canTransitionTo(TradeOrderStatus::Confirmed, TradeOrderStatus::Preparing));
+        $this->assertTrue($machine->canTransitionTo(TradeOrderStatus::Preparing, TradeOrderStatus::Ready));
+        $this->assertTrue($machine->canTransitionTo(TradeOrderStatus::Ready, TradeOrderStatus::Shipped));
+        $this->assertTrue($machine->canTransitionTo(TradeOrderStatus::Shipped, TradeOrderStatus::Delivered));
+        $this->assertTrue($machine->canTransitionTo(TradeOrderStatus::Delivered, TradeOrderStatus::Closed));
 
         $machine->assertCanTransitionTo(TradeOrderStatus::Draft, TradeOrderStatus::Confirmed);
         $machine->assertCanTransitionTo(TradeOrderStatus::Confirmed, TradeOrderStatus::Preparing);

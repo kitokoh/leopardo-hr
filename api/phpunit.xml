@@ -501,6 +501,7 @@
             <file>tests/Feature/CRM/CrmHardeningNegativeTest.php</file>
             <file>tests/Feature/CRM/CrmImportFlowTest.php</file>
             <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
+            <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
             <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
             <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
             <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
@@ -1365,6 +1366,11 @@
             <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
             <file>tests/Feature/Trade/TradeFeatureFlagTest.php</file>
             <file>tests/Feature/Trade/TradeProductApiTest.php</file>
+            <file>tests/Feature/Trade/TradeProductLineBindingTest.php</file>
+            <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
+            <file>tests/Feature/Trade/TradeOrderApiTest.php</file>
+            <file>tests/Feature/Trade/TradeLifecycleTransitionApiTest.php</file>
+            <file>tests/Feature/Trade/TradeDocumentApiTest.php</file>
             <file>tests/Feature/Trade/TradeQuoteApiTest.php</file>
             <file>tests/Feature/Trade/TradeRfqApiTest.php</file>
             <file>tests/Feature/Trade/TradeSchemaTest.php</file>
@@ -2036,6 +2042,38 @@
             <file>tests/Feature/Core/Auth/PiiHmacLookupServiceTest.php</file>
             <file>tests/Feature/CotisationSimulationControllerTest.php</file>
             <file>tests/Feature/CotisationSimulationTest.php</file>
+            <file>tests/Feature/CRM/CrmActivitiesTasksTest.php</file>
+            <file>tests/Feature/CRM/CrmAutomationTest.php</file>
+            <file>tests/Feature/CRM/CrmCampaignSendProcessingTest.php</file>
+            <file>tests/Feature/CRM/CrmCampaignTest.php</file>
+            <file>tests/Feature/CRM/CrmChannelAdapterTest.php</file>
+            <file>tests/Feature/CRM/CrmChannelCrudTest.php</file>
+            <file>tests/Feature/CRM/CrmChannelSendTest.php</file>
+            <file>tests/Feature/CRM/CrmConsentTest.php</file>
+            <file>tests/Feature/CRM/CrmCrossTenantHarnessTest.php</file>
+            <file>tests/Feature/CRM/CrmDashboardTest.php</file>
+            <file>tests/Feature/CRM/CrmDeduplicationTest.php</file>
+            <file>tests/Feature/CRM/CrmDirectoryListTest.php</file>
+            <file>tests/Feature/CRM/CrmEmailTest.php</file>
+            <file>tests/Feature/CRM/CrmExportTest.php</file>
+            <file>tests/Feature/CRM/CrmHardeningNegativeTest.php</file>
+            <file>tests/Feature/CRM/CrmImportFlowTest.php</file>
+            <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
+            <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
+            <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
+            <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
+            <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>
+            <file>tests/Feature/CRM/CrmOutboxRuntimeTest.php</file>
+            <file>tests/Feature/CRM/CrmOutboxTest.php</file>
+            <file>tests/Feature/CRM/CrmPilotSeederTest.php</file>
+            <file>tests/Feature/CRM/CrmPlatformIsolationTest.php</file>
+            <file>tests/Feature/CRM/CrmSearchTest.php</file>
+            <file>tests/Feature/CRM/CrmSegmentTest.php</file>
+            <file>tests/Feature/CRM/CrmSoftDeletesTest.php</file>
+            <file>tests/Feature/CRM/CrmTaskTimelineTest.php</file>
+            <file>tests/Feature/CRM/CrmWhatsAppWebhookTest.php</file>
+            <file>tests/Feature/CRM/ResendEmailProviderTest.php</file>
+            <file>tests/Feature/CRM/Rgpd/CrmRgpdLifecycleTest.php</file>
             <file>tests/Feature/CrmMigrationsTest.php</file>
             <file>tests/Feature/CrossTenantIndexIsolationTest.php</file>
             <file>tests/Feature/DataModel/CompositeTenantIndexesTest.php</file>
@@ -2721,6 +2759,11 @@
             <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
             <file>tests/Feature/Trade/TradeFeatureFlagTest.php</file>
             <file>tests/Feature/Trade/TradeProductApiTest.php</file>
+            <file>tests/Feature/Trade/TradeProductLineBindingTest.php</file>
+            <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
+            <file>tests/Feature/Trade/TradeOrderApiTest.php</file>
+            <file>tests/Feature/Trade/TradeLifecycleTransitionApiTest.php</file>
+            <file>tests/Feature/Trade/TradeDocumentApiTest.php</file>
             <file>tests/Feature/Trade/TradeQuoteApiTest.php</file>
             <file>tests/Feature/Trade/TradeRfqApiTest.php</file>
             <file>tests/Feature/Trade/TradeSchemaTest.php</file>

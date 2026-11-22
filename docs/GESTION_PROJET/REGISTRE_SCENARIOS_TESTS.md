@@ -200,6 +200,27 @@ Surface : `api/routes/modules/trade.php` (`GET|POST /v1/trade/counterparties`, `
 
 **Non couvert** — `pint` (exige PHP ≥ 8.3, indisponible sur Debian 12 dans le sandbox) ; le rendu navigateur réel des 5 formulaires Toolbox.
 
+## 2026-11-22 — Vendeur B2B : pipeline CRM en écriture et 13 routes Trade sans contrat (PR #9784, issues #9777, #9778, #9779, #9790)
+
+Surface : `api/routes/modules/crm.php` (`PATCH /v1/crm/opportunities/{opportunity}/stage`, `whereNumber`), `api/routes/modules/trade.php` (contreparties, commandes, documents — 13 opérations), `api/app/Modules/CRM/Interfaces/Api/V1/Controllers/CrmOpportunityController.php`, `api/app/Modules/Trade/Interfaces/Api/V1/Controllers/{TradeCounterpartyController,TradeOrderController,TradeDocumentController}.php`, `api/openapi.yaml`, `front/web/src/app/(dashboard)/trade-os/page.tsx` (onglets Commandes, Contreparties).
+
+**Pourquoi c'est un scénario de test** : `GET /crm/opportunities` alimentait un kanban par `stage`, mais hors `ConvertLeadAction` **aucune route n'écrivait** dans `crm_opportunities` — le pipeline était en lecture seule, une affaire convertie restait figée et rien ne pouvait être marqué gagné ou perdu. Côté Trade, trois outils vendeur (contreparties, commandes, documents) avaient table + modèle + factory et **aucune route** : sans contreparties créables, `POST /trade/rfqs/{rfq}/send` (qui exige `counterparty_ids`) était inutilisable par un tenant réel.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| `PATCH /crm/opportunities/{id}/stage` avec une étape hors whitelist → 422 | `CrmOpportunityStage` n'était validée sur aucun chemin d'écriture : la colonne n'était qu'un `string(80)` |
+| `status` **dérivé** de `stage` (`won`/`lost` → `closed`) | deux vérités dans la même ligne : un `status` fourni par le client pourrait contredire l'étape |
+| `won`/`lost` **terminaux** (rejouer → 422) | rouvrir réécrirait l'historique commercial : un CA déjà compté redeviendrait « en cours » |
+| retour en arrière permis dans le parcours **ouvert** | un client qui revient sur son budget forcerait le commercial à mentir sur l'étape |
+| `lost_reason` exigé et conservé avec l'étape précédente | une affaire perdue sans motif ne dit rien, et l'étape d'origine serait perdue |
+| contrepartie d'un AUTRE tenant → **404**, jamais 403 | l'API ne doit pas révéler l'existence d'une ressource d'un autre tenant |
+| `POST /trade/rfqs/{rfq}/send` avec `counterparty_ids` d'un tenant réel → 200 | la diffusion d'une demande de prix, cœur du sourcing B2B, restait impossible |
+| `TradeProductApiTest` déclaré dans une testsuite de `phpunit.xml` | un test jamais exécuté donne l'illusion d'une garantie (garde anti-test-orphelin) |
+
+**Couverture exécutée** — `php -l` sur les fichiers touchés ; Pint `--test` (0 écart) ; `check-openapi-route-coverage.py` (0 nouvelle route non couverte) ; `tsc --noEmit` 0 erreur ; le workflow `Trade B2B CI` mesure la suite (177 passes, 0 échec, 845 assertions au dernier run).
+
+**Non couvert** — exécution locale de PHPUnit (pas de PostgreSQL dans l'espace de travail) et le rendu navigateur des deux nouveaux onglets (vérifié par TypeScript, pas visuellement).
+
 ## 2026-11-22 — Quota par plan : une fenêtre réelle de 60 s rendait le test instable (issue #9793)
 
 Surface : `api/tests/Feature/Security/ApiVersionAndPlanRateLimitTest.php` uniquement. Aucun changement de produit, de route ni de contrat d'API.
