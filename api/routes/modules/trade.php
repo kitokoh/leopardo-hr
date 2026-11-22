@@ -40,6 +40,7 @@ use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeMetaController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeProductController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeQuoteController;
 use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeRfqController;
+use App\Modules\Trade\Interfaces\Api\V1\Controllers\TradeSearchController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 'throttle:api-plan', 'module.trade'])
@@ -107,6 +108,14 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
             Route::put('/products/{product}', [TradeProductController::class, 'update']);
             // Acte distinct : archiver n'est pas enregistrer un champ.
             Route::post('/products/{product}/archive', [TradeProductController::class, 'archive']);
+        });
+
+        // ── Recherche transverse — #9781 ─────────────────────────────────────
+        // « Je ne sais plus où c'est » : un seul champ qui interroge les
+        // contreparties, le catalogue et les dossiers. Ouvert à tous les rôles
+        // métier — chercher n'est pas une opération commerciale.
+        Route::middleware('trade.role:purchase,sales,logistics,reports,admin')->group(function (): void {
+            Route::get('/search', [TradeSearchController::class, 'index']);
         });
 
         // ── Contreparties : clients, fournisseurs, transporteurs — #9780 ──────
