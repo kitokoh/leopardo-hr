@@ -1351,6 +1351,552 @@ paths:
           description: Produit inexistant OU appartenant a une autre entreprise (jamais 403)
         '429':
           $ref: '#/components/responses/Error429'
+  /v1/trade/counterparties:
+    get:
+      operationId: api_get_trade_counterparties
+      tags:
+      - Trade
+      summary: Lister les contreparties du vendeur B2B (#9779)
+      description: >-
+        Annuaire clients / fournisseurs / transporteurs de l'entreprise
+        (BC-36 TRADE, espace vendeur ET acheteur).
+
+        Table, modele et factory existaient depuis TRADE-003/#8478, mais
+        AUCUNE route ne les exposait. Or `POST /v1/trade/rfqs/{rfq}/send`
+        exige des `counterparty_ids` (`min:1`) : sans ces routes, un tenant
+        reel ne pouvait pas diffuser une demande de prix — le seul moyen
+        d'obtenir une contrepartie etait le factory de test.
+
+        Isolation tenant par `BelongsToCompany` : une contrepartie d'une autre
+        entreprise est introuvable (404), jamais 403.
+      parameters:
+      - name: role
+        in: query
+        description: Filtre sur un role metier (appartenance dans le tableau `roles`)
+        schema:
+          $ref: '#/components/schemas/TradeCounterpartyRole'
+      - name: verification_status
+        in: query
+        schema:
+          type: string
+          enum: [none, pending, verified, rejected]
+      - name: q
+        in: query
+        description: Recherche sur le nom (jokers SQL echappes)
+        schema:
+          type: string
+          maxLength: 200
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginee des contreparties du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier de lecture
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      operationId: api_post_trade_counterparties
+      tags:
+      - Trade
+      summary: Creer une contrepartie (#9779)
+      description: >-
+        Une contrepartie nait `none`. `verification_status` n'accepte que
+        `pending` : la verification est une SAISIE MANUELLE TRACEE
+        (`verified_by_employee_id`, `verified_at`). Declarer soi-meme
+        `verified` ferait passer une declaration pour un controle qui n'a pas
+        eu lieu — aucun service de verification d'entreprise n'est souscrit.
+
+        `company_id` n'est jamais accepte : il est pose depuis le tenant
+        courant (anti-spoof #7646).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, roles]
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                country:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                city:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  format: email
+                  maxLength: 190
+                phone:
+                  type: string
+                  maxLength: 40
+                website:
+                  type: string
+                  format: uri
+                  maxLength: 255
+                roles:
+                  type: array
+                  minItems: 1
+                  items:
+                    $ref: '#/components/schemas/TradeCounterpartyRole'
+                capabilities:
+                  type: object
+                  additionalProperties: true
+                notes:
+                  type: string
+                  maxLength: 5000
+                crm_account_id:
+                  type: integer
+                  minimum: 1
+                verification_status:
+                  type: string
+                  enum: [pending]
+      responses:
+        '201':
+          description: Contrepartie creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role sales/purchase/admin
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/counterparties/{counterparty}:
+    get:
+      operationId: api_get_trade_counterparty
+      tags:
+      - Trade
+      summary: Detail d'une contrepartie (#9779)
+      parameters:
+      - name: counterparty
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Contrepartie
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
+    put:
+      operationId: api_put_trade_counterparty
+      tags:
+      - Trade
+      summary: Mettre a jour une contrepartie (#9779)
+      description: >-
+        `verification_status` n'est PAS editable ici : verifier est un acte
+        distinct et trace, servi par un endpoint dedie. Un `PUT` ne doit pas
+        pouvoir faire passer une contrepartie pour verifiee.
+      parameters:
+      - name: counterparty
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 200
+                country:
+                  type: string
+                  minLength: 2
+                  maxLength: 2
+                city:
+                  type: string
+                  maxLength: 120
+                email:
+                  type: string
+                  format: email
+                  maxLength: 190
+                phone:
+                  type: string
+                  maxLength: 40
+                website:
+                  type: string
+                  format: uri
+                  maxLength: 255
+                roles:
+                  type: array
+                  minItems: 1
+                  items:
+                    $ref: '#/components/schemas/TradeCounterpartyRole'
+                capabilities:
+                  type: object
+                  additionalProperties: true
+                notes:
+                  type: string
+                  maxLength: 5000
+                crm_account_id:
+                  type: integer
+                  minimum: 1
+      responses:
+        '200':
+          description: Contrepartie mise a jour
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+    delete:
+      operationId: api_delete_trade_counterparty
+      tags:
+      - Trade
+      summary: Supprimer logiquement une contrepartie (#9779)
+      description: >-
+        Suppression LOGIQUE (`deleted_at`) : les RFQ diffusees et les offres
+        emises citent la contrepartie, une suppression dure casserait
+        l'historique commercial.
+      parameters:
+      - name: counterparty
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Contrepartie supprimee logiquement
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/orders:
+    get:
+      operationId: api_get_trade_orders
+      tags:
+      - Trade
+      summary: Lister les commandes du vendeur B2B (#9779)
+      description: >-
+        `AcceptQuoteAction` creait une `TradeOrder` en `confirmed` et
+        `TradeOrderResource` existait — mais AUCUNE route ne servait la
+        ressource. Le vendeur acceptait une offre et la commande disparaissait
+        de son espace.
+
+        `?direction=purchase|sale` distingue, comme pour les offres, ce que
+        l'entreprise achete de ce qu'elle vend : meme objet, deux flux.
+      parameters:
+      - name: direction
+        in: query
+        schema:
+          type: string
+          enum: [purchase, sale]
+      - name: status
+        in: query
+        schema:
+          type: string
+          enum: [draft, confirmed, preparing, ready, shipped, delivered, closed, cancelled]
+      - name: trade_counterparty_id
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginee des commandes du tenant
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/orders/{order}:
+    get:
+      operationId: api_get_trade_order
+      tags:
+      - Trade
+      summary: Detail d'une commande, expeditions incluses (#9779)
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Commande
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/orders/{order}/transition:
+    post:
+      operationId: api_post_trade_order_transition
+      tags:
+      - Trade
+      summary: Faire avancer (ou annuler) une commande (#9779)
+      description: >-
+        Cycle : draft -> confirmed -> preparing -> ready -> shipped ->
+        delivered -> closed. Annulation possible AVANT `shipped` uniquement :
+        une fois la marchandise partie, un `cancelled` masquerait une
+        expedition reelle.
+
+        Le client envoie la CIBLE ; le verdict appartient a
+        `TradeOrderStateMachine` — aucune regle de transition n'est dupliquee
+        dans le controleur. Un statut inconnu est une 422 de validation, une
+        transition interdite une 422 `INVALID_STATUS_TRANSITION` qui nomme
+        `from` et `to`.
+
+        `cancel_reason` est EXIGE pour `cancelled` : une annulation sans motif
+        est inexploitable six mois plus tard.
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [draft, confirmed, preparing, ready, shipped, delivered, closed, cancelled]
+                cancel_reason:
+                  type: string
+                  maxLength: 500
+                  description: Exige quand `status` vaut `cancelled`
+                expected_delivery_at:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: Commande dans son nouvel etat
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/documents:
+    get:
+      operationId: api_get_trade_documents
+      tags:
+      - Trade
+      summary: Lister les documents commerciaux d'un dossier (#9779)
+      description: >-
+        `trade_documents` existait depuis TRADE-005/#8480 (11 types normatifs,
+        disque `private`) sans aucune route. La checklist douaniere reclame la
+        facture commerciale qu'aucun ecran ne permettait de deposer.
+
+        `path` et `disk` ne sortent JAMAIS : le telechargement passe par une
+        route autorisee, pas par une URL de stockage.
+      parameters:
+      - name: trade_order_id
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      - name: trade_quote_id
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      - name: trade_rfq_id
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      - name: trade_deal_id
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+      - name: type
+        in: query
+        schema:
+          $ref: '#/components/schemas/TradeDocumentType'
+      - name: per_page
+        in: query
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+          default: 20
+      responses:
+        '200':
+          description: Liste paginee des documents
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      operationId: api_post_trade_documents
+      tags:
+      - Trade
+      summary: Deposer un document commercial (#9779)
+      description: >-
+        `disk` et `path` ne sont JAMAIS acceptes du client : le stockage est
+        une decision serveur (disque `private`, chemin genere par uuid). Les
+        accepter permettrait d'ecrire ou de faire pointer un document vers un
+        fichier qu'on ne devrait pas lire.
+
+        `size_bytes` et `mime_type` sont CONSTATES a la reception
+        (`getSize()`, `getClientMimeType()`), jamais declares : un client peut
+        mentir sur la taille.
+
+        Le document doit etre rattache a au moins un dossier (commande, offre,
+        RFQ ou transaction) — un document orphelin serait introuvable dans
+        l'ecran du vendeur.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, type, title]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: 20 Mo maximum
+                type:
+                  $ref: '#/components/schemas/TradeDocumentType'
+                title:
+                  type: string
+                  maxLength: 200
+                trade_order_id:
+                  type: integer
+                  minimum: 1
+                trade_quote_id:
+                  type: integer
+                  minimum: 1
+                trade_rfq_id:
+                  type: integer
+                  minimum: 1
+                trade_deal_id:
+                  type: integer
+                  minimum: 1
+      responses:
+        '201':
+          description: Document depose
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `trade` inactive, ou acteur sans role metier
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/documents/{document}:
+    get:
+      operationId: api_get_trade_document
+      tags:
+      - Trade
+      summary: Detail d'un document commercial (#9779)
+      parameters:
+      - name: document
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Document
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistant OU appartenant a une autre entreprise (jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
+    delete:
+      operationId: api_delete_trade_document
+      tags:
+      - Trade
+      summary: Supprimer un document commercial (#9779)
+      description: >-
+        Suppression LOGIQUE de la ligne (`SoftDeletes`, tracabilite exigee par
+        une transaction internationale) ET suppression REELLE du fichier : un
+        document commercial retire ne doit pas rester lisible sur le disque.
+      parameters:
+      - name: document
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Document supprime
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistant OU appartenant a une autre entreprise (jamais 403)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/trade/documents/{document}/download:
+    get:
+      operationId: api_get_trade_document_download
+      tags:
+      - Trade
+      summary: Telecharger un document commercial (#9779)
+      description: >-
+        Le fichier n'est jamais servi depuis une URL de stockage : sans cette
+        route, un document prive serait inatteignable ; avec une URL publique,
+        il serait lisible par qui devine le chemin. Le perimetre tenant est
+        applique par le model binding — 404 uniforme inter-tenant.
+      parameters:
+      - name: document
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Flux binaire du document
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Inexistant, appartenant a une autre entreprise, ou fichier absent du disque
+        '429':
+          $ref: '#/components/responses/Error429'
+
   /public/vtc/marketplace/estimate:
     post:
       operationId: api_post_public_vtc_marketplace_estimate
@@ -68039,6 +68585,23 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    # Issue #9779 — contreparties et documents de la verticale Trade.
+    # Les deux enums sont les SOURCES du contrat : ils correspondent
+    # exactement a TradeCounterpartyRole et TradeDocumentType cote PHP.
+    TradeCounterpartyRole:
+      type: string
+      description: >-
+        Role metier d'une contrepartie. Une contrepartie porte PLUSIEURS roles
+        simultanement : un meme acteur est souvent fabricant ET fournisseur,
+        ou transitaire ET transporteur.
+      enum: [buyer, supplier, manufacturer, wholesaler, carrier, forwarder, customs_broker, inspector]
+    TradeDocumentType:
+      type: string
+      description: >-
+        Liste NORMATIVE des pieces d'une transaction internationale : elle sert
+        a la checklist documentaire douaniere autant qu'au rangement du dossier.
+      enum: [proforma_invoice, commercial_invoice, packing_list, bill_of_lading, airway_bill, certificate_of_origin, certificate_of_conformity, insurance_certificate, customs_declaration, contract, other]
+
     # Issue #9333 — entrée de la piste d'audit tenant.
     AuditLogEntry:
       type: object
