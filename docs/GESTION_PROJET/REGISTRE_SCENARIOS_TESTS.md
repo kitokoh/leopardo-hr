@@ -19,7 +19,24 @@ Surface : `front/web/src/app/(dashboard)/edu-manager/fee-types/page.tsx` (nouvea
 
 **Couverture exécutée** — `php -l` sur les fichiers PHP touchés (0 erreur) ; `pint --test` → 0 style issue ; `phpstan analyse -c phpstan-strict.neon app/Modules/EduManager` → **0 erreur** ; `check-module-isolation.sh` → aucun nouvel import croisé ; `check-i18n-catalog-parity.sh` → parité OK (4 langues) ; `validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `check-hardcoded-accented-messages.sh` → aucune nouvelle chaîne accentuée ; `check-tests-no-frozen-dates.sh` → aucune date figée ; `tsc --noEmit` → 0 erreur ; `eslint --max-warnings 0` → 0 erreur ; `jest --ci` → suites vertes.
 
-**Non couvert** — le rendu navigateur réel des 4 pages n'est pas ouvert par ce lot ; la mesure reste le run CI.
+**Contrôle visuel navigateur** — les 4 pages ont été ouvertes dans Chromium (serveur Next.js local, API mockée) et leurs captures lues : `/edu-manager/fee-types` (tableau des 4 types de frais, colonnes Code/Libellé/Montant/Fréquence/Actions), `/edu-manager/guardians` (3 responsables, colonnes Nom/Lien de parenté/Contact/Actions, contact masqué), `/edu-manager/reports` (blocs Présence et Inscriptions remplis) et `/business/ecole` (vitrine pack école). Aucun défaut de rendu. Ce contrôle a révélé un défaut réel corrigé depuis : l'en-tête « Statut » s'affichait au-dessus d'une colonne vide sur les référentiels sans statut (`CrudPage`).
+
+## 2026-11-22 — Quota par plan : une fenêtre réelle de 60 s rendait le test instable (issue #9793)
+
+Surface : `api/tests/Feature/Security/ApiVersionAndPlanRateLimitTest.php` uniquement. Aucun changement de produit, de route ni de contrat d'API.
+
+**Pourquoi c'est un scénario de test** : le test vérifiait le bon contrat (« la 3e requête est refusée ») mais mesurait aussi la vitesse du runner. `RateLimiter::tooManyAttempts()` ne compare pas seulement le compteur : si la clé `:timer` posée par `hit()` (TTL = `Limit::perMinute()` = 60 s) a expiré, il **remet les tentatives à zéro**. Trois requêtes HTTP réelles qui s'étalent sur plus de 60 s — runner saturé, workers paratest sur le même PostgreSQL — repartent donc de zéro et la 3e répond 200 : la classe échouait dans 2 des 3 mesures d'un même commit (`56114ff5a`, `79ec3813a`).
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| horloge gelée avant les trois requêtes, 3e = 429 | la fenêtre de 60 s expire et le test rouge ne dit rien du produit |
+| `RateLimiter::limiter('api-plan')` rend `maxAttempts = 2` | un repli Free (60/min) ou « employé non reconnu » (100/min par IP) produisait le même 200 muet |
+| la clé vaut `plan:pilot:company:<id>` | une clé sans plan ne prouve plus que le quota suit le plan de la société |
+| 1re et 2e requêtes = 200 | une garde trop stricte casserait les appels légitimes |
+
+**Couverture exécutée** — `php -l` sur le fichier de test ; la mesure est le run CI (pas de `vendor/` ni de PostgreSQL dans l'espace de travail, `api/vendor` symlinké).
+
+**Non couvert** — exécution locale de PHPUnit ; contrôle négatif (retrait de `freezeTime()`, ou `pilot_per_minute` modifié sans toucher au test) à faire sur un poste outillé.
 
 ## 2026-11-22 — Trade : catalogue produits B2B (API interne + catalogue public + UI vendeur) (PR #9769, #9767, #9768)
 
