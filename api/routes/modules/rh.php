@@ -197,7 +197,11 @@ ModuleRoutes::tenantModule('', function (): void {
 
     // ── Module 4 — HR Referentials ────────────────────────────────────────────
     Route::get('/departments', [DepartmentController::class, 'index']);
-    Route::post('/departments', [DepartmentController::class, 'store'])->middleware('api.manager');
+    // #eval-2026-11-23 — la création d'un département est réservée aux rôles
+    // `principal` et `rh` (aligné sur DepartmentPolicy::create). Sans liste de
+    // rôles, `api.manager` laissait passer comptable/superviseur (201).
+    Route::post('/departments', [DepartmentController::class, 'store'])
+        ->middleware('api.manager:principal,rh');
     Route::get('/departments/{department}/hierarchy', [DepartmentController::class, 'hierarchy'])->whereNumber('department');
     Route::get('/departments/{department}', [DepartmentController::class, 'show'])->whereNumber('department');
     Route::put('/departments/{department}', [DepartmentController::class, 'update'])->whereNumber('department');

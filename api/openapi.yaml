@@ -46946,20 +46946,50 @@ paths:
       - Restaurant
       summary: Lister les travaux d'impression de la succursale (REST-OS-1)
       description: >-
-        REST-OS-1 - liste des travaux d'impression de LA succursale active.
-        Portee stricte : `company_id` + `branch_id` du contexte. Autorisation :
-        `restaurant.print_jobs.manage`.
+        REST-OS-1 - liste des travaux d'impression d'UNE succursale, triee du
+        plus recent au plus ancien (100 maximum). La succursale est designee
+        par le parametre de requete `branch_id` (obligatoire) : il n'existe
+        AUCUN en-tete `X-Branch-Id` sur cette route. Portee stricte :
+        `company_id` de l'acteur + `branch_id` demande ; une succursale sur
+        laquelle l'acteur n'a pas le droit `view` renvoie 403, une succursale
+        d'un autre tenant n'est jamais atteignable. Autorisation :
+        `restaurant.print_jobs.manage` (lecture ressource-scopee, #7599).
       security:
       - BearerAuth: []
       parameters:
-      - name: X-Branch-Id
-        in: header
+      - name: branch_id
+        in: query
         required: true
+        description: >-
+          Identifiant de la succursale dont on liste les travaux. Absent ou non
+          numerique -> 422 (`branch_id is required to list print jobs.`).
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        description: Filtre sur l'etat du travail (`pending`, `claimed`, `printed`, `failed`).
+        schema:
+          type: string
+          enum: [pending, claimed, printed, failed]
+      - name: order_id
+        in: query
+        required: false
+        description: Filtre sur la commande d'origine (ignore si non numerique).
         schema:
           type: integer
       responses:
         '200':
           description: Travaux de la succursale
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantPrintJob'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
