@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
@@ -52,6 +52,13 @@ export type CrudResource = {
   columns: Column<Record<string, unknown>>[];
   rowKey: (row: Record<string, unknown>) => string | number;
   statusField?: string;
+  /**
+   * #9792 — actions métier supplémentaires par ligne (au-delà de
+   * éditer/supprimer). Une page qui a besoin d'un geste propre à son domaine
+   * (ici : « encaisser en lot » depuis une classe) n'a pas à réimplémenter
+   * tout le CRUD pour l'obtenir.
+   */
+  rowActions?: (row: Record<string, unknown>) => ReactNode;
 };
 
 function statusBadge(row: Record<string, unknown>, statusField?: string) {
@@ -191,16 +198,25 @@ export default function CrudPage({ resource }: { resource: CrudResource }) {
         ...column,
         header: t(locale, column.header),
       })),
-      {
-        key: 'status',
-        header: t(locale, 'edu.campuses.status'),
-        render: (row) => statusBadge(row, resource.statusField),
-      },
+      // #9789 — la colonne « Statut » n'a de sens que si la ressource expose
+      // un champ de statut : sans `statusField`, `statusBadge` renvoie `null`
+      // et l'en-tête restait affiché au-dessus d'une colonne entièrement vide
+      // (constaté sur /edu-manager/fee-types, qui n'a pas de statut).
+      ...(resource.statusField
+        ? [
+            {
+              key: 'status',
+              header: t(locale, 'edu.campuses.status'),
+              render: (row: Record<string, unknown>) => statusBadge(row, resource.statusField),
+            },
+          ]
+        : []),
       {
         key: '__actions',
         header: t(locale, 'edu.common.actions'),
         render: (row) => (
           <div className="flex items-center gap-1">
+            {resource.rowActions ? resource.rowActions(row) : null}
             <button
               type="button"
               title={t(locale, 'edu.common.edit')}

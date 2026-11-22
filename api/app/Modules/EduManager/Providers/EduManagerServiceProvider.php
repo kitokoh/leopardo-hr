@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace App\Modules\EduManager\Providers;
 
+use App\Core\Solutions\Contracts\DemoDataKit;
+use App\Core\Solutions\DemoDataRegistry;
 use App\Core\Solutions\SolutionCatalogue;
 use App\Events\SolutionActivated;
 use App\Modules\EduManager\Application\Actions\SeedMinimalEduManagerAction;
 use App\Modules\EduManager\Console\Commands\EduOutboxDispatchCommand;
 use App\Modules\EduManager\Domain\Solution\EduManagerManifest;
+use App\Modules\EduManager\Infrastructure\Services\EduDemoDataKit;
+use App\Modules\EduManager\Infrastructure\Services\EduOnboardingStepPredicate;
 use App\Modules\EduManager\Infrastructure\Services\EduOutboxConsumerRegistry;
+use App\Shared\Onboarding\StepPredicateRegistry;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
@@ -34,6 +39,30 @@ class EduManagerServiceProvider extends ServiceProvider
         // les adaptateurs (Accounting, CRM client, Notification) s'y
         // déclarent au fil des issues de consommation.
         $this->app->singleton(EduOutboxConsumerRegistry::class);
+
+        // #9785 — kit de données de démonstration de la verticale. Même pattern
+        // partagé que `SolutionCatalogue` : singleton avec garde `bound()` +
+        // `resolving()` (le registre est partagé entre modules, ne jamais le
+        // ré-écraser) et factory PARESSEUSE — le kit n'est instancié qu'à
+        // l'import effectif (`POST /demo-data/edumanager/import`).
+        if (! $this->app->bound(DemoDataRegistry::class)) {
+            $this->app->singleton(DemoDataRegistry::class, static fn (): DemoDataRegistry => new DemoDataRegistry);
+        }
+
+        $this->app->resolving(DemoDataRegistry::class, function (DemoDataRegistry $registry): void {
+            $registry->register('edumanager', fn (): DemoDataKit => $this->app->make(EduDemoDataKit::class));
+        });
+
+        // #9787 — prédicats de complétion des étapes d'onboarding école. Le
+        // module Onboarding ne peut pas importer EduManager (garde #5584) : il
+        // consulte le registre partagé, où ce module déclare SES étapes.
+        if (! $this->app->bound(StepPredicateRegistry::class)) {
+            $this->app->singleton(StepPredicateRegistry::class, static fn (): StepPredicateRegistry => new StepPredicateRegistry);
+        }
+
+        $this->app->resolving(StepPredicateRegistry::class, function (StepPredicateRegistry $registry): void {
+            $registry->register($this->app->make(EduOnboardingStepPredicate::class));
+        });
     }
 
     public function boot(): void
