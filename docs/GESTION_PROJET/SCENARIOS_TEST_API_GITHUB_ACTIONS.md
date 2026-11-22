@@ -790,6 +790,7 @@ Note 2026-07-25 (PA2-PAY-003) : `GET /api/v1/payroll/cycles/preview` permet a un
 - Les outils write (`create_absence`, `absence_decision`, etc.) retournent `confirmation_required` avec `pending_action_id` sans mutation immediate
 - `POST /api/v1/ai/actions/{pendingActionId}/confirm` execute l'action apres validation utilisateur
 - `POST /api/v1/ai/actions/{pendingActionId}/reject` annule l'action en attente
+- `POST /api/v1/ai/actions/propose` cree une proposition depuis un client MCP externe (RBAC applique, aucun effet metier, `pending_action_id` renvoye) — issue #9753
 - Isolation : un utilisateur ne peut confirmer que ses propres actions pending dans son tenant
 - Couverture Feature : `AIWriteActionConfirmationTest` (confirmation, rejet, retrait du legacy approve_absence #8145, orchestrator pending_confirmations)
 

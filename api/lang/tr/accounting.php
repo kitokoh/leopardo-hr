@@ -80,6 +80,10 @@ return [
         'bank_reference_required' => 'İçe aktarma referansı zorunludur.',
         'bank_payment_required' => 'Eşleştirilecek ödeme zorunludur.',
         'bank_payment_exists' => 'Seçilen ödeme mevcut değil.',
+        // Belge paylaşımı (#9765)
+        'share_email_invalid' => 'Alıcı e-posta adresi geçersiz.',
+        'share_expiry_min' => 'Paylaşım en az 1 gün geçerli olmalıdır.',
+        'share_expiry_max' => 'Paylaşım 365 günü aşamaz.',
     ],
 
     // Yevmiye türü etiketleri (#9370)

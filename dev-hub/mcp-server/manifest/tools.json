@@ -274,7 +274,7 @@
             "description": "Statut agrégé de la paie du tenant : dernier run clôturé (validé/payé) et run en cours éventuel (draft/calculating/processing/calculated/error) avec progression (bulletins générés/validés rapportés à l'effectif du run). Aucun montant, aucune donnée nominative.",
             "inputSchema": {
                 "type": "object",
-                "properties": []
+                "properties": {}
             },
             "outputSchema": {
                 "type": "object",

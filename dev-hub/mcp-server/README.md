@@ -77,8 +77,9 @@ LEOPARDO_API_URL=https://api.example.com LEOPARDO_API_TOKEN=... \
 ## Surface exposée
 
 - **Outils** (`tools/list`) : les `AIToolDefinition` du manifeste A3 **et** les
-  outils CRUD générés depuis `api/openapi.yaml` (issue #9746) — 170 outils au
-  total aujourd'hui (9 A3 + 161 générés).
+  outils CRUD générés depuis `api/openapi.yaml` (issue #9746) — 287 outils au
+  total aujourd'hui (9 A3 + 278 générés, dont les verticales Travel et
+  Restaurant depuis l'issue #9751 et 40 outils d'action depuis l'issue #9753).
 - **Ressources** (`resources/list`) :
   - `leopardo://tools/catalog` — le manifeste complet ;
   - `leopardo://tools/{name}/schema` — schémas d'entrée/sortie d'un outil.
@@ -95,7 +96,8 @@ par un BC propriétaire porte une sémantique métier que le générateur ne peu
 déduire d'un verbe HTTP.
 
 Le générateur n'expose pas les ~1 950 opérations de la spec : il filtre par
-allowlist de tags RH, par verbe CRUD (les endpoints d'action — `/approve`,
+allowlist de tags (RH/plateforme + verticales Travel et Restaurant), par verbe
+CRUD (les endpoints d'action — `/approve`,
 `/lock`, `/confirm`… — restent sur `PendingAction`) et exclut `/public/*` et
 `/webhooks/*`.
 
@@ -111,9 +113,21 @@ serveur MCP :
 |---|---|
 | `read` | exécution directe (Laravel applique RBAC + Policy) |
 | `write` / `send` | **refus** : aucun effet de bord. L'action doit passer par le flux `PendingAction` de l'API (`POST /api/v1/ai/actions/{id}/confirm`) |
+| `write` + `route.action: true` | **proposition** : `POST /api/v1/ai/actions/propose` crée une action en attente et renvoie son `pending_action_id` — jamais d'exécution directe (issue #9753) |
 
 Un outil déclaré sans route REST mappée est refusé (fail-closed), de même
 qu'une réponse `403` de l'API.
+
+### Outils d'action (issue #9753)
+
+Les endpoints d'action (`/approve`, `/publish`, `/rotate`…) sont générés avec
+`--include-actions` et portent `route.action: true`. `tools/call` les route vers
+`POST /api/v1/ai/actions/propose` : Laravel applique le RBAC, vérifie que
+l'outil a un handler de confirmation, stocke l'action en attente et renvoie son
+identifiant. **Aucun effet métier** tant qu'un humain n'a pas confirmé.
+
+Le serveur MCP n'a aucun accès base : c'est cet endpoint qui fait le pont avec
+`PendingActionStore`, sans dupliquer la logique de stockage.
 
 ## Régénérer le manifeste
 
@@ -127,8 +141,11 @@ php artisan ai:tools:manifest --output=../dev-hub/mcp-server/manifest/tools.json
 Après toute modification de `api/openapi.yaml` :
 
 ```bash
-python3 dev-hub/tools/generate-mcp-openapi-tools.py
+python3 dev-hub/tools/generate-mcp-openapi-tools.py --include-actions
 ```
+
+`--include-actions` est requis : le manifeste versionné inclut les outils
+d'action (issue #9753), et la garde CI compare avec la même option.
 
 Les gardes CI `dev-hub/tools/check-mcp-manifest-drift.sh` et
 `dev-hub/tools/check-mcp-openapi-tools-drift.sh` (job *Hygiene Guards*) échouent

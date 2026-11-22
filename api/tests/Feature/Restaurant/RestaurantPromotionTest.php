@@ -115,6 +115,37 @@ class RestaurantPromotionTest extends TestCase
         });
     }
 
+    /**
+     * #9744 — contrat de la fixture : une promotion créée par la factory
+     * n'impose AUCUNE contrainte métier (ni seuil, ni plafond, ni fenêtre).
+     *
+     * Sur l'ancienne factory, ces quatre colonnes venaient d'`optional()` : une
+     * fois sur deux elles étaient renseignées au hasard, ce qui rendait
+     * intermittent tout test qui ne les fixait pas — `RestaurantPromotionCrudTest`
+     * échouait en 422 « sous le minimum » environ une fois sur quatre. Le test
+     * échantillonne dix créations : avec l'ancienne factory il était rouge dans
+     * plus de 99 % des exécutions, ce qui le rend détectable en CI.
+     */
+    public function test_factory_imposes_no_business_constraint(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateRestaurant($company);
+
+        app(TenantManager::class)->withinTenant($company, function (): void {
+            foreach (range(1, 10) as $sample) {
+                /** @var RestaurantPromotion $promotion */
+                $promotion = RestaurantPromotion::factory()->create();
+
+                $this->assertNull($promotion->min_order_minor, "Échantillon {$sample} : la factory impose un minimum de commande.");
+                $this->assertNull($promotion->max_uses, "Échantillon {$sample} : la factory impose un plafond d'utilisations.");
+                $this->assertNull($promotion->starts_at, "Échantillon {$sample} : la factory impose un début de fenêtre.");
+                $this->assertNull($promotion->ends_at, "Échantillon {$sample} : la factory impose une fin de fenêtre.");
+                $this->assertTrue((bool) $promotion->is_active, "Échantillon {$sample} : une promotion de fixture doit être active (#8660).");
+            }
+        });
+    }
+
     public function test_unknown_code_returns_404(): void
     {
         /** @var Company $company */
