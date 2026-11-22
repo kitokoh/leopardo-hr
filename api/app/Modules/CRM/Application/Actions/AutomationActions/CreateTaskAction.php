@@ -32,8 +32,13 @@ final class CreateTaskAction implements AutomationActionContract
         $title = isset($config['title']) && is_string($config['title']) ? $config['title'] : 'Tache CRM';
         $dueAt = isset($config['due_at']) && is_string($config['due_at']) ? $config['due_at'] : now()->addDay();
 
+        // #9790 — `crm_tasks.id` est un `bigint` auto-incremente
+        // (`$table->id()` dans la migration #5710), PAS un uuid. L'insertion
+        // d'un `Str::uuid()` echouait en `invalid input syntax for type bigint`
+        // et avortait la transaction appelante. Le defaut a survecu parce
+        // qu'aucun emetteur ne declenchait d'automatisation : le chemin n'etait
+        // jamais execute. On laisse la sequence attribuer l'identifiant.
         DB::table('crm_tasks')->insert([
-            'id' => (string) Str::uuid(),
             'company_id' => currentCompany()->id,
             'title' => $title,
             'due_at' => $dueAt,
