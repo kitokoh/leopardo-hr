@@ -46,7 +46,9 @@ Renommages **différés** (phases 2-3, voir §4 — beaucoup sont surveillés pa
 
 ## 2. Taxonomie cible (~11 familles)
 
-Regroupement cible des 53 dossiers actuels :
+Regroupement cible des dossiers actuels (64 au 2026-11-22 — le décompte n'est plus
+inscrit en dur ici : il dérivait, il annonçait encore « 53 » alors que le disque en
+contenait 64) :
 
 ```
 docs/
