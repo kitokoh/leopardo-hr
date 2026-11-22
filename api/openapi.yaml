@@ -47766,6 +47766,67 @@ paths:
           $ref: '#/components/responses/Error422'
 
   /edu-manager/fee-charges:
+    get:
+      operationId: api_get_edu_manager_fee_charges
+      tags:
+      - EduManager
+      summary: Lister les charges de frais scolaires
+      description: 'Direction/RH uniquement. Liste paginée des charges du tenant, avec le solde
+        restant calculé en base (`paid_amount`, `remaining_amount`). Filtres : `status`,
+        `student_id`, `fee_type_id`, `academic_year_id`.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - pending
+          - partial
+          - paid
+          - waived
+          - cancelled
+      - name: student_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: fee_type_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: academic_year_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+      responses:
+        '200':
+          description: Liste paginée des charges
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EduFeeCharge'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
     post:
       operationId: api_post_edu_manager_fee_charges
       tags:
@@ -47925,6 +47986,113 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  /edu-manager/fee-charges/{charge}:
+    get:
+      operationId: api_get_edu_manager_fee_charges_by_charge
+      tags:
+      - EduManager
+      summary: Détail d'une charge de frais et de ses encaissements
+      description: 'Direction/RH uniquement. Renvoie la charge avec son solde restant et la liste
+        de ses paiements. Une charge d''un autre tenant répond 404 (aucune fuite d''existence).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: charge
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Charge et ses paiements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                    - $ref: '#/components/schemas/EduFeeCharge'
+                    - type: object
+                      properties:
+                        payments:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/EduFeePayment'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edu-manager/fee-payments:
+    get:
+      operationId: api_get_edu_manager_fee_payments
+      tags:
+      - EduManager
+      summary: Journal des encaissements scolaires
+      description: 'Direction/RH uniquement. Liste paginée des encaissements du tenant, tous guichets
+        confondus. Filtres : `fee_charge_id`, `student_id`, `method`, `from`, `to` (sur `paid_at`).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fee_charge_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: student_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: method
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - cash
+          - transfer
+          - card
+          - mobile_money
+          - other
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: per_page
+        in: query
+        required: false
+        schema:
+          type: integer
+          default: 15
+      responses:
+        '200':
+          description: Liste paginée des encaissements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/EduFeePayment'
+                  meta:
+                    $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /edu-manager/fee-accounting-entries:
     get:
       operationId: api_get_edu_manager_fee_accounting_entries
