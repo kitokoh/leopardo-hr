@@ -1,3 +1,33 @@
+## 2026-11-22 — École : encaissement en lot et exports CSV du guichet (PR #9792, #9791)
+
+Surface : `api/app/Modules/EduManager/Application/Actions/RecordEduFeeBatchPaymentsAction.php` (nouveau), `.../Interfaces/Api/V1/Requests/StoreEduFeeBatchPaymentRequest.php` (nouveau), `.../Infrastructure/Exports/FeePaymentsCsvExporter.php` (nouveau), `.../FeeAccountingEntriesCsvExporter.php` (nouveau), `.../Controllers/EduFeeChargeController.php` (`batchPayment`), `.../EduFeePaymentController.php` (`export` + requête filtrée partagée), `.../EduAccountingEntryController.php` (`export` + requête filtrée partagée), `api/routes/modules/edu_manager.php` (`POST /fee-charges/batch-payments`, `GET /fee-payments/export.csv`, `GET /fee-accounting-entries/export.csv`), `api/tests/Feature/EduManager/EduFeeBatchAndExportTest.php` (nouveau, 9 tests), `front/web/src/app/(dashboard)/edu-manager/fee-charges/batch/page.tsx` (nouveau), `.../fee-charges/page.tsx` (export + lien lot), `.../fee-accounting-entries/page.tsx` (export), `.../__tests__/edu-fee-batch-export.test.tsx` (nouveau, 5 tests), `shared/i18n/locales/{fr,en,ar,tr}.json` + catalogues générés.
+
+**Pourquoi c'est un scénario de test** : le guichet encaissait une charge à la fois et ne sortait rien du produit. À la rentrée, une classe entière règle le même jour — le caissier rouvrait la modale trente fois, et rien ne garantissait que le moyen de paiement ou la référence de bordereau fussent identiques d'une ligne à l'autre. Côté comptabilité, l'écran de rapprochement affichait un contrôle d'équilibre mais aucun fichier ne sortait : l'expert-comptable ne pouvait pas récupérer les lignes, et le contrôle n'était vérifiable qu'à l'œil, page par page.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| un lot de 3 lignes valides enregistre 3 encaissements et rend `summary.recorded`/`total_amount` | le guichet ne saurait pas ce qui a été encaissé |
+| les statuts suivent le cumul (soldé / partiel) et `remaining_amount` est juste par ligne | le solde affiché divergerait dès le premier règlement partiel |
+| une seule ligne en surdébit annule le lot ENTIER et rend 422 avec `errors[0].index` | un lot à moitié appliqué laisserait des écritures comptables orphelines et un état de caisse faux |
+| les refus métier (terminale, introuvable, doublon, devise) sont tous détectés AVANT écriture et indexés | le caissier chercherait laquelle, parmi trente, a échoué |
+| une charge d'un autre tenant rend `EDU_FEE_CHARGE_NOT_FOUND` et n'écrit rien | fuite inter-tenants par le lot |
+| rejouer le même `external_id` de lot ne double aucun encaissement | un rejeu de bordereau doublerait la caisse |
+| employé lambda 403, non authentifié 401 sur le lot | montants et PII d'élèves exposés hors périmètre |
+| l'export du journal porte BOM UTF-8, en-tête, lignes et ligne `TOTAL` | Excel lirait « Élève » en mojibake, et l'état de caisse serait sans total |
+| l'export du journal d'un tenant ne contient jamais les lignes d'un autre | une fuite par export serait invisible à l'écran |
+| l'export du rapprochement porte `TOTAL` ET `EQUILIBRE` (écart débit − crédit) | le contrôle d'équilibre ne survivrait pas à l'export |
+| les deux exports sont réservés à la direction | un employé lambda exporterait la comptabilité |
+| le sélecteur de moyen de paiement affiche « Espèces », pas `cash` | un caissier lirait un code technique |
+| la page de lot ne propose que les charges encore encaissables | le serveur refuserait les charges soldées, ligne par ligne |
+
+**Défaut révélé par le contrôle visuel** — le sélecteur de moyen de paiement affichait `cash`, `transfer`, `mobile_money` : des codes techniques en minuscules. Le défaut existait aussi sur la page de facturation livrée au tour précédent. Corrigé par une table de correspondance unique (`methodLabel`) partagée par les deux pages, avec libellés fr/en/ar/tr.
+
+**Couverture exécutée** — `php8.4 artisan test --filter=EduFeeBatchAndExportTest` → **9 passed (75 assertions)** ; `--filter=EduFeeTest` → **10 passed (114 assertions)** de non-régression ; `phpstan analyse -c phpstan-strict.neon app/Modules/EduManager` → **0 erreur** ; `pint --test` → 0 style issue ; `check-module-isolation.sh` → aucun nouvel import croisé ; `check-i18n-catalog-parity.sh` → parité OK (4 langues) ; `_local_governance_check.py` → PASS ; `tsc --noEmit` → 0 erreur ; `eslint --max-warnings 0` → 0 erreur ; `jest` → **20 passed** (dont 5 nouveaux).
+
+**Contrôle visuel navigateur** — Chromium réel, serveur Next.js local, API mockée : `/edu-manager/fee-charges/batch` (charges encaissables, solde restant, total du lot, « Espèces »), `/edu-manager/fee-charges` (bouton « Exporter en CSV » + « Encaisser en lot ») et `/edu-manager/fee-accounting-entries` (bouton d'export). 3/3 pages vertes, aucune erreur console.
+
+**Non couvert** — la suite Feature complète n'a pas été relancée (blocage de migration PostGIS dans le sandbox, cf. entrée précédente) : la mesure reste le run CI. Les états d'erreur des exports ne sont pas vus à l'écran (couverts par Jest).
+
 ## 2026-11-22 — École : facturation et encaissement (PR #9792, #9790)
 
 Surface : `api/app/Modules/EduManager/Interfaces/Api/V1/Controllers/EduFeeChargeController.php` (index + show ajoutés), `.../EduFeePaymentController.php` (nouveau), `api/routes/modules/edu_manager.php` (`GET /fee-charges`, `GET /fee-charges/{charge}`, `GET /fee-payments`), `api/tests/Feature/EduManager/EduFeeTest.php` (3 tests), `front/web/src/app/(dashboard)/edu-manager/fee-charges/page.tsx` (nouveau), `.../fees/page.tsx` (nouveau), `.../fee-accounting-entries/page.tsx` (nouveau), `.../edu-manager/page.tsx` (raccourcis), `.../__tests__/edu-tools-journey.test.tsx` (5 tests), `shared/i18n/locales/{fr,en,ar,tr}.json` + catalogues générés.
