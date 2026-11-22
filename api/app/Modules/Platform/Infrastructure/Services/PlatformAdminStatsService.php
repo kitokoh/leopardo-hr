@@ -91,6 +91,32 @@ class PlatformAdminStatsService
         }
     }
 
+    /**
+     * La table existe-t-elle dans le schéma partagé ?
+     *
+     * Certaines sources du cockpit sont OPTIONNELLES (`edge_nodes` n'existe
+     * que sur les déploiements qui exploitent EdgeSync). Les interroger sans
+     * garde faisait remonter un 503 sur tout le dashboard — y compris sur une
+     * base de test ou un environnement sans EdgeSync.
+     */
+    private function tenantTableExists(string $table): bool
+    {
+        try {
+            $row = DB::selectOne(
+                'SELECT 1
+                   FROM information_schema.tables
+                  WHERE table_schema = ?
+                    AND table_name = ?
+                  LIMIT 1',
+                [self::TENANT_SCHEMA, $table]
+            );
+
+            return $row !== null;
+        } catch (\Throwable $e) {
+            $this->reportDashboardFailure(__FUNCTION__, $e);
+        }
+    }
+
     private function publicCount(string $table): int
     {
         try {
@@ -222,6 +248,15 @@ class PlatformAdminStatsService
     /** @return array<int, array<string, mixed>> */
     private function edgeSyncActivities(): array
     {
+        // `edge_nodes` est une table OPTIONNELLE : elle n'existe que sur les
+        // déploiements qui exploitent EdgeSync. Son absence ne doit pas faire
+        // tomber tout le cockpit super-admin en 503 — c'était le cas, et le
+        // moindre environnement sans EdgeSync (dont la base de test) rendait
+        // `/admin/dashboard/activities` inutilisable.
+        if (! $this->tenantTableExists('edge_nodes')) {
+            return [];
+        }
+
         try {
             return DB::table(self::TENANT_SCHEMA.'.edge_nodes')
                 ->whereNotNull('last_sync_at')
@@ -326,6 +361,10 @@ class PlatformAdminStatsService
     /** @return array<string, mixed>|null */
     private function licensesExpiringAlert(): ?array
     {
+        if (! $this->tenantTableExists('edge_nodes')) {
+            return null;
+        }
+
         try {
             $count = (int) DB::table(self::TENANT_SCHEMA.'.edge_nodes')
                 ->where('license_expires_at', '>=', Carbon::now()->toDateTimeString())

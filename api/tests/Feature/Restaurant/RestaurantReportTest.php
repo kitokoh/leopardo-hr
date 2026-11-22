@@ -64,8 +64,14 @@ class RestaurantReportTest extends TestCase
             RestaurantOrder::factory()->create(['branch_id' => $branch->id, 'status' => 'paid', 'total_minor' => 5000, 'tax_minor' => 950, 'discount_minor' => 500]);
 
             // 2 sessions de table aujourd'hui.
-            RestaurantTableSession::factory()->create(['branch_id' => $branch->id, 'table_id' => $table->id, 'covers' => 2, 'opened_at' => now()->subHours(3), 'closed_at' => now()->subHour()]);
-            RestaurantTableSession::factory()->create(['branch_id' => $branch->id, 'table_id' => $table->id, 'covers' => 4, 'opened_at' => now()->subMinutes(90), 'closed_at' => null]);
+            //
+            // Les horaires sont ancrés sur le DÉBUT de la journée, pas sur
+            // `now()->subHours(3)` : un run lancé avant 03:00 UTC faisait
+            // basculer la première session sur la veille, et le rapport
+            // (borné à la journée courante) n'en comptait plus qu'une.
+            $dayStart = now()->startOfDay();
+            RestaurantTableSession::factory()->create(['branch_id' => $branch->id, 'table_id' => $table->id, 'covers' => 2, 'opened_at' => $dayStart->copy()->addHour(), 'closed_at' => $dayStart->copy()->addHours(2)]);
+            RestaurantTableSession::factory()->create(['branch_id' => $branch->id, 'table_id' => $table->id, 'covers' => 4, 'opened_at' => $dayStart->copy()->addHours(3), 'closed_at' => null]);
 
             // Rapports.
             $this->getJson('/api/v1/restaurant/reports/sales')
