@@ -40,7 +40,7 @@ Route::middleware(['throttle:auth-sensitive'])->prefix('user')->group(function (
 });
 
 // Authentifie (user_api guard)
-Route::middleware(['throttle:api', 'auth:user_api'])->prefix('user')->group(function (): void {
+Route::middleware(['throttle:api', 'auth:user_api', 'account.active'])->prefix('user')->group(function (): void {
     Route::get('/me', [UserAuthController::class, 'me']);
     Route::patch('/profile', [UserAuthController::class, 'updateProfile']);
     Route::post('/change-password', [UserAuthController::class, 'changePassword']);
