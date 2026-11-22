@@ -9023,7 +9023,10 @@
         "forwarder": "Transitaire",
         "customs_broker": "Courtier en douane",
         "inspector": "Inspecteur"
-      }
+      },
+      "archive": "Archiver",
+      "archiveConfirm": "Archiver cette contrepartie ? Elle quittera le répertoire mais restera dans l'historique des dossiers et offres.",
+      "archived": "Contrepartie archivée."
     }
   },
   "vtc": {

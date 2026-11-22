@@ -69,6 +69,41 @@ export type CounterpartyDraft = {
   crmAccountId: string;
 };
 
+/**
+ * Vue minimale de l'utilisateur courant, suffisante pour décider d'un droit.
+ *
+ * Structurelle plutôt qu'importée de `StoredAuthUser` : ce module de types ne
+ * doit pas dépendre de la couche session, et un test peut fournir un objet
+ * littéral sans construire une session complète.
+ */
+export type TradeRoleViewer = {
+  manager_role?: string | null;
+  module_grants?: string[] | null;
+} | null;
+
+/**
+ * L'utilisateur courant est-il `admin` de la verticale Trade ?
+ *
+ * Miroir EXACT de `TradeRoleResolver` côté API, qui accorde `admin` :
+ *
+ *  - aux managers `principal` (propriétaire/exploitant du tenant) ;
+ *  - aux employés portant le grant explicite `trade.admin`.
+ *
+ * Un manager `dept`/`superviseur` obtient purchase/sales/logistics/reports
+ * mais **jamais** `admin` : il ne doit donc pas voir le bouton « Vérifier ».
+ *
+ * Cette fonction ne fait qu'ÉVITER d'afficher un bouton qui renverrait 403.
+ * Elle n'autorise rien : le serveur reste l'autorité (`trade.role:admin` sur
+ * `POST /trade/counterparties/{id}/verify`).
+ */
+export function isTradeAdmin(viewer: TradeRoleViewer): boolean {
+  if (!viewer) return false;
+
+  if ((viewer.manager_role ?? '').toLowerCase() === 'principal') return true;
+
+  return (viewer.module_grants ?? []).includes('trade.admin');
+}
+
 export const EMPTY_COUNTERPARTY_DRAFT: CounterpartyDraft = {
   name: '',
   country: '',

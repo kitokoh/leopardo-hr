@@ -9023,7 +9023,10 @@
         "forwarder": "Forwarder",
         "customs_broker": "Customs broker",
         "inspector": "Inspector"
-      }
+      },
+      "archive": "Archive",
+      "archiveConfirm": "Archive this counterparty? It will leave the directory but stay in the history of deals and quotes.",
+      "archived": "Counterparty archived."
     }
   },
   "vtc": {
