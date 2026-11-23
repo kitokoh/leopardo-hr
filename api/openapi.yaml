@@ -131,6 +131,8 @@ tags:
   description: 'BC-35 VTC — verticale VTC/taxi (spec MODULE_GEOCORE_ET_VERTICAL_VTC, VTC-01 #8357 → VTC-07 #8363) : estimation de tarif, réservation idempotente, dispatch au chauffeur le plus proche via le core geo (BC-34), cycle de course complet, console de répartition, administration (chauffeurs, véhicules, profils tarifaires). RBAC deny-by-default (docs/architecture/VTC_RBAC.md).'
 - name: Trade
   description: 'BC-36 TRADE — verticale International Trade OS (TRADE-001 #8476 → TRADE-011 #8486, spec docs/specifications/VERTICAL_TRADE_OS.md) : noyau commercial partagé (profils professionnels, catalogue, demandes de prix, offres, commandes, transport, coûts rendus, documents) avec vues acheteur et vendeur sur les MÊMES objets. RBAC par opération, deny-by-default (TradeRoleResolver : purchase / sales / logistics / admin).'
+- name: Connectors
+  description: 'BC-14 INTEGRATION (#9846 → #9848) — onglet « Connecteurs ». Surface TENANT : un client branche ses surfaces externes (site WordPress/WooCommerce, page produit Facebook, boutique Shopify/Instagram/TikTok Shop, fiche Google Merchant) et retrouve au même endroit les intégrations qu''il utilisait déjà. Surface PLATEFORME : comptes externes de l''éditeur (banques qui reçoivent les paiements des tenants). Secrets chiffrés au repos, write-only, jamais renvoyés en clair — l''API ne rend qu''un masque.'
 
 paths:
   /v1/audit-logs:
@@ -70622,6 +70624,862 @@ paths:
           description: Marque inconnue, non publiée ou suspendue (fail-closed)
         '429':
           description: Limite de débit `shop-public` dépassée
+  /v1/connectors/catalog:
+    get:
+      operationId: api_get_connectors_catalog
+      tags: [Connectors]
+      summary: Types de connecteur proposables à un tenant (#9848)
+      description: >-
+        Catalogue des surfaces externes qu'un client peut brancher sur son
+        espace. Filtré par `audience = tenant` : les entrées `audience =
+        platform` (les banques de l'éditeur) n'apparaissent jamais ici, même si
+        un contrôleur l'oubliait.
+
+        Chaque entrée porte son `field_schema` : le front génère le formulaire
+        à partir de lui, donc ajouter un type de connecteur est une écriture de
+        données, pas un déploiement.
+      responses:
+        '200':
+          description: Entrées de catalogue visibles par le tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ConnectorCatalogEntry'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `connectors` inactive pour ce tenant
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/connectors/connections:
+    get:
+      operationId: api_get_connectors_connections
+      tags: [Connectors]
+      summary: Connexions externes du tenant courant (#9848)
+      description: >-
+        Isolation tenant appliquée par `BelongsToCompany` : une connexion d'une
+        autre entreprise est introuvable (404), jamais 403.
+
+        Les secrets ne redescendent JAMAIS en clair : `secrets` ne contient que
+        `{configured, mask}` par champ secret du catalogue.
+      responses:
+        '200':
+          description: Connexions du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ConnectorConnection'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `connectors` inactive pour ce tenant
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      operationId: api_post_connectors_connections
+      tags: [Connectors]
+      summary: Connecte une surface externe (#9848)
+      description: >-
+        Réservé au `principal` du tenant : connecter un compte externe engage
+        l'entreprise, comme les profils d'encaissement (#7727).
+
+        La connexion est créée en `draft` : elle ne devient `active` que par
+        `PATCH .../status`. `company_id` n'est jamais accepté — il est posé par
+        `BelongsToCompany` depuis le contexte tenant (anti-spoof #7646).
+
+        La validation de SCHÉMA (champs requis du connecteur, types, options de
+        `select`) dépend du `catalog_key` et rend un 422 détaillé par champ dans
+        `violations`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorConnectionInput'
+      responses:
+        '201':
+          description: Connexion créée (statut `draft`)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Acteur autre que `principal`
+        '422':
+          description: >-
+            Enveloppe invalide, `catalog_key` inconnu
+            (`CONNECTOR_CATALOG_KEY_UNKNOWN`) ou schéma du connecteur violé
+            (`CONNECTOR_SCHEMA_VIOLATION`, détail dans `violations`)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/connectors/connections/{id}:
+    patch:
+      operationId: api_patch_connectors_connection
+      tags: [Connectors]
+      summary: Met à jour une connexion du tenant (#9848)
+      description: >-
+        PATCH partiel : la configuration et les secrets sont FUSIONNÉS avec
+        l'existant avant validation, pour qu'un champ requis déjà en base ne
+        fasse pas échouer la requête.
+
+        Un secret absent ou vide conserve la valeur en place ; un secret fourni
+        REMPLACE l'ancien.
+      parameters:
+        - $ref: '#/components/parameters/ConnectorConnectionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorConnectionUpdateInput'
+      responses:
+        '200':
+          description: Connexion mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Acteur autre que `principal`
+        '404':
+          description: Connexion inconnue ou hors tenant (fail-closed)
+        '409':
+          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
+        '422':
+          description: Schéma du connecteur violé (`violations` détaille le champ fautif)
+        '429':
+          $ref: '#/components/responses/Error429'
+    delete:
+      operationId: api_delete_connectors_connection
+      tags: [Connectors]
+      summary: Supprime une connexion du tenant (#9848)
+      description: >-
+        Suppression franche de la ligne : la configuration et les secrets
+        disparaissent avec elle. Pour suspendre sans perdre la saisie, utiliser
+        `PATCH .../status` avec `revoked`.
+      parameters:
+        - $ref: '#/components/parameters/ConnectorConnectionId'
+      responses:
+        '204':
+          description: Connexion supprimée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Acteur autre que `principal`
+        '404':
+          description: Connexion inconnue ou hors tenant (fail-closed)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/connectors/connections/{id}/status:
+    patch:
+      operationId: api_patch_connectors_connection_status
+      tags: [Connectors]
+      summary: Active ou révoque une connexion du tenant (#9848)
+      description: >-
+        Le statut est un champ FERMÉ (`draft`, `active`, `error`, `revoked`).
+        Révoquer conserve la configuration : c'est une suspension, pas une
+        suppression.
+      parameters:
+        - $ref: '#/components/parameters/ConnectorConnectionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorStatusInput'
+      responses:
+        '200':
+          description: Statut appliqué
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Acteur autre que `principal`
+        '404':
+          description: Connexion inconnue ou hors tenant (fail-closed)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/connectors/connections/{id}/test:
+    post:
+      operationId: api_post_connectors_connection_test
+      tags: [Connectors]
+      summary: Vérifie réellement une connexion du tenant (#9848)
+      description: >-
+        Le verdict est celui du contrôle réellement exécuté
+        (`ConnectorConnectionTester`) : jamais un succès inventé. Un connecteur
+        qui exigerait un appel authentifié au fournisseur rend `unsupported`
+        plutôt que de prétendre l'avoir vérifié.
+
+        Le résultat est persisté (`last_check_status`, `last_checked_at`) pour
+        que l'écran affiche le dernier état connu sans relancer un test à chaque
+        ouverture. Un test en échec fait passer une connexion `active` en
+        `error` : l'écran reflète la réalité, pas l'intention.
+      parameters:
+        - $ref: '#/components/parameters/ConnectorConnectionId'
+      responses:
+        '200':
+          description: Verdict du contrôle et connexion mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      connection:
+                        $ref: '#/components/schemas/ConnectorConnection'
+                      check:
+                        $ref: '#/components/schemas/ConnectorCheckResult'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Acteur autre que `principal`
+        '404':
+          description: Connexion inconnue ou hors tenant (fail-closed)
+        '409':
+          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/connectors/overview:
+    get:
+      operationId: api_get_connectors_overview
+      tags: [Connectors]
+      summary: Index des intégrations déjà existantes du tenant (#9848)
+      description: >-
+        LECTURE seule : chaque intégration existante garde son écran natif comme
+        source de vérité. L'onglet les regroupe, il ne les duplique pas — deux
+        vérités divergentes seraient pires qu'aucun index.
+
+        Une source indisponible (table absente, module non activé pour ce
+        tenant) disparaît de l'index au lieu de faire échouer tout l'écran.
+      responses:
+        '200':
+          description: Index des intégrations et compteurs de connexions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorOverview'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Feature `connectors` inactive pour ce tenant
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/platform/connectors/catalog:
+    get:
+      operationId: api_get_platform_connectors_catalog
+      tags: [Connectors]
+      summary: Types de connecteur proposables à la plateforme (#9847)
+      description: >-
+        Catalogue filtré par `audience = platform` : les comptes externes de
+        l'éditeur, d'abord ses banques (celles qui reçoivent les paiements des
+        tenants), qui étaient jusqu'ici saisies en dur dans la configuration
+        d'environnement.
+
+        Permission requise : `connectors.view`.
+      responses:
+        '200':
+          description: Entrées de catalogue visibles par la plateforme
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ConnectorCatalogEntry'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `connectors.view` absente
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/platform/connectors/connections:
+    get:
+      operationId: api_get_platform_connectors_connections
+      tags: [Connectors]
+      summary: Connexions externes de la plateforme (#9847)
+      description: >-
+        Triées par `is_default` puis `catalog_key`. Les secrets ne redescendent
+        jamais en clair : `secrets` ne contient que `{configured, mask}`.
+
+        Permission requise : `connectors.view`.
+      responses:
+        '200':
+          description: Connexions de la plateforme
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ConnectorConnection'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `connectors.view` absente
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      operationId: api_post_platform_connectors_connections
+      tags: [Connectors]
+      summary: Connecte un compte externe de la plateforme (#9847)
+      description: >-
+        Permission requise : `connectors.manage`.
+
+        La connexion est créée en `draft`. Chaque écriture est auditée SANS
+        valeur de secret : le journal ne retient que QUELLES clés secrètes ont
+        été fournies, jamais leur contenu.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorConnectionInput'
+      responses:
+        '201':
+          description: Connexion créée (statut `draft`)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `connectors.manage` absente
+        '422':
+          description: >-
+            Enveloppe invalide, `catalog_key` inconnu
+            (`CONNECTOR_CATALOG_KEY_UNKNOWN`) ou schéma du connecteur violé
+            (`CONNECTOR_SCHEMA_VIOLATION`, détail dans `violations`)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/platform/connectors/connections/{id}:
+    patch:
+      operationId: api_patch_platform_connectors_connection
+      tags: [Connectors]
+      summary: Met à jour une connexion de la plateforme (#9847)
+      description: >-
+        Permission requise : `connectors.manage`.
+
+        PATCH partiel : configuration et secrets sont FUSIONNÉS avec l'existant
+        avant validation. Un secret absent ou vide conserve la valeur en base —
+        on peut corriger un libellé sans retaper un IBAN ; un secret fourni
+        REMPLACE l'ancien.
+      parameters:
+        - $ref: '#/components/parameters/ConnectorConnectionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorConnectionUpdateInput'
+      responses:
+        '200':
+          description: Connexion mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `connectors.manage` absente
+        '404':
+          description: Connexion inconnue
+        '409':
+          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
+        '422':
+          description: Schéma du connecteur violé (`violations` détaille le champ fautif)
+        '429':
+          $ref: '#/components/responses/Error429'
+    delete:
+      operationId: api_delete_platform_connectors_connection
+      tags: [Connectors]
+      summary: Supprime une connexion de la plateforme (#9847)
+      description: >-
+        Permission requise : `connectors.manage`. La suppression est auditée
+        (`connector.deleted`) avec la clé de catalogue et le libellé, jamais un
+        secret.
+      parameters:
+        - $ref: '#/components/parameters/ConnectorConnectionId'
+      responses:
+        '204':
+          description: Connexion supprimée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `connectors.manage` absente
+        '404':
+          description: Connexion inconnue
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/platform/connectors/connections/{id}/status:
+    patch:
+      operationId: api_patch_platform_connectors_connection_status
+      tags: [Connectors]
+      summary: Active ou révoque une connexion de la plateforme (#9847)
+      description: >-
+        Permission requise : `connectors.manage`. Le statut est un champ FERMÉ
+        (`draft`, `active`, `error`, `revoked`) ; le changement est audité
+        (`connector.status_changed`).
+      parameters:
+        - $ref: '#/components/parameters/ConnectorConnectionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConnectorStatusInput'
+      responses:
+        '200':
+          description: Statut appliqué
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `connectors.manage` absente
+        '404':
+          description: Connexion inconnue
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/platform/connectors/connections/{id}/test:
+    post:
+      operationId: api_post_platform_connectors_connection_test
+      tags: [Connectors]
+      summary: Vérifie réellement une connexion de la plateforme (#9847)
+      description: >-
+        Permission requise : `connectors.manage`.
+
+        Le verdict est celui du contrôle réellement exécuté : pour un compte
+        bancaire, IBAN (clé mod-97), BIC (ISO 9362) et titulaire sont contrôlés
+        localement. Aucun succès n'est inventé ; un connecteur non vérifiable
+        rend `unsupported`.
+
+        Le résultat est persisté, et un échec fait passer une connexion `active`
+        en `error`.
+      parameters:
+        - $ref: '#/components/parameters/ConnectorConnectionId'
+      responses:
+        '200':
+          description: Verdict du contrôle et connexion mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      connection:
+                        $ref: '#/components/schemas/ConnectorConnection'
+                      check:
+                        $ref: '#/components/schemas/ConnectorCheckResult'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `connectors.manage` absente
+        '404':
+          description: Connexion inconnue
+        '409':
+          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/platform/connectors/overview:
+    get:
+      operationId: api_get_platform_connectors_overview
+      tags: [Connectors]
+      summary: Index des intégrations existantes de la plateforme (#9847)
+      description: >-
+        Permission requise : `connectors.view`. LECTURE seule : chaque
+        intégration garde son écran natif comme source de vérité.
+      responses:
+        '200':
+          description: Index des intégrations et compteurs de connexions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorOverview'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Permission `connectors.view` absente
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/employees/{employee}/vertical-permissions:
+    get:
+      operationId: api_get_employee_vertical_permissions
+      tags: [Employees]
+      summary: Permissions verticales déléguées à un collaborateur (#EVAL)
+      description: >-
+        Ce que le collaborateur détient aujourd'hui, plus le catalogue des
+        permissions qu'on peut lui déléguer. Le front compose ses cases à cocher
+        avec `available` : il ne peut donc jamais proposer une permission d'une
+        verticale inactive (fail-closed côté UI ET côté API).
+
+        Surface distincte de `module-grants` : `ModuleKey` est un registre FERMÉ
+        de modules HORIZONTAUX, l'ouvrir aux permissions de manifest casserait
+        l'invariant « manifest inactif ⇒ aucune permission effective ». Ici le
+        registre est DYNAMIQUE et borné au tenant.
+
+        Autorisation : `principal` du tenant uniquement, jamais sur un employé
+        d'une autre société (policy `EmployeePolicy::manageModuleGrants`).
+      parameters:
+        - $ref: '#/components/parameters/EmployeeId'
+      responses:
+        '200':
+          description: Permissions détenues et catalogue délégable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/EmployeeVerticalPermissions'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Acteur sans droit de gestion des grants, ou hors tenant
+        '404':
+          description: Employé inconnu ou hors tenant (fail-closed)
+        '429':
+          $ref: '#/components/responses/Error429'
+    put:
+      operationId: api_put_employee_vertical_permissions
+      tags: [Employees]
+      summary: Remplace le jeu complet de permissions verticales (#EVAL)
+      description: >-
+        PUT = remplacement du jeu COMPLET, seule forme qui rende la révocation
+        possible en un geste : une permission absente du corps est retirée.
+
+        Fail-closed : une clé inconnue, une permission d'une verticale inactive
+        ou une permission horizontale (`marketing`, …) est refusée en 422,
+        jamais ignorée silencieusement. Les doublons sont dédoublonnés.
+      parameters:
+        - $ref: '#/components/parameters/EmployeeId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [permission_keys]
+              properties:
+                permission_keys:
+                  type: array
+                  description: >-
+                    Jeu complet attendu. Tableau vide = révocation de toutes les
+                    permissions verticales.
+                  items:
+                    type: string
+                    example: travel.agent
+      responses:
+        '200':
+          description: Jeu appliqué
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      permission_keys:
+                        type: array
+                        items:
+                          type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Acteur sans droit de gestion des grants, ou hors tenant
+        '404':
+          description: Employé inconnu ou hors tenant (fail-closed)
+        '422':
+          description: >-
+            `permission_keys` absent (`MODULE_KEYS_REQUIRED`) ou clé hors du
+            registre délégable (`VERTICAL_PERMISSION_UNKNOWN`)
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/inventory:
+    get:
+      operationId: api_get_travel_hotel_room_inventory
+      tags: [Travel]
+      summary: Grille d'inventaire d'une chambre sur une période (M4)
+      description: >-
+        Grille CONTINUE sur `[from, to]` inclus : une nuit sans ligne est rendue
+        avec la capacité par défaut (1), donc la grille n'a jamais de trou et
+        l'appelant n'a pas à interpréter une absence comme « fermé ».
+
+        Isolation : l'hôtel et la chambre doivent appartenir à la société de
+        l'acteur, et la chambre à l'hôtel — sinon 404 (jamais 403, qui
+        révélerait l'existence de la ressource d'un autre tenant).
+      parameters:
+        - $ref: '#/components/parameters/TravelHotelId'
+        - $ref: '#/components/parameters/TravelHotelRoomId'
+        - name: from
+          in: query
+          required: false
+          description: "Premier jour de la grille. Défaut : aujourd'hui."
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: false
+          description: "Dernier jour de la grille (inclus). Défaut : aujourd'hui + 30 jours."
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Grille d'inventaire, une entrée par nuit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelHotelRoomInventoryDay'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
+        '429':
+          $ref: '#/components/responses/Error429'
+    put:
+      operationId: api_put_travel_hotel_room_inventory
+      tags: [Travel]
+      summary: Ouvre ou ferme un intervalle d'inventaire (M4)
+      description: >-
+        `rooms_total = 0` ferme la chambre sur la période (maintenance).
+        L'intervalle est borné à 90 nuits : au-delà, c'est du remplissage de
+        masse, pas de la gestion d'inventaire.
+
+        Une baisse de capacité sous le nombre déjà vendu est refusée (422) :
+        elle rendrait l'inventaire incohérent (`rooms_booked > rooms_total`).
+
+        La réponse rend l'intervalle DEMANDÉ, pas la fenêtre par défaut de
+        `GET` (qui lit `from`/`to` en query string, absents d'un PUT en JSON).
+      parameters:
+        - $ref: '#/components/parameters/TravelHotelId'
+        - $ref: '#/components/parameters/TravelHotelRoomId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [from, to, rooms_total]
+              properties:
+                from:
+                  type: string
+                  format: date
+                to:
+                  type: string
+                  format: date
+                  description: "Doit être ≥ `from`. Intervalle maximal : 90 nuits."
+                rooms_total:
+                  type: integer
+                  minimum: 0
+                  maximum: 1000
+                  description: Capacité par nuit. `0` ferme la chambre sur la période.
+                status:
+                  type: string
+                  enum: [active, disabled]
+                  default: active
+      responses:
+        '200':
+          description: Grille d'inventaire de l'intervalle demandé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelHotelRoomInventoryDay'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Acteur sans droit de modification sur l'hôtel
+        '404':
+          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
+        '422':
+          description: >-
+            Intervalle invalide, supérieur à 90 nuits, ou capacité inférieure au
+            nombre de chambres déjà vendues sur une nuit
+        '429':
+          $ref: '#/components/responses/Error429'
+  /v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/bookings:
+    get:
+      operationId: api_get_travel_hotel_room_bookings
+      tags: [Travel]
+      summary: Réservations d'une chambre (M4)
+      description: >-
+        Réservations de la chambre, les plus récentes d'abord, paginées au
+        format Laravel (`data`, `links`, `meta`).
+      parameters:
+        - $ref: '#/components/parameters/TravelHotelId'
+        - $ref: '#/components/parameters/TravelHotelRoomId'
+        - name: per_page
+          in: query
+          required: false
+          description: "Taille de page, bornée à 200. Défaut : 50."
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+            default: 50
+      responses:
+        '200':
+          description: Liste paginée des réservations de la chambre
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelHotelBooking'
+                  links:
+                    type: object
+                  meta:
+                    type: object
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      operationId: api_post_travel_hotel_room_bookings
+      tags: [Travel]
+      summary: Réserve une chambre sur un intervalle de dates (M4)
+      description: >-
+        Le montant n'est JAMAIS accepté du client : il est calculé par l'action
+        (prix par nuit × nuits × chambres). `idempotency_key` est obligatoire —
+        rejouer la même clé ne crée pas une seconde réservation.
+
+        Le contrôle de surréservation est porté par `BookHotelRoomAction`
+        (verrou `FOR UPDATE` sur les nuits) : si une nuit manque, la requête est
+        refusée en 409 et rien n'est écrit.
+      parameters:
+        - $ref: '#/components/parameters/TravelHotelId'
+        - $ref: '#/components/parameters/TravelHotelRoomId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [check_in, check_out, idempotency_key]
+              properties:
+                check_in:
+                  type: string
+                  format: date
+                  description: Doit être aujourd'hui ou plus tard.
+                check_out:
+                  type: string
+                  format: date
+                  description: Strictement après `check_in`.
+                rooms:
+                  type: integer
+                  minimum: 1
+                  maximum: 50
+                  default: 1
+                idempotency_key:
+                  type: string
+                  maxLength: 255
+      responses:
+        '201':
+          description: Réservation créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelHotelBooking'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Acteur sans droit de modification sur l'hôtel
+        '404':
+          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
+        '409':
+          description: Une des nuits demandées n'est plus disponible (surréservation)
+        '422':
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
 components:
   securitySchemes:
     BearerAuth:
@@ -70801,6 +71659,31 @@ components:
       required: true
       schema:
         type: string
+    ConnectorConnectionId:
+      name: id
+      in: path
+      required: true
+      description: >-
+        Identifiant de la connexion. Côté tenant, la recherche se fait SOUS
+        scope : une connexion d'une autre entreprise rend 404, jamais 403.
+      schema:
+        type: integer
+    TravelHotelId:
+      name: travelHotel
+      in: path
+      required: true
+      description: Identifiant de l'hôtel (BC-24 TRAVEL, M4).
+      schema:
+        type: integer
+    TravelHotelRoomId:
+      name: travelHotelRoom
+      in: path
+      required: true
+      description: >-
+        Identifiant de la chambre. Doit appartenir à l'hôtel du chemin, sinon
+        404.
+      schema:
+        type: integer
   headers:
     RetryAfter:
       description: Delai conseille avant retry lorsqu'une limite de debit est atteinte.
@@ -83874,3 +84757,305 @@ components:
           format: date-time
           nullable: true
           description: 'Date métier. Défaut : maintenant.'
+    ConnectorCatalogEntry:
+      type: object
+      description: >-
+        Entrée du catalogue des connecteurs (#9846). Le `field_schema` décrit
+        EXACTEMENT le formulaire que le front génère : ajouter un champ ici
+        suffit à le faire apparaître dans les deux écrans, sans redéploiement.
+      properties:
+        key:
+          type: string
+          maxLength: 60
+          example: shopify
+        category:
+          type: string
+          description: Famille du connecteur (ex. `bank`, `shop`, `social`, `merchant`).
+          example: shop
+        audience:
+          type: string
+          enum: [tenant, platform]
+          description: >-
+            `tenant` = surface client ; `platform` = compte externe de l'éditeur.
+            Le catalogue de chaque surface ne rend que son audience.
+        label:
+          type: string
+        provider:
+          type: string
+          nullable: true
+        docs_url:
+          type: string
+          format: uri
+          nullable: true
+        sort_order:
+          type: integer
+        fields:
+          type: array
+          description: Schéma des champs du formulaire, dans l'ordre d'affichage.
+          items:
+            $ref: '#/components/schemas/ConnectorCatalogField'
+    ConnectorCatalogField:
+      type: object
+      required: [key, label, type]
+      properties:
+        key:
+          type: string
+          description: "Clé du champ dans `config` (ou `secrets` si `secret: true`)."
+        label:
+          type: string
+        type:
+          type: string
+          enum: [text, textarea, password, number, select, checkbox, url, email]
+        required:
+          type: boolean
+          default: false
+        secret:
+          type: boolean
+          default: false
+          description: >-
+            Champ chiffré au repos et write-only : jamais renvoyé en clair, seul
+            un masque est rendu en lecture.
+        placeholder:
+          type: string
+          nullable: true
+        help:
+          type: string
+          nullable: true
+        options:
+          type: array
+          description: "Uniquement pour `type: select`."
+          items:
+            type: object
+            required: [value, label]
+            properties:
+              value:
+                type: string
+              label:
+                type: string
+    ConnectorConnectionInput:
+      type: object
+      required: [catalog_key, label]
+      description: >-
+        Enveloppe de création. La validation de SCHÉMA (champs requis du
+        connecteur, types, options de `select`) dépend du `catalog_key` et rend
+        un 422 détaillé par champ dans `violations`.
+      properties:
+        catalog_key:
+          type: string
+          maxLength: 60
+          description: Clé d'une entrée du catalogue visible par l'audience appelante.
+        label:
+          type: string
+          maxLength: 120
+          description: Nom lisible donné par l'utilisateur à cette connexion.
+        config:
+          type: object
+          description: Champs NON secrets, conformes au `field_schema` du catalogue.
+        secrets:
+          type: object
+          description: >-
+            Champs secrets, conformes au `field_schema`. Chiffrés au repos,
+            write-only : jamais renvoyés en clair.
+        is_default:
+          type: boolean
+          description: >-
+            Surface plateforme uniquement : connexion utilisée par défaut pour ce
+            type de connecteur.
+    ConnectorConnectionUpdateInput:
+      type: object
+      description: >-
+        PATCH partiel : tous les champs sont facultatifs. `config` et `secrets`
+        sont FUSIONNÉS avec l'existant avant validation ; un secret absent ou
+        vide conserve la valeur en base.
+      properties:
+        label:
+          type: string
+          maxLength: 120
+        config:
+          type: object
+        secrets:
+          type: object
+        is_default:
+          type: boolean
+    ConnectorStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [draft, active, error, revoked]
+          description: >-
+            Champ FERMÉ. `revoked` suspend sans supprimer : la configuration est
+            conservée.
+    ConnectorConnection:
+      type: object
+      description: >-
+        Connexion à un service externe. `secrets` ne contient JAMAIS de valeur :
+        seulement `{configured, mask}` par champ secret du catalogue.
+      properties:
+        id:
+          type: integer
+        catalog_key:
+          type: string
+        label:
+          type: string
+        status:
+          type: string
+          enum: [draft, active, error, revoked]
+        config:
+          type: object
+          description: Champs non secrets, tels que saisis.
+        secrets:
+          type: object
+          description: >-
+            Masques des champs secrets, par clé : `{configured: bool, mask:
+            string|null}`. Exemple de masque : `sk_live_••••1234`.
+          additionalProperties:
+            type: object
+            properties:
+              configured:
+                type: boolean
+              mask:
+                type: string
+                nullable: true
+        last_check_status:
+          type: string
+          nullable: true
+          enum: [validated, invalid, unreachable, unsupported]
+        last_checked_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_default:
+          type: boolean
+          description: Surface plateforme uniquement.
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+    ConnectorCheckResult:
+      type: object
+      description: >-
+        Verdict du contrôle RÉELLEMENT exécuté. Jamais un succès inventé : un
+        connecteur non vérifiable rend `unsupported`.
+      properties:
+        status:
+          type: string
+          enum: [validated, invalid, unreachable, unsupported]
+        message:
+          type: string
+        checks:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              ok:
+                type: boolean
+              detail:
+                type: string
+    ConnectorOverview:
+      type: object
+      description: >-
+        Index des intégrations DÉJÀ existantes. LECTURE seule : chaque
+        intégration garde son écran natif comme source de vérité.
+      properties:
+        integrations:
+          type: array
+          items:
+            type: object
+            properties:
+              key:
+                type: string
+              label:
+                type: string
+              category:
+                type: string
+              href:
+                type: string
+                description: Lien vers l'écran natif de l'intégration.
+              count:
+                type: integer
+                description: Nombre d'éléments réellement configurés.
+              configured:
+                type: boolean
+              detail:
+                type: string
+                nullable: true
+        connections_count:
+          type: integer
+        active_count:
+          type: integer
+    EmployeeVerticalPermissions:
+      type: object
+      properties:
+        permission_keys:
+          type: array
+          description: Permissions verticales détenues aujourd'hui.
+          items:
+            type: string
+        available:
+          type: object
+          description: >-
+            Catalogue délégable, borné aux solutions ACTIVES du tenant. Le front
+            compose ses cases à cocher avec lui : il ne peut donc jamais
+            proposer une permission d'une verticale inactive.
+          additionalProperties:
+            type: string
+    TravelHotelRoomInventoryDay:
+      type: object
+      description: >-
+        Une nuit de la grille d'inventaire. La grille est CONTINUE : une nuit
+        sans ligne est rendue avec la capacité par défaut (1), jamais omise.
+      properties:
+        stay_date:
+          type: string
+          format: date
+        rooms_total:
+          type: integer
+          description: Capacité de la chambre cette nuit.
+        rooms_booked:
+          type: integer
+        rooms_remaining:
+          type: integer
+        status:
+          type: string
+          enum: [active, disabled]
+    TravelHotelBooking:
+      type: object
+      description: >-
+        Réservation hôtelière. Le montant est calculé serveur (prix par nuit ×
+        nuits × chambres), jamais accepté du client.
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        room_id:
+          type: integer
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+        rooms:
+          type: integer
+        nights:
+          type: integer
+        total_amount_minor:
+          type: integer
+          description: Montant total en plus petite unité monétaire (centimes).
+        currency:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true

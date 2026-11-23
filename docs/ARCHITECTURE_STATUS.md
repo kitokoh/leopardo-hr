@@ -8,7 +8,7 @@
 
 <!-- BEGIN GENERATED ARCHITECTURE STATUS S1 -->
 
-## 1. Tableau de l'etat DDD — 41 modules actifs
+## 1. Tableau de l'etat DDD — 42 modules actifs
 
 | Module | Domain | Contracts | Exceptions | Application | DTOs | Infra | Interfaces | Providers | Tests |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
@@ -22,7 +22,7 @@
 | **Cameras** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **Catalog** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **Communication** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
-| **Connectors** | ✅ | — | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
+| **Connectors** | ✅ | — | ✅ | — | — | ✅ | ✅ | ✅ | ✅ |
 | **Delivery** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **EdgeSync** | ✅ | — | — | ✅ | — | ✅ | ✅ | ✅ | ✅ |
 | **EduManager** | ✅ | ✅ | ✅ | ✅ | — | ✅ | ✅ | ✅ | ✅ |
@@ -100,10 +100,10 @@
 
 | Indicateur | Valeur |
 |---|---|
-| Modules DDD actifs | **41** |
-| Fichiers de test sur disque | 1513 |
+| Modules DDD actifs | **42** |
+| Fichiers de test sur disque | 1520 |
 | Modules sans dossier de tests dedie | 5 (`Absence`, `FarmOs`, `HospitalityManager`, `RestaurantManager`, `TravelAgency`) |
-| Modules sans couche `Application` | 3 (`Absence`, `Geo`, `Restaurant`) |
+| Modules sans couche `Application` | 4 (`Absence`, `Connectors`, `Geo`, `Restaurant`) |
 
 > L'historique par phase (Phase 1→4, chantier clos 2026-07) est conserve ci-dessous a titre d'archive. Il ne decrit **pas** l'etat courant : le lire comme tel etait la source des trois comptages contradictoires releves par l'audit du 2026-11-22.
 
