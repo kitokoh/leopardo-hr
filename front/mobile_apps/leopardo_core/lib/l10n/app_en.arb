@@ -4175,7 +4175,7 @@
   "eduFeechargesMethodmobilemoney": "Mobile money",
   "eduFeechargesMethodother": "Other",
   "eduFeechargesBatchfromclass": "Collect in batch for this class",
-  "eduFeechargesBatchclassbanner": "Class {class} — {students} student(s), {charges} charge(s) to collect.",
+  "eduFeechargesBatchclassbanner": "Class {className} — {students} student(s), {charges} charge(s) to collect.",
   "eduFeechargesBatchclearclass": "Back to all charges",
   "eduFeechargesBatchfilters": "Filters",
   "eduFeechargesBatchfiltershint": "Narrow the charges offered before building the batch.",

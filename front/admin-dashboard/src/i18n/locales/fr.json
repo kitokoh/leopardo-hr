@@ -5318,7 +5318,7 @@
       "methodMobileMoney": "Paiement mobile",
       "methodOther": "Autre",
       "batchFromClass": "Encaisser en lot pour cette classe",
-      "batchClassBanner": "Classe {class} — {students} élève(s), {charges} facturation(s) à encaisser.",
+      "batchClassBanner": "Classe {className} — {students} élève(s), {charges} facturation(s) à encaisser.",
       "batchClearClass": "Revenir à toutes les facturations",
       "batchFilters": "Filtres",
       "batchFiltersHint": "Restreindre les facturations proposées avant de composer le lot.",
