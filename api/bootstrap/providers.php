@@ -10,6 +10,7 @@ use App\Modules\Branding\Providers\BrandingServiceProvider;
 use App\Modules\Cabinet\Providers\CabinetServiceProvider;
 use App\Modules\Cameras\Providers\CamerasServiceProvider;
 use App\Modules\Catalog\Providers\CatalogServiceProvider;
+use App\Modules\Connectors\Providers\ConnectorsServiceProvider;
 use App\Modules\Communication\Providers\CommunicationServiceProvider;
 use App\Modules\CRM\Providers\CrmServiceProvider;
 use App\Modules\Delivery\Providers\DeliveryServiceProvider;
@@ -92,6 +93,9 @@ return [
     HealthManagerServiceProvider::class,
     RestaurantManagerServiceProvider::class,
     CatalogServiceProvider::class,
+    // BC-14 INTEGRATION (#9838) — onglet « Connecteurs » : catalogue dynamique
+    // de types de connecteur + connexions plateforme et tenant.
+    ConnectorsServiceProvider::class,
     RetailServiceProvider::class,
     ShowcaseServiceProvider::class,
     PagesServiceProvider::class,
