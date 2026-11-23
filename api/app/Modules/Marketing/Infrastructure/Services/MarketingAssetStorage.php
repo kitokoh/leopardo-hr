@@ -193,6 +193,21 @@ class MarketingAssetStorage
             ]);
         }
 
+        // #9758 — un fichier RÉELLEMENT vide n'est pas un problème de type MIME :
+        // c'est un envoi qui n'a pas abouti (formulaire interrompu, client qui
+        // n'a pas joint le binaire). Le message générique « le contenu
+        // (application/x-empty) ne correspond pas à l'extension » laissait
+        // l'utilisateur sans piste. On le dit explicitement, AVANT la
+        // comparaison MIME, pour que le cas vide ne soit jamais confondu avec
+        // un contenu malveillant.
+        $size = (int) $file->getSize();
+
+        if ($size === 0) {
+            throw ValidationException::withMessages([
+                'file' => 'Le fichier envoyé est vide (0 octet). Sélectionnez à nouveau le fichier et vérifiez que le transfert est terminé.',
+            ]);
+        }
+
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
         $detected = $finfo->file($path);
 
@@ -203,6 +218,16 @@ class MarketingAssetStorage
         }
 
         $detected = strtolower($detected);
+
+        // #9758 — `finfo` peut aussi rendre `application/x-empty` sur un
+        // fichier non nul mais sans signature reconnue (cas de certains
+        // clients qui envoient un corps tronqué). Même message actionnable.
+        if ($detected === 'application/x-empty' || $detected === 'inode/x-empty') {
+            throw ValidationException::withMessages([
+                'file' => 'Le fichier envoyé est vide ou tronqué. Sélectionnez à nouveau le fichier et vérifiez que le transfert est terminé.',
+            ]);
+        }
+
         $expected = self::EXPECTED_MIMES[$extension] ?? null;
 
         if ($expected === null) {
