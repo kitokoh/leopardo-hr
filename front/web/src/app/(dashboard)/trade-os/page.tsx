@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, ClipboardList, FileText, Globe2, Handshake, Megaphone, Package, RefreshCw, ShoppingCart, Store, Truck, Users } from 'lucide-react';
+import { AlertTriangle, ClipboardList, FileText, Globe2, Megaphone, Package, RefreshCw, ShoppingCart, Store, Truck, Users } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { getStoredUser } from '@/lib/auth-session';
@@ -244,11 +244,18 @@ const TABS: { key: TradeTab; labelKey: string; icon: typeof Globe2 }[] = [
   // Le catalogue est l'outil du VENDEUR : sans lui, il ne peut pas alimenter
   // les lignes de ses offres (`trade_product_id` restait vide).
   { key: 'catalog', labelKey: 'trade.catalog.title', icon: Package },
-  // Les commandes et l'annuaire sont les deux outils qui manquaient au
-  // "GERER" : sans eux, une offre acceptee ne produisait rien de visible et
-  // aucune RFQ ne pouvait etre diffusee (il faut une contrepartie).
+  // Les commandes sont l'outil qui manquait au "GERER" : sans lui, une offre
+  // acceptee ne produisait rien de visible.
+  //
+  // #9859 — `counterparties` etait declare une SECONDE fois ici (avec l'icone
+  // `Handshake`), alors qu'il figure deja plus haut (`Users`). Consequence
+  // reelle, pas theorique : deux onglets identiques a l'ecran, deux cles
+  // React egales dans `TABS.map()` (avertissement de reconciliation), et une
+  // requete `getByRole('tab', { name: /contreparties/i })` qui trouve deux
+  // elements donc echoue — c'est ce qui rendait `counterparties.test.tsx`
+  // rouge. Le repertoire etant deja accessible, l'entree en double est
+  // supprimee ; `orders` et `costs` restent.
   { key: 'orders', labelKey: 'trade.orders.title', icon: ClipboardList },
-  { key: 'counterparties', labelKey: 'trade.counterparties.title', icon: Handshake },
   { key: 'costs', labelKey: 'trade.costs.title', icon: Truck },
   // ── PROMOUVOIR (#9831 #9832 #9833) ────────────────────────────────────────
   // `GET|PUT /trade/profile`, `PUT /trade/profile/publication`,
@@ -1310,76 +1317,6 @@ export default function TradeDashboardPage() {
                               : `${(order.total_minor / 100).toLocaleString(locale)}${order.currency ? ` ${order.currency}` : ''}`}
                           </td>
                           <td className="px-3 py-3 text-slate-600">{order.incoterm ?? '—'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
-          ) : null}
-
-          {tab === 'counterparties' ? (
-            <div className="rounded-2xl bg-white/70 px-5 py-4 ring-1 ring-slate-200">
-              <h2 className="text-sm font-semibold text-slate-900">
-                {t(locale, 'trade.counterparties.title')}
-              </h2>
-              <p className="mt-1 text-xs text-slate-500">
-                {t(locale, 'trade.counterparties.subtitle')}
-              </p>
-
-              {counterpartyError ? (
-                <p className="mt-3 rounded-xl bg-rose-50 px-4 py-2 text-xs text-rose-700">
-                  {counterpartyError}
-                </p>
-              ) : null}
-
-              {!counterparties.length ? (
-                <p className="px-1 py-6 text-sm text-slate-500">
-                  {t(locale, 'trade.counterparties.empty')}
-                </p>
-              ) : (
-                <div className="mt-3 overflow-x-auto">
-                  <table className="min-w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-xs uppercase tracking-wide text-slate-500">
-                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.counterparties.name')}</th>
-                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.counterparties.roles')}</th>
-                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.counterparties.country')}</th>
-                        <th scope="col" className="px-3 py-2">{t(locale, 'trade.counterparties.verification')}</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {counterparties.map((party) => (
-                        <tr key={String(party.id)} className="border-t border-slate-100">
-                          <td className="px-3 py-3 text-slate-900">{party.name ?? '—'}</td>
-                          <td className="px-3 py-3 text-slate-600">
-                            {/* `roles` est un tableau d'enums serveur
-                                (`buyer`, `supplier`, `carrier`…) : chaque rôle
-                                est traduit, une valeur inconnue reste lisible. */}
-                            {party.roles?.length
-                              ? party.roles
-                                  .map((role) => t(locale, `trade.counterparties.role.${role}`, role))
-                                  .join(' · ')
-                              : '—'}
-                          </td>
-                          <td className="px-3 py-3 text-slate-600">{party.country ?? '—'}</td>
-                          <td className="px-3 py-3">
-                            {/* `verified` veut dire « verifie par un membre de
-                                l'equipe ». On ne l'affiche jamais comme un
-                                controle automatique : il n'en existe pas. */}
-                            <span
-                              className={
-                                party.verification_status === 'verified'
-                                  ? 'rounded-full bg-emerald-50 px-2 py-0.5 text-xs text-emerald-700'
-                                  : 'rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600'
-                              }
-                            >
-                              {party.verification_status === 'verified'
-                                ? t(locale, 'trade.counterparties.verifiedByTeam')
-                                : t(locale, 'trade.counterparties.notVerified')}
-                            </span>
-                          </td>
                         </tr>
                       ))}
                     </tbody>
