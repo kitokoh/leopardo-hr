@@ -154,6 +154,43 @@ class CrmChannelAdapterTest extends TestCase
         ])->assertStatus(429)->assertJsonPath('error', 'CRM_QUOTA_EXCEEDED');
     }
 
+    /**
+     * #9756 — un `contact_id` non numérique est refusé en 422, jamais en 500.
+     *
+     * `crm_consents.contact_id` est un `unsignedBigInteger`. Un identifiant de
+     * type slug (« contact-9 ») faisait lever à PostgreSQL
+     * `22P02 invalid input syntax for type bigint`, que l'appelant recevait en
+     * 500 — une erreur serveur pour une saisie invalide. La garde de
+     * consentement refuse désormais explicitement, en 422.
+     *
+     * Le test est DÉDIÉ : le cas n'était couvert qu'incidemment par un test de
+     * quota, où l'assertion portait sur le quota et non sur le typage.
+     */
+    public function test_non_numeric_contact_id_is_rejected_with_422_not_500(): void
+    {
+        Sanctum::actingAs($this->manager());
+
+        $channel = CrmChannel::query()->forceCreate([
+            'company_id' => $this->company->id,
+            'type' => 'sms',
+            'provider' => 'sms_audit',
+            'status' => 'active',
+            'is_configured' => true,
+            'monthly_quota' => 10,
+        ]);
+
+        // `allow` : sans consentement exigé, seul le typage peut faire échouer.
+        config()->set('crm.channels.consent_fallback', 'allow');
+
+        $this->postJson('/api/v1/crm/channels/'.$channel->id.'/send', [
+            'to' => '+213555010203',
+            'body' => 'bonjour',
+            'contact_id' => 'contact-9',
+        ])
+            ->assertStatus(422)
+            ->assertJsonPath('error', 'CRM_CONSENT_REQUIRED');
+    }
+
     public function test_observability_aggregates_costs_and_errors(): void
     {
         Sanctum::actingAs($this->manager());
