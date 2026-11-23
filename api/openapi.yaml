@@ -48268,6 +48268,183 @@ paths:
         '422':
           $ref: '#/components/responses/Error422'
 
+  /edu-manager/classes/{class}/fee-charges:
+    get:
+      operationId: api_get_edu_manager_classes_by_class_fee_charges
+      tags:
+      - EduManager
+      summary: Charges encaissables d'une classe (guichet en lot)
+      description: 'Direction/RH uniquement. Effectif actif de la classe avec, par eleve, ses charges
+        encore encaissables et leur solde restant. Point d''entree du guichet d''encaissement en lot :
+        on part de la classe, pas d''une liste de charges a filtrer. Par defaut les charges terminales
+        (paid, waived, cancelled) sont exclues — `include_terminal=true` les reintegre.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: class
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: include_terminal
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: due_from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: due_to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: paid_with_method
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - cash
+          - transfer
+          - card
+          - mobile_money
+          - other
+      responses:
+        '200':
+          description: Effectif de la classe et charges encaissables par eleve
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      class:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          code:
+                            type: string
+                          name:
+                            type: string
+                      students:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: integer
+                            student_number:
+                              type: string
+                            display_name:
+                              type: string
+                            charges:
+                              type: array
+                              items:
+                                $ref: '#/components/schemas/EduFeeCharge'
+                  meta:
+                    type: object
+                    properties:
+                      students:
+                        type: integer
+                      charges:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /edu-manager/students/{student}/fee-charges:
+    get:
+      operationId: api_get_edu_manager_students_by_student_fee_charges
+      tags:
+      - EduManager
+      summary: Charges encaissables d'un eleve (guichet en lot)
+      description: 'Direction/RH uniquement. Toutes les charges encore encaissables d''un eleve, pour
+        qu''un parent regle plusieurs frais en une fois (scolarite + cantine + transport). Meme contrat
+        que la variante par classe, un seul eleve au lieu d''un effectif. Un eleve d''un autre tenant
+        repond 404 (aucune fuite d''existence).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: student
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: include_terminal
+        in: query
+        required: false
+        schema:
+          type: boolean
+          default: false
+      - name: due_from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: due_to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: paid_with_method
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - cash
+          - transfer
+          - card
+          - mobile_money
+          - other
+      responses:
+        '200':
+          description: Eleve et ses charges encaissables
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      student:
+                        type: object
+                        properties:
+                          id:
+                            type: integer
+                          student_number:
+                            type: string
+                          display_name:
+                            type: string
+                      charges:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/EduFeeCharge'
+                  meta:
+                    type: object
+                    properties:
+                      charges:
+                        type: integer
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /edu-manager/fee-charges:
     get:
       operationId: api_get_edu_manager_fee_charges
@@ -48489,6 +48666,160 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  /edu-manager/fee-charges/batch-payments:
+    post:
+      operationId: api_post_edu_manager_fee_charges_batch_payments
+      tags:
+      - EduManager
+      summary: Encaisser plusieurs charges en un seul lot
+      description: 'Direction/RH uniquement. Une classe regle le meme jour : le lot porte le contexte
+        commun (moyen, reference de bordereau, date) et une ligne par charge. Validation integrale
+        AVANT toute ecriture, puis transaction unique — si une seule ligne est invalide, RIEN n''est
+        ecrit et la reponse 422 indexe les lignes fautives. Un lot inconnu du tenant ne peut pas etre
+        encaisse (aucune fuite cross-tenant).'
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - method
+              - lines
+              properties:
+                method:
+                  type: string
+                  enum:
+                  - cash
+                  - transfer
+                  - card
+                  - mobile_money
+                  - other
+                reference:
+                  type: string
+                  maxLength: 120
+                  description: Reference de bordereau commune au lot.
+                paid_at:
+                  type: string
+                  format: date-time
+                external_id:
+                  type: string
+                  maxLength: 100
+                  description: Cle d''idempotence du lot (suffixee par charge_id).
+                lines:
+                  type: array
+                  minItems: 1
+                  maxItems: 200
+                  items:
+                    type: object
+                    required:
+                    - charge_id
+                    - amount
+                    properties:
+                      charge_id:
+                        type: integer
+                        minimum: 1
+                      amount:
+                        type: number
+                        exclusiveMinimum: 0
+                        maximum: 9999999999.99
+                      currency:
+                        type: string
+                        minLength: 3
+                        maxLength: 3
+                      reference:
+                        type: string
+                        maxLength: 120
+                        description: Surcharge la reference du lot pour cette ligne.
+      responses:
+        '201':
+          description: Lot encaisse — une ligne de resultat par charge
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        charge_id:
+                          type: integer
+                        payment_id:
+                          type: integer
+                        batch_id:
+                          type: string
+                        student_id:
+                          type: integer
+                        amount:
+                          type: number
+                        paid_amount:
+                          type: number
+                        remaining_amount:
+                          type: number
+                        currency:
+                          type: string
+                        status:
+                          type: string
+                  summary:
+                    type: object
+                    properties:
+                      lines:
+                        type: integer
+                      recorded:
+                        type: integer
+                      total_amount:
+                        type: number
+                      currency:
+                        type: string
+                        nullable: true
+                      batch_id:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          description: 'Au moins une ligne est invalide — aucune ecriture n''a eu lieu. `errors[]`
+            indexe les lignes fautives (EDU_FEE_CHARGE_NOT_FOUND, EDU_FEE_TERMINAL,
+            EDU_FEE_OVERPAYMENT, EDU_FEE_CURRENCY_MISMATCH, EDU_FEE_BATCH_DUPLICATE).'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    enum:
+                    - EDU_FEE_BATCH_INVALID
+                  message:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        index:
+                          type: integer
+                        charge_id:
+                          type: integer
+                        error:
+                          type: string
+                  summary:
+                    type: object
+                    properties:
+                      lines:
+                        type: integer
+                      recorded:
+                        type: integer
+                      total_amount:
+                        type: number
+                      currency:
+                        type: string
+                        nullable: true
   /edu-manager/fee-charges/{charge}:
     get:
       operationId: api_get_edu_manager_fee_charges_by_charge
@@ -48596,6 +48927,104 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /edu-manager/fee-payments/export.csv:
+    get:
+      operationId: api_get_edu_manager_fee_payments_export_csv
+      tags:
+      - EduManager
+      summary: Exporter le journal des encaissements en CSV
+      description: 'Direction/RH uniquement. Memes filtres que la liste, sans pagination : etat de
+        caisse remis a la comptabilite, controle d''un depot bancaire. Le perimetre est calcule par
+        la meme requete que la liste, donc aucune divergence entre ce qu''on voit et ce qu''on exporte
+        (et aucune fuite cross-tenant par l''export).'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: fee_charge_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: student_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: method
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - cash
+          - transfer
+          - card
+          - mobile_money
+          - other
+      - name: from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      responses:
+        '200':
+          description: Fichier CSV des encaissements
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/fee-payments/batches/{batch}/receipt.pdf:
+    get:
+      operationId: api_get_edu_manager_fee_payments_batches_by_batch_receipt_pdf
+      tags:
+      - EduManager
+      summary: Recu PDF d'un encaissement en lot
+      description: 'Direction/RH uniquement. Piece remise au payeur apres un depot de classe. Le lot
+        est identifie par `batch_id` (et non `external_id`, qui est optionnel et ne peut donc pas
+        servir de regroupement fiable). Un lot inconnu du tenant repond 404 : on ne revele pas
+        l''existence d''un lot d''une autre ecole, et on ne rend pas un PDF vide qui ferait croire a
+        un encaissement nul.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: batch
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Recu PDF du lot
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          description: 'Lot inconnu du tenant (EDU_FEE_BATCH_NOT_FOUND).'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
   /edu-manager/fee-accounting-entries:
     get:
       operationId: api_get_edu_manager_fee_accounting_entries
@@ -48640,6 +49069,44 @@ paths:
                       $ref: '#/components/schemas/EduAccountingEntry'
                   meta:
                     $ref: '#/components/schemas/PaginationMeta'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /edu-manager/fee-accounting-entries/export.csv:
+    get:
+      operationId: api_get_edu_manager_fee_accounting_entries_export_csv
+      tags:
+      - EduManager
+      summary: Exporter le rapprochement comptable des frais en CSV
+      description: 'Direction/RH uniquement. Memes filtres que la liste, sans pagination, avec les
+        totaux et l''ecart debit − credit. Le perimetre est calcule par la meme requete que la liste,
+        donc aucune divergence entre l''ecran et le fichier.'
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: source_type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - fee_charge
+          - fee_payment
+          - fee_waiver
+      - name: source_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Fichier CSV du rapprochement
+          content:
+            text/csv:
+              schema:
+                type: string
+                format: binary
         '401':
           $ref: '#/components/responses/Error401'
         '403':
