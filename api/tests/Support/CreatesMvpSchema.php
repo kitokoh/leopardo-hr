@@ -6679,6 +6679,47 @@ trait CreatesMvpSchema
             });
         }
 
+        // M4 (#9844) — inventaire et reservations de chambres. Sans ces deux
+        // tables, tout test utilisant CreatesMvpSchema echoue en CI avec
+        // « relation ... does not exist » (regression #5418).
+        if (! Schema::hasTable($this->moduleTable('travel_hotel_room_inventories'))) {
+            Schema::create($this->moduleTable('travel_hotel_room_inventories'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('room_id');
+                $table->date('stay_date');
+                $table->unsignedInteger('rooms_total')->default(1);
+                $table->unsignedInteger('rooms_booked')->default(0);
+                $table->string('status', 20)->default('active');
+                $table->timestamps();
+
+                $table->unique(['company_id', 'room_id', 'stay_date'], 'travel_hotel_inventory_company_room_date_unique');
+                $table->index(['company_id', 'stay_date'], 'travel_hotel_inventory_company_date_idx');
+            });
+        }
+
+        if (! Schema::hasTable($this->moduleTable('travel_hotel_bookings'))) {
+            Schema::create($this->moduleTable('travel_hotel_bookings'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->string('reference', 40);
+                $table->unsignedBigInteger('room_id');
+                $table->date('check_in');
+                $table->date('check_out');
+                $table->unsignedInteger('rooms')->default(1);
+                $table->unsignedInteger('nights');
+                $table->unsignedInteger('total_amount_minor');
+                $table->char('currency', 3);
+                $table->string('status', 20)->default('pending');
+                $table->string('idempotency_key', 255);
+                $table->timestamps();
+
+                $table->unique(['company_id', 'reference'], 'travel_hotel_bookings_company_reference_unique');
+                $table->unique(['company_id', 'idempotency_key'], 'travel_hotel_bookings_company_idempotency_unique');
+                $table->index(['company_id', 'room_id', 'check_in'], 'travel_hotel_bookings_company_room_checkin_idx');
+            });
+        }
+
         if (! Schema::hasTable($this->moduleTable('travel_likes'))) {
             Schema::create($this->moduleTable('travel_likes'), function (Blueprint $table): void {
                 $table->bigIncrements('id');
