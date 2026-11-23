@@ -30,7 +30,7 @@ class ConnectorSchemaValidator
     /**
      * Valide et normalise une saisie.
      *
-     * @param  array<string, mixed>  $config   champs non secrets saisis
+     * @param  array<string, mixed>  $config  champs non secrets saisis
      * @param  array<string, mixed>  $secrets  champs secrets saisis
      * @return array{config: array<string, string>, secrets: array<string, string>}
      *

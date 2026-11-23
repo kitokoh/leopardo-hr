@@ -26,7 +26,7 @@ class ConnectorSchemaViolationException extends DomainException
      */
     public function __construct(
         private readonly array $violations,
-        string $message = 'La configuration ne respecte pas le schéma du connecteur.',
+        string $message = __('connectors.schema_violation'),
     ) {
         parent::__construct($message, 422, self::ERROR_CODE);
     }

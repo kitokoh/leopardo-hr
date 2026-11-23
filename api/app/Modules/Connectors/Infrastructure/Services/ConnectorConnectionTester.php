@@ -44,7 +44,7 @@ class ConnectorConnectionTester
     /**
      * Exécute le contrôle adapté au connecteur.
      *
-     * @param  array<string, mixed>  $config   configuration non secrète
+     * @param  array<string, mixed>  $config  configuration non secrète
      * @param  array<string, string>  $secrets  secrets déchiffrés (jamais loggés)
      * @return array{status: string, checks: list<array{key: string, ok: bool, detail: string}>, message: string}
      */

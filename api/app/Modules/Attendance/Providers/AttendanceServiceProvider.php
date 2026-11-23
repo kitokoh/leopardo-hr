@@ -78,7 +78,7 @@ class AttendanceServiceProvider extends ServiceProvider
         // pointeuses ZKTeco) auprès du registre partagé de l'onglet
         // Connecteurs (garde d'isolation #5584).
         $registry = $this->app->make(ConnectorIntegrationRegistry::class);
-        $registry->register(new CalendarConnectionIntegrationSource());
-        $registry->register(new ZktecoDeviceIntegrationSource());
+        $registry->register(new CalendarConnectionIntegrationSource);
+        $registry->register(new ZktecoDeviceIntegrationSource);
     }
 }

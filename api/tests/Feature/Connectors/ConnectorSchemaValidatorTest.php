@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Connectors;
 
+use App\Modules\Connectors\Domain\Exceptions\ConnectorSchemaViolationException;
 use App\Modules\Connectors\Domain\Models\ConnectorCatalogEntry;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorConnectionTester;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorSchemaValidator;
-use App\Modules\Connectors\Domain\Exceptions\ConnectorSchemaViolationException;
 use Tests\TestCase;
 
 /**
@@ -49,7 +49,7 @@ class ConnectorSchemaValidatorTest extends TestCase
             ['key' => 'site_url', 'label' => 'URL', 'type' => 'url', 'required' => true],
         ]);
 
-        $result = (new ConnectorSchemaValidator())->validate(
+        $result = (new ConnectorSchemaValidator)->validate(
             $entry,
             ['site_url' => 'https://exemple.com', 'champ_pirate' => 'valeur'],
             ['secret_pirate' => 'valeur'],
@@ -67,7 +67,7 @@ class ConnectorSchemaValidatorTest extends TestCase
 
         $this->expectException(ConnectorSchemaViolationException::class);
 
-        (new ConnectorSchemaValidator())->validate($entry, [], []);
+        (new ConnectorSchemaValidator)->validate($entry, [], []);
     }
 
     public function test_violation_lists_every_faulty_field(): void
@@ -78,7 +78,7 @@ class ConnectorSchemaValidatorTest extends TestCase
         ]);
 
         try {
-            (new ConnectorSchemaValidator())->validate($entry, ['site_url' => 'pas-une-url'], []);
+            (new ConnectorSchemaValidator)->validate($entry, ['site_url' => 'pas-une-url'], []);
             $this->fail('Une violation était attendue.');
         } catch (ConnectorSchemaViolationException $exception) {
             $violations = $exception->violations();
@@ -97,7 +97,7 @@ class ConnectorSchemaValidatorTest extends TestCase
             ]],
         ]);
 
-        $validator = new ConnectorSchemaValidator();
+        $validator = new ConnectorSchemaValidator;
 
         $ok = $validator->validate($entry, ['mode' => 'live'], []);
         $this->assertSame(['mode' => 'live'], $ok['config']);
@@ -113,7 +113,7 @@ class ConnectorSchemaValidatorTest extends TestCase
             ['key' => 'api_key', 'label' => 'Clé API', 'type' => 'password', 'secret' => true, 'required' => true],
         ]);
 
-        $result = (new ConnectorSchemaValidator())->validate(
+        $result = (new ConnectorSchemaValidator)->validate(
             $entry,
             ['site_url' => 'https://exemple.com'],
             ['api_key' => 'sk_test_123'],
@@ -132,14 +132,14 @@ class ConnectorSchemaValidatorTest extends TestCase
             ['key' => 'api_key', 'label' => 'Clé API', 'type' => 'password', 'secret' => true, 'required' => false],
         ]);
 
-        $result = (new ConnectorSchemaValidator())->validate($entry, [], ['api_key' => '']);
+        $result = (new ConnectorSchemaValidator)->validate($entry, [], ['api_key' => '']);
 
         $this->assertSame([], $result['secrets']);
     }
 
     public function test_iban_validation_uses_mod_97(): void
     {
-        $tester = new ConnectorConnectionTester();
+        $tester = new ConnectorConnectionTester;
 
         // IBAN de test publics, valides par construction.
         $this->assertTrue($tester->isValidIban('FR1420041010050500013M02606'));
@@ -159,7 +159,7 @@ class ConnectorSchemaValidatorTest extends TestCase
             ['key' => 'iban', 'label' => 'IBAN', 'type' => 'text', 'secret' => true, 'required' => true],
         ], 'bank');
 
-        $result = (new ConnectorConnectionTester())->test(
+        $result = (new ConnectorConnectionTester)->test(
             $entry,
             ['iban' => 'FR1420041010050500013M02607'],
             [],
@@ -176,7 +176,7 @@ class ConnectorSchemaValidatorTest extends TestCase
             ['key' => 'iban', 'label' => 'IBAN', 'type' => 'text', 'secret' => true, 'required' => true],
         ], 'bank');
 
-        $result = (new ConnectorConnectionTester())->test(
+        $result = (new ConnectorConnectionTester)->test(
             $entry,
             ['iban' => 'FR1420041010050500013M02606', 'account_holder' => 'Leopardo SAS'],
             [],
@@ -196,7 +196,7 @@ class ConnectorSchemaValidatorTest extends TestCase
             ['key' => 'page_id', 'label' => 'Page ID', 'type' => 'text', 'required' => true],
         ], 'social');
 
-        $result = (new ConnectorConnectionTester())->test($entry, ['page_id' => '123'], []);
+        $result = (new ConnectorConnectionTester)->test($entry, ['page_id' => '123'], []);
 
         $this->assertSame('unsupported', $result['status']);
         $this->assertStringContainsString('ne peut pas être vérifié', $result['message']);

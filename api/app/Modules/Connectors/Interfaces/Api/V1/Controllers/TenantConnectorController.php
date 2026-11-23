@@ -127,7 +127,7 @@ class TenantConnectorController extends Controller
             return new JsonResponse([
                 'error' => 'CONNECTOR_CATALOG_ENTRY_MISSING',
                 'message' => 'CONNECTOR_CATALOG_ENTRY_MISSING',
-                'localized_message' => 'Ce type de connecteur n\'existe plus dans le catalogue : la connexion ne peut plus être modifiée.',
+                'localized_message' => __('connectors.type_removed'),
             ], 409);
         }
 

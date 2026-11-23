@@ -55,6 +55,6 @@ class SearchIntelligenceServiceProvider extends ServiceProvider
         // SEO/SEA auprès du registre partagé de l'onglet Connecteurs (garde
         // d'isolation #5584).
         $this->app->make(ConnectorIntegrationRegistry::class)
-            ->register(new SearchIntelligenceIntegrationSource());
+            ->register(new SearchIntelligenceIntegrationSource);
     }
 }

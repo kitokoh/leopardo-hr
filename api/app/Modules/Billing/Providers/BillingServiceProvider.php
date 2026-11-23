@@ -36,8 +36,8 @@ class BillingServiceProvider extends ServiceProvider
         // PROPRIÉTAIRE qui s'enregistre : Connecteurs n'importe pas Billing
         // (garde d'isolation #5584).
         $registry = $this->app->make(ConnectorIntegrationRegistry::class);
-        $registry->register(new PaymentGatewayIntegrationSource());
-        $registry->register(new TenantPaymentProfileIntegrationSource());
-        $registry->register(new WebhookEndpointIntegrationSource());
+        $registry->register(new PaymentGatewayIntegrationSource);
+        $registry->register(new TenantPaymentProfileIntegrationSource);
+        $registry->register(new WebhookEndpointIntegrationSource);
     }
 }

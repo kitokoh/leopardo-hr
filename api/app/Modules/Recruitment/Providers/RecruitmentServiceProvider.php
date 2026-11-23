@@ -58,6 +58,6 @@ class RecruitmentServiceProvider extends ServiceProvider
         // #9846 — Recruitment déclare ses agrégateurs d'offres auprès du
         // registre partagé de l'onglet Connecteurs (garde d'isolation #5584).
         $this->app->make(ConnectorIntegrationRegistry::class)
-            ->register(new JobSourceIntegrationSource());
+            ->register(new JobSourceIntegrationSource);
     }
 }

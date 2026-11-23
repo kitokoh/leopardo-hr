@@ -57,6 +57,6 @@ class PaiementsServiceProvider extends ServiceProvider
         // #9846 — Paiements déclare ses instances de fournisseur auprès du
         // registre partagé de l'onglet Connecteurs (garde d'isolation #5584).
         $this->app->make(ConnectorIntegrationRegistry::class)
-            ->register(new PaymentProviderInstanceIntegrationSource());
+            ->register(new PaymentProviderInstanceIntegrationSource);
     }
 }
