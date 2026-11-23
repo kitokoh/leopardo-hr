@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { ModulePageShell } from '@/components/module-page-shell';
+import { ConnectorsPanel } from '@/components/connectors-panel';
 import { getCopy, getPreferredLocale, toIntlLocale, type AppLocale } from '@/lib/i18n';
 
 const emptySubscribe = () => () => {};
@@ -333,6 +334,15 @@ export default function DeveloperSettingsPage() {
             </button>
           </section>
         </div>
+
+        {/* #9850 (BC-14 INTEGRATION) — onglet « Connecteurs » côté tenant.
+            Monté DANS cet onglet « Intégrations » plutôt que sur une page
+            séparée : la mission demande d'étendre l'existant, pas de créer un
+            doublon. Les clés API et les webhooks gardent leurs sections
+            ci-dessus ; ce panneau ajoute les surfaces externes du client (site
+            WordPress, page produit Facebook, boutiques) et l'index des
+            intégrations déjà configurées. */}
+        <ConnectorsPanel />
 
         <section className="rounded-2xl border border-app-border bg-gradient-to-br from-slate-900 to-slate-800 p-6 text-white shadow-sm">
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">

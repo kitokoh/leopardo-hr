@@ -10330,5 +10330,56 @@
       "viewPublicPage": "عرض صفحتي العامة",
       "solutionInactive": "حل PharmaManager غير مفعّل في مساحتك."
     }
+  },
+  "connectors": {
+    "nav": "الموصّلات",
+    "title": "الموصّلات",
+    "subtitle": "اجمع كل ما هو متصل بالخارج: بنوك المنصة وحساباتها، والتكاملات الموجودة مسبقًا.",
+    "loading": "جارٍ التحميل…",
+    "loadError": "تعذّر تحميل الموصّلات.",
+    "addConnection": "إضافة موصّل",
+    "platformConnections": "اتصالات المنصة",
+    "activeCount": "{active} نشط من {total}",
+    "emptyConnections": "لا يوجد موصّل بعد. أضف بنكًا أو خدمة خارجية للبدء.",
+    "default": "افتراضي",
+    "test": "اختبار",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "notConfigured": "غير مُهيّأ",
+    "existingIntegrations": "التكاملات الموجودة مسبقًا",
+    "existingIntegrationsHint": "كل تكامل يحتفظ بشاشته الخاصة وهي المرجع. هذا الجدول يجمعها للقراءة فقط.",
+    "table": {
+      "integration": "التكامل",
+      "state": "الحالة",
+      "action": "إجراء"
+    },
+    "configuredCount": "{count} مُهيّأ",
+    "openNativeScreen": "فتح الشاشة",
+    "editConnection": "تعديل الموصّل",
+    "newConnection": "موصّل جديد",
+    "fields": {
+      "type": "نوع الموصّل",
+      "typePlaceholder": "اختر نوعًا…",
+      "label": "الاسم",
+      "labelPlaceholder": "مثال: الحساب الرئيسي، موقع الشركة…",
+      "selectPlaceholder": "اختر…",
+      "secretHint": "مشفّر عند التخزين. اتركه فارغًا للاحتفاظ بالقيمة المسجّلة.",
+      "secretPlaceholder": "أدخل القيمة"
+    },
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "saving": "جارٍ الحفظ…",
+    "saved": "تم حفظ الموصّل.",
+    "saveError": "تعذّر الحفظ.",
+    "testError": "فشل الاختبار.",
+    "confirmDelete": "حذف الموصّل «{label}»؟",
+    "deleted": "تم حذف الموصّل.",
+    "deleteError": "تعذّر الحذف.",
+    "status": {
+      "active": "نشط",
+      "draft": "مسودة",
+      "error": "خطأ",
+      "revoked": "ملغى"
+    }
   }
 }

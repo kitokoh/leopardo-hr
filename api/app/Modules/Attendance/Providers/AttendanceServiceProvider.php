@@ -7,12 +7,15 @@ namespace App\Modules\Attendance\Providers;
 use App\Core\AI\Domain\Contracts\FaceVerificationPort;
 use App\Core\AI\Infrastructure\Adapters\UnavailableFaceVerificationAdapter;
 use App\Modules\Attendance\Domain\Contracts\GeofenceValidatorInterface;
+use App\Modules\Attendance\Infrastructure\Connectors\CalendarConnectionIntegrationSource;
+use App\Modules\Attendance\Infrastructure\Connectors\ZktecoDeviceIntegrationSource;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceAnomalySummarizerAdapter;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceGeofenceService;
 use App\Modules\Attendance\Infrastructure\Services\AttendanceLogReaderAdapter;
 use App\Modules\Attendance\Infrastructure\Services\TraccarService;
 use App\Shared\Contracts\Attendance\AttendanceAnomalySummarizer;
 use App\Shared\Contracts\Attendance\AttendanceLogReader;
+use App\Shared\Contracts\Connectors\ConnectorIntegrationRegistry;
 use App\Shared\Contracts\Tracking\VehicleTrackingProvider;
 use Illuminate\Support\ServiceProvider;
 use RuntimeException;
@@ -70,5 +73,12 @@ class AttendanceServiceProvider extends ServiceProvider
         // ADR-0016 Phase 3 (#5354) : routes géo consolidées sous /api/v1/attendance/*
         // (Phase 5 #5356 : alias /smart-attendance/* supprimés, contrat unique).
         $this->loadRoutesFrom(__DIR__.'/../routes/geo.php');
+
+        // #9846 — Attendance déclare ses intégrations extérieures (calendrier,
+        // pointeuses ZKTeco) auprès du registre partagé de l'onglet
+        // Connecteurs (garde d'isolation #5584).
+        $registry = $this->app->make(ConnectorIntegrationRegistry::class);
+        $registry->register(new CalendarConnectionIntegrationSource);
+        $registry->register(new ZktecoDeviceIntegrationSource);
     }
 }

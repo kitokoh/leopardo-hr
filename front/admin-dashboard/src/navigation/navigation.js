@@ -623,6 +623,17 @@ export const NAV_ENTRIES = [
     permission: 'billing.manage',
     group: 'parametres',
   },
+  // #9849 (BC-14 INTEGRATION) — onglet « Connecteurs » côté plateforme :
+  // banques qui reçoivent les paiements des tenants, PSP, services externes.
+  // Permission alignée sur les routes `/platform/connectors/*`.
+  {
+    name: 'connectors',
+    path: '/connectors',
+    titleKey: 'connectors.nav',
+    icon: LinkIcon,
+    permission: 'connectors.view',
+    group: 'plateforme',
+  },
   // #8739 (BC-38 PAIEMENTS) — « Operations de paiement » : surface Superadmin
   // du socle de paiement. Permission alignee sur les routes
   // `/platform/payments/*` (`payments.view`).

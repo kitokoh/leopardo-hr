@@ -438,10 +438,15 @@
         {
           "path": "api/app/Contracts/Queue",
           "status": "active"
+        },
+        {
+          "path": "api/app/Modules/Connectors",
+          "status": "active"
         }
       ],
       "routes": [
-        "api/routes/modules/integrations.php"
+        "api/routes/modules/integrations.php",
+        "api/routes/modules/connectors.php"
       ],
       "migrations": [
         "api/database/migrations/tenant"

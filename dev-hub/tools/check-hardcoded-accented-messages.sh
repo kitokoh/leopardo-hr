@@ -74,6 +74,7 @@ fi
 #   - api/app/Modules/*/Console/**
 mapfile -t touched_files < <(
   git diff --name-only --diff-filter=ACMR "${BASE_SHA}" "${HEAD_SHA}" -- "${API_DIR}/app" \
+    | grep -E '\.php$' \
     | grep -E 'Controller\.php$|/Modules/[^/]+/Application/|/Modules/[^/]+/Domain/Exceptions/|/Modules/[^/]+/Console/' \
     | sort -u || true
 )

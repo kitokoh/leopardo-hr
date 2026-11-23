@@ -930,6 +930,12 @@
       "to": "BC-02",
       "baseline": false,
       "note": "BRANDING → TENANT — une Brand appartient à un tenant (company_id) : c'est l'invariant d'isolation. BrandResolver lit Company uniquement pour vérifier l'appartenance et le statut du tenant avant de servir une surface publique ; BrandBackfillService énumère les tenants pour créer leur Brand par défaut. Aucune donnée métier du tenant n'est exposée : le presenter public ne publie que l'identité de marque."
+    },
+    {
+      "from": "BC-14",
+      "to": "BC-03",
+      "baseline": false,
+      "note": "INTEGRATION → IDENTITY — PlatformConnectorController écrit l'AuditLog immuable de chaque changement de connecteur plateforme (création, mise à jour, changement de statut) : la traçabilité des accès aux banques/API de la plateforme est une exigence de sécurité, pas une dépendance métier. Aucune donnée d'identité n'est lue. Arête identique à BC-39 → BC-03 (Pages, #8725)."
     }
   ]
 }

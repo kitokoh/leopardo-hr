@@ -31,7 +31,7 @@
           Fichiers : 212 — poids cumulé : 1340 méthodes.
           Équilibrage : panier le plus léger 223, le plus lourd 224.
 
-          Suivent un shard par sous-répertoire de tests/Feature (74 shards), chacun listant ses <file> récursivement.
+          Suivent un shard par sous-répertoire de tests/Feature (75 shards), chacun listant ses <file> récursivement.
         -->
         <testsuite name="FeatureRoot1">
             <file>tests/Feature/AIWriteActionConfirmationTest.php</file>
@@ -554,6 +554,11 @@
             <file>tests/Feature/Communication/CommunicationIntegrationTest.php</file>
             <file>tests/Feature/Communication/CommunicationModuleGateTest.php</file>
             <file>tests/Feature/Communication/CommunicationReplyTest.php</file>
+        </testsuite>
+        <testsuite name="Connectors">
+            <file>tests/Feature/Connectors/ConnectorSchemaValidatorTest.php</file>
+            <file>tests/Feature/Connectors/PlatformConnectorApiTest.php</file>
+            <file>tests/Feature/Connectors/TenantConnectorApiTest.php</file>
         </testsuite>
         <testsuite name="Console">
             <file>tests/Feature/Console/AuditSchedulerDuplicatesTest.php</file>
@@ -1553,7 +1558,7 @@
           et detruit le marqueur `__mvp_fixture_ready`.
 
           FeatureMvpFixture : 242 fichiers.
-          FeatureRest       : 1105 fichiers.
+          FeatureRest       : 1107 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
             <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
@@ -2031,6 +2036,9 @@
             <file>tests/Feature/Communication/CommunicationModuleGateTest.php</file>
             <file>tests/Feature/Communication/CommunicationReplyTest.php</file>
             <file>tests/Feature/CompanyOnboardingIntegrationTest.php</file>
+            <file>tests/Feature/Connectors/ConnectorSchemaValidatorTest.php</file>
+            <file>tests/Feature/Connectors/PlatformConnectorApiTest.php</file>
+            <file>tests/Feature/Connectors/TenantConnectorApiTest.php</file>
             <file>tests/Feature/Console/AuditSchedulerDuplicatesTest.php</file>
             <file>tests/Feature/Console/LeaPilotReportCommandTest.php</file>
             <file>tests/Feature/Console/ModulesConsolidateApplyTest.php</file>

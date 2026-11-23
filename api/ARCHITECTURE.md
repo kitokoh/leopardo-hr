@@ -138,6 +138,7 @@ restent libres. `Modules/CRM` existe et est complet (`CrmServiceProvider`) ; la 
 | `Modules/FuelStation` | ✅ routes/modules/fuel_station.php | 🔶 Application vide (0 PHP) — Domain/Infrastructure/Interfaces/Providers complets | `FuelStationServiceProvider` |
 | `Modules/Fundraising` | ✅ routes/modules/fundraising.php | 🟢 verticale BC-33 (#8379) : 4 tables tenant + 2 annuaires publics cross-tenant, passerelles carte Stripe / mobile money / manuel derrière `FundraisingGatewayInterface`, règlement idempotent (journal `(provider, event_id)` + lockForUpdate), reversements au bénéficiaire — Application/Domain/Infrastructure/Interfaces/Providers complets, gate `module.fundraising` dans `Interfaces/Http/Middleware` | `FundraisingServiceProvider` |
 | `Modules/Geo` | ✅ routes/modules/geo.php | 🟢 core transverse BC-34 (GEO-01..07 : PostGIS, capacités, distance, plus-proches) — squelette GEO-02 posé | `GeoServiceProvider` |
+| `Modules/Connectors` | ✅ routes/modules/connectors.php (plateforme + tenant) | 🟢 socle BC-14 : catalogue dynamique, connexions plateforme/tenant, validation de schéma, testeur de connexion, index d'intégration | `ConnectorsServiceProvider` |
 | `Modules/Delivery` | ✅ routes/modules/delivery.php | 🟢 verticale BC-26 consolidée (#6757, PHPStan assaini #6759) | `DeliveryServiceProvider` |
 | `Modules/EdgeSync` | ✅ module routes | ✅ complet | `EdgeSyncServiceProvider` |
 | `Modules/TravelAgency` | ✅ routes partagées + publiques shop | 🟢 fondations verticale BC-24 (TRAVEL-101..108, 201..203 + shop/e-billets) | `TravelAgencyServiceProvider` |

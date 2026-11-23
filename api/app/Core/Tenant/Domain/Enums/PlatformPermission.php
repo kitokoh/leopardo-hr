@@ -72,6 +72,20 @@ enum PlatformPermission: string
     case PaymentsManage = 'payments.manage';
 
     /**
+     * BC-14 INTEGRATION (#9847) — onglet « Connecteurs » côté plateforme.
+     *
+     * `connectors.view` ouvre le catalogue et la liste des connexions de
+     * l'éditeur (banques, PSP) ; `connectors.manage` autorise la création,
+     * l'édition, la révocation et le test d'une connexion.
+     *
+     * La séparation suit la règle du dépôt : lire une configuration n'est pas
+     * la modifier. Un compte `ops` diagnostique une banque en erreur sans
+     * pouvoir changer l'IBAN qui reçoit l'argent des clients.
+     */
+    case ConnectorsView = 'connectors.view';
+    case ConnectorsManage = 'connectors.manage';
+
+    /**
      * #8673 (épic #8670) — pilotage de l'INFRASTRUCTURE de déploiement :
      * lecture de l'état des stacks (dev/prod) et bascule d'un tier vers une
      * autre stack. C'est un bouton qui peut couper la plateforme : il reste
@@ -216,6 +230,8 @@ enum PlatformPermission: string
             self::ShowcaseManage => 'Administrer la vitrine publique',
             self::PaymentsView => 'Consulter les paiements et le journal des transactions',
             self::PaymentsManage => 'Administrer les instances et réconciliations de paiement',
+            self::ConnectorsView => 'Consulter les connecteurs (banques, paiement, services externes)',
+            self::ConnectorsManage => 'Connecter, modifier et tester un connecteur',
             self::MarketingOsView => 'Consulter le Marketing OS (stratégie, contenus, médiathèque, publications)',
             self::MarketingOsManage => 'Administrer le Marketing OS (campagnes, briefs, médiathèque, publications)',
             self::EdgeManage => 'Administrer les nœuds edge',

@@ -13,6 +13,7 @@
 # dev-hub/governance/bounded-context-registry.json (MAT-001 / issue #5859),
 # gardées cohérentes par dev-hub/tools/check-bounded-context-registry.sh.
 /api/app/Modules/Platform/  @kitokoh
+/api/app/Modules/Connectors/ @kitokoh
 /api/app/Modules/Onboarding/ @kitokoh
 /api/app/Core/Feature/      @kitokoh
 /api/app/Core/Tenant/       @kitokoh

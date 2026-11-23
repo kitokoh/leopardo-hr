@@ -9464,5 +9464,56 @@
       "viewPublicPage": "Voir ma fiche publique",
       "solutionInactive": "La solution PharmaManager n'est pas active sur votre espace."
     }
+  },
+  "connectors": {
+    "nav": "Connecteurs",
+    "title": "Connecteurs",
+    "subtitle": "Centralisez tout ce qui est connecté à l'extérieur : vos banques et comptes de la plateforme, et les intégrations déjà en place.",
+    "loading": "Chargement…",
+    "loadError": "Impossible de charger les connecteurs.",
+    "addConnection": "Ajouter un connecteur",
+    "platformConnections": "Connexions de la plateforme",
+    "activeCount": "{active} actif(s) sur {total}",
+    "emptyConnections": "Aucun connecteur pour l'instant. Ajoutez une banque ou un service externe pour commencer.",
+    "default": "Par défaut",
+    "test": "Tester",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "notConfigured": "Non configuré",
+    "existingIntegrations": "Intégrations déjà en place",
+    "existingIntegrationsHint": "Chaque intégration garde son écran dédié : c'est lui qui fait foi. Ce tableau les regroupe en lecture seule.",
+    "table": {
+      "integration": "Intégration",
+      "state": "État",
+      "action": "Action"
+    },
+    "configuredCount": "{count} configuré(s)",
+    "openNativeScreen": "Ouvrir l'écran",
+    "editConnection": "Modifier le connecteur",
+    "newConnection": "Nouveau connecteur",
+    "fields": {
+      "type": "Type de connecteur",
+      "typePlaceholder": "Choisir un type…",
+      "label": "Nom",
+      "labelPlaceholder": "Ex. Compte principal, Site vitrine…",
+      "selectPlaceholder": "Choisir…",
+      "secretHint": "Chiffré au repos. Laissez vide pour conserver la valeur enregistrée.",
+      "secretPlaceholder": "Saisir la valeur"
+    },
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "saved": "Connecteur enregistré.",
+    "saveError": "Enregistrement impossible.",
+    "testError": "Le test a échoué.",
+    "confirmDelete": "Supprimer le connecteur « {label} » ?",
+    "deleted": "Connecteur supprimé.",
+    "deleteError": "Suppression impossible.",
+    "status": {
+      "active": "Actif",
+      "draft": "Brouillon",
+      "error": "En erreur",
+      "revoked": "Révoqué"
+    }
   }
 }
