@@ -6,7 +6,9 @@ namespace App\Modules\Connectors\Providers;
 
 use App\Modules\Connectors\Infrastructure\Services\ConnectorCatalog;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorConnectionTester;
+use App\Modules\Connectors\Infrastructure\Services\ConnectorIntegrationIndex;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorSchemaValidator;
+use App\Shared\Contracts\Connectors\ConnectorIntegrationRegistry;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -23,6 +25,13 @@ class ConnectorsServiceProvider extends ServiceProvider
         $this->app->singleton(ConnectorCatalog::class);
         $this->app->singleton(ConnectorSchemaValidator::class);
         $this->app->singleton(ConnectorConnectionTester::class);
+
+        // #9846 — registre des intégrations extérieures déjà existantes.
+        // Le registre vit dans `Shared\Contracts` : Connecteurs ne connaît
+        // aucun module métier, ce sont les modules propriétaires qui s'y
+        // déclarent depuis leur propre provider (garde d'isolation #5584).
+        $this->app->singleton(ConnectorIntegrationRegistry::class);
+        $this->app->singleton(ConnectorIntegrationIndex::class);
     }
 
     public function boot(): void {}

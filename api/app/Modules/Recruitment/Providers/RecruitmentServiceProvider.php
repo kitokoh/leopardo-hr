@@ -9,7 +9,9 @@ use App\Modules\Recruitment\Domain\Contracts\ResumeScanner;
 use App\Modules\Recruitment\Domain\Contracts\ResumeTextExtraction;
 use App\Modules\Recruitment\Infrastructure\Antivirus\ClamAvResumeScanner;
 use App\Modules\Recruitment\Infrastructure\Antivirus\NullResumeScanner;
+use App\Modules\Recruitment\Infrastructure\Connectors\JobSourceIntegrationSource;
 use App\Modules\Recruitment\Infrastructure\Extraction\ShellResumeTextExtractor;
+use App\Shared\Contracts\Connectors\ConnectorIntegrationRegistry;
 use Illuminate\Support\ServiceProvider;
 use Psr\Log\LoggerInterface;
 
@@ -51,5 +53,11 @@ class RecruitmentServiceProvider extends ServiceProvider
         ));
     }
 
-    public function boot(): void {}
+    public function boot(): void
+    {
+        // #9846 — Recruitment déclare ses agrégateurs d'offres auprès du
+        // registre partagé de l'onglet Connecteurs (garde d'isolation #5584).
+        $this->app->make(ConnectorIntegrationRegistry::class)
+            ->register(new JobSourceIntegrationSource());
+    }
 }

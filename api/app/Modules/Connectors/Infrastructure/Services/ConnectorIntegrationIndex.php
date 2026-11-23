@@ -4,14 +4,8 @@ declare(strict_types=1);
 
 namespace App\Modules\Connectors\Infrastructure\Services;
 
-use App\Modules\Attendance\Domain\Models\CalendarConnection;
-use App\Modules\Attendance\Domain\Models\ZktecoDevice;
-use App\Modules\Billing\Domain\Models\PaymentGatewaySetting;
-use App\Modules\Billing\Domain\Models\TenantPaymentProfile;
-use App\Modules\Billing\Domain\Models\WebhookEndpoint;
-use App\Modules\Paiements\Domain\Models\PaymentProviderInstance;
-use App\Modules\Recruitment\Domain\Models\JobSource;
-use App\Modules\SearchIntelligence\Domain\Models\Integration as SearchIntelligenceIntegration;
+use App\Shared\Contracts\Connectors\ConnectorIntegrationRegistry;
+use App\Shared\Contracts\Connectors\ConnectorIntegrationSourceInterface;
 use Throwable;
 
 /**
@@ -30,6 +24,12 @@ use Throwable;
  * plus su laquelle fait foi. C'est exactement le doublon que la mission demande
  * d'éviter.
  *
+ * ⚠️ Ce service n'importe AUCUN module métier. Les sources sont déclarées par
+ * les modules propriétaires dans `ConnectorIntegrationRegistry` (contrat
+ * partagé `Shared\Contracts\Connectors`), ce qui satisfait la garde
+ * d'isolation des modules (#5584) : Connecteurs ne dépend de personne, ce sont
+ * les modules qui se déclarent auprès de lui.
+ *
  * Robustesse : chaque source est lue dans son propre `try/catch`. Une table
  * absente (module non activé pour ce tenant, migration non jouée) retire la
  * ligne de l'index au lieu de faire échouer tout l'écran — un onglet
@@ -38,6 +38,8 @@ use Throwable;
  */
 class ConnectorIntegrationIndex
 {
+    public function __construct(private readonly ConnectorIntegrationRegistry $registry) {}
+
     /**
      * Intégrations de la PLATEFORME (Superadmin).
      *
@@ -45,40 +47,7 @@ class ConnectorIntegrationIndex
      */
     public function forPlatform(): array
     {
-        return array_values(array_filter([
-            $this->source(
-                key: 'payment_gateways',
-                label: 'Passerelles de paiement (abonnements)',
-                category: 'payment',
-                href: '/billing/gateways',
-                count: fn (): int => PaymentGatewaySetting::query()->where('is_active', true)->count(),
-                detail: 'Stripe et Chargily : encaissement des abonnements de la plateforme.',
-            ),
-            $this->source(
-                key: 'payment_provider_instances',
-                label: 'Instances de fournisseur de paiement',
-                category: 'payment',
-                href: '/payments/provider-instances',
-                count: fn (): int => PaymentProviderInstance::query()->count(),
-                detail: 'Socle de paiement interne (BC-38) : bascule d\'un marché d\'une instance à une autre.',
-            ),
-            $this->source(
-                key: 'job_sources',
-                label: 'Agrégateurs d\'offres d\'emploi',
-                category: 'marketplace',
-                href: '/recruitment/sources',
-                count: fn (): int => JobSource::query()->count(),
-                detail: 'Connecteurs de diffusion d\'offres (BC-10) : publication vers les job boards.',
-            ),
-            $this->source(
-                key: 'search_intelligence',
-                label: 'Connecteurs SEO / SEA (GSI)',
-                category: 'analytics',
-                href: '/search-intel/integrations',
-                count: fn (): int => SearchIntelligenceIntegration::query()->count(),
-                detail: 'Search Console, GA4, Google Ads, Microsoft Ads.',
-            ),
-        ]));
+        return $this->build('platform');
     }
 
     /**
@@ -92,58 +61,37 @@ class ConnectorIntegrationIndex
      */
     public function forTenant(): array
     {
-        return array_values(array_filter([
-            $this->source(
-                key: 'payment_profiles',
-                label: 'Encaissements',
-                category: 'payment',
-                href: '/settings/encaissements',
-                count: fn (): int => TenantPaymentProfile::query()->count(),
-                detail: 'Vos comptes d\'encaissement : Stripe, IBAN, mobile money, espèces.',
-            ),
-            $this->source(
-                key: 'webhooks',
-                label: 'Webhooks sortants',
-                category: 'other',
-                href: '/settings/webhooks',
-                count: fn (): int => WebhookEndpoint::query()->count(),
-                detail: 'Notifications envoyées vers vos systèmes quand un événement se produit.',
-            ),
-            $this->source(
-                key: 'calendar',
-                label: 'Synchronisation calendrier',
-                category: 'other',
-                href: '/settings/integrations',
-                count: fn (): int => CalendarConnection::query()->where('is_active', true)->count(),
-                detail: 'Congés et formations poussés vers Google Calendar / Outlook.',
-            ),
-            $this->source(
-                key: 'zkteco_devices',
-                label: 'Pointeuses ZKTeco',
-                category: 'other',
-                href: '/settings/integrations',
-                count: fn (): int => ZktecoDevice::query()->count(),
-                detail: 'Appareils biométriques de pointage connectés à la plateforme.',
-            ),
-        ]));
+        return $this->build('tenant');
+    }
+
+    /**
+     * @param  'platform'|'tenant'  $audience
+     * @return list<array<string, mixed>>
+     */
+    private function build(string $audience): array
+    {
+        $rows = [];
+
+        foreach ($this->registry->forAudience($audience) as $source) {
+            $row = $this->row($source);
+
+            if ($row !== null) {
+                $rows[] = $row;
+            }
+        }
+
+        return $rows;
     }
 
     /**
      * Construit une ligne d'index, ou `null` si la source est indisponible.
      *
-     * @param  callable(): int  $count
      * @return array<string, mixed>|null
      */
-    private function source(
-        string $key,
-        string $label,
-        string $category,
-        string $href,
-        callable $count,
-        string $detail,
-    ): ?array {
+    private function row(ConnectorIntegrationSourceInterface $source): ?array
+    {
         try {
-            $count = $count();
+            $count = $source->count();
         } catch (Throwable) {
             // Table absente ou module non activé : la ligne disparaît de
             // l'index plutôt que de casser l'écran entier.
@@ -151,13 +99,13 @@ class ConnectorIntegrationIndex
         }
 
         return [
-            'key' => $key,
-            'label' => $label,
-            'category' => $category,
-            'href' => $href,
+            'key' => $source->key(),
+            'label' => $source->label(),
+            'category' => $source->category(),
+            'href' => $source->href(),
             'count' => $count,
             'configured' => $count > 0,
-            'detail' => $detail,
+            'detail' => $source->detail(),
         ];
     }
 }
