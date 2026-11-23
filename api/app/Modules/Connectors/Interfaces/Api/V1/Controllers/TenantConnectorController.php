@@ -12,9 +12,11 @@ use App\Modules\Connectors\Infrastructure\Services\ConnectorCatalog;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorConnectionTester;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorIntegrationIndex;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorSchemaValidator;
+use App\Modules\Connectors\Interfaces\Api\V1\Requests\StoreTenantConnectorRequest;
+use App\Modules\Connectors\Interfaces\Api\V1\Requests\UpdateTenantConnectorRequest;
+use App\Modules\Connectors\Interfaces\Api\V1\Requests\UpdateTenantConnectorStatusRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * #9848 (BC-14 INTEGRATION) — onglet « Connecteurs », surface TENANT.
@@ -73,14 +75,9 @@ class TenantConnectorController extends Controller
     /**
      * POST /connectors/connections — connecte une surface externe.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StoreTenantConnectorRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'catalog_key' => ['required', 'string', 'max:60'],
-            'label' => ['required', 'string', 'max:120'],
-            'config' => ['sometimes', 'array'],
-            'secrets' => ['sometimes', 'array'],
-        ]);
+        $validated = $request->validated();
 
         $entry = $this->catalog->findAvailable($validated['catalog_key'], 'tenant');
 
@@ -117,16 +114,12 @@ class TenantConnectorController extends Controller
     /**
      * PATCH /connectors/connections/{id} — met à jour une connexion.
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdateTenantConnectorRequest $request, int $id): JsonResponse
     {
         // findOrFail SOUS scope tenant : 404 cross-tenant garanti.
         $connection = ConnectorConnection::query()->findOrFail($id);
 
-        $validated = $request->validate([
-            'label' => ['sometimes', 'string', 'max:120'],
-            'config' => ['sometimes', 'array'],
-            'secrets' => ['sometimes', 'array'],
-        ]);
+        $validated = $request->validated();
 
         $entry = $this->catalog->find($connection->catalog_key);
 
@@ -161,13 +154,11 @@ class TenantConnectorController extends Controller
     /**
      * PATCH /connectors/connections/{id}/status — active ou révoque.
      */
-    public function setStatus(Request $request, int $id): JsonResponse
+    public function setStatus(UpdateTenantConnectorStatusRequest $request, int $id): JsonResponse
     {
         $connection = ConnectorConnection::query()->findOrFail($id);
 
-        $validated = $request->validate([
-            'status' => ['required', Rule::in(ConnectorConnection::STATUSES)],
-        ]);
+        $validated = $request->validated();
 
         $connection->forceFill(['status' => $validated['status']])->save();
 

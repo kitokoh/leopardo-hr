@@ -13,9 +13,11 @@ use App\Modules\Connectors\Infrastructure\Services\ConnectorCatalog;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorConnectionTester;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorIntegrationIndex;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorSchemaValidator;
+use App\Modules\Connectors\Interfaces\Api\V1\Requests\StorePlatformConnectorRequest;
+use App\Modules\Connectors\Interfaces\Api\V1\Requests\UpdatePlatformConnectorRequest;
+use App\Modules\Connectors\Interfaces\Api\V1\Requests\UpdatePlatformConnectorStatusRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * #9847 (BC-14 INTEGRATION) — onglet « Connecteurs », surface SUPERADMIN.
@@ -77,15 +79,9 @@ class PlatformConnectorController extends Controller
     /**
      * POST /platform/connectors/connections — connecte un nouveau compte.
      */
-    public function store(Request $request): JsonResponse
+    public function store(StorePlatformConnectorRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'catalog_key' => ['required', 'string', 'max:60'],
-            'label' => ['required', 'string', 'max:120'],
-            'config' => ['sometimes', 'array'],
-            'secrets' => ['sometimes', 'array'],
-            'is_default' => ['sometimes', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         $entry = $this->catalog->findAvailable($validated['catalog_key'], 'platform');
 
@@ -133,16 +129,11 @@ class PlatformConnectorController extends Controller
      * Les secrets sont write-only : un secret absent ou vide conserve la valeur
      * en place. Un secret fourni REMPLACE l'ancien.
      */
-    public function update(Request $request, int $id): JsonResponse
+    public function update(UpdatePlatformConnectorRequest $request, int $id): JsonResponse
     {
         $connection = PlatformConnectorConnection::query()->findOrFail($id);
 
-        $validated = $request->validate([
-            'label' => ['sometimes', 'string', 'max:120'],
-            'config' => ['sometimes', 'array'],
-            'secrets' => ['sometimes', 'array'],
-            'is_default' => ['sometimes', 'boolean'],
-        ]);
+        $validated = $request->validated();
 
         $entry = $this->catalog->find($connection->catalog_key);
 
@@ -192,13 +183,11 @@ class PlatformConnectorController extends Controller
     /**
      * PATCH /platform/connectors/connections/{id}/status — active, révoque…
      */
-    public function setStatus(Request $request, int $id): JsonResponse
+    public function setStatus(UpdatePlatformConnectorStatusRequest $request, int $id): JsonResponse
     {
         $connection = PlatformConnectorConnection::query()->findOrFail($id);
 
-        $validated = $request->validate([
-            'status' => ['required', Rule::in(PlatformConnectorConnection::STATUSES)],
-        ]);
+        $validated = $request->validated();
 
         $before = ['status' => $connection->status];
         $connection->forceFill(['status' => $validated['status']])->save();
