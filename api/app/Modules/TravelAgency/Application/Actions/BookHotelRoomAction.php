@@ -8,8 +8,8 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\TravelAgency\Domain\Models\TravelHotelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelHotelRoom;
 use App\Modules\TravelAgency\Domain\Models\TravelHotelRoomInventory;
+use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 
 /**
  * M4 — Réservation d'une chambre d'hôtel sur un intervalle de dates.
@@ -29,6 +29,14 @@ use Illuminate\Support\Facades\DB;
  */
 final class BookHotelRoomAction
 {
+    /**
+     * La connexion est injectée plutôt que lue via la facade `DB` : la couche
+     * Application ne touche pas les facades Laravel (garde #6568).
+     */
+    public function __construct(
+        private readonly ConnectionInterface $db,
+    ) {}
+
     /**
      * @param  array{check_in: string, check_out: string, rooms?: int|null}  $data
      */
@@ -56,7 +64,7 @@ final class BookHotelRoomAction
             abort(422, __('travel.hotel.departure_after_arrival'));
         }
 
-        return DB::transaction(function () use ($room, $checkIn, $checkOut, $nights, $rooms, $idempotencyKey): TravelHotelBooking {
+        return $this->db->transaction(function () use ($room, $checkIn, $checkOut, $nights, $rooms, $idempotencyKey): TravelHotelBooking {
             // Verrouille la chambre : sérialise les créations concurrentes.
             TravelHotelRoom::query()->whereKey($room->id)->lockForUpdate()->firstOrFail();
 
