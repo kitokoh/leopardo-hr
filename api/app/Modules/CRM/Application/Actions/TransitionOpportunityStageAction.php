@@ -11,7 +11,7 @@ use App\Modules\CRM\Domain\Models\CrmActivity;
 use App\Modules\CRM\Domain\Models\CrmOpportunity;
 use App\Modules\CRM\Infrastructure\Services\AutomationEngine;
 use Illuminate\Database\DatabaseManager;
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 
 /**
  * Deplacement d'une opportunite dans le pipeline — #9780.
@@ -49,6 +49,9 @@ final class TransitionOpportunityStageAction
 {
     public function __construct(
         private readonly DatabaseManager $db,
+        // #9859 — la facade `Log` est reservee a Interfaces/Infrastructure
+        // (issue #6568). La couche Application depend du contrat PSR-3.
+        private readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -175,7 +178,7 @@ final class TransitionOpportunityStageAction
                 ],
             ]);
         } catch (\Throwable $e) {
-            Log::warning('CRM automation: emission stage_changed ignoree (non bloquant)', [
+            $this->logger->warning('CRM automation: emission stage_changed ignoree (non bloquant)', [
                 'opportunity_id' => $opportunity->id,
                 'from' => $from,
                 'to' => $to,
