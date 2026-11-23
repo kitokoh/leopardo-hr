@@ -79,6 +79,45 @@ php artisan leopardo:migrate
 php artisan serve
 ```
 
+### Lancer les tests hors Docker (#9855)
+
+La suite a besoin d'un PostgreSQL **avec PostGIS** et d'un `APP_KEY`. Depuis
+#9855, elle ne depend plus d'un `CI=true` magique : `tests/TestCase.php`
+sonde l'hote configure et ne bascule sur le nom de service `pgsql` que si
+celui-ci resout reellement en DNS (c'est-a-dire dans le `docker compose` du
+depot). Ailleurs, la valeur de `.env` est conservee telle quelle.
+
+```bash
+# 1. Base de test + extensions
+createdb leopardo_test
+psql -d leopardo_test -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+psql -d leopardo_test -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+
+# 2. Variables (les valeurs par defaut de phpunit.xml suffisent si la base
+#    est joignable sur 127.0.0.1:5432 avec leopardo_user/leopardo_pass_test)
+export DB_HOST=127.0.0.1 DB_PORT=5432 DB_DATABASE=leopardo_test
+export DB_USERNAME=leopardo_user DB_PASSWORD=leopardo_pass_test
+
+# 3. Suite
+vendor/bin/pest tests/Unit
+vendor/bin/pest tests/Feature/Database/RealMigrationsReplayTest.php
+```
+
+Si l'hote configure est injoignable, l'erreur de connexion nomme desormais
+cet hote — plus de `could not translate host name "pgsql"` trompeur.
+
+### Mesurer la dette PHPStan reelle (#9856)
+
+`phpstan.neon` inclut une baseline : « niveau max, 0 erreur » ne dit donc
+rien du code non couvert par cette liste d'exceptions. Pour mesurer la dette
+reelle, sans baseline, par lots (un run unique depasse la memoire d'un
+runner modeste) :
+
+```bash
+dev-tools/phpstan-debt-report.sh          # rapport lisible
+dev-tools/phpstan-debt-report.sh --json   # JSON agrege
+```
+
 ## References
 
 - Vision produit active : `../docs/REFERENTIEL_PRODUIT/APV.md`

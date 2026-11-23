@@ -8,7 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\EduManager\Domain\Models\EduFeeCharge;
 use App\Modules\EduManager\Domain\Models\EduFeePayment;
 use App\Modules\EduManager\Infrastructure\Services\EduFeeService;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Database\DatabaseManager;
 
 /**
  * Cas d'usage : encaissement EN LOT au guichet (#9791).
@@ -42,6 +42,11 @@ final class RecordEduFeeBatchPaymentsAction
 {
     public function __construct(
         private readonly EduFeeService $fees,
+        // #9859 — la facade `DB` est reservee a Interfaces/Infrastructure
+        // (issue #6568). On injecte le `DatabaseManager`, exactement comme
+        // `TransitionOpportunityStageAction` : meme contrat, meme semantique
+        // de transaction, et la couche Application reste testable sans facade.
+        private readonly DatabaseManager $db,
     ) {}
 
     /**
@@ -177,7 +182,7 @@ final class RecordEduFeeBatchPaymentsAction
         }
 
         /** @var list<array<string, mixed>> $results */
-        $results = DB::transaction(function () use (
+        $results = $this->db->transaction(function () use (
             $actor,
             $lines,
             $charges,

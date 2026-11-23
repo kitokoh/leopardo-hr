@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Trade\Interfaces\Api\V1\Requests;
 
 use App\Modules\Trade\Domain\Enums\TradeRfqStatus;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -27,6 +28,15 @@ final class RfqTransitionRequest extends FormRequest
      */
     public function rules(): array
     {
+        // #9859 — le paramètre de route `rfq` est résolu une fois, avec un
+        // type explicite. Avant, `$this->route('rfq')?->id` supposait un
+        // objet alors que le binding peut rendre un `string` (id brut, ou
+        // route résolue avant le model binding) : PHPStan signalait
+        // `property.notFound` sur `(object|string)::$id`, et à l'exécution la
+        // contrainte d'appartenance pouvait être silencieusement perdue.
+        $rfq = $this->route('rfq');
+        $rfqId = $rfq instanceof Model ? $rfq->getKey() : $rfq;
+
         return [
             'status' => ['required', 'string', Rule::in(TradeRfqStatus::values())],
             // L'offre gagnante doit appartenir a CETTE RFQ : sans cette regle,
@@ -35,7 +45,7 @@ final class RfqTransitionRequest extends FormRequest
                 'required_if:status,awarded',
                 'nullable',
                 'integer',
-                Rule::exists('trade_quotes', 'id')->where('trade_rfq_id', $this->route('rfq')?->id),
+                Rule::exists('trade_quotes', 'id')->where('trade_rfq_id', $rfqId),
             ],
             'close_reason' => ['nullable', 'string', 'max:500'],
         ];

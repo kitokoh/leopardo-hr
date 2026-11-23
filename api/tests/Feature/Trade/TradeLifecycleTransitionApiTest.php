@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Trade;
 
+use App\Core\Auth\Domain\Models\Employee;
+use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\Trade\Domain\Models\TradeCounterparty;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -163,7 +165,22 @@ class TradeLifecycleTransitionApiTest extends TestCase
             'lines' => [['description' => 'The', 'quantity' => 5]],
         ])->json('data.id');
 
-        $this->postJson("/api/v1/trade/rfqs/{$rfqId}/transition", ['status' => 'awarded'])
+        // #9859 — le test envoyait `awarded` SANS `awarded_quote_id`, donc la
+        // requete s'arretait a la VALIDATION (`VALIDATION_ERROR`) et
+        // n'atteignait jamais la machine a etats : il ne prouvait pas ce que
+        // son nom annonce. On fournit une offre reelle pour que la requete
+        // passe la validation et que le refus vienne bien du saut interdit
+        // `draft -> awarded`.
+        $quoteId = $this->postJson('/api/v1/trade/quotes', [
+            'currency' => 'USD',
+            'trade_rfq_id' => $rfqId,
+            'lines' => [['description' => 'The', 'quantity' => 5, 'unit_price_minor' => 1_000]],
+        ])->json('data.id');
+
+        $this->postJson("/api/v1/trade/rfqs/{$rfqId}/transition", [
+            'status' => 'awarded',
+            'awarded_quote_id' => $quoteId,
+        ])
             ->assertStatus(422)
             ->assertJsonPath('error', 'INVALID_STATUS_TRANSITION')
             ->assertJsonPath('from', 'draft')
@@ -211,5 +228,37 @@ class TradeLifecycleTransitionApiTest extends TestCase
         // « acceptee » sans commande — un etat qui ment sur ce qui s'est passe.
         $this->postJson("/api/v1/trade/quotes/{$quoteId}/transition", ['status' => 'accepted'])
             ->assertStatus(422);
+    }
+
+    private function createCompany(bool $enableTrade = true): Company
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+
+        if ($enableTrade) {
+            $company->setFeature('trade', true);
+            $company->save();
+        }
+
+        app()->instance('current_company', $company);
+
+        return $company;
+    }
+
+    private function actingAsEmployee(Company $company, string $managerRole = 'principal'): Employee
+    {
+        /** @var Employee $employee */
+        $employee = Employee::factory()->create([
+            'company_id' => $company->id,
+            // `role` doit valoir `manager` : `TradeRoleResolver` s'appuie sur
+            // `Employee::isManager()` (role === 'manager') AVANT de lire
+            // `manager_role`.
+            'role' => 'manager',
+            'manager_role' => $managerRole,
+        ]);
+
+        $this->actingAs($employee, 'sanctum');
+
+        return $employee;
     }
 }

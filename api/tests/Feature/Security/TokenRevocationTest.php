@@ -9,6 +9,7 @@ use App\Core\Auth\Infrastructure\Services\AccountStatusGuard;
 use App\Core\Auth\Infrastructure\Services\TokenRevocationService;
 use App\Core\Tenant\Domain\Models\Company;
 use Carbon\CarbonImmutable;
+use Laravel\Sanctum\PersonalAccessToken;
 use Tests\Support\CreatesMvpSchema;
 use Tests\TestCase;
 
@@ -183,7 +184,7 @@ class TokenRevocationTest extends TestCase
 
         $this->employee->forceFill(['status' => 'suspended'])->save();
 
-        $this->assertFalse($this->guard->tokenIsUsable($token->fresh()));
+        $this->assertFalse($this->guard->tokenIsUsable($this->freshToken($token)));
     }
 
     public function test_an_archived_account_is_refused(): void
@@ -192,7 +193,7 @@ class TokenRevocationTest extends TestCase
 
         $this->employee->forceFill(['status' => 'archived'])->save();
 
-        $this->assertFalse($this->guard->tokenIsUsable($token->fresh()));
+        $this->assertFalse($this->guard->tokenIsUsable($this->freshToken($token)));
     }
 
     public function test_an_active_account_passes(): void
@@ -201,7 +202,22 @@ class TokenRevocationTest extends TestCase
 
         $this->employee->forceFill(['status' => 'active'])->save();
 
-        $this->assertTrue($this->guard->tokenIsUsable($token->fresh()));
+        $this->assertTrue($this->guard->tokenIsUsable($this->freshToken($token)));
+    }
+
+    /**
+     * #9859 — `fresh()` est typé `PersonalAccessToken|null`, alors que
+     * `tokenIsUsable()` exige un non-null. Le jeton existe forcément (on vient
+     * de le créer) : on l'affirme au lieu de laisser PHPStan deviner, ce qui
+     * documente aussi l'invariant du test.
+     */
+    private function freshToken(PersonalAccessToken $token): PersonalAccessToken
+    {
+        $fresh = $token->fresh();
+
+        self::assertInstanceOf(PersonalAccessToken::class, $fresh);
+
+        return $fresh;
     }
 
     // ── 4. Clés de cache ────────────────────────────────────────────────────

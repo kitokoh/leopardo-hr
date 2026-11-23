@@ -29,10 +29,6 @@ class EduFeeBatchReceiptTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $companyA;
-
-    private Company $companyB;
-
     private Employee $principalA;
 
     private Employee $principalB;
@@ -46,13 +42,15 @@ class EduFeeBatchReceiptTest extends TestCase
     {
         parent::setUp();
 
+        // #9859 — les deux sociétés ne servaient qu'à créer `principalA` et
+        // `principalB` (lus par les tests) : les garder comme propriétés les
+        // rendait écrites-jamais-lues (PHPStan `property.onlyWritten`).
         /** @var Company $companyA */
         $companyA = Company::factory()->create([
             'country' => 'DZ',
             'currency' => 'DZD',
             'features' => ['edumanager' => true],
         ]);
-        $this->companyA = $companyA;
 
         /** @var Company $companyB */
         $companyB = Company::factory()->create([
@@ -60,7 +58,6 @@ class EduFeeBatchReceiptTest extends TestCase
             'currency' => 'MAD',
             'features' => ['edumanager' => true],
         ]);
-        $this->companyB = $companyB;
 
         /** @var Employee $principalA */
         $principalA = Employee::factory()->create([

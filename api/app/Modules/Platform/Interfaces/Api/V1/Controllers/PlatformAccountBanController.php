@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Platform\Interfaces\Api\V1\Controllers;
 
-use App\Core\Auth\Infrastructure\Services\TokenRevocationService;
+use App\Core\Auth\Domain\Contracts\TokenRevocationContract;
 use App\Core\Tenant\Domain\Models\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Modules\Platform\Interfaces\Api\V1\Requests\BanPlatformAccountRequest;
@@ -56,14 +56,14 @@ class PlatformAccountBanController extends Controller
      * @var list<string>
      */
     private const TYPES = [
-        TokenRevocationService::TYPE_EMPLOYEE,
-        TokenRevocationService::TYPE_USER,
-        TokenRevocationService::TYPE_TRAVEL_CUSTOMER,
-        TokenRevocationService::TYPE_SUPER_ADMIN,
+        TokenRevocationContract::TYPE_EMPLOYEE,
+        TokenRevocationContract::TYPE_USER,
+        TokenRevocationContract::TYPE_TRAVEL_CUSTOMER,
+        TokenRevocationContract::TYPE_SUPER_ADMIN,
     ];
 
     public function __construct(
-        private readonly TokenRevocationService $revocations,
+        private readonly TokenRevocationContract $revocations,
     ) {}
 
     /**

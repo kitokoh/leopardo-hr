@@ -1546,7 +1546,7 @@
           et detruit le marqueur `__mvp_fixture_ready`.
 
           FeatureMvpFixture : 242 fichiers.
-          FeatureRest       : 1092 fichiers.
+          FeatureRest       : 1104 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
             <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
@@ -1844,6 +1844,7 @@
             <file>tests/Feature/Accounting/BankStatementImportTest.php</file>
             <file>tests/Feature/Accounting/BankStatementStatusTest.php</file>
             <file>tests/Feature/Accounting/DepreciationTest.php</file>
+            <file>tests/Feature/Accounting/DocumentPdfOnDemandTest.php</file>
             <file>tests/Feature/Accounting/DocumentPdfRendererTest.php</file>
             <file>tests/Feature/Accounting/DocumentShareEmailTest.php</file>
             <file>tests/Feature/Accounting/DocumentWorkflowNumberingTest.php</file>
@@ -1945,6 +1946,7 @@
             <file>tests/Feature/Billing/GrowthTenantIsolationTest.php</file>
             <file>tests/Feature/Billing/InvoiceStateMachineTest.php</file>
             <file>tests/Feature/Billing/MailCheckConfigCommandTest.php</file>
+            <file>tests/Feature/Billing/PublicInvoicesSchemaParityTest.php</file>
             <file>tests/Feature/Billing/SetTrialPasswordActionTest.php</file>
             <file>tests/Feature/Billing/SweepStaleTrialProvisioningsCommandTest.php</file>
             <file>tests/Feature/Billing/TenantPaymentProfileApiTest.php</file>
@@ -2042,38 +2044,6 @@
             <file>tests/Feature/Core/Auth/PiiHmacLookupServiceTest.php</file>
             <file>tests/Feature/CotisationSimulationControllerTest.php</file>
             <file>tests/Feature/CotisationSimulationTest.php</file>
-            <file>tests/Feature/CRM/CrmActivitiesTasksTest.php</file>
-            <file>tests/Feature/CRM/CrmAutomationTest.php</file>
-            <file>tests/Feature/CRM/CrmCampaignSendProcessingTest.php</file>
-            <file>tests/Feature/CRM/CrmCampaignTest.php</file>
-            <file>tests/Feature/CRM/CrmChannelAdapterTest.php</file>
-            <file>tests/Feature/CRM/CrmChannelCrudTest.php</file>
-            <file>tests/Feature/CRM/CrmChannelSendTest.php</file>
-            <file>tests/Feature/CRM/CrmConsentTest.php</file>
-            <file>tests/Feature/CRM/CrmCrossTenantHarnessTest.php</file>
-            <file>tests/Feature/CRM/CrmDashboardTest.php</file>
-            <file>tests/Feature/CRM/CrmDeduplicationTest.php</file>
-            <file>tests/Feature/CRM/CrmDirectoryListTest.php</file>
-            <file>tests/Feature/CRM/CrmEmailTest.php</file>
-            <file>tests/Feature/CRM/CrmExportTest.php</file>
-            <file>tests/Feature/CRM/CrmHardeningNegativeTest.php</file>
-            <file>tests/Feature/CRM/CrmImportFlowTest.php</file>
-            <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
-            <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
-            <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
-            <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
-            <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>
-            <file>tests/Feature/CRM/CrmOutboxRuntimeTest.php</file>
-            <file>tests/Feature/CRM/CrmOutboxTest.php</file>
-            <file>tests/Feature/CRM/CrmPilotSeederTest.php</file>
-            <file>tests/Feature/CRM/CrmPlatformIsolationTest.php</file>
-            <file>tests/Feature/CRM/CrmSearchTest.php</file>
-            <file>tests/Feature/CRM/CrmSegmentTest.php</file>
-            <file>tests/Feature/CRM/CrmSoftDeletesTest.php</file>
-            <file>tests/Feature/CRM/CrmTaskTimelineTest.php</file>
-            <file>tests/Feature/CRM/CrmWhatsAppWebhookTest.php</file>
-            <file>tests/Feature/CRM/ResendEmailProviderTest.php</file>
-            <file>tests/Feature/CRM/Rgpd/CrmRgpdLifecycleTest.php</file>
             <file>tests/Feature/CrmMigrationsTest.php</file>
             <file>tests/Feature/CrossTenantIndexIsolationTest.php</file>
             <file>tests/Feature/DataModel/CompositeTenantIndexesTest.php</file>
@@ -2083,6 +2053,7 @@
             <file>tests/Feature/Database/LeopardoMigrateRunnerTest.php</file>
             <file>tests/Feature/Database/MigrationSchemaPlacementTest.php</file>
             <file>tests/Feature/Database/NotificationPreferencesUniqueMigrationTest.php</file>
+            <file>tests/Feature/Database/RealMigrationsReplayTest.php</file>
             <file>tests/Feature/Delivery/DeliveryApiTest.php</file>
             <file>tests/Feature/Delivery/DeliveryAsyncExportApiTest.php</file>
             <file>tests/Feature/Delivery/DeliveryAsyncTest.php</file>
@@ -2132,6 +2103,9 @@
             <file>tests/Feature/EduManager/EduCourseSlotServiceTest.php</file>
             <file>tests/Feature/EduManager/EduDashboardTest.php</file>
             <file>tests/Feature/EduManager/EduFeeApiTest.php</file>
+            <file>tests/Feature/EduManager/EduFeeBatchAndExportTest.php</file>
+            <file>tests/Feature/EduManager/EduFeeBatchReceiptTest.php</file>
+            <file>tests/Feature/EduManager/EduFeeClassBatchTest.php</file>
             <file>tests/Feature/EduManager/EduFeeServiceTest.php</file>
             <file>tests/Feature/EduManager/EduFeeTest.php</file>
             <file>tests/Feature/EduManager/EduGradeServiceTest.php</file>
@@ -2147,6 +2121,7 @@
             <file>tests/Feature/EduManager/EduMeTest.php</file>
             <file>tests/Feature/EduManager/EduNotificationApiTest.php</file>
             <file>tests/Feature/EduManager/EduNotificationServiceTest.php</file>
+            <file>tests/Feature/EduManager/EduOnboardingStepPredicateTest.php</file>
             <file>tests/Feature/EduManager/EduPerformanceTest.php</file>
             <file>tests/Feature/EduManager/EduRbacMatrixTest.php</file>
             <file>tests/Feature/EduManager/EduRbacPolicyTest.php</file>
@@ -2154,6 +2129,7 @@
             <file>tests/Feature/EduManager/EduReportCardTest.php</file>
             <file>tests/Feature/EduManager/EduReportServiceTest.php</file>
             <file>tests/Feature/EduManager/EduRetentionServiceTest.php</file>
+            <file>tests/Feature/EduManager/EduSchoolBootstrapTest.php</file>
             <file>tests/Feature/EduManager/EduSolutionManifestTest.php</file>
             <file>tests/Feature/EduManager/EduTeacherInterfaceTest.php</file>
             <file>tests/Feature/EduManager/EduTeacherSubjectTest.php</file>
@@ -2757,13 +2733,12 @@
             <file>tests/Feature/Trade/TradeCompanyProfileTest.php</file>
             <file>tests/Feature/Trade/TradeCostEstimateApiTest.php</file>
             <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
+            <file>tests/Feature/Trade/TradeDocumentApiTest.php</file>
             <file>tests/Feature/Trade/TradeFeatureFlagTest.php</file>
+            <file>tests/Feature/Trade/TradeLifecycleTransitionApiTest.php</file>
+            <file>tests/Feature/Trade/TradeOrderApiTest.php</file>
             <file>tests/Feature/Trade/TradeProductApiTest.php</file>
             <file>tests/Feature/Trade/TradeProductLineBindingTest.php</file>
-            <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
-            <file>tests/Feature/Trade/TradeOrderApiTest.php</file>
-            <file>tests/Feature/Trade/TradeLifecycleTransitionApiTest.php</file>
-            <file>tests/Feature/Trade/TradeDocumentApiTest.php</file>
             <file>tests/Feature/Trade/TradeQuoteApiTest.php</file>
             <file>tests/Feature/Trade/TradeRfqApiTest.php</file>
             <file>tests/Feature/Trade/TradeSchemaTest.php</file>

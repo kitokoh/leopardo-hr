@@ -1277,35 +1277,42 @@ trait CreatesMvpSchema
      */
     private function purgeOrphanPublicTypes(): void
     {
+        // #9853 — la version précédente évaluait une sous-requête CORRÉLÉE par
+        // type candidat : pour chacun des ~93 types, elle rescannait les
+        // 28 477 colonnes de `pg_attribute` ET, pour chaque colonne, relançait
+        // un sous-scan de `pg_type` (`at.typelem = t.oid`). Coût observé :
+        // > 4 min 49 s sans jamais rendre la main (blocage de TOUTE la suite
+        // `CreatesMvpSchema`, cf. `pg_stat_activity`). On matérialise donc
+        // UNE FOIS l'ensemble des oids référencés (colonnes + types tableaux)
+        // dans une CTE, puis on fait une simple anti-jointure : O(colonnes +
+        // types) au lieu de O(types × colonnes × types).
         DB::statement(<<<'SQL'
             DO $do$
             DECLARE
                 r record;
             BEGIN
                 FOR r IN
+                    WITH referenced AS MATERIALIZED (
+                        -- Tout oid utilisé comme type de colonne vivante…
+                        SELECT DISTINCT a.atttypid AS oid
+                        FROM pg_catalog.pg_attribute a
+                        WHERE NOT a.attisdropped
+                        UNION
+                        -- …ou comme type élément d'un type tableau (garde anti
+                        -- DROP CASCADE sur les tables réelles conservées, ex.
+                        -- company_requests et son enum de statut).
+                        SELECT DISTINCT at.typelem AS oid
+                        FROM pg_catalog.pg_type at
+                        WHERE at.typelem <> 0
+                    )
                     SELECT t.typname
                     FROM pg_catalog.pg_type t
                     JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
                     WHERE n.nspname = 'public'
                       AND t.typtype IN ('c', 'e', 'd')
                       AND t.typname NOT LIKE '\_%'
-                      -- Exclut tout type encore référencé par une colonne
-                      -- (attisdropped = false), directement ou via son type
-                      -- tableau (typelem) : garde anti DROP CASCADE sur les
-                      -- tables réelles conservées (ex. company_requests et
-                      -- son enum de statut).
                       AND NOT EXISTS (
-                          SELECT 1
-                          FROM pg_catalog.pg_attribute a
-                          WHERE NOT a.attisdropped
-                            AND (
-                                a.atttypid = t.oid
-                                OR a.atttypid IN (
-                                    SELECT at.oid
-                                    FROM pg_catalog.pg_type at
-                                    WHERE at.typelem = t.oid
-                                )
-                            )
+                          SELECT 1 FROM referenced ref WHERE ref.oid = t.oid
                       )
                 LOOP
                     BEGIN
