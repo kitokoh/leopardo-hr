@@ -21,7 +21,8 @@ class ActivateSolutionCommand extends Command
     protected $signature = 'leopardo:solution:activate
         {company : Company UUID}
         {solution : Solution code (ex. fuel_station)}
-        {--actor= : Employee id for audit (optional)}';
+        {--actor= : Employee id for audit (optional)}
+        {--with-dependencies : Activate the manifest required modules first (fresh tenant / provisioning)}';
 
     protected $description = 'Activate a sectorial solution (feature flag) for a tenant.';
 
@@ -40,7 +41,13 @@ class ActivateSolutionCommand extends Command
         $actorId = $this->option('actor') !== null ? (int) $this->option('actor') : null;
 
         try {
-            $result = $activator->activate($company, (string) $this->argument('solution'), $actorId);
+            // #eval — un tenant frais n'a que `rh` d'actif : sans ce flag,
+            // l'activation d'une verticale echoue toujours en CLI avec
+            // « Modules requis inactifs ». `activateWithDependencies` est le
+            // chemin deja utilise par le provisioning (BC-25, #6693).
+            $result = $this->option('with-dependencies')
+                ? $activator->activateWithDependencies($company, (string) $this->argument('solution'), $actorId)
+                : $activator->activate($company, (string) $this->argument('solution'), $actorId);
         } catch (DomainException $exception) {
             $this->error($exception->getMessage());
 

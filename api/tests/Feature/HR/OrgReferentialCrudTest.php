@@ -83,6 +83,43 @@ class OrgReferentialCrudTest extends TestCase
         $this->deleteJson("/api/v1/departments/{$department->id}")->assertForbidden();
     }
 
+    /**
+     * #eval-2026-11-23 — la creation d'un departement est reservee a
+     * `principal` et `rh` (DepartmentPolicy::create). Avant le correctif, la
+     * route ne portait qu'un `api.manager` sans liste de roles : comptable et
+     * superviseur obtenaient 201.
+     */
+    public function test_only_principal_and_rh_can_create_departments(): void
+    {
+        [$company] = $this->createActors();
+
+        $suffix = substr((string) $company->id, 0, 8);
+
+        $allowed = [
+            'principal' => $this->createEmployee($company, 'principal.'.$suffix.'@a.test', 'manager', 'principal'),
+            'rh' => $this->createEmployee($company, 'rh.'.$suffix.'@a.test', 'manager', 'rh'),
+        ];
+
+        $denied = [
+            'comptable' => $this->createEmployee($company, 'comptable.'.$suffix.'@a.test', 'manager', 'comptable'),
+            'superviseur' => $this->createEmployee($company, 'superviseur.'.$suffix.'@a.test', 'manager', 'superviseur'),
+        ];
+
+        foreach ($allowed as $role => $actor) {
+            Sanctum::actingAs($actor);
+
+            $this->postJson('/api/v1/departments', ['name' => 'Dept '.$role])
+                ->assertStatus(201);
+        }
+
+        foreach ($denied as $role => $actor) {
+            Sanctum::actingAs($actor);
+
+            $this->postJson('/api/v1/departments', ['name' => 'Dept '.$role])
+                ->assertForbidden();
+        }
+    }
+
     public function test_cross_tenant_department_is_404(): void
     {
         [$companyA, $managerA] = $this->createActors();

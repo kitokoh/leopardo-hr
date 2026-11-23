@@ -1,0 +1,63 @@
+{
+  "branch_id": "16",
+  "table_id": "57",
+  "ingredient_id": "31",
+  "pos_open": {
+    "code": 409,
+    "body": "{'error': 'A POS session is already open for this branch.', 'message': 'A POS session is already open for this branch.', 'localized_message': 'A data conflict prevents this operation.'}"
+  },
+  "order_create": {
+    "code": 201,
+    "body": "{'data': {'id': 61, 'reference': 'RST-QKXQKA0ZUH', 'branch_id': 16, 'pos_session_id': None, 'order_type': 'dine_in', 'table_id': 57, 'zone_id': None, 'covers': 2, 'customer_contact_id': None, 'rider_id': None, 'status': 'draft', 'subtotal_minor': None, 'tax_minor': None, 'discount_minor': None, 'total_minor': None, 'currency': 'XAF', 'source': 'pos', 'note_redacted': None, 'version': 1, 'created_a"
+  },
+  "products_count": 6,
+  "order_add_item": {
+    "code": 201,
+    "body": "{'data': {'id': 60, 'order_id': 61, 'product_id': 46, 'menu_id': None, 'quantity': 2, 'unit_price_minor': 600000, 'line_total_minor': 1200000, 'tax_rate_id': 10, 'tax_minor': 231000, 'status': 'active', 'line_index': 1, 'created_at': '2026-11-22T13:22:58.000000Z', 'updated_at': '2026-11-22T13:22:58."
+  },
+  "order_submit": {
+    "code": 200,
+    "body": "{'data': {'id': 61, 'reference': 'RST-QKXQKA0ZUH', 'branch_id': 16, 'pos_session_id': None, 'order_type': 'dine_in', 'table_id': 57, 'zone_id': None, 'covers': 2, 'customer_contact_id': None, 'rider_id': None, 'status': 'open', 'subtotal_minor': 1200"
+  },
+  "order_confirm": {
+    "code": 200,
+    "body": "{'data': {'id': 61, 'reference': 'RST-QKXQKA0ZUH', 'branch_id': 16, 'pos_session_id': None, 'order_type': 'dine_in', 'table_id': 57, 'zone_id': None, 'covers': 2, 'customer_contact_id': None, 'rider_id': None, 'status': 'in_preparation', 'subtotal_mi"
+  },
+  "kitchen_start": {
+    "code": 409,
+    "body": "{'error': 'Transition not allowed from \"in_preparation\" to \"in_preparation\".', 'message': 'Transition not allowed from \"in_preparation\" to \"in_preparation\".', 'localized_message': 'A data conflict prevents this operation.'}"
+  },
+  "kitchen_ready": {
+    "code": 200,
+    "body": "{'data': {'id': 61, 'reference': 'RST-QKXQKA0ZUH', 'branch_id': 16, 'table_id': 57, 'order_type': 'dine_in', 'status': 'ready', 'covers': 2, 'created_at': '2026-11-22T13:22:57.000000Z', 'updated_at': '2026-11-22T13:22:58.000000Z', 'items': [{'id': 60"
+  },
+  "order_serve": {
+    "code": 200,
+    "body": "{'data': {'id': 61, 'reference': 'RST-QKXQKA0ZUH', 'branch_id': 16, 'pos_session_id': None, 'order_type': 'dine_in', 'table_id': 57, 'zone_id': None, 'covers': 2, 'customer_contact_id': None, 'rider_id': None, 'status': 'served', 'subtotal_minor': 12"
+  },
+  "order_due_minor": 1431000,
+  "order_pay": {
+    "code": 201,
+    "body": "{'data': {'id': 1, 'order_id': 61, 'pos_session_id': None, 'provider_code': 'cash', 'amount_minor': 1431000, 'currency': 'XAF', 'status': 'confirmed', 'paid_at': '2026-11-22T13:22:58.000000Z', 'provider_reference': 'CASH-CA828359-A8E1-4D0A-B82F-98B2EEE73632', 'tip_minor': None, 'idempotency_key': '3"
+  },
+  "order_refund": {
+    "code": 201,
+    "body": "{'data': {'id': 1, 'order_id': 61, 'payment_id': None, 'amount_minor': 100000, 'reason_code': 'customer_request', 'reason_text': 'Geste commercial (recette)', 'refunded_by_user_id': 97, 'status': 'processed', 'idempotency_key': '51e736ec-5b40-40c8-9940-ff02486cf9bc', 'created_at': '2026-11-22T13:22:"
+  },
+  "reservation_create": {
+    "code": 201,
+    "body": "{'data': {'id': 19, 'company_id': 'afac80c6-8b98-4c4b-8127-c799f7ca6529', 'branch_id': 16, 'reference': 'RSV-W4MULPEHIB', 'customer_contact_id': None, 'contact_name': 'Client Recette', 'contact_phone': '+237600000099', 'reserved_at': '2026-11-22T19:30:00+00:00', 'covers': 4, 'table_id': None, 'zone_"
+  },
+  "stock_waste": {
+    "code": 201,
+    "body": "{'data': {'id': 1, 'company_id': 'afac80c6-8b98-4c4b-8127-c799f7ca6529', 'branch_id': 16, 'ingredient_id': 31, 'stock_level_id': 31, 'quantity_delta': '-1.000', 'reason_code': 'waste', 'reference_type': None, 'reference_id': None, 'note_redacted': None, 'user_id': 97, 'created_at': '2026-11-22T13:22"
+  },
+  "public_menu_link": {
+    "code": 201,
+    "body": "{'data': {'menu_url': 'http://127.0.0.1:8000/api/v1/restaurant/public/menu?company=afac80c6-8b98-4c4b-8127-c799f7ca6529&expires=1795440178&signature=ee731d751ee43a0b56cc651003971e65be8002b22f25c17c22a0126984dc0a2b', 'expires_at': '2026-11-23T13:22:58+00:00'}}"
+  },
+  "public_menu_fetch": {
+    "code": 200,
+    "body": "{'data': {'currency': 'XAF', 'payments': {'online_providers': ['mobile_money'], 'pay_on_site': True}, 'branches': [{'branch_id': 16, 'name': 'Chez Leo — Centre', 'currency': 'XAF', 'menus': [{'menu_id': 8, 'code': 'MENU-MIDI', 'name': 'Menu du midi', 'currency': 'XAF', 'items': [{'menu_item_id': 22,"
+  }
+}

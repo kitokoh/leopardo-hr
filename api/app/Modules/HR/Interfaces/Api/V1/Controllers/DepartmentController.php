@@ -43,6 +43,12 @@ class DepartmentController extends Controller
     {
         /** @var Employee $user */
         $user = $request->user();
+
+        // #eval-2026-11-23 — la Policy existait mais n'était jamais évaluée :
+        // `store()` créait le département pour tout manager (comptable,
+        // superviseur). Défense en profondeur en plus du middleware de route.
+        $this->authorize('create', Department::class);
+
         // Issue #3597 : company_id non mass-assignable — assignation explicite.
         $dept = Department::create($request->validated());
         $dept->company_id = $user->company_id;
