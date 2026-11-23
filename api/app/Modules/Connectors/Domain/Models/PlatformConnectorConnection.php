@@ -25,6 +25,13 @@ use Illuminate\Support\Carbon;
  * fail-closed exclurait tout, faute de contexte tenant sur la surface
  * plateforme).
  *
+ * EXCEPTION TENANT-SCOPE (#7999) — déclarée dans
+ * dev-hub/governance/tenant-scope-exceptions.json. La garde
+ * `check-tenant-scope-models.sh` cherche le mot `company_id` par grep
+ * textuel : elle le trouve dans cette phrase même, qui documente son
+ * ABSENCE. Le marqueur ci-dessus est ce qui la fait sortir en exception
+ * justifiée plutôt qu'en violation.
+ *
  * SÉCURITÉ : `secrets` chiffré au repos (cast `encrypted:array`) + `$hidden` ;
  * l'API ne renvoie que des masques, en écriture seule.
  *
