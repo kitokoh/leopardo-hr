@@ -6,11 +6,13 @@ namespace App\Modules\Expense\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Expense\Interfaces\Api\V1\Requests\ExpenseStatsRequest;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * GET /expense/stats — KPIs des notes de frais pour dashboard Finance (#9550).
@@ -22,7 +24,7 @@ use Illuminate\Support\Facades\DB;
  */
 class ExpenseStatsController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(ExpenseStatsRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -32,10 +34,7 @@ class ExpenseStatsController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'from' => 'nullable|date',
-            'to' => 'nullable|date',
-        ]);
+        $validated = $request->validated();
 
         $from = isset($validated['from']) ? Carbon::parse($validated['from'])->startOfDay() : null;
         $to = isset($validated['to']) ? Carbon::parse($validated['to'])->endOfDay() : null;
@@ -77,18 +76,25 @@ class ExpenseStatsController extends Controller
             ->map(fn ($v) => (float) $v)
             ->toArray();
 
-        // Category breakdown (if category column exists, otherwise skip)
-        $amountsByCategory = ExpenseClaim::query()
-            ->where('company_id', $companyId)
-            ->when($from, fn ($q) => $q->where('created_at', '>=', $from))
-            ->when($to, fn ($q) => $q->where('created_at', '<=', $to))
-            ->select('category', DB::raw('SUM(total_amount) as total'))
-            ->whereNotNull('category')
-            ->groupBy('category')
-            ->get()
-            ->pluck('total', 'category')
-            ->map(fn ($v) => (float) $v)
-            ->toArray();
+        // Category breakdown — la colonne `category` n'existe pas dans toutes
+        // les installations (le schéma `expense_claims` ne la porte pas) : le
+        // commentaire annonçait « sinon on saute » mais la requête était
+        // exécutée quand même, ce qui renvoyait 500 (SQLSTATE 42703) sur
+        // `GET /expense/stats` dès que la Gate laissait passer.
+        $amountsByCategory = [];
+        if (Schema::hasColumn((new ExpenseClaim)->getTable(), 'category')) {
+            $amountsByCategory = ExpenseClaim::query()
+                ->where('company_id', $companyId)
+                ->when($from, fn ($q) => $q->where('created_at', '>=', $from))
+                ->when($to, fn ($q) => $q->where('created_at', '<=', $to))
+                ->select('category', DB::raw('SUM(total_amount) as total'))
+                ->whereNotNull('category')
+                ->groupBy('category')
+                ->get()
+                ->pluck('total', 'category')
+                ->map(fn ($v) => (float) $v)
+                ->toArray();
+        }
 
         // Processing times
         $avgApprovalTime = ExpenseClaim::query()

@@ -12,7 +12,10 @@ use App\Http\Resources\Api\V1\EmployeeResource;
 use App\Modules\HR\Application\DTOs\CreateEmployeeDTO;
 use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
+use App\Modules\HR\Infrastructure\Services\EmployeeStatsService;
 use App\Modules\HR\Interfaces\Api\V1\Requests\ArchiveEmployeeRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\EmployeeIndexRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\EmployeeStatsRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\StoreEmployeeRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEmployeeRequest;
 use App\Modules\Planning\Domain\Models\Absence;
@@ -54,22 +57,14 @@ class EmployeeController extends Controller
         mobile_compatible: true
     )]
     #[RequiresPermission('employees.view')]
-    public function index(Request $request): JsonResponse
+    public function index(EmployeeIndexRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
         $this->authorize('viewAny', Employee::class);
 
-        $validated = $request->validate([
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'page' => ['nullable', 'integer', 'min:1'],
-            'status' => ['nullable', 'in:active,archived,suspended'],
-            'role' => ['nullable', 'in:employee,manager,admin,super_admin'],
-            'search' => ['nullable', 'string', 'max:100'],
-            'sort_by' => ['nullable', 'in:id,first_name,last_name,email,role,status'],
-            'sort_dir' => ['nullable', 'in:asc,desc'],
-        ]);
+        $validated = $request->validated();
 
         $perPage = (int) ($validated['per_page'] ?? 20);
         $sortBy = (string) ($validated['sort_by'] ?? 'id');
@@ -414,6 +409,35 @@ class EmployeeController extends Controller
         $employee->loadMissing('schedule:id,name,start_time,end_time,break_minutes,late_tolerance_minutes');
 
         return (new EmployeeResource($employee))->response();
+    }
+
+    /**
+     * Statistiques de l'effectif (dashboard RH / écran Équipe).
+     *
+     * Homogénéise la famille `/stats` de l'API (`/absences/stats`,
+     * `/expense/stats`, `/recruitment/stats`, `/library/stats`) : même
+     * convention de période (`from`/`to`), même enveloppe `{"data": {...}}`,
+     * même RBAC (`employees.view` via la Policy, donc managers uniquement).
+     *
+     * Le périmètre « équipe » de l'acteur est appliqué : un superviseur ne
+     * lit pas les effectifs qu'il ne voit pas dans la liste.
+     */
+    public function stats(EmployeeStatsRequest $request, EmployeeStatsService $statsService): JsonResponse
+    {
+        /** @var Employee $actor */
+        $actor = $request->user();
+
+        $this->authorize('viewAny', Employee::class);
+
+        $validated = $request->validated();
+
+        return new JsonResponse([
+            'data' => $statsService->overview(
+                $actor,
+                $validated['from'] ?? null,
+                $validated['to'] ?? null,
+            ),
+        ]);
     }
 
     public function archive(ArchiveEmployeeRequest $request, string $employeeId): JsonResponse

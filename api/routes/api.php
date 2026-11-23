@@ -668,6 +668,12 @@ Route::prefix('v1')->group(function (): void {
     // Superadmin est enregistrée dans le groupe `platform` ci-dessous.
     require __DIR__.'/modules/paiements.php';
 
+    // BC-14 INTEGRATION (#9848) — onglet « Connecteurs » côté tenant :
+    // surfaces externes du client (site, page produit Facebook, boutiques) et
+    // index des intégrations déjà existantes. La surface Superadmin est
+    // enregistrée dans le groupe `platform` ci-dessous.
+    require __DIR__.'/modules/connectors.php';
+
     // IA Module — fichier requis DANS le groupe v1 (prefix /api/v1) :
     // chemins réels /api/v1/ai/* (drift doc #4936)
     require __DIR__.'/ai.php';
@@ -780,6 +786,31 @@ Route::prefix('v1')->group(function (): void {
         Route::put('/billing/gateways', [PlatformPaymentGatewayController::class, 'update'])->middleware('platform.permission:billing.manage');
         Route::post('/billing/gateways/{gateway}/test', [PlatformPaymentGatewayController::class, 'test'])
             ->where('gateway', '[a-z]+')->middleware('platform.permission:billing.manage');
+
+        // BC-14 INTEGRATION (#9847) — onglet « Connecteurs » côté plateforme :
+        // connexion DYNAMIQUE des comptes externes de l'éditeur (banques qui
+        // reçoivent les paiements des tenants, PSP, services), plus un index
+        // en lecture des intégrations existantes. Les secrets sont chiffrés au
+        // repos et write-only ; le formulaire est piloté par le schéma du
+        // catalogue, donc ajouter un type de connecteur ne demande aucun code.
+        Route::prefix('connectors')->group(function (): void {
+            Route::get('/catalog', [\App\Modules\Connectors\Interfaces\Api\V1\Controllers\PlatformConnectorController::class, 'catalog'])
+                ->middleware('platform.permission:connectors.view');
+            Route::get('/overview', [\App\Modules\Connectors\Interfaces\Api\V1\Controllers\PlatformConnectorController::class, 'overview'])
+                ->middleware('platform.permission:connectors.view');
+            Route::get('/connections', [\App\Modules\Connectors\Interfaces\Api\V1\Controllers\PlatformConnectorController::class, 'index'])
+                ->middleware('platform.permission:connectors.view');
+            Route::post('/connections', [\App\Modules\Connectors\Interfaces\Api\V1\Controllers\PlatformConnectorController::class, 'store'])
+                ->middleware('platform.permission:connectors.manage');
+            Route::patch('/connections/{id}', [\App\Modules\Connectors\Interfaces\Api\V1\Controllers\PlatformConnectorController::class, 'update'])
+                ->whereNumber('id')->middleware('platform.permission:connectors.manage');
+            Route::patch('/connections/{id}/status', [\App\Modules\Connectors\Interfaces\Api\V1\Controllers\PlatformConnectorController::class, 'setStatus'])
+                ->whereNumber('id')->middleware('platform.permission:connectors.manage');
+            Route::delete('/connections/{id}', [\App\Modules\Connectors\Interfaces\Api\V1\Controllers\PlatformConnectorController::class, 'destroy'])
+                ->whereNumber('id')->middleware('platform.permission:connectors.manage');
+            Route::post('/connections/{id}/test', [\App\Modules\Connectors\Interfaces\Api\V1\Controllers\PlatformConnectorController::class, 'test'])
+                ->whereNumber('id')->middleware('platform.permission:connectors.manage');
+        });
         // BC-38 PAIEMENTS (#8690) — registre des moyens de paiement de la
         // plateforme. Ne pas confondre avec `/billing/gateways` ci-dessus
         // (BC-21 BILLING : passerelles d'abonnement Stripe/Chargily). Ici il

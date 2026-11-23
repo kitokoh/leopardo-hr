@@ -14,6 +14,7 @@ use App\Events\TaxRateSubmitted;
 use App\Listeners\NotifyTaxRateValidation;
 use App\Listeners\ProcessCommissionOnPayment;
 use App\Listeners\SendInvoicePaymentReceipt;
+use App\Modules\Billing\Domain\Enums\InvoiceStatus;
 use App\Modules\Billing\Domain\Models\Invoice;
 use App\Modules\Payroll\Domain\Models\Payment;
 use App\Modules\Payroll\Domain\Models\TaxSlab;
@@ -53,6 +54,80 @@ class QueuedListenersTest extends TestCase
             CallQueuedListener::class,
             fn (CallQueuedListener $job): bool => $job->class === SendInvoicePaymentReceipt::class
                 && $job->method === 'handle',
+        );
+        Mail::assertNothingSent();
+    }
+
+    /**
+     * #9757 — une facture payée produit EXACTEMENT UN reçu, jamais deux.
+     *
+     * Le listener pouvait être déclenché deux fois : une fois par l'entrée
+     * `$listen` de `EventServiceProvider`, une fois par la découverte
+     * automatique d'événements de Laravel 11 (forme `Class@handle`). Le
+     * symptôme était un client qui recevait deux fois le même reçu PDF pour un
+     * seul paiement.
+     *
+     * Ce test COMPTE les envois au lieu de vérifier « au moins un » : c'est le
+     * seul moyen d'attraper une double inscription. `assertPushed` sans
+     * prédicat de comptage ne prouve rien sur le doublon.
+     */
+    public function test_one_paid_invoice_dispatches_exactly_one_receipt(): void
+    {
+        Queue::fake();
+        Mail::fake();
+
+        InvoicePaid::dispatch(new Invoice);
+
+        // `assertPushedTimes` compte les occurrences : c'est le seul moyen
+        // d'attraper une double inscription. `assertPushed` sans comptage ne
+        // prouve rien sur le doublon.
+        Queue::assertPushedTimes(
+            CallQueuedListener::class,
+            1,
+        );
+
+        $receiptJobs = collect(Queue::pushedJobs())
+            ->flatten(1)
+            ->filter(fn ($job): bool => ($job['job'] ?? null) instanceof CallQueuedListener
+                && $job['job']->class === SendInvoicePaymentReceipt::class);
+
+        $this->assertCount(1, $receiptJobs, 'Une facture payée doit produire exactement un reçu.');
+    }
+
+    /**
+     * #9757 — la re-transition idempotente `paid → paid` ne renvoie pas de reçu.
+     *
+     * C'est le cas des webhooks provider rejoués : Stripe peut réémettre
+     * `invoice.paid` pour la même facture. Le modèle ne dispatche que sur une
+     * transition RÉELLE (`$current !== $status`), donc un rejeu n'envoie rien —
+     * sans quoi un client recevrait un reçu à chaque retry du provider.
+     */
+    public function test_replayed_paid_webhook_dispatches_no_additional_receipt(): void
+    {
+        Queue::fake();
+        Mail::fake();
+
+        /** @var Invoice $invoice */
+        $invoice = Invoice::query()->create([
+            'company_id' => (string) \Illuminate\Support\Str::uuid(),
+            'subscription_id' => null,
+            'number' => 'INV-REPLAY-'.uniqid(),
+            'period' => '2026-11',
+            'amount' => 99.00,
+            'tax_amount' => 0,
+            'total' => 99.00,
+            'currency' => 'EUR',
+            'status' => InvoiceStatus::Paid->value,
+            'due_date' => '2026-12-01',
+        ]);
+
+        // Rejeu du webhook : la facture est DÉJÀ `paid`, la transition est
+        // idempotente et ne doit produire aucun nouveau reçu.
+        $invoice->transitionTo(InvoiceStatus::Paid);
+
+        Queue::assertNotPushed(
+            CallQueuedListener::class,
+            fn (CallQueuedListener $job): bool => $job->class === SendInvoicePaymentReceipt::class,
         );
         Mail::assertNothingSent();
     }

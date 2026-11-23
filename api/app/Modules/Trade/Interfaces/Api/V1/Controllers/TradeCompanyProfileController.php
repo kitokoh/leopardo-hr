@@ -113,11 +113,19 @@ class TradeCompanyProfileController extends Controller
             // facultatif dans le payload), et `hq_country` étant NOT NULL en
             // base, toute création de profil sans pays explicite partait en
             // 500. Les replis viennent donc en dernier.
+            //
+            // #9755 — le repli du pays n'est plus `'DZ'` en dur : le siège d'une
+            // entreprise est d'abord celui du TENANT (pays d'enregistrement de
+            // la société). Un tenant camerounais qui créait son profil sans
+            // saisir `hq_country` se retrouvait avec un siège en Algérie, et
+            // `TradePromotionKitBuilder` publiait « pays du siège : DZ » sur sa
+            // vitrine. `'DZ'` ne subsiste que si le tenant n'a lui-même aucun
+            // pays renseigné (colonne NOT NULL, donc cas défensif).
             $profile = TradeCompanyProfile::query()->create([
                 'company_id' => $actor->company_id,
                 ...$attributes,
-                'hq_country' => $attributes['hq_country'] ?? 'DZ',
-                'default_currency' => $attributes['default_currency'] ?? 'DZD',
+                'hq_country' => $attributes['hq_country'] ?? $this->tenantCountry($actor),
+                'default_currency' => $attributes['default_currency'] ?? $this->tenantCurrency($actor),
             ]);
         }
 
@@ -231,6 +239,36 @@ class TradeCompanyProfileController extends Controller
         $text = $this->normalizeText($value);
 
         return $text === null ? null : mb_strtoupper($text);
+    }
+
+    /**
+     * #9755 — pays d'enregistrement du tenant, repli de `hq_country`.
+     *
+     * `companies.country` est un code ISO 3166-1 alpha-2 NOT NULL : la valeur
+     * est donc toujours exploitable. La garde ci-dessous couvre le seul cas
+     * ou la resolution echoue (tenant absent de la session), et reste
+     * fail-safe plutot que de lever : creer un profil commercial ne doit pas
+     * echouer parce qu'une societe n'a pas pu etre relue.
+     */
+    private function tenantCountry(Employee $actor): string
+    {
+        $country = $this->normalizeUpper($actor->company?->country);
+
+        return $country ?? 'DZ';
+    }
+
+    /**
+     * #9755 — devise par defaut du tenant, repli de `default_currency`.
+     *
+     * Meme raisonnement que `tenantCountry()` : `companies.currency` porte la
+     * devise de la societe, et un profil Trade cree sans devise explicite doit
+     * heriter de celle du tenant, pas d'un `DZD` code en dur.
+     */
+    private function tenantCurrency(Employee $actor): string
+    {
+        $currency = $this->normalizeUpper($actor->company?->currency);
+
+        return $currency ?? 'DZD';
     }
 
     /**

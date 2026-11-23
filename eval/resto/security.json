@@ -1,0 +1,42 @@
+{
+  "branches_visible_principal": {
+    "code": 200,
+    "ids": [
+      16,
+      17
+    ]
+  },
+  "branches_visible_serveur": {
+    "code": 200,
+    "ids": [
+      16
+    ]
+  },
+  "branches_visible_livreur": {
+    "code": 200,
+    "ids": [
+      16
+    ]
+  },
+  "all_branch_ids": [
+    16,
+    17
+  ],
+  "pos_open_unassigned_branch": {
+    "code": 403,
+    "body": "{'error': 'FORBIDDEN', 'message': 'FORBIDDEN', 'localized_message': 'You do not have permission for this action.'}"
+  },
+  "cross_tenant_login": {
+    "code": 401,
+    "body": "{'error': 'INVALID_CREDENTIALS', 'message': 'INVALID_CREDENTIALS', 'localized_message': 'Email ou mot de passe incorrect.'}"
+  },
+  "public_menu_url_ok": true,
+  "public_menu": {
+    "code": 200
+  },
+  "public_menu_items": 3,
+  "public_order": {
+    "code": 403,
+    "body": "{'error': 'Invalid signature.', 'message': 'Invalid signature.', 'localized_message': 'You do not have permission for this action.'}"
+  }
+}

@@ -7,11 +7,13 @@ namespace App\Modules\SearchIntelligence\Providers;
 use App\Modules\SearchIntelligence\Application\Services\SeoIssueWorkflow;
 use App\Modules\SearchIntelligence\Domain\Contracts\LeadMetricsProviderInterface;
 use App\Modules\SearchIntelligence\Domain\Contracts\PageFetcherInterface;
+use App\Modules\SearchIntelligence\Infrastructure\Connectors\SearchIntelligenceIntegrationSource;
 use App\Modules\SearchIntelligence\Infrastructure\Services\HttpPageFetcher;
 use App\Modules\SearchIntelligence\Infrastructure\Services\NullLeadMetricsProvider;
 use App\Modules\SearchIntelligence\Infrastructure\Services\SearchIntelOverviewService;
 use App\Modules\SearchIntelligence\Infrastructure\Services\SeoPageAnalyzer;
 use App\Modules\SearchIntelligence\Infrastructure\Services\SeoPageScanner;
+use App\Shared\Contracts\Connectors\ConnectorIntegrationRegistry;
 use Illuminate\Support\ServiceProvider;
 
 /**
@@ -48,5 +50,11 @@ class SearchIntelligenceServiceProvider extends ServiceProvider
     {
         // Aucun boot actif : le module expose des routes et des services
         // passifs, sans écouteur d'événement ni commande artisan.
+
+        // #9846 — seule exception : SearchIntelligence déclare ses connecteurs
+        // SEO/SEA auprès du registre partagé de l'onglet Connecteurs (garde
+        // d'isolation #5584).
+        $this->app->make(ConnectorIntegrationRegistry::class)
+            ->register(new SearchIntelligenceIntegrationSource);
     }
 }

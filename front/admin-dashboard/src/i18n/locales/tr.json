@@ -10330,5 +10330,56 @@
       "viewPublicPage": "Herkese açık sayfamı gör",
       "solutionInactive": "PharmaManager çözümü çalışma alanınızda etkin değil."
     }
+  },
+  "connectors": {
+    "nav": "Bağlayıcılar",
+    "title": "Bağlayıcılar",
+    "subtitle": "Dışarıya bağlı her şeyi tek yerde toplayın: platform bankaları ve hesapları ile mevcut entegrasyonlar.",
+    "loading": "Yükleniyor…",
+    "loadError": "Bağlayıcılar yüklenemedi.",
+    "addConnection": "Bağlayıcı ekle",
+    "platformConnections": "Platform bağlantıları",
+    "activeCount": "{total} içinden {active} etkin",
+    "emptyConnections": "Henüz bağlayıcı yok. Başlamak için bir banka veya harici servis ekleyin.",
+    "default": "Varsayılan",
+    "test": "Test et",
+    "edit": "Düzenle",
+    "delete": "Sil",
+    "notConfigured": "Yapılandırılmadı",
+    "existingIntegrations": "Mevcut entegrasyonlar",
+    "existingIntegrationsHint": "Her entegrasyon kendi ekranını korur ve asıl kaynak odur. Bu tablo onları salt okunur olarak gruplar.",
+    "table": {
+      "integration": "Entegrasyon",
+      "state": "Durum",
+      "action": "İşlem"
+    },
+    "configuredCount": "{count} yapılandırıldı",
+    "openNativeScreen": "Ekranı aç",
+    "editConnection": "Bağlayıcıyı düzenle",
+    "newConnection": "Yeni bağlayıcı",
+    "fields": {
+      "type": "Bağlayıcı türü",
+      "typePlaceholder": "Bir tür seçin…",
+      "label": "Ad",
+      "labelPlaceholder": "Örn. Ana hesap, Kurumsal site…",
+      "selectPlaceholder": "Seçin…",
+      "secretHint": "Bekleme durumunda şifrelenir. Kayıtlı değeri korumak için boş bırakın.",
+      "secretPlaceholder": "Değeri girin"
+    },
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor…",
+    "saved": "Bağlayıcı kaydedildi.",
+    "saveError": "Kaydedilemedi.",
+    "testError": "Test başarısız oldu.",
+    "confirmDelete": "«{label}» bağlayıcısı silinsin mi?",
+    "deleted": "Bağlayıcı silindi.",
+    "deleteError": "Silinemedi.",
+    "status": {
+      "active": "Etkin",
+      "draft": "Taslak",
+      "error": "Hata",
+      "revoked": "İptal edildi"
+    }
   }
 }

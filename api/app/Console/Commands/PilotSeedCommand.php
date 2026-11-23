@@ -13,6 +13,7 @@ use Database\Seeders\FuelStationPilotSeeder;
 use Database\Seeders\RestaurantUatSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use RuntimeException;
 
 /**
@@ -211,6 +212,14 @@ class PilotSeedCommand extends Command
 
                 if (schemaTableExists('employees')) {
                     DB::table('employees')->where('company_id', $companyId)->delete();
+                }
+
+                // `user_lookups` (schéma public) porte un index UNIQUE sur
+                // `email` : sans cette purge, un `--clean` suivi d'un re-seed
+                // échoue en violation d'unicité (les comptes de démo gardent
+                // le même email). Le nettoyage doit être complet.
+                if (Schema::hasTable('public.user_lookups')) {
+                    DB::table('public.user_lookups')->where('company_id', $companyId)->delete();
                 }
 
                 $company->delete();

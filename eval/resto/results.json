@@ -1,0 +1,1128 @@
+{
+  "profiles": {
+    "principal": {
+      "login": 200
+    },
+    "gerant": {
+      "login": 200
+    },
+    "comptable": {
+      "login": 200
+    },
+    "superviseur": {
+      "login": 200
+    },
+    "chef": {
+      "login": 200
+    },
+    "serveur": {
+      "login": 200
+    },
+    "caisse": {
+      "login": 200
+    },
+    "livreur": {
+      "login": 200
+    }
+  },
+  "restaurant": {
+    "/restaurant/ping": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/branches": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/zones": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/tables": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/products": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/ingredients": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/menus": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/orders": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/kitchen/orders?branch_id=10": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 200,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/pos-sessions/current?branch_id=10": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/stock-levels": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/stock/alerts": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/purchase-orders": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/reservations": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/reviews": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/delivery-riders": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/deliveries": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/loyalty-programs": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/loyalty-customers": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/promotions": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/reports/sales": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/reports/kpis": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/reports/occupancy": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/reports/products": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/reports/cogs": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/reports/pos": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/reports/group": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/dashboard/kpis": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/health/metrics": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/suppliers": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/units": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/tax-rates": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/categories": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/hours": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/delivery-zones": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/inventory-movements": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/inventory-counts": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/receivings": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/print-jobs": {
+      "principal": 422,
+      "gerant": 422,
+      "comptable": 422,
+      "superviseur": 422,
+      "chef": 422,
+      "serveur": 422,
+      "caisse": 422,
+      "livreur": 422
+    },
+    "/restaurant/printing/bridge/health": {
+      "principal": 403,
+      "gerant": 403,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/printing/bridge/jobs": {
+      "principal": 403,
+      "gerant": 403,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/sync/status": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 200,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/sync/errors": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 200,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/sync/conflicts": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/restaurant/mobile/server/orders": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/mobile/server/tables": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/mobile/rider/deliveries": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/mobile/manager/kpis": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/mobile/manager/stock-alerts": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/mobile/manager/pos-sessions/current?branch_id=10": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/shop/token": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/restaurant/payments/configuration": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    }
+  },
+  "hr": {
+    "/employees": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/departments": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/positions": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/schedules": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/attendance/today": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/attendance/dashboard": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/attendance/anomalies": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/attendance/regularity": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/attendance/monthly-report": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/attendance/my-sessions": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/attendance/config": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/attendance/corrections": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/attendance/day-closures": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/absences": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/absences/stats": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/leave-balances": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/leave-policies": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/leave-accruals": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/payrolls": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/contracts": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/contracts/expiring": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/contracts/templates": {
+      "principal": 422,
+      "gerant": 422,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/employee-documents": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/notifications": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/expense-claims": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/expense/stats": {
+      "principal": 403,
+      "gerant": 403,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/loans": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/evaluations": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/hr/dashboard": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/dashboard/rh": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/dashboard/kpi": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/dashboard/summary": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/dashboard/recent-activity": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/me/leave-balances": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/me/contracts": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/me/documents": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/me/loans": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/me/attendance-anomalies": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/me/training-enrollments": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    }
+  },
+  "crm": {
+    "/crm/accounts": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/contacts": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/leads": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/opportunities": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/tasks": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/dashboard/pipeline": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/dashboard/quality": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/segments": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/campaigns": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/automations": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/consents": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/exports": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/crm/read-models": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 200,
+      "superviseur": 200,
+      "chef": 200,
+      "serveur": 200,
+      "caisse": 200,
+      "livreur": 200
+    },
+    "/crm/dedup/suggestions": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    },
+    "/crm/search?q=hotel": {
+      "principal": 200,
+      "gerant": 200,
+      "comptable": 403,
+      "superviseur": 403,
+      "chef": 403,
+      "serveur": 403,
+      "caisse": 403,
+      "livreur": 403
+    }
+  },
+  "workflows": {
+    "pos_open": {
+      "code": 405,
+      "body": "{'error': 'The POST method is not supported for route api/v1/restaurant/pos-sessions/open. Supported methods: GET, HEAD.', 'message': 'The POST method is not supported for route api/v1/restaurant/pos-sessions/open. Supported methods: GET, HEAD.', 'localized_message': 'An error occurred. Please try a"
+    },
+    "products_count": 6,
+    "order_create": {
+      "code": 422,
+      "body": "{'error': 'VALIDATION_ERROR', 'message': 'VALIDATION_ERROR', 'localized_message': 'Certains champs sont incorrects.', 'errors': {'order_type': ['Le champ order type est obligatoire.']}}"
+    },
+    "kitchen_queue": {
+      "code": 403,
+      "body": "{'error': \"Vous n'avez pas accès à cette ressource.\", 'message': \"Vous n'avez pas accès à cette ressource.\", 'localized_message': 'You do not have permission for this action.'}"
+    },
+    "reservation_create": {
+      "code": 422,
+      "body": "{'error': 'VALIDATION_ERROR', 'message': 'VALIDATION_ERROR', 'localized_message': 'Certains champs sont incorrects.', 'errors': {'contact_name': ['Le champ contact name est obligatoire.'], 'contact_phone': ['Le champ contact phone est obligatoire.'], 'reserved_at': ['Le champ reserved at est obligat"
+    },
+    "review_create": {
+      "code": 405,
+      "body": "{'error': 'The POST method is not supported for route api/v1/restaurant/reviews. Supported methods: GET, HEAD.', 'message': 'The POST method is not supported for route api/v1/restaurant/reviews. Supported methods: GET, HEAD.', 'localized_message': 'An error occurred. Please try again.'}"
+    },
+    "stock_movement": {
+      "code": 422,
+      "body": "{'error': 'VALIDATION_ERROR', 'message': 'VALIDATION_ERROR', 'localized_message': 'Certains champs sont incorrects.', 'errors': {'ingredient_id': ['Le champ ingredient id est obligatoire.'], 'quantity_delta': ['Le champ quantity delta est obligatoire.'], 'reason_code': ['Le champ reason code est obl"
+    }
+  },
+  "public": {
+    "menu": {
+      "code": 403,
+      "body": "{'error': 'Invalid signature.', 'message': 'Invalid signature.', 'localized_message': 'You do not have permission for this action.'}"
+    }
+  },
+  "branch_id": "10"
+}

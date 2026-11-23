@@ -31,7 +31,7 @@
           Fichiers : 212 — poids cumulé : 1340 méthodes.
           Équilibrage : panier le plus léger 223, le plus lourd 224.
 
-          Suivent un shard par sous-répertoire de tests/Feature (74 shards), chacun listant ses <file> récursivement.
+          Suivent un shard par sous-répertoire de tests/Feature (75 shards), chacun listant ses <file> récursivement.
         -->
         <testsuite name="FeatureRoot1">
             <file>tests/Feature/AIWriteActionConfirmationTest.php</file>
@@ -554,6 +554,11 @@
             <file>tests/Feature/Communication/CommunicationIntegrationTest.php</file>
             <file>tests/Feature/Communication/CommunicationModuleGateTest.php</file>
             <file>tests/Feature/Communication/CommunicationReplyTest.php</file>
+        </testsuite>
+        <testsuite name="Connectors">
+            <file>tests/Feature/Connectors/ConnectorSchemaValidatorTest.php</file>
+            <file>tests/Feature/Connectors/PlatformConnectorApiTest.php</file>
+            <file>tests/Feature/Connectors/TenantConnectorApiTest.php</file>
         </testsuite>
         <testsuite name="Console">
             <file>tests/Feature/Console/AuditSchedulerDuplicatesTest.php</file>
@@ -1202,6 +1207,7 @@
             <file>tests/Feature/Restaurant/RestaurantPosSessionCloseEventTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPosSessionPartialUniqueTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPosSessionTest.php</file>
+            <file>tests/Feature/Restaurant/RestaurantPrintBridgeEndToEndTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintBridgeTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintJobPersistenceTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintJobTest.php</file>
@@ -2033,6 +2039,9 @@
             <file>tests/Feature/Communication/CommunicationModuleGateTest.php</file>
             <file>tests/Feature/Communication/CommunicationReplyTest.php</file>
             <file>tests/Feature/CompanyOnboardingIntegrationTest.php</file>
+            <file>tests/Feature/Connectors/ConnectorSchemaValidatorTest.php</file>
+            <file>tests/Feature/Connectors/PlatformConnectorApiTest.php</file>
+            <file>tests/Feature/Connectors/TenantConnectorApiTest.php</file>
             <file>tests/Feature/Console/AuditSchedulerDuplicatesTest.php</file>
             <file>tests/Feature/Console/LeaPilotReportCommandTest.php</file>
             <file>tests/Feature/Console/ModulesConsolidateApplyTest.php</file>
@@ -2606,6 +2615,7 @@
             <file>tests/Feature/Restaurant/RestaurantPosSessionCloseEventTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPosSessionPartialUniqueTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPosSessionTest.php</file>
+            <file>tests/Feature/Restaurant/RestaurantPrintBridgeEndToEndTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintBridgeTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintJobPersistenceTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintJobTest.php</file>

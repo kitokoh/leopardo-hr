@@ -41,6 +41,7 @@ use App\Policies\CrmDashboardPolicy;
 use App\Policies\CrmSearchPolicy;
 use App\Policies\CrmTaskPolicy;
 use App\Policies\ExportPolicy;
+use App\Policies\ExpenseClaimPolicy;
 use App\Policies\RecruitmentPolicy;
 use App\Shared\Contracts\Discovery\PublicActivityProvider;
 use App\Shared\Contracts\Discovery\PublicDiscoverableProvider;
@@ -337,6 +338,15 @@ class AppServiceProvider extends ServiceProvider
         // La Gate était appelée par le contrôleur mais jamais définie :
         // `cannot()` renvoyait toujours vrai → 403 pour tout le monde.
         Gate::define('recruitment.view', [RecruitmentPolicy::class, 'view']);
+
+        // Issue #9550 — KPIs des notes de frais (`GET /expense/stats`).
+        // Même trou que #9680 : le contrôleur appelle `expense.reports` /
+        // `expense.manage` mais aucune Gate n'était définie, donc `cannot()`
+        // renvoyait toujours vrai → 403 pour TOUS les profils, y compris le
+        // principal et le comptable. On branche les Gates sur la policy
+        // existante (approbation = principal/comptable/rh).
+        Gate::define('expense.reports', [ExpenseClaimPolicy::class, 'viewAny']);
+        Gate::define('expense.manage', [ExpenseClaimPolicy::class, 'approve']);
 
         Gate::define('viewApiDocs', function (?Employee $user = null) {
             // Pour l'instant, on autorise l'accès à la doc en dev, ou on peut exiger un accès Super Admin

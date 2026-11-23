@@ -138,12 +138,23 @@ function rtmxIdempotencyKey(method: string, url: string, body?: unknown): string
 export class ApiError extends Error {
   status: number;
   code?: string;
+  /**
+   * Corps JSON de la réponse d'erreur, quand il y en a un.
+   *
+   * `message` ne porte qu'un texte déjà résumé (`localized_message`). Certaines
+   * erreurs — notamment les violations de schéma des connecteurs (#9846) —
+   * portent un détail PAR CHAMP dans `violations` : sans le corps brut, l'écran
+   * ne pourrait afficher qu'un message générique et l'utilisateur ne saurait
+   * pas quel champ corriger.
+   */
+  payload?: unknown;
 
-  constructor(message: string, status: number, code?: string) {
+  constructor(message: string, status: number, code?: string, payload?: unknown) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.code = code;
+    this.payload = payload;
   }
 }
 
@@ -310,7 +321,7 @@ export async function apiFetch(
       ? String((payload as Record<string, unknown>).error)
       : undefined;
 
-    throw new ApiError(message, response.status, code);
+    throw new ApiError(message, response.status, code, payload);
   }
 
   return response;
