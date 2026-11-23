@@ -32,4 +32,9 @@ return [
     'marketplace' => [
         'booking_not_found' => 'حجز السوق غير موجود.',
     ],
+    'hotel' => [
+        'departure_after_arrival' => 'يجب أن يكون تاريخ المغادرة بعد تاريخ الوصول.',
+        'room_unavailable' => 'الغرفة غير متاحة في :date: لا توجد إتاحة كافية.',
+        'below_sold_rooms' => 'لا يمكن النزول تحت عدد الغرف المباعة بالفعل في :date.',
+    ],
 ];

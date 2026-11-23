@@ -32,4 +32,9 @@ return [
     'marketplace' => [
         'booking_not_found' => 'Pazar yeri rezervasyonu bulunamadı.',
     ],
+    'hotel' => [
+        'departure_after_arrival' => 'Çıkış tarihi giriş tarihinden sonra olmalıdır.',
+        'room_unavailable' => ':date tarihinde oda müsait değil: yeterli müsaitlik yok.',
+        'below_sold_rooms' => ':date tarihinde satılmış oda sayısının altına inilemez.',
+    ],
 ];

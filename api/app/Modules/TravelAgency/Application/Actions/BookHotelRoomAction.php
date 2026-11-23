@@ -53,7 +53,7 @@ final class BookHotelRoomAction
         $rooms = max(1, (int) ($data['rooms'] ?? 1));
 
         if ($nights < 1) {
-            abort(422, 'La date de départ doit être postérieure à la date d\'arrivée.');
+            abort(422, __('travel.hotel.departure_after_arrival'));
         }
 
         return DB::transaction(function () use ($room, $checkIn, $checkOut, $nights, $rooms, $idempotencyKey): TravelHotelBooking {
@@ -86,7 +86,7 @@ final class BookHotelRoomAction
                 }
 
                 if ($row->remaining() < $rooms) {
-                    abort(409, 'Chambre indisponible le '.$date.' : plus assez de disponibilités.');
+                    abort(409, __('travel.hotel.room_unavailable', ['date' => $date]));
                 }
 
                 $cursor->addDay();

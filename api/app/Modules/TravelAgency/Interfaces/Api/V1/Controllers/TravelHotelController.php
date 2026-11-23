@@ -327,7 +327,7 @@ class TravelHotelController extends Controller
 
                 if ($row instanceof TravelHotelRoomInventory) {
                     if ($roomsTotal < $row->rooms_booked) {
-                        abort(422, 'Impossible de descendre sous le nombre de chambres déjà vendues le '.$date.'.');
+                        abort(422, __('travel.hotel.below_sold_rooms', ['date' => $date]));
                     }
 
                     $row->forceFill(['rooms_total' => $roomsTotal, 'status' => $status])->save();
