@@ -430,7 +430,7 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // dernière déclaration, la première implémentation était inatteignable.
         // Déclaration canonique unique conservée dans le bloc « webhooks
         // sortants » plus haut ; seul le `DELETE` (absent de ce bloc) reste ici.
-        Route::delete('/webhook-subscriptions/{subscription}', [TravelWebhookSubscriptionController::class, 'destroy']);
+        Route::delete('/webhook-subscriptions/{travelWebhookSubscription}', [TravelWebhookSubscriptionController::class, 'destroy']);
         Route::get('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'show']);
         // #7445 — ce second bloc redéclarait les routes de fidélité, dont
         // `/loyalty/redeem` vers une méthode exigeant un paramètre de route
@@ -485,8 +485,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/quizzes/{travelQuiz}/publish', [TravelQuizController::class, 'publish']);
         Route::delete('/quiz-questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
         Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
-        Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
-        Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);
+        Route::put('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'update']);
+        Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
 
         // ── Alias /travel/community/* rétro-compatibles pour la suite Feature (#8127) ──
         Route::prefix('community')->group(function (): void {
@@ -531,8 +531,8 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
 
             Route::post('/tourist-sites', [TravelTouristSiteController::class, 'store']);
             Route::get('/tourist-sites/search', [TravelTouristSiteController::class, 'search']);
-            Route::put('/tourist-sites/{site}', [TravelTouristSiteController::class, 'update']);
-            Route::delete('/tourist-sites/{site}', [TravelTouristSiteController::class, 'destroy']);
+            Route::put('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'update']);
+            Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
         });
 
         Route::get('/contacts', [TravelCustomerContactController::class, 'index']);

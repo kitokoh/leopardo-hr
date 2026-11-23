@@ -119,7 +119,15 @@ class EmployeeStatsService
         // Seuls les salaires MENSUELS sont additionnables : un horaire ou un
         // journalier mélangé à un mensuel produirait un total qui ne veut rien
         // dire. On expose donc le nombre de contrats réellement pris en compte.
-        $monthly = $active->filter(static fn (Employee $e): bool => $e->salary_type === 'monthly' && $e->salary_base !== null);
+        // #eval-2026-11-23 — `salary_type` vaut `fixed` pour un salaire
+        // mensuel (enum DB fixed|hourly|daily). Filtrer sur `monthly`
+        // renvoyait toujours 0 : le total de masse salariale etait faux.
+        // Un `salary_base` a 0 (valeur par defaut de la colonne) n'est pas un
+        // salaire : il ne doit ni peser dans la moyenne ni gonfler l'effectif
+        // « avec salaire ».
+        $monthly = $active->filter(static fn (Employee $e): bool => $e->salary_type === 'fixed'
+            && $e->salary_base !== null
+            && (float) $e->salary_base > 0.0);
 
         $monthlyTotal = (float) $monthly->sum(fn (Employee $e): float => (float) $e->salary_base);
 

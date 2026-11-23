@@ -26,9 +26,14 @@ class ConnectorSchemaViolationException extends DomainException
      */
     public function __construct(
         private readonly array $violations,
-        string $message = __('connectors.schema_violation'),
+        ?string $message = null,
     ) {
-        parent::__construct($message, 422, self::ERROR_CODE);
+        // #eval-2026-11-23 — `__()` n'est pas une expression constante : le
+        // l'utiliser comme valeur par defaut provoquait un fatal
+        // « Constant expression contains invalid operations » des que la
+        // classe etait chargee (toute la suite de tests tombait). La
+        // traduction est donc resolue a l'execution.
+        parent::__construct($message ?? __('connectors.schema_violation'), 422, self::ERROR_CODE);
     }
 
     /**
