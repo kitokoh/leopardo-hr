@@ -15,6 +15,7 @@ declare(strict_types=1);
  * #3727).
  */
 
+use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmActivityController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmAutomationController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmCampaignController;
 use App\Modules\CRM\Interfaces\Api\V1\Controllers\CrmChannelController;
@@ -178,6 +179,15 @@ ModuleRoutes::tenantModule('crm', function (): void {
     // ── Dashboard pipeline & qualité (#5721) ────────────────────────────────
     Route::get('/dashboard/pipeline', [CrmDashboardController::class, 'pipeline']);
     Route::get('/dashboard/quality', [CrmDashboardController::class, 'quality']);
+
+    // ── Journal d'activités tenant (#5720) ────────────────────────────────
+    // Contrat documenté (CRM_API_MATRICE_TENANT_PLATFORM §2.5) mais jamais
+    // routé : `/crm/activities` renvoyait 404 alors que la timeline par
+    // account existait. Append-only : aucune route de mutation.
+    Route::middleware('api.manager:principal,rh,marketing,module:crm')->group(function (): void {
+        Route::get('/activities', [CrmActivityController::class, 'index']);
+        Route::post('/activities', [CrmActivityController::class, 'store']);
+    });
 
     // ── Tâches, timeline (#5720) ──────────────────────────────────────────────
     Route::middleware('api.manager:principal,rh,marketing,module:crm')->group(function (): void {

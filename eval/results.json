@@ -1,0 +1,1418 @@
+{
+  "principal": {
+    "_login": {
+      "http": "200",
+      "token": true,
+      "role": null,
+      "manager_role": null
+    },
+    "auth.me": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "auth.contexts": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "auth.2fa.status": {
+      "http": "200",
+      "summary": "obj:enabled,mfa_required"
+    },
+    "auth.profile.patch": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "employees.list": {
+      "http": "200",
+      "summary": "list[11]"
+    },
+    "employees.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "departments.list": {
+      "http": "200",
+      "summary": "list[4]"
+    },
+    "departments.create": {
+      "http": "201",
+      "summary": "obj:id,company_id,name,manager_id,created_at"
+    },
+    "positions.list": {
+      "http": "200",
+      "summary": "list[8]"
+    },
+    "contracts.list": {
+      "http": "200",
+      "summary": "list[6]"
+    },
+    "contracts.expiring": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "contracts.templates": {
+      "http": "422",
+      "summary": "error={'code': 'CONTRACT_TEMPLATE_NOT_FOUND', 'message': 'Modèle de contrat indisponible pour ce pays (DZ/MA/TN/SN supportés).'}"
+    },
+    "absences.list": {
+      "http": "200",
+      "summary": "list[4]"
+    },
+    "absences.stats": {
+      "http": "200",
+      "summary": "obj:period,total_absences,total_days,by_status,by_type,top_employees"
+    },
+    "absences.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "salary-advances.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "expense-claims.list": {
+      "http": "200",
+      "summary": "list[2]"
+    },
+    "expense-claims.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "attendance.list": {
+      "http": "200",
+      "summary": "list[20]"
+    },
+    "attendance.today": {
+      "http": "200",
+      "summary": "obj:mode,items,meta"
+    },
+    "attendance.dashboard": {
+      "http": "200",
+      "summary": "obj:today,stats,pending"
+    },
+    "attendance.my-sessions": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "attendance.anomalies": {
+      "http": "200",
+      "summary": "obj:period,summary,items"
+    },
+    "attendance.regularity": {
+      "http": "200",
+      "summary": "obj:employee_id,period,score,score_label,breakdown,weights"
+    },
+    "attendance.config": {
+      "http": "200",
+      "summary": "obj:mode,can_override,gps_enabled,geofence,requires_consent,requires_punch_photo"
+    },
+    "attendance.checkin": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "schedules.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "sites.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "payroll-runs.list": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "payroll-runs.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "accounting.dashboard": {
+      "http": "200",
+      "summary": "obj:period,invoices,collections,expenses,outstanding,snapshot"
+    },
+    "accounting.documents": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "accounting.journal": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "accounting.chart": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "accounting.contacts": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "accounting.tax-rates": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "accounting.settings": {
+      "http": "200",
+      "summary": "obj:currency,document_language,template_style,payment_terms,legal_mentions,tva_rates"
+    },
+    "crm.accounts": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.leads": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.opportunities": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.activities": {
+      "http": "404",
+      "summary": "error=RESOURCE_NOT_FOUND"
+    },
+    "billing.subscription": {
+      "http": "404",
+      "summary": "msg=Aucun abonnement actif."
+    },
+    "billing.invoices": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "notifications.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "conversations.list": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "recruitment.jobs": {
+      "http": "200",
+      "summary": "list[3]"
+    },
+    "company.profile": {
+      "http": "200",
+      "summary": "obj:id,name,address,city,country,phone"
+    },
+    "company.roles": {
+      "http": "200",
+      "summary": "obj:roles,catalog"
+    },
+    "company.branding": {
+      "http": "200",
+      "summary": "obj:company_id,branding"
+    },
+    "company.banking": {
+      "http": "200",
+      "summary": "obj:company_iban,company_bic,sepa_ready,country"
+    },
+    "audit-logs.list": {
+      "http": "200",
+      "summary": "list[6]"
+    },
+    "travel.trips": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "restaurant.branches": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "pharmacy.products": {
+      "http": "403",
+      "summary": "error=PHARMACY_SOLUTION_INACTIVE"
+    },
+    "fuel-station.stations": {
+      "http": "403",
+      "summary": "error=FUEL_SOLUTION_INACTIVE"
+    },
+    "platform.companies": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    },
+    "admin.dashboard.stats": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    }
+  },
+  "rh": {
+    "_login": {
+      "http": "200",
+      "token": true,
+      "role": null,
+      "manager_role": null
+    },
+    "auth.me": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "auth.contexts": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "auth.2fa.status": {
+      "http": "200",
+      "summary": "obj:enabled,mfa_required"
+    },
+    "auth.profile.patch": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "employees.list": {
+      "http": "200",
+      "summary": "list[11]"
+    },
+    "employees.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "departments.list": {
+      "http": "200",
+      "summary": "list[5]"
+    },
+    "departments.create": {
+      "http": "201",
+      "summary": "obj:id,company_id,name,manager_id,created_at"
+    },
+    "positions.list": {
+      "http": "200",
+      "summary": "list[8]"
+    },
+    "contracts.list": {
+      "http": "200",
+      "summary": "list[6]"
+    },
+    "contracts.expiring": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "contracts.templates": {
+      "http": "422",
+      "summary": "error={'code': 'CONTRACT_TEMPLATE_NOT_FOUND', 'message': 'Modèle de contrat indisponible pour ce pays (DZ/MA/TN/SN supportés).'}"
+    },
+    "absences.list": {
+      "http": "200",
+      "summary": "list[4]"
+    },
+    "absences.stats": {
+      "http": "200",
+      "summary": "obj:period,total_absences,total_days,by_status,by_type,top_employees"
+    },
+    "absences.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "salary-advances.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "expense-claims.list": {
+      "http": "200",
+      "summary": "list[2]"
+    },
+    "expense-claims.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "attendance.list": {
+      "http": "200",
+      "summary": "list[20]"
+    },
+    "attendance.today": {
+      "http": "200",
+      "summary": "obj:mode,items,meta"
+    },
+    "attendance.dashboard": {
+      "http": "200",
+      "summary": "obj:today,stats,pending"
+    },
+    "attendance.my-sessions": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "attendance.anomalies": {
+      "http": "200",
+      "summary": "obj:period,summary,items"
+    },
+    "attendance.regularity": {
+      "http": "200",
+      "summary": "obj:employee_id,period,score,score_label,breakdown,weights"
+    },
+    "attendance.config": {
+      "http": "200",
+      "summary": "obj:mode,can_override,gps_enabled,geofence,requires_consent,requires_punch_photo"
+    },
+    "attendance.checkin": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "schedules.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "sites.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "payroll-runs.list": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "payroll-runs.create": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.dashboard": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.documents": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.journal": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.chart": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.contacts": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.tax-rates": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.settings": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "crm.accounts": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.leads": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.opportunities": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.activities": {
+      "http": "404",
+      "summary": "error=RESOURCE_NOT_FOUND"
+    },
+    "billing.subscription": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "billing.invoices": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "notifications.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "conversations.list": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "recruitment.jobs": {
+      "http": "200",
+      "summary": "list[3]"
+    },
+    "company.profile": {
+      "http": "200",
+      "summary": "obj:id,name,address,city,country,phone"
+    },
+    "company.roles": {
+      "http": "200",
+      "summary": "obj:roles,catalog"
+    },
+    "company.branding": {
+      "http": "200",
+      "summary": "obj:company_id,branding"
+    },
+    "company.banking": {
+      "http": "200",
+      "summary": "obj:company_iban,company_bic,sepa_ready,country"
+    },
+    "audit-logs.list": {
+      "http": "200",
+      "summary": "list[7]"
+    },
+    "travel.trips": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "restaurant.branches": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "pharmacy.products": {
+      "http": "403",
+      "summary": "error=PHARMACY_SOLUTION_INACTIVE"
+    },
+    "fuel-station.stations": {
+      "http": "403",
+      "summary": "error=FUEL_SOLUTION_INACTIVE"
+    },
+    "platform.companies": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    },
+    "admin.dashboard.stats": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    }
+  },
+  "dept_mgr": {
+    "_login": {
+      "http": "200",
+      "token": true,
+      "role": null,
+      "manager_role": null
+    },
+    "auth.me": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "auth.contexts": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "auth.2fa.status": {
+      "http": "200",
+      "summary": "obj:enabled,mfa_required"
+    },
+    "auth.profile.patch": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "employees.list": {
+      "http": "200",
+      "summary": "list[5]"
+    },
+    "employees.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "departments.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "departments.create": {
+      "http": "201",
+      "summary": "obj:id,company_id,name,manager_id,created_at"
+    },
+    "positions.list": {
+      "http": "200",
+      "summary": "list[8]"
+    },
+    "contracts.list": {
+      "http": "200",
+      "summary": "list[6]"
+    },
+    "contracts.expiring": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "contracts.templates": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "absences.list": {
+      "http": "200",
+      "summary": "list[4]"
+    },
+    "absences.stats": {
+      "http": "200",
+      "summary": "obj:period,total_absences,total_days,by_status,by_type,top_employees"
+    },
+    "absences.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "salary-advances.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "expense-claims.list": {
+      "http": "200",
+      "summary": "list[2]"
+    },
+    "expense-claims.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "attendance.list": {
+      "http": "200",
+      "summary": "list[20]"
+    },
+    "attendance.today": {
+      "http": "200",
+      "summary": "obj:mode,items,meta"
+    },
+    "attendance.dashboard": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "attendance.my-sessions": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "attendance.anomalies": {
+      "http": "200",
+      "summary": "obj:period,summary,items"
+    },
+    "attendance.regularity": {
+      "http": "200",
+      "summary": "obj:employee_id,period,score,score_label,breakdown,weights"
+    },
+    "attendance.config": {
+      "http": "200",
+      "summary": "obj:mode,can_override,gps_enabled,geofence,requires_consent,requires_punch_photo"
+    },
+    "attendance.checkin": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "schedules.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "sites.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "payroll-runs.list": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "payroll-runs.create": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.dashboard": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.documents": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.journal": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.chart": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.contacts": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.tax-rates": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.settings": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "crm.accounts": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.leads": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.opportunities": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.activities": {
+      "http": "404",
+      "summary": "error=RESOURCE_NOT_FOUND"
+    },
+    "billing.subscription": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "billing.invoices": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "notifications.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "conversations.list": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "recruitment.jobs": {
+      "http": "200",
+      "summary": "list[3]"
+    },
+    "company.profile": {
+      "http": "200",
+      "summary": "obj:id,name,address,city,country,phone"
+    },
+    "company.roles": {
+      "http": "200",
+      "summary": "obj:roles,catalog"
+    },
+    "company.branding": {
+      "http": "200",
+      "summary": "obj:company_id,branding"
+    },
+    "company.banking": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "audit-logs.list": {
+      "http": "403",
+      "summary": "error=Accès réservé au principal"
+    },
+    "travel.trips": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "restaurant.branches": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "pharmacy.products": {
+      "http": "403",
+      "summary": "error=PHARMACY_SOLUTION_INACTIVE"
+    },
+    "fuel-station.stations": {
+      "http": "403",
+      "summary": "error=FUEL_SOLUTION_INACTIVE"
+    },
+    "platform.companies": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    },
+    "admin.dashboard.stats": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    }
+  },
+  "comptable": {
+    "_login": {
+      "http": "200",
+      "token": true,
+      "role": null,
+      "manager_role": null
+    },
+    "auth.me": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "auth.contexts": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "auth.2fa.status": {
+      "http": "200",
+      "summary": "obj:enabled,mfa_required"
+    },
+    "auth.profile.patch": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "employees.list": {
+      "http": "200",
+      "summary": "list[11]"
+    },
+    "employees.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "departments.list": {
+      "http": "200",
+      "summary": "list[7]"
+    },
+    "departments.create": {
+      "http": "201",
+      "summary": "obj:id,company_id,name,manager_id,created_at"
+    },
+    "positions.list": {
+      "http": "200",
+      "summary": "list[8]"
+    },
+    "contracts.list": {
+      "http": "200",
+      "summary": "list[6]"
+    },
+    "contracts.expiring": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "contracts.templates": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "absences.list": {
+      "http": "200",
+      "summary": "list[4]"
+    },
+    "absences.stats": {
+      "http": "200",
+      "summary": "obj:period,total_absences,total_days,by_status,by_type,top_employees"
+    },
+    "absences.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "salary-advances.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "expense-claims.list": {
+      "http": "200",
+      "summary": "list[2]"
+    },
+    "expense-claims.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "attendance.list": {
+      "http": "200",
+      "summary": "list[20]"
+    },
+    "attendance.today": {
+      "http": "200",
+      "summary": "obj:mode,items,meta"
+    },
+    "attendance.dashboard": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "attendance.my-sessions": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "attendance.anomalies": {
+      "http": "200",
+      "summary": "obj:period,summary,items"
+    },
+    "attendance.regularity": {
+      "http": "200",
+      "summary": "obj:employee_id,period,score,score_label,breakdown,weights"
+    },
+    "attendance.config": {
+      "http": "200",
+      "summary": "obj:mode,can_override,gps_enabled,geofence,requires_consent,requires_punch_photo"
+    },
+    "attendance.checkin": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "schedules.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "sites.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "payroll-runs.list": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "payroll-runs.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "accounting.dashboard": {
+      "http": "200",
+      "summary": "obj:period,invoices,collections,expenses,outstanding,snapshot"
+    },
+    "accounting.documents": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "accounting.journal": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "accounting.chart": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "accounting.contacts": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "accounting.tax-rates": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "accounting.settings": {
+      "http": "200",
+      "summary": "obj:currency,document_language,template_style,payment_terms,legal_mentions,tva_rates"
+    },
+    "crm.accounts": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.leads": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.opportunities": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.activities": {
+      "http": "404",
+      "summary": "error=RESOURCE_NOT_FOUND"
+    },
+    "billing.subscription": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "billing.invoices": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "notifications.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "conversations.list": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "recruitment.jobs": {
+      "http": "200",
+      "summary": "list[3]"
+    },
+    "company.profile": {
+      "http": "200",
+      "summary": "obj:id,name,address,city,country,phone"
+    },
+    "company.roles": {
+      "http": "200",
+      "summary": "obj:roles,catalog"
+    },
+    "company.branding": {
+      "http": "200",
+      "summary": "obj:company_id,branding"
+    },
+    "company.banking": {
+      "http": "200",
+      "summary": "obj:company_iban,company_bic,sepa_ready,country"
+    },
+    "audit-logs.list": {
+      "http": "403",
+      "summary": "error=Accès réservé au principal"
+    },
+    "travel.trips": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "restaurant.branches": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "pharmacy.products": {
+      "http": "403",
+      "summary": "error=PHARMACY_SOLUTION_INACTIVE"
+    },
+    "fuel-station.stations": {
+      "http": "403",
+      "summary": "error=FUEL_SOLUTION_INACTIVE"
+    },
+    "platform.companies": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    },
+    "admin.dashboard.stats": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    }
+  },
+  "superviseur": {
+    "_login": {
+      "http": "200",
+      "token": true,
+      "role": null,
+      "manager_role": null
+    },
+    "auth.me": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "auth.contexts": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "auth.2fa.status": {
+      "http": "200",
+      "summary": "obj:enabled,mfa_required"
+    },
+    "auth.profile.patch": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "employees.list": {
+      "http": "200",
+      "summary": "list[3]"
+    },
+    "employees.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "departments.list": {
+      "http": "200",
+      "summary": "list[8]"
+    },
+    "departments.create": {
+      "http": "201",
+      "summary": "obj:id,company_id,name,manager_id,created_at"
+    },
+    "positions.list": {
+      "http": "200",
+      "summary": "list[8]"
+    },
+    "contracts.list": {
+      "http": "200",
+      "summary": "list[6]"
+    },
+    "contracts.expiring": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "contracts.templates": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "absences.list": {
+      "http": "200",
+      "summary": "list[4]"
+    },
+    "absences.stats": {
+      "http": "200",
+      "summary": "obj:period,total_absences,total_days,by_status,by_type,top_employees"
+    },
+    "absences.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "salary-advances.list": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "expense-claims.list": {
+      "http": "200",
+      "summary": "list[2]"
+    },
+    "expense-claims.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "attendance.list": {
+      "http": "200",
+      "summary": "list[20]"
+    },
+    "attendance.today": {
+      "http": "200",
+      "summary": "obj:mode,items,meta"
+    },
+    "attendance.dashboard": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "attendance.my-sessions": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "attendance.anomalies": {
+      "http": "200",
+      "summary": "obj:period,summary,items"
+    },
+    "attendance.regularity": {
+      "http": "200",
+      "summary": "obj:employee_id,period,score,score_label,breakdown,weights"
+    },
+    "attendance.config": {
+      "http": "200",
+      "summary": "obj:mode,can_override,gps_enabled,geofence,requires_consent,requires_punch_photo"
+    },
+    "attendance.checkin": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "schedules.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "sites.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "payroll-runs.list": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "payroll-runs.create": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.dashboard": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.documents": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.journal": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.chart": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.contacts": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.tax-rates": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "accounting.settings": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "crm.accounts": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.leads": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.opportunities": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "crm.activities": {
+      "http": "404",
+      "summary": "error=RESOURCE_NOT_FOUND"
+    },
+    "billing.subscription": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "billing.invoices": {
+      "http": "403",
+      "summary": "error=INSUFFICIENT_ROLE"
+    },
+    "notifications.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "conversations.list": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "recruitment.jobs": {
+      "http": "200",
+      "summary": "list[3]"
+    },
+    "company.profile": {
+      "http": "200",
+      "summary": "obj:id,name,address,city,country,phone"
+    },
+    "company.roles": {
+      "http": "200",
+      "summary": "obj:roles,catalog"
+    },
+    "company.branding": {
+      "http": "200",
+      "summary": "obj:company_id,branding"
+    },
+    "company.banking": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "audit-logs.list": {
+      "http": "403",
+      "summary": "error=Accès réservé au principal"
+    },
+    "travel.trips": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "restaurant.branches": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "pharmacy.products": {
+      "http": "403",
+      "summary": "error=PHARMACY_SOLUTION_INACTIVE"
+    },
+    "fuel-station.stations": {
+      "http": "403",
+      "summary": "error=FUEL_SOLUTION_INACTIVE"
+    },
+    "platform.companies": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    },
+    "admin.dashboard.stats": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    }
+  },
+  "employe": {
+    "_login": {
+      "http": "200",
+      "token": true,
+      "role": null,
+      "manager_role": null
+    },
+    "auth.me": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "auth.contexts": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "auth.2fa.status": {
+      "http": "200",
+      "summary": "obj:enabled,mfa_required"
+    },
+    "auth.profile.patch": {
+      "http": "200",
+      "summary": "obj:id,matricule,company_id,first_name,middle_name,last_name"
+    },
+    "employees.list": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "employees.create": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "departments.list": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "departments.create": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "positions.list": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "contracts.list": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "contracts.expiring": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "contracts.templates": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "absences.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "absences.stats": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "absences.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "salary-advances.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "expense-claims.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "expense-claims.create": {
+      "http": "422",
+      "summary": "error=VALIDATION_ERROR"
+    },
+    "attendance.list": {
+      "http": "200",
+      "summary": "list[13]"
+    },
+    "attendance.today": {
+      "http": "200",
+      "summary": "obj:mode,item,sessions,summary"
+    },
+    "attendance.dashboard": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "attendance.my-sessions": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "attendance.anomalies": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "attendance.regularity": {
+      "http": "200",
+      "summary": "obj:employee_id,period,score,score_label,breakdown,weights"
+    },
+    "attendance.config": {
+      "http": "200",
+      "summary": "obj:mode,can_override,gps_enabled,geofence,requires_consent,requires_punch_photo"
+    },
+    "attendance.checkin": {
+      "http": "201",
+      "summary": "obj:id,employee_id,company_id,employee,date,session_number"
+    },
+    "schedules.list": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "sites.list": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "payroll-runs.list": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "payroll-runs.create": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "accounting.dashboard": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "accounting.documents": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "accounting.journal": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "accounting.chart": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "accounting.contacts": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "accounting.tax-rates": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "accounting.settings": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "crm.accounts": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "crm.leads": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "crm.opportunities": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "crm.activities": {
+      "http": "404",
+      "summary": "error=RESOURCE_NOT_FOUND"
+    },
+    "billing.subscription": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "billing.invoices": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "notifications.list": {
+      "http": "200",
+      "summary": "list[1]"
+    },
+    "conversations.list": {
+      "http": "200",
+      "summary": "list[0]"
+    },
+    "recruitment.jobs": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "company.profile": {
+      "http": "200",
+      "summary": "obj:id,name,address,city,country,phone"
+    },
+    "company.roles": {
+      "http": "403",
+      "summary": "error=MANAGER_REQUIRED"
+    },
+    "company.branding": {
+      "http": "200",
+      "summary": "obj:company_id,branding"
+    },
+    "company.banking": {
+      "http": "403",
+      "summary": "error=FORBIDDEN"
+    },
+    "audit-logs.list": {
+      "http": "403",
+      "summary": "error=Accès réservé au principal"
+    },
+    "travel.trips": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "restaurant.branches": {
+      "http": "403",
+      "summary": "error=FEATURE_NOT_ENABLED"
+    },
+    "pharmacy.products": {
+      "http": "403",
+      "summary": "error=PHARMACY_SOLUTION_INACTIVE"
+    },
+    "fuel-station.stations": {
+      "http": "403",
+      "summary": "error=FUEL_SOLUTION_INACTIVE"
+    },
+    "platform.companies": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    },
+    "admin.dashboard.stats": {
+      "http": "401",
+      "summary": "error=UNAUTHENTICATED"
+    }
+  }
+}

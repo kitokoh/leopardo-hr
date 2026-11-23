@@ -14551,6 +14551,91 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /employees/stats:
+    get:
+      operationId: api_get_employees_stats
+      tags:
+      - Employees
+      summary: Statistiques de l'effectif
+      description: >-
+        Agrégats de l'effectif pour le tableau de bord RH. Même convention que
+        les autres routes `/stats` de l'API (`/absences/stats`,
+        `/expense/stats`, `/recruitment/stats`) : période optionnelle
+        `from`/`to` sur `contract_start`, enveloppe `{"data": {...}}`.
+        Le périmètre « équipe » de l'acteur est appliqué : un superviseur ne
+        lit que les effectifs qu'il voit dans la liste (fail-closed s'il n'a
+        aucun périmètre assigné).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: from
+        in: query
+        required: false
+        schema: {type: string, format: date}
+        description: 'Borne basse sur contract_start (Y-m-d).'
+      - name: to
+        in: query
+        required: false
+        schema: {type: string, format: date}
+        description: 'Borne haute sur contract_start (Y-m-d).'
+      responses:
+        '200':
+          description: Agrégats de l'effectif
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      total: {type: integer}
+                      by_status: {type: object, additionalProperties: {type: integer}}
+                      by_role: {type: object, additionalProperties: {type: integer}}
+                      by_manager_role: {type: object, additionalProperties: {type: integer}}
+                      by_contract_type: {type: object, additionalProperties: {type: integer}}
+                      by_department:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id: {type: integer, nullable: true}
+                            name: {type: string}
+                            count: {type: integer}
+                      headcount:
+                        type: object
+                        properties:
+                          active: {type: integer}
+                          archived: {type: integer}
+                          suspended: {type: integer}
+                      contracts_expiring:
+                        type: object
+                        properties:
+                          in_30_days: {type: integer}
+                          in_60_days: {type: integer}
+                          in_90_days: {type: integer}
+                      payroll:
+                        type: object
+                        description: >-
+                          Seuls les contrats MENSUELS sont additionnés : un
+                          horaire ou un journalier mélangé à un mensuel
+                          produirait un total dénué de sens.
+                        properties:
+                          currency: {type: string, nullable: true}
+                          monthly_base_total: {type: number}
+                          average_base: {type: number}
+                          headcount_with_salary: {type: integer}
+                      seniority:
+                        type: object
+                        properties:
+                          average_months: {type: number}
+                          new_hires_90_days: {type: integer}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /employees:
     get:
       operationId: api_get_employees
@@ -39071,6 +39156,175 @@ paths:
           description: Nœud révoqué
         '401':
           $ref: '#/components/responses/Error401'
+  /crm/activities:
+    get:
+      operationId: api_get_crm_activities
+      tags:
+      - CRM
+      summary: Journal d'activités CRM du tenant
+      description: >-
+        Journal **append-only** des activités CRM (appels, e-mails, réunions,
+        notes, visites). Contrat documenté dans
+        `docs/specifications/CRM_API_MATRICE_TENANT_PLATFORM.md` §2.5 ; la
+        timeline par compte existait déjà, la collection tenant non.
+        Trié par `occurred_at` décroissant. Aucune route de mutation
+        (PUT/PATCH/DELETE) n'est exposée : on ne réécrit pas un journal.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: type
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [call, email, meeting, note, visit, task, other]
+      - name: account_id
+        in: query
+        required: false
+        schema: {type: integer}
+      - name: contact_id
+        in: query
+        required: false
+        schema: {type: integer}
+      - name: lead_id
+        in: query
+        required: false
+        schema: {type: integer}
+      - name: opportunity_id
+        in: query
+        required: false
+        schema: {type: integer}
+      - name: from
+        in: query
+        required: false
+        schema: {type: string, format: date}
+        description: 'Borne basse sur occurred_at (Y-m-d).'
+      - name: to
+        in: query
+        required: false
+        schema: {type: string, format: date}
+        description: 'Borne haute sur occurred_at (Y-m-d).'
+      - $ref: '#/components/parameters/PerPage'
+      - $ref: '#/components/parameters/Page'
+      responses:
+        '200':
+          description: Page d'activités
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CrmActivity'
+                  meta:
+                    type: object
+                    additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+    post:
+      operationId: api_post_crm_activities
+      tags:
+      - CRM
+      summary: Enregistrer une activité CRM
+      description: >-
+        Au moins un ancrage métier (`account_id`, `contact_id`, `lead_id`,
+        `opportunity_id`) est obligatoire : une activité orpheline
+        n'apparaîtrait dans aucune timeline. 422 `VALIDATION_ERROR` sinon.
+        `occurred_at` porte la date métier (défaut : maintenant).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrmActivityInput'
+      responses:
+        '201':
+          description: Activité enregistrée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/CrmActivity'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /planning:
+    get:
+      operationId: api_get_planning
+      tags:
+      - Planning
+      summary: Vue d'ensemble du planning
+      description: >-
+        Agrège l'existant pour l'écran Planning : horaires de travail du
+        tenant, effectif actif, absences de la semaine, couverture par
+        département, conflits et score d'optimisation. Aucune règle métier
+        nouvelle — les deux endpoints d'optimisation restent la source de
+        vérité et sont référencés dans `links`.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: week_start
+        in: query
+        required: false
+        schema: {type: string, format: date}
+        description: 'Lundi de la semaine visée (défaut : lundi courant).'
+      responses:
+        '200':
+          description: Vue d'ensemble du planning
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      week: {type: object, additionalProperties: true}
+                      schedules:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id: {type: integer}
+                            name: {type: string}
+                            start_time: {type: string, nullable: true}
+                            end_time: {type: string, nullable: true}
+                            break_minutes: {type: integer, nullable: true}
+                            work_days: {type: array, items: {type: integer}}
+                            is_default: {type: boolean}
+                      headcount:
+                        type: object
+                        properties:
+                          active_employees: {type: integer}
+                          absences_this_week: {type: integer}
+                          expiring_contracts: {type: integer}
+                      department_coverage: {type: array, items: {type: object, additionalProperties: true}}
+                      conflicts: {type: array, items: {type: object, additionalProperties: true}}
+                      optimization_score: {type: number}
+                      links:
+                        type: object
+                        properties:
+                          weekly_optimization: {type: string}
+                          shift_rebalancing: {type: string}
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /planning/weekly-optimization:
     get:
       operationId: api_get_planning_weekly_optimization
@@ -46939,6 +47193,724 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  # ─────────────────────────────────────────────────────────────────────────
+  # RestaurantManager — référentiel & exploitation (payloads documentés)
+  #
+  # Les payloads de la verticale étaient validés par des FormRequest très
+  # stricts (règles `Rule::exists(...)->where(company_id)` : un identifiant
+  # d'un autre tenant renvoie 422, pas 403) mais n'apparaissaient nulle part
+  # dans la spec : un client généré depuis l'OpenAPI ne pouvait pas construire
+  # une requête valide. Chaque `requestBody` ci-dessous pointe vers un schéma
+  # de `components/schemas` qui reflète EXACTEMENT les règles du FormRequest
+  # correspondant (champs requis, bornes, énumérations).
+  # ─────────────────────────────────────────────────────────────────────────
+  /restaurant/branches:
+    get:
+      operationId: api_get_restaurant_branches
+      tags: [Restaurant]
+      summary: Lister les succursales du tenant
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succursales accessibles à l'acteur
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_restaurant_branches
+      tags: [Restaurant]
+      summary: Créer une succursale
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantBranchInput'
+      responses:
+        '201':
+          description: Succursale créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/zones:
+    get:
+      operationId: api_get_restaurant_zones
+      tags: [Restaurant]
+      summary: Lister les zones de salle
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Zones
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_zones
+      tags: [Restaurant]
+      summary: Créer une zone de salle
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantZoneInput'
+      responses:
+        '201':
+          description: Zone créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/tables:
+    get:
+      operationId: api_get_restaurant_tables
+      tags: [Restaurant]
+      summary: Lister les tables
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Tables
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_tables
+      tags: [Restaurant]
+      summary: Créer une table
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantTableInput'
+      responses:
+        '201':
+          description: Table créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/categories:
+    get:
+      operationId: api_get_restaurant_categories
+      tags: [Restaurant]
+      summary: Lister les catégories de produits
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Catégories
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_categories
+      tags: [Restaurant]
+      summary: Créer une catégorie
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantCategoryInput'
+      responses:
+        '201':
+          description: Catégorie créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/products:
+    get:
+      operationId: api_get_restaurant_products
+      tags: [Restaurant]
+      summary: Lister les produits (carte)
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Produits
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_products
+      tags: [Restaurant]
+      summary: Créer un produit
+      description: >-
+        `code` est unique PAR TENANT (422 si déjà pris). `price_minor` est un
+        entier en unité mineure (centimes) : aucun montant décimal n'est
+        accepté, et aucun total n'est jamais fourni par le client.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantProductInput'
+      responses:
+        '201':
+          description: Produit créé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/ingredients:
+    get:
+      operationId: api_get_restaurant_ingredients
+      tags: [Restaurant]
+      summary: Lister les ingrédients
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Ingrédients
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_ingredients
+      tags: [Restaurant]
+      summary: Créer un ingrédient
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantIngredientInput'
+      responses:
+        '201':
+          description: Ingrédient créé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/units:
+    get:
+      operationId: api_get_restaurant_units
+      tags: [Restaurant]
+      summary: Lister les unités de mesure
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Unités
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_units
+      tags: [Restaurant]
+      summary: Créer une unité de mesure
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantUnitInput'
+      responses:
+        '201':
+          description: Unité créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/tax-rates:
+    get:
+      operationId: api_get_restaurant_tax_rates
+      tags: [Restaurant]
+      summary: Lister les taux de TVA
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Taux de TVA
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_tax_rates
+      tags: [Restaurant]
+      summary: Créer un taux de TVA
+      description: >-
+        `rate_bps` est exprimé en POINTS DE BASE (2000 = 20 %) : un pourcentage
+        décimal serait interprété comme 100 fois trop petit.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantTaxRateInput'
+      responses:
+        '201':
+          description: Taux créé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/menus:
+    get:
+      operationId: api_get_restaurant_menus
+      tags: [Restaurant]
+      summary: Lister les menus
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Menus
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_menus
+      tags: [Restaurant]
+      summary: Créer un menu
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantMenuInput'
+      responses:
+        '201':
+          description: Menu créé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/menus/{restaurantMenu}/items:
+    post:
+      operationId: api_post_restaurant_menus_by_restaurantMenu_items
+      tags: [Restaurant]
+      summary: Ajouter un produit à un menu
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantMenuItemInput'
+      responses:
+        '201':
+          description: Ligne de menu créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/hours:
+    get:
+      operationId: api_get_restaurant_hours
+      tags: [Restaurant]
+      summary: Lister les horaires d'ouverture
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Horaires
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_hours
+      tags: [Restaurant]
+      summary: Créer un horaire d'ouverture
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantHourInput'
+      responses:
+        '201':
+          description: Horaire créé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/suppliers:
+    get:
+      operationId: api_get_restaurant_suppliers
+      tags: [Restaurant]
+      summary: Lister les fournisseurs
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Fournisseurs
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_suppliers
+      tags: [Restaurant]
+      summary: Créer un fournisseur
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantSupplierInput'
+      responses:
+        '201':
+          description: Fournisseur créé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/pos-sessions:
+    post:
+      operationId: api_post_restaurant_pos_sessions
+      tags: [Restaurant]
+      summary: Ouvrir une session de caisse
+      description: >-
+        Une seule session ouverte par succursale : une seconde ouverture
+        renvoie 409. `opening_cash_minor` est le fond de caisse compté à
+        l'ouverture (unité mineure).
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantPosSessionInput'
+      responses:
+        '201':
+          description: Session ouverte
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '409':
+          description: Une session est déjà ouverte pour cette succursale
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/orders:
+    get:
+      operationId: api_get_restaurant_orders
+      tags: [Restaurant]
+      summary: Lister les commandes
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Commandes
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_orders
+      tags: [Restaurant]
+      summary: Créer une commande
+      description: >-
+        Aucun montant n'est accepté : les totaux sont recalculés côté serveur.
+        `table_id` est obligatoire pour `order_type=dine_in` et doit
+        appartenir à la succursale de la commande. `idempotency_key` (uuid)
+        permet le rejeu sans doublon.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantOrderInput'
+      responses:
+        '201':
+          description: Commande créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/orders/{restaurantOrder}/items:
+    post:
+      operationId: api_post_restaurant_orders_by_restaurantOrder_items
+      tags: [Restaurant]
+      summary: Ajouter une ligne à une commande
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantOrderItemInput'
+      responses:
+        '201':
+          description: Ligne ajoutée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/orders/{restaurantOrder}/pay:
+    post:
+      operationId: api_post_restaurant_orders_by_restaurantOrder_pay
+      tags: [Restaurant]
+      summary: Encaisser une commande
+      description: >-
+        `amount_minor` doit couvrir le total recalculé côté serveur ; un
+        montant insuffisant renvoie 422. `idempotency_key` (uuid) évite un
+        double encaissement sur rejeu réseau.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantOrderPaymentInput'
+      responses:
+        '200':
+          description: Paiement enregistré
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/reservations:
+    get:
+      operationId: api_get_restaurant_reservations
+      tags: [Restaurant]
+      summary: Lister les réservations
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Réservations
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_reservations
+      tags: [Restaurant]
+      summary: Créer une réservation
+      description: >-
+        `idempotency_key` est un rejeu NORMAL : le contrôleur renvoie la
+        ressource existante (200) au lieu d'un 422, l'unicité étant garantie
+        par l'index en base.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantReservationInput'
+      responses:
+        '200':
+          description: Réservation déjà existante (rejeu idempotent)
+        '201':
+          description: Réservation créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/stock-levels:
+    get:
+      operationId: api_get_restaurant_stock_levels
+      tags: [Restaurant]
+      summary: Lister les niveaux de stock
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Niveaux de stock
+        '401':
+          $ref: '#/components/responses/Error401'
+  /restaurant/inventory-movements:
+    post:
+      operationId: api_post_restaurant_inventory_movements
+      tags: [Restaurant]
+      summary: Enregistrer un mouvement de stock manuel
+      description: >-
+        `quantity_delta` ne peut pas être 0 (422). `reason_code` est une
+        allowlist fermée : un motif libre est refusé.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantInventoryMovementInput'
+      responses:
+        '201':
+          description: Mouvement enregistré
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/purchase-orders:
+    get:
+      operationId: api_get_restaurant_purchase_orders
+      tags: [Restaurant]
+      summary: Lister les bons de commande fournisseur
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Bons de commande
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_purchase_orders
+      tags: [Restaurant]
+      summary: Créer un bon de commande fournisseur
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantPurchaseOrderInput'
+      responses:
+        '201':
+          description: Bon de commande créé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/delivery-riders:
+    get:
+      operationId: api_get_restaurant_delivery_riders
+      tags: [Restaurant]
+      summary: Lister les livreurs
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Livreurs
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_delivery_riders
+      tags: [Restaurant]
+      summary: Créer un livreur
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantDeliveryRiderInput'
+      responses:
+        '201':
+          description: Livreur créé
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/delivery-zones:
+    get:
+      operationId: api_get_restaurant_delivery_zones
+      tags: [Restaurant]
+      summary: Lister les zones de livraison
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Zones de livraison
+        '401':
+          $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_delivery_zones
+      tags: [Restaurant]
+      summary: Créer une zone de livraison
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RestaurantDeliveryZoneInput'
+      responses:
+        '201':
+          description: Zone de livraison créée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/print-jobs:
     get:
       operationId: api_get_restaurant_print_jobs
@@ -46946,20 +47918,50 @@ paths:
       - Restaurant
       summary: Lister les travaux d'impression de la succursale (REST-OS-1)
       description: >-
-        REST-OS-1 - liste des travaux d'impression de LA succursale active.
-        Portee stricte : `company_id` + `branch_id` du contexte. Autorisation :
-        `restaurant.print_jobs.manage`.
+        REST-OS-1 - liste des travaux d'impression d'UNE succursale, triee du
+        plus recent au plus ancien (100 maximum). La succursale est designee
+        par le parametre de requete `branch_id` (obligatoire) : il n'existe
+        AUCUN en-tete `X-Branch-Id` sur cette route. Portee stricte :
+        `company_id` de l'acteur + `branch_id` demande ; une succursale sur
+        laquelle l'acteur n'a pas le droit `view` renvoie 403, une succursale
+        d'un autre tenant n'est jamais atteignable. Autorisation :
+        `restaurant.print_jobs.manage` (lecture ressource-scopee, #7599).
       security:
       - BearerAuth: []
       parameters:
-      - name: X-Branch-Id
-        in: header
+      - name: branch_id
+        in: query
         required: true
+        description: >-
+          Identifiant de la succursale dont on liste les travaux. Absent ou non
+          numerique -> 422 (`branch_id is required to list print jobs.`).
+        schema:
+          type: integer
+      - name: status
+        in: query
+        required: false
+        description: Filtre sur l'etat du travail (`pending`, `claimed`, `printed`, `failed`).
+        schema:
+          type: string
+          enum: [pending, claimed, printed, failed]
+      - name: order_id
+        in: query
+        required: false
+        description: Filtre sur la commande d'origine (ignore si non numerique).
         schema:
           type: integer
       responses:
         '200':
           description: Travaux de la succursale
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RestaurantPrintJob'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -82511,3 +83513,364 @@ components:
           type: string
           maxLength: 500
           description: 'Obligatoire et non vide : 422 REDEEM_REASON_REQUIRED sinon.'
+
+    # ── RestaurantManager : payloads d'entrée ──────────────────────────────
+    # Miroir exact des FormRequest de `app/Modules/RestaurantManager/
+    # Interfaces/Api/V1/Requests`. Toute référence d'entité est validée
+    # `exists(...)->where(company_id)` : un identifiant d'un autre tenant
+    # produit un 422 (jamais un 403, jamais une fuite d'existence).
+    RestaurantBranchInput:
+      type: object
+      required: [name]
+      properties:
+        code:
+          type: string
+          maxLength: 40
+          description: 'Code court unique par tenant. Généré si absent.'
+        name: {type: string, maxLength: 150}
+        address: {type: string, maxLength: 255, nullable: true}
+        city: {type: string, maxLength: 120, nullable: true}
+        phone: {type: string, maxLength: 40, nullable: true}
+        timezone:
+          type: string
+          nullable: true
+          description: 'Identifiant IANA (ex. Africa/Douala). 422 si inconnu.'
+        currency: {type: string, minLength: 3, maxLength: 3, nullable: true}
+        status:
+          type: string
+          enum: [active, disabled]
+          default: active
+    RestaurantZoneInput:
+      type: object
+      required: [name, branch_id]
+      properties:
+        name: {type: string, maxLength: 120}
+        branch_id: {type: integer, description: 'Succursale du tenant courant.'}
+        color: {type: string, maxLength: 7, nullable: true, description: 'Hex #RRGGBB.'}
+        sort_order: {type: integer, nullable: true}
+        status:
+          type: string
+          enum: [active, disabled]
+          default: active
+    RestaurantTableInput:
+      type: object
+      required: [branch_id, code, seats]
+      properties:
+        branch_id: {type: integer}
+        zone_id: {type: integer, nullable: true, description: 'Zone de la même succursale.'}
+        code: {type: string, maxLength: 40, description: 'Unique par succursale.'}
+        seats: {type: integer, minimum: 1, maximum: 50}
+        status:
+          type: string
+          enum: [active, disabled]
+          default: active
+    RestaurantCategoryInput:
+      type: object
+      required: [name]
+      properties:
+        name: {type: string, maxLength: 120}
+        branch_id: {type: integer, nullable: true, description: 'null = catégorie du tenant.'}
+        color: {type: string, maxLength: 7, nullable: true}
+        sort_order: {type: integer, nullable: true}
+        status:
+          type: string
+          enum: [active, disabled]
+          default: active
+    RestaurantProductInput:
+      type: object
+      required: [name, price_minor]
+      properties:
+        code:
+          type: string
+          maxLength: 40
+          description: 'Unique par tenant. Généré si absent.'
+        name: {type: string, maxLength: 150}
+        category_id: {type: integer, nullable: true}
+        branch_id: {type: integer, nullable: true, description: 'null = produit de la carte commune.'}
+        price_minor:
+          type: integer
+          minimum: 0
+          description: 'Prix de vente en unité mineure (centimes). Jamais de décimal.'
+        currency: {type: string, minLength: 3, maxLength: 3, nullable: true}
+        tax_rate_id: {type: integer, nullable: true}
+        description: {type: string, maxLength: 1000, nullable: true}
+        is_available: {type: boolean, default: true}
+        status:
+          type: string
+          enum: [active, disabled]
+          default: active
+    RestaurantIngredientInput:
+      type: object
+      required: [name, unit_code]
+      properties:
+        code: {type: string, maxLength: 40, description: 'Unique par tenant.'}
+        name: {type: string, maxLength: 150}
+        branch_id: {type: integer, nullable: true}
+        unit_code: {type: string, maxLength: 20, description: 'Doit exister dans /restaurant/units.'}
+        avg_cost_minor: {type: integer, minimum: 0, nullable: true}
+        status:
+          type: string
+          enum: [active, disabled]
+          default: active
+    RestaurantUnitInput:
+      type: object
+      required: [code, label]
+      properties:
+        code: {type: string, maxLength: 20, description: 'kg, g, l, cl, pcs…'}
+        label: {type: string, maxLength: 80}
+        status:
+          type: string
+          enum: [active, disabled]
+          default: active
+    RestaurantTaxRateInput:
+      type: object
+      required: [code, label, rate_bps]
+      properties:
+        code: {type: string, maxLength: 20}
+        label: {type: string, maxLength: 80}
+        rate_bps:
+          type: integer
+          minimum: 0
+          maximum: 10000
+          description: 'Points de base : 2000 = 20 %.'
+        is_default: {type: boolean, default: false}
+        status:
+          type: string
+          enum: [active, disabled]
+          default: active
+    RestaurantMenuInput:
+      type: object
+      required: [name, price_minor]
+      properties:
+        code: {type: string, maxLength: 40, description: 'Unique par tenant.'}
+        name: {type: string, maxLength: 150}
+        branch_id: {type: integer, nullable: true}
+        price_minor: {type: integer, minimum: 0, description: 'Prix du menu en unité mineure.'}
+        currency: {type: string, minLength: 3, maxLength: 3, nullable: true}
+        starts_at: {type: string, format: date-time, nullable: true}
+        ends_at: {type: string, format: date-time, nullable: true}
+        status:
+          type: string
+          enum: [active, disabled]
+          default: active
+    RestaurantMenuItemInput:
+      type: object
+      required: [product_id]
+      properties:
+        product_id: {type: integer, description: 'Produit du tenant courant.'}
+        position: {type: integer, minimum: 0, nullable: true}
+        is_optional: {type: boolean, default: false}
+    RestaurantHourInput:
+      type: object
+      required: [branch_id, day_of_week]
+      properties:
+        branch_id: {type: integer}
+        day_of_week: {type: integer, minimum: 0, maximum: 6, description: '0 = lundi.'}
+        opens_at: {type: string, pattern: '^[0-2][0-9]:[0-5][0-9]$', nullable: true}
+        closes_at: {type: string, pattern: '^[0-2][0-9]:[0-5][0-9]$', nullable: true}
+        is_closed: {type: boolean, default: false}
+    RestaurantSupplierInput:
+      type: object
+      required: [name]
+      properties:
+        name: {type: string, maxLength: 150}
+        contact_phone: {type: string, maxLength: 40, nullable: true}
+        email: {type: string, format: email, maxLength: 150, nullable: true}
+        address: {type: string, maxLength: 255, nullable: true}
+        status:
+          type: string
+          enum: [active, disabled]
+          default: active
+    RestaurantPosSessionInput:
+      type: object
+      required: [branch_id, opening_cash_minor]
+      properties:
+        branch_id: {type: integer}
+        opening_cash_minor:
+          type: integer
+          minimum: 0
+          maximum: 999999999
+          description: 'Fond de caisse compté à l''ouverture, en unité mineure.'
+    RestaurantOrderInput:
+      type: object
+      required: [branch_id, order_type]
+      properties:
+        branch_id: {type: integer}
+        order_type:
+          type: string
+          enum: [dine_in, takeaway, delivery]
+        table_id:
+          type: integer
+          nullable: true
+          description: 'Obligatoire si order_type=dine_in ; doit appartenir à branch_id.'
+        customer_name: {type: string, maxLength: 150, nullable: true}
+        customer_phone: {type: string, maxLength: 40, nullable: true}
+        delivery_zone_id: {type: integer, nullable: true, description: 'Requis si order_type=delivery.'}
+        notes: {type: string, maxLength: 1000, nullable: true}
+        idempotency_key:
+          type: string
+          format: uuid
+          description: 'Rejeu réseau : la même clé renvoie la commande existante.'
+    RestaurantOrderItemInput:
+      type: object
+      required: [product_id, quantity]
+      properties:
+        product_id: {type: integer}
+        quantity: {type: integer, minimum: 1, maximum: 999}
+        notes: {type: string, maxLength: 500, nullable: true}
+        modifiers:
+          type: array
+          nullable: true
+          items: {type: string, maxLength: 120}
+    RestaurantOrderPaymentInput:
+      type: object
+      required: [method, amount_minor]
+      properties:
+        method:
+          type: string
+          enum: [cash, card, mobile_money, transfer]
+        amount_minor:
+          type: integer
+          minimum: 1
+          description: 'Doit couvrir le total recalculé côté serveur (422 sinon).'
+        reference: {type: string, maxLength: 120, nullable: true}
+        idempotency_key: {type: string, format: uuid, nullable: true}
+    RestaurantReservationInput:
+      type: object
+      required: [branch_id, customer_name, party_size, reserved_at]
+      properties:
+        branch_id: {type: integer}
+        table_id: {type: integer, nullable: true}
+        customer_name: {type: string, maxLength: 150}
+        customer_phone: {type: string, maxLength: 40, nullable: true}
+        party_size: {type: integer, minimum: 1, maximum: 100}
+        reserved_at: {type: string, format: date-time}
+        notes: {type: string, maxLength: 1000, nullable: true}
+        idempotency_key:
+          type: string
+          format: uuid
+          description: 'Rejeu : renvoie 200 avec la réservation existante.'
+    RestaurantInventoryMovementInput:
+      type: object
+      required: [branch_id, ingredient_id, quantity_delta, reason_code]
+      properties:
+        branch_id: {type: integer}
+        ingredient_id: {type: integer}
+        quantity_delta:
+          type: number
+          description: 'Signé (entrée positive, sortie négative). 0 est refusé (422).'
+        reason_code:
+          type: string
+          description: 'Allowlist fermée (waste, breakage, recount, transfer, correction…).'
+        reference_type: {type: string, maxLength: 80, nullable: true}
+        reference_id: {type: integer, nullable: true}
+        note_redacted: {type: string, maxLength: 1000, nullable: true}
+    RestaurantPurchaseOrderInput:
+      type: object
+      required: [branch_id, supplier_id]
+      properties:
+        branch_id: {type: integer}
+        supplier_id: {type: integer}
+        expected_at: {type: string, format: date-time, nullable: true}
+        currency: {type: string, minLength: 3, maxLength: 3, nullable: true}
+        items:
+          type: array
+          items:
+            type: object
+            required: [ingredient_id, quantity]
+            properties:
+              ingredient_id: {type: integer}
+              quantity: {type: number, minimum: 0.001}
+              unit_cost_minor: {type: integer, minimum: 0, nullable: true}
+    RestaurantDeliveryRiderInput:
+      type: object
+      required: [branch_id, name]
+      properties:
+        branch_id: {type: integer}
+        employee_id: {type: integer, nullable: true, description: 'Employé du tenant à rattacher.'}
+        name: {type: string, maxLength: 150}
+        phone: {type: string, maxLength: 40, nullable: true}
+        vehicle_code: {type: string, maxLength: 40, nullable: true}
+        is_active: {type: boolean, default: true}
+    RestaurantDeliveryZoneInput:
+      type: object
+      required: [branch_id, name, fee_minor]
+      properties:
+        branch_id: {type: integer}
+        name: {type: string, maxLength: 120}
+        fee_minor: {type: integer, minimum: 0, description: 'Frais de livraison en unité mineure.'}
+        min_order_minor: {type: integer, minimum: 0, nullable: true}
+        status:
+          type: string
+          enum: [active, disabled]
+          default: active
+    RestaurantPrintJob:
+      type: object
+      description: >-
+        Travail d'impression thermique (REST-OS-2). La paire
+        (order_id, ticket_kind, revision) est unique par tenant : rejouer une
+        demande ne crée jamais de doublon. `status` ne passe à `printed` que
+        sur accusé explicite du bridge local.
+      properties:
+        id: {type: integer}
+        branch_id: {type: integer}
+        order_id: {type: integer}
+        ticket_kind:
+          type: string
+          enum: [kitchen, receipt, delivery]
+        revision: {type: integer, minimum: 1}
+        status:
+          type: string
+          enum: [pending, claimed, printed, failed]
+        attempts: {type: integer, minimum: 0}
+        printer_ref: {type: string, nullable: true}
+        last_error: {type: string, nullable: true}
+        payload_hash: {type: string, nullable: true}
+        claimed_at: {type: string, format: date-time, nullable: true}
+        printed_at: {type: string, format: date-time, nullable: true}
+        failed_at: {type: string, format: date-time, nullable: true}
+        created_at: {type: string, format: date-time}
+    CrmActivity:
+      type: object
+      properties:
+        id: {type: integer}
+        type:
+          type: string
+          enum: [call, email, meeting, note, visit, task, other]
+        subject: {type: string, nullable: true}
+        description: {type: string, nullable: true}
+        account_id: {type: integer, nullable: true}
+        contact_id: {type: integer, nullable: true}
+        lead_id: {type: integer, nullable: true}
+        opportunity_id: {type: integer, nullable: true}
+        occurred_at: {type: string, format: date-time}
+        created_by: {type: integer, nullable: true}
+        actor:
+          type: object
+          nullable: true
+          properties:
+            id: {type: integer}
+            first_name: {type: string, nullable: true}
+            last_name: {type: string, nullable: true}
+        created_at: {type: string, format: date-time}
+    CrmActivityInput:
+      type: object
+      required: [type]
+      description: >-
+        Au moins un de account_id / contact_id / lead_id / opportunity_id est
+        obligatoire (422 VALIDATION_ERROR sinon).
+      properties:
+        type:
+          type: string
+          enum: [call, email, meeting, note, visit, task, other]
+        subject: {type: string, maxLength: 255, nullable: true}
+        description: {type: string, maxLength: 5000, nullable: true}
+        account_id: {type: integer, nullable: true}
+        contact_id: {type: integer, nullable: true}
+        lead_id: {type: integer, nullable: true}
+        opportunity_id: {type: integer, nullable: true}
+        occurred_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: 'Date métier. Défaut : maintenant.'

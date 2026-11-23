@@ -44,5 +44,6 @@ return [
         'stage_terminal' => 'Une affaire gagnée ou perdue est définitive. Créez une nouvelle opportunité pour repartir.',
         'lost_reason_required' => "Indiquez pourquoi l'affaire est perdue : sans motif, le bilan trimestriel est inexplicable.",
         'activity_stage_changed' => 'Étape modifiée',
+        'activity_target_required' => 'Une activité doit référencer au moins un compte, contact, prospect ou opportunité.',
     ],
 ];

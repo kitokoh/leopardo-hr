@@ -1207,6 +1207,7 @@
             <file>tests/Feature/Restaurant/RestaurantPosSessionCloseEventTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPosSessionPartialUniqueTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPosSessionTest.php</file>
+            <file>tests/Feature/Restaurant/RestaurantPrintBridgeEndToEndTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintBridgeTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintJobPersistenceTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintJobTest.php</file>
@@ -2611,6 +2612,7 @@
             <file>tests/Feature/Restaurant/RestaurantPosSessionCloseEventTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPosSessionPartialUniqueTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPosSessionTest.php</file>
+            <file>tests/Feature/Restaurant/RestaurantPrintBridgeEndToEndTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintBridgeTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintJobPersistenceTest.php</file>
             <file>tests/Feature/Restaurant/RestaurantPrintJobTest.php</file>
