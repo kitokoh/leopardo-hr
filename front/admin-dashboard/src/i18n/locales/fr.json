@@ -2975,7 +2975,14 @@
     "moduleCrm": "CRM",
     "moduleShowcase": "Site vitrine",
     "moduleHr": "RH (équipe, pointage, paie)",
-    "moduleBillingView": "Facturation (lecture)"
+    "moduleBillingView": "Facturation (lecture)",
+    "verticalTitle": "Permissions métier",
+    "verticalHint": "Attribuez les permissions de votre métier (vente au guichet, embarquement, rapports) — ce qui n’est pas coché est révoqué. Seules les permissions de vos solutions actives sont proposées.",
+    "verticalSave": "Enregistrer les permissions",
+    "verticalSaved": "Permissions métier mises à jour.",
+    "verticalLoadError": "Impossible de charger les permissions métier.",
+    "verticalEmpty": "Aucune permission métier disponible : activez d’abord une solution.",
+    "verticalPrincipalNote": "Le manager principal a déjà toutes les permissions de ses solutions actives."
   },
   "attendanceBreakFailure": "Pause non confirmée",
   "attendanceBreakHint": "Ferme la session et marque une pause",

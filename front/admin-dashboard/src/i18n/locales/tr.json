@@ -2975,7 +2975,14 @@
     "moduleCrm": "CRM",
     "moduleShowcase": "Tanıtım sitesi",
     "moduleHr": "İK (ekip, mesai, bordro)",
-    "moduleBillingView": "Faturalama (salt okunur)"
+    "moduleBillingView": "Faturalama (salt okunur)",
+    "verticalTitle": "Mesleki izinler",
+    "verticalHint": "Mesleğinizin izinlerini atayın (gişe satışı, biniş, raporlar) — işaretlenmeyenler geri alınır. Yalnızca etkin çözümlerinizin izinleri sunulur.",
+    "verticalSave": "İzinleri kaydet",
+    "verticalSaved": "Mesleki izinler güncellendi.",
+    "verticalLoadError": "Mesleki izinler yüklenemedi.",
+    "verticalEmpty": "Kullanılabilir mesleki izin yok: önce bir çözümü etkinleştirin.",
+    "verticalPrincipalNote": "Ana yönetici, etkin çözümlerin tüm izinlerine zaten sahiptir."
   },
   "attendanceBreakFailure": "Mola onaylanmadı",
   "attendanceBreakHint": "Oturumu kapatır ve molayı başlatır",
