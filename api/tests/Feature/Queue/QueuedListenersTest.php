@@ -78,11 +78,20 @@ class QueuedListenersTest extends TestCase
 
         InvoicePaid::dispatch(new Invoice);
 
-        Queue::assertPushed(
+        // `assertPushedTimes` compte les occurrences : c'est le seul moyen
+        // d'attraper une double inscription. `assertPushed` sans comptage ne
+        // prouve rien sur le doublon.
+        Queue::assertPushedTimes(
             CallQueuedListener::class,
             1,
-            fn (CallQueuedListener $job): bool => $job->class === SendInvoicePaymentReceipt::class,
         );
+
+        $receiptJobs = collect(Queue::pushedJobs())
+            ->flatten(1)
+            ->filter(fn ($job): bool => ($job['job'] ?? null) instanceof CallQueuedListener
+                && $job['job']->class === SendInvoicePaymentReceipt::class);
+
+        $this->assertCount(1, $receiptJobs, 'Une facture payée doit produire exactement un reçu.');
     }
 
     /**
@@ -102,7 +111,7 @@ class QueuedListenersTest extends TestCase
         $invoice = Invoice::query()->create([
             'company_id' => (string) \Illuminate\Support\Str::uuid(),
             'subscription_id' => null,
-            'number' => 'INV-REPLAY-1',
+            'number' => 'INV-REPLAY-'.uniqid(),
             'period' => '2026-11',
             'amount' => 99.00,
             'tax_amount' => 0,
