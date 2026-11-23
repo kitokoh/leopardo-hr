@@ -92,9 +92,15 @@ final class TransitionOpportunityStageAction
                 // Journal append-only : chaque ligne raconte un deplacement.
                 // On horodate, sinon un retour en arriere et un aller simple
                 // seraient indistinguables.
-                $entry = sprintf('[%s] %s -> %s (%s)', now()->toIso8601String(), $from, $to, $actor->id);
+                // La fleche est un caractere typographique (U+2192), pas `->` :
+                // la ligne est lue par un humain dans la fiche, et le contrat
+                // teste (`CrmOpportunityStageTest`) l'exige ainsi.
+                $entry = sprintf("[%s] %s \u{2192} %s (%s)", now()->toIso8601String(), $from, $to, $actor->id);
 
-                if (! empty($data['lost_reason'])) {
+                // La raison n'est journalisee que sur une perte : la validation
+                // la refuse ailleurs, et cette garde couvre un appel direct a
+                // l'action (hors requete HTTP).
+                if ($target === CrmOpportunityStage::Lost && ! empty($data['lost_reason'])) {
                     // La raison de la perte voyage AVEC le deplacement : c'est
                     // la seule information qui explique la ligne six mois plus
                     // tard, et `crm_opportunities` n'a pas de colonne dediee.

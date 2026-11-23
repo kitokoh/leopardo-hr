@@ -49,7 +49,20 @@ final class TransitionOpportunityStageRequest extends FormRequest
             ],
             // Obligatoire pour `lost` : une affaire perdue sans raison ecrite
             // est inexploitable au bilan trimestriel.
-            'lost_reason' => ['required_if:stage,lost', 'nullable', 'string', 'max:500'],
+            //
+            // Et INTERDIT ailleurs : un motif sur une affaire gagnee (ou sur un
+            // simple deplacement de pipeline) est une donnee trompeuse. Il etait
+            // accepte puis journalise dans `notes`, ce qui laissait croire a une
+            // perte sur une affaire close en succes. On le refuse plutot que de
+            // l'ignorer en silence : le client doit savoir que son champ n'a pas
+            // ete pris en compte.
+            'lost_reason' => [
+                'required_if:stage,lost',
+                'prohibited_unless:stage,lost',
+                'nullable',
+                'string',
+                'max:500',
+            ],
             'amount' => ['nullable', 'numeric', 'min:0'],
             'expected_close_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:5000'],
@@ -64,6 +77,7 @@ final class TransitionOpportunityStageRequest extends FormRequest
         return [
             'stage.in' => __('crm.opportunities.stage_invalid'),
             'lost_reason.required_if' => __('crm.opportunities.lost_reason_required'),
+            'lost_reason.prohibited_unless' => __('crm.opportunities.lost_reason_only_when_lost'),
         ];
     }
 

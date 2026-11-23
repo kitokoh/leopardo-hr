@@ -43,6 +43,7 @@ return [
         'stage_invalid' => "Cette étape n'existe pas dans le pipeline.",
         'stage_terminal' => 'Une affaire gagnée ou perdue est définitive. Créez une nouvelle opportunité pour repartir.',
         'lost_reason_required' => "Indiquez pourquoi l'affaire est perdue : sans motif, le bilan trimestriel est inexplicable.",
+        'lost_reason_only_when_lost' => "Un motif de perte n'a de sens que sur une affaire perdue : retirez-le pour ce changement d'etape.",
         'activity_stage_changed' => 'Étape modifiée',
         'activity_target_required' => 'Une activité doit référencer au moins un compte, contact, prospect ou opportunité.',
     ],
