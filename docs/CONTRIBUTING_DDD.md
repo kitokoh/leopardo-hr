@@ -15,7 +15,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | ~~`api/app/Services/`~~ — répertoire **supprimé** (2026-08-11, #1728), ne rien y ajouter | `Modules/<Name>/Infrastructure/Services/` |
 | `api/app/Exceptions/` (base `DomainException` partagée, encore étendue par des modules) | `Modules/<Name>/Domain/Exceptions/` |
 
-## Modules existants (41 modules)
+## Modules existants (42 modules)
 
 | Module | Domaine couvert |
 |---|---|
@@ -33,6 +33,7 @@ Dossiers encore en coexistence partielle — ne pas y ajouter de nouveau code :
 | `Cameras` | Surveillance, streaming |
 | `CRM` | CRM client : consentements, segments, campagnes, canaux de communication (issues #5722/#5723/#5724/#5726) |
 | `CRM` | CRM client tenant-scoped (V0 #5705→#5716, V1 #5717→#5731) — module DDD isolé du CRM commercial Platform/Marketing |
+| `Connectors` | Intégrations externes (BC-14) : catalogue dynamique de connecteurs, connexions plateforme et tenant, validation de schéma, testeur de connexion, index d'intégration par module (CONNECT-001..006) |
 | `Delivery` | Livraison générique multi-tenant : colis, tournées, livreurs, tracking, COD, contrats sources (DELIVERY-101..208, BC-26) |
 | `EduManager` | Verticale scolaire BC-16 : inscriptions, classes, notes, frais, portail guardian, marketing admissions |
 | `HealthManager` | Verticale santé BC-30 : services médicaux, praticiens, patients, rendez-vous, consultations, hospitalisations, facturation des soins |
