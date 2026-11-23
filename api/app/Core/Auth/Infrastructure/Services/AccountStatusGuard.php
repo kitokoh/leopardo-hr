@@ -107,7 +107,14 @@ final class AccountStatusGuard
 
         // Client travel : la colonne `status` a été ajoutée par #9809. Tant
         // qu'elle n'existe pas sur une base non migrée, on ne bloque pas.
-        if (method_exists($user, 'getAttribute') && $user->getAttribute('status') !== null) {
+        //
+        // #9859 — `method_exists($user, 'getAttribute')` était TOUJOURS vrai
+        // (`Model` définit `getAttribute`) : le test ne prouvait rien et
+        // Larastan le signalait (`function.alreadyNarrowedType`). La vraie
+        // question n'est pas « la méthode existe-t-elle » mais « la colonne
+        // porte-t-elle une valeur » — `getAttribute` rend `null` quand elle
+        // n'existe pas, ce qui est exactement le cas à couvrir.
+        if ($user->getAttribute('status') !== null) {
             return $this->statusIsActive($user);
         }
 

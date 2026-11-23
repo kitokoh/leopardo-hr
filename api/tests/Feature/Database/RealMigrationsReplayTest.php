@@ -165,6 +165,8 @@ final class RealMigrationsReplayTest extends TestCase
 
         sort($names);
 
-        return array_values($names);
+        // #9859 — `array_map()` sur une liste rend déjà une liste : `array_values()`
+        // n'ajoutait rien et PHPStan le signalait (`arrayValues.list`).
+        return $names;
     }
 }

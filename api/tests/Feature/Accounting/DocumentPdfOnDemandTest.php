@@ -76,12 +76,17 @@ class DocumentPdfOnDemandTest extends TestCase
      * Remplace le renderer réel (dompdf) par un faux : le test porte sur le
      * déclenchement de la génération, pas sur le moteur de rendu — déjà couvert
      * par `DocumentPdfRendererTest`.
+     *
+     * @param  callable(AccountingDocument, string): string  $render
      */
     private function bindRenderer(callable $render): void
     {
         $this->app->bind(PdfRendererInterface::class, function () use ($render): PdfRendererInterface {
             return new class($render, $this) implements PdfRendererInterface
             {
+                /**
+                 * @param  callable(AccountingDocument, string): string  $render
+                 */
                 public function __construct(
                     private $render,
                     private DocumentPdfOnDemandTest $test,

@@ -38,19 +38,13 @@ class EduFeeClassBatchTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $companyA;
-
     private Employee $principalA;
 
     private Employee $lambdaA;
 
     private EduAcademicYear $yearA;
 
-    private EduCampus $campusA;
-
     private EduClass $classA;
-
-    private EduClass $classB;
 
     /** @var list<EduStudent> */
     private array $studentsA = [];
@@ -59,13 +53,16 @@ class EduFeeClassBatchTest extends TestCase
     {
         parent::setUp();
 
+        // #9859 — `$this->companyA`, `$this->campusA` et `$this->classB`
+        // étaient écrits sans jamais être lus (PHPStan `property.onlyWritten`).
+        // Les locaux ci-dessous portent la même valeur et sont réellement
+        // utilisés ; on ne garde en propriété que ce que les tests lisent.
         /** @var Company $companyA */
         $companyA = Company::factory()->create([
             'country' => 'DZ',
             'currency' => 'DZD',
             'features' => ['edumanager' => true],
         ]);
-        $this->companyA = $companyA;
 
         /** @var Employee $principalA */
         $principalA = Employee::factory()->create([
@@ -96,7 +93,6 @@ class EduFeeClassBatchTest extends TestCase
             'name' => 'Campus principal',
             'status' => 'active',
         ]);
-        $this->campusA = $campusA;
 
         /** @var EduClass $classA */
         $classA = EduClass::query()->create([
@@ -118,7 +114,6 @@ class EduFeeClassBatchTest extends TestCase
             'name' => '6ème B',
             'status' => EduClass::STATUS_ACTIVE,
         ]);
-        $this->classB = $classB;
 
         foreach (['Lina Benali', 'Yacine Haddad', 'Nour Cherif'] as $i => $name) {
             /** @var EduStudent $student */

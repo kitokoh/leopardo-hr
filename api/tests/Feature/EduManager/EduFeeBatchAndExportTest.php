@@ -31,8 +31,6 @@ class EduFeeBatchAndExportTest extends TestCase
 {
     use RefreshTenantDatabase;
 
-    private Company $companyA;
-
     private Company $companyB;
 
     private Employee $principalA;
@@ -48,13 +46,16 @@ class EduFeeBatchAndExportTest extends TestCase
     {
         parent::setUp();
 
+        // #9859 — `$this->companyA` était écrit sans jamais être lu (PHPStan
+        // `property.onlyWritten`) : le scénario dual-tenant ne se sert du
+        // tenant A que par ses ids locaux. On garde `$companyB`, qui est lu
+        // par les tests d'isolation.
         /** @var Company $companyA */
         $companyA = Company::factory()->create([
             'country' => 'DZ',
             'currency' => 'DZD',
             'features' => ['edumanager' => true],
         ]);
-        $this->companyA = $companyA;
 
         /** @var Company $companyB */
         $companyB = Company::factory()->create([
@@ -242,11 +243,23 @@ class EduFeeBatchAndExportTest extends TestCase
 
         $response->assertStatus(422);
 
-        $errors = collect($response->json('errors'))->keyBy('index');
+        /** @var list<array{index: int, error: string}> $errorRows */
+        $errorRows = (array) $response->json('errors');
 
-        $this->assertSame('EDU_FEE_TERMINAL', $errors[1]['error']);
-        $this->assertSame('EDU_FEE_CHARGE_NOT_FOUND', $errors[2]['error']);
-        $this->assertSame('EDU_FEE_BATCH_DUPLICATE', $errors[3]['error']);
+        // #9859 — `collect(...)->keyBy('index')` rendait une valeur NULLABLE
+        // pour chaque clé, donc `$errors[1]['error']` était une lecture sur
+        // `...|null` (PHPStan `offsetAccess.notFound`). Une table d'index
+        // explicite dit exactement ce que le test affirme.
+        /** @var array<int, string> $errorsByIndex */
+        $errorsByIndex = [];
+
+        foreach ($errorRows as $row) {
+            $errorsByIndex[(int) $row['index']] = (string) $row['error'];
+        }
+
+        $this->assertSame('EDU_FEE_TERMINAL', $errorsByIndex[1] ?? null);
+        $this->assertSame('EDU_FEE_CHARGE_NOT_FOUND', $errorsByIndex[2] ?? null);
+        $this->assertSame('EDU_FEE_BATCH_DUPLICATE', $errorsByIndex[3] ?? null);
 
         // Aucune écriture, y compris pour la ligne 0 qui était valide.
         $this->assertSame(1, EduFeePayment::query()->count()); // seulement le règlement de c2

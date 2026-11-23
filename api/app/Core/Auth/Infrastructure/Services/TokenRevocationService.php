@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Contracts\TokenRevocationContract;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use Carbon\CarbonImmutable;
+use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Illuminate\Contracts\Cache\Repository as CacheRepository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
@@ -76,7 +77,12 @@ final class TokenRevocationService implements TokenRevocationContract
     public const TYPE_SUPER_ADMIN = TokenRevocationContract::TYPE_SUPER_ADMIN;
 
     public function __construct(
-        private readonly CacheRepository $cache,
+        // #9859 — `CacheManager` (et non `CacheRepository`) : `store($name)`
+        // est une méthode du MANAGER, pas du contrat `Repository`. Injecter
+        // le contrat puis appeler `->store()` était une erreur de typage que
+        // PHPStan signalait (`method.notFound`) et qui aurait échoué à
+        // l'exécution dès qu'un store nommé est configuré.
+        private readonly CacheFactory $cache,
     ) {}
 
     /**
@@ -92,7 +98,7 @@ final class TokenRevocationService implements TokenRevocationContract
             return $this->cache->store($name);
         }
 
-        return $this->cache;
+        return $this->cache->store();
     }
 
     // ---------------------------------------------------------------------
