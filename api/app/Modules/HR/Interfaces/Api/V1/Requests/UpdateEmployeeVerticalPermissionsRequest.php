@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Solutions\VerticalPermissionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Foundation\Http\FormRequest;
@@ -31,8 +32,14 @@ class UpdateEmployeeVerticalPermissionsRequest extends FormRequest
     /** @return array<string, mixed> */
     public function rules(): array
     {
-        $company = $this->user()?->company_id !== null
-            ? Company::query()->find($this->user()->company_id)
+        // `company_id` n'existe que sur Employee : le type de retour de
+        // `user()` couvre aussi User/SuperAdmin, qui n'ont pas cette colonne.
+        // On lit donc la valeur sur l'instance Employee après vérification.
+        $user = $this->user();
+        $companyId = $user instanceof Employee ? $user->company_id : null;
+
+        $company = $companyId !== null
+            ? Company::query()->find($companyId)
             : null;
 
         $delegable = $company !== null

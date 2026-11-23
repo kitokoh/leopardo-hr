@@ -34,6 +34,9 @@ class UpdateTravelHotelInventoryRequest extends FormRequest
         ];
     }
 
+    /**
+     * @param  \Illuminate\Validation\Validator  $validator
+     */
     public function withValidator($validator): void
     {
         $validator->after(function ($validator): void {

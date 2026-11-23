@@ -337,6 +337,7 @@
             <file>tests/Feature/Accounting/BankStatementImportTest.php</file>
             <file>tests/Feature/Accounting/BankStatementStatusTest.php</file>
             <file>tests/Feature/Accounting/DepreciationTest.php</file>
+            <file>tests/Feature/Accounting/DocumentPdfOnDemandTest.php</file>
             <file>tests/Feature/Accounting/DocumentPdfRendererTest.php</file>
             <file>tests/Feature/Accounting/DocumentShareEmailTest.php</file>
             <file>tests/Feature/Accounting/DocumentWorkflowNumberingTest.php</file>
@@ -462,6 +463,7 @@
             <file>tests/Feature/Billing/PilotReportCommandTest.php</file>
             <file>tests/Feature/Billing/PlatformPaymentGatewayAdminApiTest.php</file>
             <file>tests/Feature/Billing/PlatformPlanAdminApiTest.php</file>
+            <file>tests/Feature/Billing/PublicInvoicesSchemaParityTest.php</file>
             <file>tests/Feature/Billing/SetTrialPasswordActionTest.php</file>
             <file>tests/Feature/Billing/SweepStaleTrialProvisioningsCommandTest.php</file>
             <file>tests/Feature/Billing/TenantPaymentProfileApiTest.php</file>
@@ -501,7 +503,6 @@
             <file>tests/Feature/CRM/CrmHardeningNegativeTest.php</file>
             <file>tests/Feature/CRM/CrmImportFlowTest.php</file>
             <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
-            <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
             <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
             <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
             <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
@@ -589,6 +590,7 @@
             <file>tests/Feature/Database/LeopardoMigrateRunnerTest.php</file>
             <file>tests/Feature/Database/MigrationSchemaPlacementTest.php</file>
             <file>tests/Feature/Database/NotificationPreferencesUniqueMigrationTest.php</file>
+            <file>tests/Feature/Database/RealMigrationsReplayTest.php</file>
         </testsuite>
         <testsuite name="Delivery">
             <file>tests/Feature/Delivery/DeliveryApiTest.php</file>
@@ -662,6 +664,9 @@
             <file>tests/Feature/EduManager/EduCourseSlotServiceTest.php</file>
             <file>tests/Feature/EduManager/EduDashboardTest.php</file>
             <file>tests/Feature/EduManager/EduFeeApiTest.php</file>
+            <file>tests/Feature/EduManager/EduFeeBatchAndExportTest.php</file>
+            <file>tests/Feature/EduManager/EduFeeBatchReceiptTest.php</file>
+            <file>tests/Feature/EduManager/EduFeeClassBatchTest.php</file>
             <file>tests/Feature/EduManager/EduFeeServiceTest.php</file>
             <file>tests/Feature/EduManager/EduFeeTest.php</file>
             <file>tests/Feature/EduManager/EduGradeServiceTest.php</file>
@@ -677,6 +682,7 @@
             <file>tests/Feature/EduManager/EduMeTest.php</file>
             <file>tests/Feature/EduManager/EduNotificationApiTest.php</file>
             <file>tests/Feature/EduManager/EduNotificationServiceTest.php</file>
+            <file>tests/Feature/EduManager/EduOnboardingStepPredicateTest.php</file>
             <file>tests/Feature/EduManager/EduPerformanceTest.php</file>
             <file>tests/Feature/EduManager/EduRbacMatrixTest.php</file>
             <file>tests/Feature/EduManager/EduRbacPolicyTest.php</file>
@@ -684,6 +690,7 @@
             <file>tests/Feature/EduManager/EduReportCardTest.php</file>
             <file>tests/Feature/EduManager/EduReportServiceTest.php</file>
             <file>tests/Feature/EduManager/EduRetentionServiceTest.php</file>
+            <file>tests/Feature/EduManager/EduSchoolBootstrapTest.php</file>
             <file>tests/Feature/EduManager/EduSolutionManifestTest.php</file>
             <file>tests/Feature/EduManager/EduTeacherInterfaceTest.php</file>
             <file>tests/Feature/EduManager/EduTeacherSubjectTest.php</file>
@@ -1364,13 +1371,12 @@
             <file>tests/Feature/Trade/TradeCompanyProfileTest.php</file>
             <file>tests/Feature/Trade/TradeCostEstimateApiTest.php</file>
             <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
+            <file>tests/Feature/Trade/TradeDocumentApiTest.php</file>
             <file>tests/Feature/Trade/TradeFeatureFlagTest.php</file>
+            <file>tests/Feature/Trade/TradeLifecycleTransitionApiTest.php</file>
+            <file>tests/Feature/Trade/TradeOrderApiTest.php</file>
             <file>tests/Feature/Trade/TradeProductApiTest.php</file>
             <file>tests/Feature/Trade/TradeProductLineBindingTest.php</file>
-            <file>tests/Feature/Trade/TradeCounterpartyApiTest.php</file>
-            <file>tests/Feature/Trade/TradeOrderApiTest.php</file>
-            <file>tests/Feature/Trade/TradeLifecycleTransitionApiTest.php</file>
-            <file>tests/Feature/Trade/TradeDocumentApiTest.php</file>
             <file>tests/Feature/Trade/TradeQuoteApiTest.php</file>
             <file>tests/Feature/Trade/TradeRfqApiTest.php</file>
             <file>tests/Feature/Trade/TradeSchemaTest.php</file>
@@ -1420,6 +1426,7 @@
             <file>tests/Feature/Travel/TravelCustomerContactAdminApiTest.php</file>
             <file>tests/Feature/Travel/TravelDistributorKeyTest.php</file>
             <file>tests/Feature/Travel/TravelEngagementApiTest.php</file>
+            <file>tests/Feature/Travel/TravelEvalRegressionTest.php</file>
             <file>tests/Feature/Travel/TravelExpirePendingBookingsTest.php</file>
             <file>tests/Feature/Travel/TravelExportTest.php</file>
             <file>tests/Feature/Travel/TravelFeatureFlagTest.php</file>
@@ -1430,6 +1437,7 @@
             <file>tests/Feature/Travel/TravelGoldenJourneyGjTravel01Test.php</file>
             <file>tests/Feature/Travel/TravelGoldenJourneyTest.php</file>
             <file>tests/Feature/Travel/TravelHotelApiTest.php</file>
+            <file>tests/Feature/Travel/TravelHotelInventoryTest.php</file>
             <file>tests/Feature/Travel/TravelHotelTest.php</file>
             <file>tests/Feature/Travel/TravelIsolationTest.php</file>
             <file>tests/Feature/Travel/TravelLegacyGeoImportTest.php</file>
@@ -1502,6 +1510,7 @@
             <file>tests/Feature/Travel/TravelVehicleApiTest.php</file>
             <file>tests/Feature/Travel/TravelVehiclePositionHistoryTest.php</file>
             <file>tests/Feature/Travel/TravelVehicleTest.php</file>
+            <file>tests/Feature/Travel/TravelVerticalPermissionDelegationTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookApiTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookDispatchTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookTest.php</file>
@@ -1546,7 +1555,7 @@
           et detruit le marqueur `__mvp_fixture_ready`.
 
           FeatureMvpFixture : 242 fichiers.
-          FeatureRest       : 1104 fichiers.
+          FeatureRest       : 1107 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
             <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
@@ -2781,6 +2790,7 @@
             <file>tests/Feature/Travel/TravelCustomerContactAdminApiTest.php</file>
             <file>tests/Feature/Travel/TravelDistributorKeyTest.php</file>
             <file>tests/Feature/Travel/TravelEngagementApiTest.php</file>
+            <file>tests/Feature/Travel/TravelEvalRegressionTest.php</file>
             <file>tests/Feature/Travel/TravelExpirePendingBookingsTest.php</file>
             <file>tests/Feature/Travel/TravelExportTest.php</file>
             <file>tests/Feature/Travel/TravelFeatureFlagTest.php</file>
@@ -2791,6 +2801,7 @@
             <file>tests/Feature/Travel/TravelGoldenJourneyGjTravel01Test.php</file>
             <file>tests/Feature/Travel/TravelGoldenJourneyTest.php</file>
             <file>tests/Feature/Travel/TravelHotelApiTest.php</file>
+            <file>tests/Feature/Travel/TravelHotelInventoryTest.php</file>
             <file>tests/Feature/Travel/TravelHotelTest.php</file>
             <file>tests/Feature/Travel/TravelIsolationTest.php</file>
             <file>tests/Feature/Travel/TravelLegacyGeoImportTest.php</file>
@@ -2863,6 +2874,7 @@
             <file>tests/Feature/Travel/TravelVehicleApiTest.php</file>
             <file>tests/Feature/Travel/TravelVehiclePositionHistoryTest.php</file>
             <file>tests/Feature/Travel/TravelVehicleTest.php</file>
+            <file>tests/Feature/Travel/TravelVerticalPermissionDelegationTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookApiTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookDispatchTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookTest.php</file>
