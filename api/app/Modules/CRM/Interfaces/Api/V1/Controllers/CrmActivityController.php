@@ -94,7 +94,7 @@ class CrmActivityController extends Controller
             return new JsonResponse([
                 'error' => 'VALIDATION_ERROR',
                 'message' => 'An activity must reference at least one of account_id, contact_id, lead_id or opportunity_id.',
-                'localized_message' => 'Une activité doit référencer au moins un compte, contact, prospect ou opportunité.',
+                'localized_message' => __('crm.opportunities.activity_target_required'),
             ], 422);
         }
 

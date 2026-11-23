@@ -44,5 +44,6 @@ return [
         'stage_terminal' => 'Kazanilan veya kaybedilen firsat kesindir. Yeniden baslamak icin yeni bir firsat olusturun.',
         'lost_reason_required' => 'Firsatin neden kaybedildigini belirtin: gerekce olmadan ceyrek degerlendirmesi aciklanamaz.',
         'activity_stage_changed' => 'Asama degisti',
+        'activity_target_required' => 'Bir aktivite en az bir hesap, kisi, potansiyel veya firsata baglanmalidir.',
     ],
 ];
