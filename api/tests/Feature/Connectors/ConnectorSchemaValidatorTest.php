@@ -26,6 +26,9 @@ use Tests\TestCase;
  */
 class ConnectorSchemaValidatorTest extends TestCase
 {
+    /**
+     * @param  list<array<string, mixed>>  $fields
+     */
     private function entry(array $fields, string $category = 'website'): ConnectorCatalogEntry
     {
         $entry = new ConnectorCatalogEntry([

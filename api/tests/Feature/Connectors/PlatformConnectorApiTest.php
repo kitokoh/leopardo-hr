@@ -79,9 +79,14 @@ class PlatformConnectorApiTest extends TestCase
         $this->assertNotContains('wordpress', $keys);
 
         // Le schéma est exposé : c'est lui qui génère le formulaire côté front.
-        $bank = collect($response->json('data.items'))->firstWhere('key', 'bank_transfer');
-        $this->assertNotEmpty($bank['fields']);
-        $this->assertContains('iban', array_column($bank['fields'], 'key'));
+        /** @var list<array<string, mixed>> $items */
+        $items = (array) $response->json('data.items');
+        $bank = collect($items)->firstWhere('key', 'bank_transfer');
+        $this->assertNotNull($bank, 'bank_transfer doit figurer au catalogue.');
+        /** @var list<array<string, mixed>> $bankFields */
+        $bankFields = (array) $bank['fields'];
+        $this->assertNotEmpty($bankFields);
+        $this->assertContains('iban', array_column($bankFields, 'key'));
     }
 
     public function test_platform_connects_a_bank_dynamically_with_encrypted_secrets(): void
@@ -213,7 +218,10 @@ class PlatformConnectorApiTest extends TestCase
 
         // Chaque ligne renvoie vers son écran natif : c'est lui qui reste la
         // source de vérité.
-        $gateways = collect($response->json('data.integrations'))->firstWhere('key', 'payment_gateways');
+        /** @var list<array<string, mixed>> $integrations */
+        $integrations = (array) $response->json('data.integrations');
+        $gateways = collect($integrations)->firstWhere('key', 'payment_gateways');
+        $this->assertNotNull($gateways, 'payment_gateways doit figurer dans l\'index.');
         $this->assertSame('/billing/gateways', $gateways['href']);
     }
 
@@ -309,12 +317,15 @@ class PlatformConnectorApiTest extends TestCase
     {
         $this->actingAsPlatform();
 
-        $items = collect($this->getJson('/api/v1/platform/connectors/catalog')->json('data.items'));
+        /** @var list<array<string, mixed>> $rawItems */
+        $rawItems = (array) $this->getJson('/api/v1/platform/connectors/catalog')->json('data.items');
+        $items = collect($rawItems);
 
         $stripe = $items->firstWhere('key', 'stripe');
         $connect = $items->firstWhere('key', 'stripe_connect');
 
         $this->assertNotNull($connect, 'stripe_connect doit figurer au catalogue.');
+        $this->assertNotNull($stripe, 'stripe doit figurer au catalogue.');
 
         // Cohérence avec les autres types de paiement déjà semés : même
         // catégorie, même audience, même fournisseur.
@@ -325,11 +336,19 @@ class PlatformConnectorApiTest extends TestCase
         // Le schéma porte bien la séparation config / secrets : la clé secrète
         // et le secret de webhook sont marqués `secret`, le compte connecté est
         // un champ requis non secret.
-        $fields = collect($connect['fields'])->keyBy('key');
-        $this->assertTrue($fields['secret_key']['secret']);
-        $this->assertTrue($fields['webhook_secret']['secret']);
-        $this->assertTrue($fields['account_id']['required']);
-        $this->assertArrayNotHasKey('secret', $fields['account_id']);
+        /** @var list<array<string, mixed>> $connectFields */
+        $connectFields = (array) $connect['fields'];
+        $fields = collect($connectFields)->keyBy('key');
+        /** @var array<string, mixed> $secretKey */
+        $secretKey = (array) $fields['secret_key'];
+        /** @var array<string, mixed> $webhookSecret */
+        $webhookSecret = (array) $fields['webhook_secret'];
+        /** @var array<string, mixed> $accountId */
+        $accountId = (array) $fields['account_id'];
+        $this->assertTrue($secretKey['secret']);
+        $this->assertTrue($webhookSecret['secret']);
+        $this->assertTrue($accountId['required']);
+        $this->assertArrayNotHasKey('secret', $accountId);
     }
 
     public function test_platform_connects_a_stripe_connect_account_with_masked_secret(): void
@@ -352,7 +371,7 @@ class PlatformConnectorApiTest extends TestCase
             ->assertJsonPath('data.config.account_id', 'acct_1QwertyUIOP');
 
         // Le secret ne redescend jamais en clair : masque uniquement.
-        $raw = $created->getContent();
+        $raw = (string) $created->getContent();
         $this->assertStringNotContainsString('sk_live_connect_4242', $raw);
         $this->assertTrue($created->json('data.secrets.secret_key.configured'));
 

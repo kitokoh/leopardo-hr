@@ -223,7 +223,10 @@ class TenantConnectorApiTest extends TestCase
         $this->assertContains('calendar', $keys);
 
         // Chaque ligne renvoie vers son écran natif.
-        $profiles = collect($response->json('data.integrations'))->firstWhere('key', 'payment_profiles');
+        /** @var list<array<string, mixed>> $integrations */
+        $integrations = (array) $response->json('data.integrations');
+        $profiles = collect($integrations)->firstWhere('key', 'payment_profiles');
+        $this->assertNotNull($profiles, 'payment_profiles doit figurer dans l\'index.');
         $this->assertSame('/settings/encaissements', $profiles['href']);
     }
 
