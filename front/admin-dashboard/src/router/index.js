@@ -754,6 +754,21 @@ const routes = [
         }
       },
       {
+        // #9841 (BC-14 INTEGRATION) — onglet « Connecteurs » côté plateforme :
+        // connexion dynamique des comptes externes de l'éditeur (banques qui
+        // reçoivent les paiements des tenants, PSP) + index des intégrations
+        // existantes. Permission alignée sur les routes
+        // `/platform/connectors/*` (`connectors.view`).
+        path: '/connectors',
+        name: 'connectors',
+        component: () => import('@/views/connectors/ConnectorsView.vue'),
+        meta: {
+          title: 'connectors.nav',
+          icon: 'LinkIcon',
+          permission: 'connectors.view'
+        }
+      },
+      {
         // #8739 (BC-38 PAIEMENTS) — « Operations de paiement » : surface
         // Superadmin du socle de paiement (types en lecture seule, CRUD des
         // instances, journal des transactions, reconciliation). Le backend

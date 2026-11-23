@@ -10330,5 +10330,56 @@
       "viewPublicPage": "View my public page",
       "solutionInactive": "The PharmaManager solution is not active on your workspace."
     }
+  },
+  "connectors": {
+    "nav": "Connectors",
+    "title": "Connectors",
+    "subtitle": "Centralise everything connected to the outside: your platform banks and accounts, plus the integrations already in place.",
+    "loading": "Loading…",
+    "loadError": "Could not load connectors.",
+    "addConnection": "Add a connector",
+    "platformConnections": "Platform connections",
+    "activeCount": "{active} active of {total}",
+    "emptyConnections": "No connector yet. Add a bank or an external service to get started.",
+    "default": "Default",
+    "test": "Test",
+    "edit": "Edit",
+    "delete": "Delete",
+    "notConfigured": "Not configured",
+    "existingIntegrations": "Integrations already in place",
+    "existingIntegrationsHint": "Each integration keeps its own screen, which remains the source of truth. This table groups them read-only.",
+    "table": {
+      "integration": "Integration",
+      "state": "State",
+      "action": "Action"
+    },
+    "configuredCount": "{count} configured",
+    "openNativeScreen": "Open screen",
+    "editConnection": "Edit connector",
+    "newConnection": "New connector",
+    "fields": {
+      "type": "Connector type",
+      "typePlaceholder": "Choose a type…",
+      "label": "Name",
+      "labelPlaceholder": "E.g. Main account, Company website…",
+      "selectPlaceholder": "Choose…",
+      "secretHint": "Encrypted at rest. Leave empty to keep the stored value.",
+      "secretPlaceholder": "Enter the value"
+    },
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Connector saved.",
+    "saveError": "Could not save.",
+    "testError": "The test failed.",
+    "confirmDelete": "Delete connector “{label}”?",
+    "deleted": "Connector deleted.",
+    "deleteError": "Could not delete.",
+    "status": {
+      "active": "Active",
+      "draft": "Draft",
+      "error": "Error",
+      "revoked": "Revoked"
+    }
   }
 }
