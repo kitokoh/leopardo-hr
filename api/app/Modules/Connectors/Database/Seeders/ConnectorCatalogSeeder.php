@@ -171,6 +171,41 @@ class ConnectorCatalogSeeder extends Seeder
                 ],
             ],
             [
+                // Stripe Connect : le compte Stripe d'un TIERS (le tenant qui
+                // encaisse ses propres factures, ou un compte connecté sur
+                // lequel la plateforme reverse). Distinct de `stripe`, qui
+                // désigne le compte Stripe PROPRIÉTAIRE de la clé : ici la clé
+                // secrète de la plateforme agit POUR le compte `account_id`.
+                //
+                // `audience = both` par cohérence avec les autres types de
+                // paiement déjà semés (stripe, chargily, paypal) : la
+                // plateforme peut connecter un compte de reversement, et un
+                // tenant peut connecter le sien. `TenantPaymentProfile`
+                // réserve d'ailleurs `stripe_account_id` pour ce cas.
+                'key' => 'stripe_connect',
+                'category' => 'payment',
+                'audience' => 'both',
+                'label' => 'Stripe Connect',
+                'provider' => 'Stripe',
+                'docs_url' => 'https://docs.stripe.com/connect',
+                // Juste après `stripe` (100) : même fournisseur, variante
+                // « compte connecté ».
+                'sort_order' => 105,
+                'field_schema' => [
+                    ['key' => 'account_id', 'label' => 'Compte connecté (acct_…)', 'type' => 'text', 'required' => true, 'placeholder' => 'acct_…', 'help' => 'Identifiant du compte Stripe qui reçoit les fonds.'],
+                    ['key' => 'client_id', 'label' => 'Client ID Connect (ca_…)', 'type' => 'text', 'required' => false, 'placeholder' => 'ca_…', 'help' => 'Requis pour l\'autorisation OAuth du compte connecté.'],
+                    ['key' => 'secret_key', 'label' => 'Clé secrète de la plateforme', 'type' => 'password', 'secret' => true, 'required' => true, 'placeholder' => 'sk_live_…'],
+                    ['key' => 'publishable_key', 'label' => 'Clé publique', 'type' => 'text', 'required' => false, 'placeholder' => 'pk_live_…'],
+                    ['key' => 'webhook_secret', 'label' => 'Secret de webhook Connect', 'type' => 'password', 'secret' => true, 'required' => false, 'placeholder' => 'whsec_…'],
+                    ['key' => 'business_type', 'label' => 'Type de compte connecté', 'type' => 'select', 'required' => false, 'options' => [
+                        ['value' => 'company', 'label' => 'Entreprise'],
+                        ['value' => 'individual', 'label' => 'Particulier'],
+                        ['value' => 'non_profit', 'label' => 'Association'],
+                    ]],
+                    ['key' => 'country', 'label' => 'Pays du compte', 'type' => 'text', 'required' => false, 'placeholder' => 'FR', 'help' => 'Code pays ISO 3166-1 alpha-2.'],
+                ],
+            ],
+            [
                 'key' => 'chargily',
                 'category' => 'payment',
                 'audience' => 'both',

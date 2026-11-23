@@ -70,6 +70,9 @@ class PlatformConnectorApiTest extends TestCase
         $this->assertContains('bank_transfer', $keys);
         $this->assertContains('bank_ecobank', $keys);
         $this->assertContains('stripe', $keys);
+        // Stripe Connect est un type de paiement `both` : la plateforme peut
+        // connecter un compte de reversement.
+        $this->assertContains('stripe_connect', $keys);
 
         // …et les connecteurs purement tenant (page Facebook) ne le sont pas.
         $this->assertNotContains('facebook_page', $keys);
@@ -300,6 +303,66 @@ class PlatformConnectorApiTest extends TestCase
 
         $this->deleteJson("/api/v1/platform/connectors/connections/{$id}")->assertNoContent();
         $this->assertNull(PlatformConnectorConnection::query()->find($id));
+    }
+
+    public function test_stripe_connect_entry_is_consistent_with_other_payment_types(): void
+    {
+        $this->actingAsPlatform();
+
+        $items = collect($this->getJson('/api/v1/platform/connectors/catalog')->json('data.items'));
+
+        $stripe = $items->firstWhere('key', 'stripe');
+        $connect = $items->firstWhere('key', 'stripe_connect');
+
+        $this->assertNotNull($connect, 'stripe_connect doit figurer au catalogue.');
+
+        // Cohérence avec les autres types de paiement déjà semés : même
+        // catégorie, même audience, même fournisseur.
+        $this->assertSame('payment', $connect['category']);
+        $this->assertSame($stripe['audience'], $connect['audience']);
+        $this->assertSame('Stripe', $connect['provider']);
+
+        // Le schéma porte bien la séparation config / secrets : la clé secrète
+        // et le secret de webhook sont marqués `secret`, le compte connecté est
+        // un champ requis non secret.
+        $fields = collect($connect['fields'])->keyBy('key');
+        $this->assertTrue($fields['secret_key']['secret']);
+        $this->assertTrue($fields['webhook_secret']['secret']);
+        $this->assertTrue($fields['account_id']['required']);
+        $this->assertArrayNotHasKey('secret', $fields['account_id']);
+    }
+
+    public function test_platform_connects_a_stripe_connect_account_with_masked_secret(): void
+    {
+        $this->actingAsPlatform();
+
+        $created = $this->postJson('/api/v1/platform/connectors/connections', [
+            'catalog_key' => 'stripe_connect',
+            'label' => 'Reversements tenants',
+            'config' => [
+                'account_id' => 'acct_1QwertyUIOP',
+                'business_type' => 'company',
+                'country' => 'FR',
+            ],
+            'secrets' => ['secret_key' => 'sk_live_connect_4242'],
+        ]);
+
+        $created->assertCreated()
+            ->assertJsonPath('data.catalog_key', 'stripe_connect')
+            ->assertJsonPath('data.config.account_id', 'acct_1QwertyUIOP');
+
+        // Le secret ne redescend jamais en clair : masque uniquement.
+        $raw = $created->getContent();
+        $this->assertStringNotContainsString('sk_live_connect_4242', $raw);
+        $this->assertTrue($created->json('data.secrets.secret_key.configured'));
+
+        // Un `business_type` hors options est refusé par le schéma.
+        $this->postJson('/api/v1/platform/connectors/connections', [
+            'catalog_key' => 'stripe_connect',
+            'label' => 'Type invalide',
+            'config' => ['account_id' => 'acct_1QwertyUIOP', 'business_type' => 'association_sportive'],
+            'secrets' => ['secret_key' => 'sk_live_connect_4242'],
+        ])->assertStatus(422);
     }
 
     public function test_url_connector_test_uses_real_http_status(): void

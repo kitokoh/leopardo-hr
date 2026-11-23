@@ -211,11 +211,14 @@
     <div
       v-if="formOpen"
       class="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="connector-form-title"
       @click.self="closeForm"
     >
       <div class="glass-card my-8 w-full max-w-2xl p-6">
         <div class="flex items-start justify-between gap-4">
-          <h2 class="text-lg font-semibold text-slate-900 dark:text-white">
+          <h2 id="connector-form-title" class="text-lg font-semibold text-slate-900 dark:text-white">
             {{ editingId ? t('connectors.editConnection') : t('connectors.newConnection') }}
           </h2>
           <button class="text-slate-400 hover:text-slate-600" @click="closeForm">✕</button>

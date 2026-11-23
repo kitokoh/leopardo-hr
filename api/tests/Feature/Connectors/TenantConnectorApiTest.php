@@ -73,6 +73,7 @@ class TenantConnectorApiTest extends TestCase
         $this->assertContains('facebook_page', $keys);
         $this->assertContains('shopify', $keys);
         $this->assertContains('stripe', $keys); // audience `both`
+        $this->assertContains('stripe_connect', $keys); // audience `both`
 
         // …et les banques de la PLATEFORME ne le sont jamais.
         $this->assertNotContains('bank_transfer', $keys);
