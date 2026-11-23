@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\TravelAgency\Application\Actions\CreateBookingAction;
+use App\Modules\TravelAgency\Application\Services\ConnectionDelayResolver;
 use App\Modules\TravelAgency\Domain\Enums\BookingSource;
 use App\Modules\TravelAgency\Domain\Enums\TripStatus;
 use App\Modules\TravelAgency\Domain\Models\TravelBooking;
@@ -20,10 +21,17 @@ use Illuminate\Support\Str;
  * arrivée de la jambe 1 + délai minimal de correspondance ≤ départ de la
  * jambe 2 (critère d'acceptation). Vente groupée = deux réservations
  * indépendantes (billets séparés) reliées par `connection_group_id`.
+ *
+ * M5 — le délai minimal n'est plus un paramètre à défaut figé à 45 : il est
+ * résolu par `ConnectionDelayResolver` (surcharge de l'appelant → réglage de
+ * la gare de correspondance → défaut du tenant).
  */
 final class TravelConnectionService
 {
-    public function __construct(private readonly CreateBookingAction $createBooking) {}
+    public function __construct(
+        private readonly CreateBookingAction $createBooking,
+        private readonly ConnectionDelayResolver $delays,
+    ) {}
 
     /**
      * Recherche des correspondances compatibles pour une date.
@@ -41,7 +49,7 @@ final class TravelConnectionService
         int $originCityId,
         int $destinationCityId,
         string $date,
-        int $minConnectionMinutes = 45,
+        ?int $minConnectionMinutes = null,
     ): array {
         /** @var list<TravelTrip> $firstLegs */
         $firstLegs = TravelTrip::query()
@@ -96,7 +104,11 @@ final class TravelConnectionService
 
                 $connectionMinutes = (int) $leg1Arrival->diffInMinutes($leg2Departure);
 
-                if ($connectionMinutes < $minConnectionMinutes) {
+                // M5 — délai propre à la gare de correspondance (ville
+                // intermédiaire = destination de la jambe 1).
+                $required = $this->delays->resolve($leg1->route?->destination_city_id, $minConnectionMinutes);
+
+                if ($connectionMinutes < $required) {
                     continue; // Horaires incompatibles.
                 }
 

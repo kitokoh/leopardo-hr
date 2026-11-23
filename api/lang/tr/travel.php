@@ -37,4 +37,7 @@ return [
         'room_unavailable' => ':date tarihinde oda müsait değil: yeterli müsaitlik yok.',
         'below_sold_rooms' => ':date tarihinde satılmış oda sayısının altına inilemez.',
     ],
+    'connections' => [
+        'invalid_delay' => 'Aktarma süresi 15 ile 240 dakika arasında olmalıdır.',
+    ],
 ];

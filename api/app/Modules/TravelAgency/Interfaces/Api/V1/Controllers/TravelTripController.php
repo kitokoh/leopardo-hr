@@ -445,7 +445,16 @@ class TravelTripController extends Controller
             abort(422, 'origin_city_id, destination_city_id et date sont requis.');
         }
 
-        $results = $action->execute($origin, $destination, $date);
+        // M5 — surcharge optionnelle du délai minimal ; null = résolution par
+        // la gare de correspondance puis le défaut du tenant.
+        $requestedDelay = $request->query('min_connection_minutes');
+        $minConnectionMinutes = $requestedDelay === null ? null : (int) $requestedDelay;
+
+        if ($minConnectionMinutes !== null && ($minConnectionMinutes < 15 || $minConnectionMinutes > 240)) {
+            abort(422, 'min_connection_minutes doit être compris entre 15 et 240.');
+        }
+
+        $results = $action->execute($origin, $destination, $date, $minConnectionMinutes);
 
         return response()->json(['data' => array_map(function (array $result): array {
             return [
