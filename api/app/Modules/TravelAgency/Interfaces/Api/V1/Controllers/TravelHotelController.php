@@ -19,7 +19,6 @@ use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelHotelRequest
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelHotelRoomRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelHotelBookingResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelHotelResource;
-use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelHotelRoomInventoryResource;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Resources\TravelHotelRoomResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

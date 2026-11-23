@@ -104,7 +104,7 @@ class EmployeeModuleGrantService
      *
      * @param  list<string>  $permissionKeys  codes déjà validés contre le
      *                                        catalogue des verticales actives
-     * @param  list<string>  $delegable       codes autorisés pour ce tenant
+     * @param  list<string>  $delegable  codes autorisés pour ce tenant
      * @return list<string> le jeu effectif après remplacement
      */
     public function syncVertical(
