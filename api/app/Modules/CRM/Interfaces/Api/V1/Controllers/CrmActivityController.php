@@ -7,6 +7,8 @@ namespace App\Modules\CRM\Interfaces\Api\V1\Controllers;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
 use App\Modules\CRM\Domain\Models\CrmActivity;
+use App\Modules\CRM\Interfaces\Api\V1\Requests\CrmActivityIndexRequest;
+use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmActivityRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Resources\CrmActivityResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,24 +33,14 @@ use Illuminate\Validation\Rule;
  */
 class CrmActivityController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(CrmActivityIndexRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
         $this->authorize('crm.timeline');
 
-        $validated = $request->validate([
-            'type' => ['sometimes', 'string', Rule::in(CrmActivity::TYPES)],
-            'account_id' => ['sometimes', 'integer', 'min:1'],
-            'contact_id' => ['sometimes', 'integer', 'min:1'],
-            'lead_id' => ['sometimes', 'integer', 'min:1'],
-            'opportunity_id' => ['sometimes', 'integer', 'min:1'],
-            'from' => ['sometimes', 'date_format:Y-m-d'],
-            'to' => ['sometimes', 'date_format:Y-m-d'],
-            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
-            'page' => ['sometimes', 'integer', 'min:1'],
-        ]);
+        $validated = $request->validated();
 
         $query = CrmActivity::query()
             ->where('company_id', $actor->company_id)
@@ -80,23 +72,14 @@ class CrmActivityController extends Controller
         return CrmActivityResource::collection($paginator)->response();
     }
 
-    public function store(Request $request): JsonResponse
+    public function store(StoreCrmActivityRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
         $this->authorize('crm.timeline');
 
-        $validated = $request->validate([
-            'type' => ['required', 'string', Rule::in(CrmActivity::TYPES)],
-            'subject' => ['nullable', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:5000'],
-            'account_id' => ['nullable', 'integer', 'min:1'],
-            'contact_id' => ['nullable', 'integer', 'min:1'],
-            'lead_id' => ['nullable', 'integer', 'min:1'],
-            'opportunity_id' => ['nullable', 'integer', 'min:1'],
-            'occurred_at' => ['nullable', 'date'],
-        ]);
+        $validated = $request->validated();
 
         // Une activité doit être rattachée à au moins une entité métier, sinon
         // elle n'apparaît dans aucune timeline et n'a aucune valeur.

@@ -7,6 +7,7 @@ namespace App\Modules\Planning\Interfaces\Api\V1\Controllers;
 use App\AI\Planning\PlanningOptimizer;
 use App\Http\Controllers\Controller;
 use App\Modules\Planning\Domain\Models\Schedule;
+use App\Modules\Planning\Interfaces\Api\V1\Requests\PlanningWeekRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -29,11 +30,9 @@ class PlanningController extends Controller
      * couverture par département. Les deux endpoints d'optimisation restent
      * inchangés et sont référencés dans `links` pour la découvrabilité.
      */
-    public function index(Request $request): JsonResponse
+    public function index(PlanningWeekRequest $request): JsonResponse
     {
-        $request->validate([
-            'week_start' => 'sometimes|date',
-        ]);
+        $request->validated();
 
         $companyId = (string) currentCompany()->id;
         $weekStart = (string) $request->input('week_start', Carbon::now()->startOfWeek()->toDateString());
@@ -74,11 +73,9 @@ class PlanningController extends Controller
         ]);
     }
 
-    public function weeklyOptimization(Request $request): JsonResponse
+    public function weeklyOptimization(PlanningWeekRequest $request): JsonResponse
     {
-        $request->validate([
-            'week_start' => 'sometimes|date',
-        ]);
+        $request->validated();
 
         $companyId = (string) currentCompany()->id;
         $weekStart = $request->input('week_start', Carbon::now()->startOfWeek()->toDateString());

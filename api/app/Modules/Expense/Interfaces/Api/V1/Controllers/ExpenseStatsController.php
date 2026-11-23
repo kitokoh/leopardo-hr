@@ -6,6 +6,7 @@ namespace App\Modules\Expense\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\Expense\Interfaces\Api\V1\Requests\ExpenseStatsRequest;
 use App\Modules\Planning\Domain\Models\ExpenseClaim;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -23,7 +24,7 @@ use Illuminate\Support\Facades\Schema;
  */
 class ExpenseStatsController extends Controller
 {
-    public function index(Request $request): JsonResponse
+    public function index(ExpenseStatsRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -33,10 +34,7 @@ class ExpenseStatsController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'from' => 'nullable|date',
-            'to' => 'nullable|date',
-        ]);
+        $validated = $request->validated();
 
         $from = isset($validated['from']) ? Carbon::parse($validated['from'])->startOfDay() : null;
         $to = isset($validated['to']) ? Carbon::parse($validated['to'])->endOfDay() : null;

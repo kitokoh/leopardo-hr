@@ -14,6 +14,8 @@ use App\Modules\HR\Application\DTOs\UpdateEmployeeDTO;
 use App\Modules\HR\Infrastructure\Services\EmployeeService;
 use App\Modules\HR\Infrastructure\Services\EmployeeStatsService;
 use App\Modules\HR\Interfaces\Api\V1\Requests\ArchiveEmployeeRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\EmployeeIndexRequest;
+use App\Modules\HR\Interfaces\Api\V1\Requests\EmployeeStatsRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\StoreEmployeeRequest;
 use App\Modules\HR\Interfaces\Api\V1\Requests\UpdateEmployeeRequest;
 use App\Modules\Planning\Domain\Models\Absence;
@@ -55,22 +57,14 @@ class EmployeeController extends Controller
         mobile_compatible: true
     )]
     #[RequiresPermission('employees.view')]
-    public function index(Request $request): JsonResponse
+    public function index(EmployeeIndexRequest $request): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
         $this->authorize('viewAny', Employee::class);
 
-        $validated = $request->validate([
-            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
-            'page' => ['nullable', 'integer', 'min:1'],
-            'status' => ['nullable', 'in:active,archived,suspended'],
-            'role' => ['nullable', 'in:employee,manager,admin,super_admin'],
-            'search' => ['nullable', 'string', 'max:100'],
-            'sort_by' => ['nullable', 'in:id,first_name,last_name,email,role,status'],
-            'sort_dir' => ['nullable', 'in:asc,desc'],
-        ]);
+        $validated = $request->validated();
 
         $perPage = (int) ($validated['per_page'] ?? 20);
         $sortBy = (string) ($validated['sort_by'] ?? 'id');
@@ -428,17 +422,14 @@ class EmployeeController extends Controller
      * Le périmètre « équipe » de l'acteur est appliqué : un superviseur ne
      * lit pas les effectifs qu'il ne voit pas dans la liste.
      */
-    public function stats(Request $request, EmployeeStatsService $statsService): JsonResponse
+    public function stats(EmployeeStatsRequest $request, EmployeeStatsService $statsService): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
 
         $this->authorize('viewAny', Employee::class);
 
-        $validated = $request->validate([
-            'from' => ['nullable', 'date_format:Y-m-d'],
-            'to' => ['nullable', 'date_format:Y-m-d'],
-        ]);
+        $validated = $request->validated();
 
         return new JsonResponse([
             'data' => $statsService->overview(
