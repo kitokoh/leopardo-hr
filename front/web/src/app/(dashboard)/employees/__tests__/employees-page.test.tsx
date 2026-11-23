@@ -90,6 +90,29 @@ function mockApiRoutes() {
       } as Response;
     }
 
+    // #EVAL — permissions VERTICALES : catalogue borné aux solutions actives.
+    if (url === '/employees/11/vertical-permissions' && method === 'GET') {
+      return {
+        ok: true,
+        json: async () => ({
+          data: {
+            permission_keys: ['travel.agent'],
+            available: {
+              'travel.agent': 'Vente au guichet : réservations, encaissement et émission de billets',
+              'travel.checkin': 'Embarquement : check-in et contrôle des billets',
+            },
+          },
+        }),
+      } as Response;
+    }
+
+    if (url === '/employees/11/vertical-permissions' && method === 'PUT') {
+      return {
+        ok: true,
+        json: async () => ({ data: { permission_keys: ['travel.agent', 'travel.checkin'] } }),
+      } as Response;
+    }
+
     if (url === '/employees' && method === 'POST') {
       return { ok: true, json: async () => ({ data: { id: 13 } }) } as Response;
     }
@@ -386,6 +409,41 @@ describe('EmployeesPage (#7862) — page unique de gestion d’équipe', () => {
       module_keys: ['marketing', 'accounting'],
     });
     expect(await screen.findByRole('status')).toHaveTextContent('Modules délégués mis à jour.');
+  });
+
+  it('charge les permissions métier (GET) et envoie le jeu COMPLET en PUT', async () => {
+    render(<EmployeesPage />);
+    await screen.findByText('Amina Cherif');
+
+    await userEvent.click(screen.getByTestId('employee-details-toggle-11'));
+
+    await waitFor(() =>
+      expect(mockedApiFetch).toHaveBeenCalledWith('/employees/11/vertical-permissions', {
+        _cacheBust: true,
+      }),
+    );
+
+    // Le catalogue vient du SERVEUR : 2 permissions actives, ni plus ni moins.
+    const panel = await screen.findByTestId('vertical-permissions-panel-11');
+    await waitFor(() => expect(panel.querySelectorAll('input[type="checkbox"]')).toHaveLength(2));
+
+    expect(screen.getByTestId('vertical-permission-11-travel.agent')).toBeChecked();
+    expect(screen.getByTestId('vertical-permission-11-travel.checkin')).not.toBeChecked();
+
+    await userEvent.click(screen.getByTestId('vertical-permission-11-travel.checkin'));
+    await userEvent.click(screen.getByTestId('vertical-permissions-save-11'));
+
+    await waitFor(() =>
+      expect(mockedApiFetch).toHaveBeenCalledWith(
+        '/employees/11/vertical-permissions',
+        expect.objectContaining({ method: 'PUT' }),
+      ),
+    );
+
+    expect(bodyOf('/employees/11/vertical-permissions', 'PUT')).toEqual({
+      permission_keys: ['travel.agent', 'travel.checkin'],
+    });
+    expect(await screen.findByRole('status')).toHaveTextContent('Permissions métier mises à jour.');
   });
 
   it('archive un collaborateur après confirmation inline', async () => {

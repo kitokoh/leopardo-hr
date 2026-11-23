@@ -27,7 +27,11 @@ class TravelTicketPolicy
 
     public function checkIn(Employee $actor, TravelTicket $ticket): bool
     {
-        return $actor->hasManagerRole('principal', 'rh')
+        // #EVAL — `travel.checkin` (contrôleur d'embarquement) : la matrice RBAC
+        // prévoit un profil dédié qui n'est PAS manager. On honore le grant du
+        // manifest au lieu d'exiger le rôle manager.
+        return ($actor->hasManagerRole('principal', 'rh')
+                || $actor->hasModuleGrant('travel.checkin'))
             && $ticket->company_id === $actor->company_id;
     }
 
@@ -40,7 +44,8 @@ class TravelTicketPolicy
      */
     public function verifyAny(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh');
+        return $actor->hasManagerRole('principal', 'rh')
+            || $actor->hasModuleGrant('travel.checkin');
     }
 
     /**

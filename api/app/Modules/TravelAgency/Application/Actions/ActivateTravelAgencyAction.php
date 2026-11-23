@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Application\Actions;
 
+use App\Core\Solutions\SolutionPermissionInstaller;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\TravelAgency\Domain\Exceptions\TravelActivationFailedException;
+use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Infrastructure\Services\TravelGeoSeederService;
 
 /**
@@ -30,7 +32,10 @@ use App\Modules\TravelAgency\Infrastructure\Services\TravelGeoSeederService;
  */
 final class ActivateTravelAgencyAction
 {
-    public function __construct(private readonly TravelGeoSeederService $geoSeeder) {}
+    public function __construct(
+        private readonly TravelGeoSeederService $geoSeeder,
+        private readonly SolutionPermissionInstaller $permissionInstaller,
+    ) {}
 
     public function execute(Company $company): void
     {
@@ -45,6 +50,16 @@ final class ActivateTravelAgencyAction
         if (! $persisted instanceof Company || ! $persisted->hasFeature('travelagency')) {
             throw TravelActivationFailedException::flagNotPersisted($company->id);
         }
+
+        // #EVAL — BOS-013 (#8200) : `SolutionPermissionInstaller` installe les
+        // permissions déclarées par le manifest pour le(s) `principal` du
+        // tenant. Le chemin d'activation TravelAgency (`leopardo:travel:activate`
+        // → cette Action) ne l'appelait PAS : les permissions `travel.manage`,
+        // `travel.agent`, `travel.checkin`, `travel.reports` n'étaient jamais
+        // posées en base, alors que la matrice RBAC et la spec §10.2 les
+        // annoncent comme installées à l'activation. On aligne le chemin
+        // TravelAgency sur `SolutionActivator::activate()` (idempotent).
+        $this->permissionInstaller->install($company, new TravelAgencyManifest);
 
         $this->geoSeeder->seed($company);
     }

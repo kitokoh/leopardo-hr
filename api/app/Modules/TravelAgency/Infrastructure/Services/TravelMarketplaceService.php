@@ -129,7 +129,11 @@ final class TravelMarketplaceService
             ->withoutGlobalScope('company')
             ->whereIn('company_id', $eligible)
             ->where('status', TripStatus::PUBLISHED)
-            ->with(['prices', 'route.originCity', 'route.destinationCity'])
+            // #EVAL — `vehicle` est lu par TravelMarketplaceController::tripPayload()
+            // (seat_layout). Sans eager-loading, la lecture déclenchait une
+            // LazyLoadingViolationException (lazy loading désactivé) → 500 sur
+            // la recherche marketplace publique.
+            ->with(['prices', 'route.originCity', 'route.destinationCity', 'vehicle'])
             ->withCount(['seats as available_seats' => fn (Builder $q) => $q->where('status', SeatStatus::FREE)]);
 
         if ($eligible === []) {

@@ -18,12 +18,17 @@ final class TravelReportPolicy
 {
     public static function authorize(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh');
+        // #EVAL — `travel.reports` peut être délégué (grant du manifest) sans
+        // conférer le rôle manager : la doc §10.2 / matrice RBAC le déclarent
+        // comme permission à part entière.
+        return $actor->hasManagerRole('principal', 'rh')
+            || $actor->hasModuleGrant('travel.reports');
     }
 
     public function viewAny(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh');
+        return $actor->hasManagerRole('principal', 'rh')
+            || $actor->hasModuleGrant('travel.reports');
     }
 
     public function view(Employee $actor, TravelReportExport $export): bool

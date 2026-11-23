@@ -28,7 +28,17 @@ class TravelBookingPolicy
 
     public function create(Employee $actor): bool
     {
-        return $actor->hasManagerRole('principal', 'rh');
+        // #EVAL — la matrice RBAC (docs/security/TRAVEL_RBAC_MATRIX.md) et la
+        // spec D9 déclarent `travel.agent` = « vente guichet / caisse (lecture
+        // + création de réservation) », et l'app mobile agent
+        // (front/mobile_apps/leopardo_travel_agent) vend au guichet via
+        // `POST /travel/bookings`. Or cette Policy n'autorisait QUE les
+        // managers : un vendeur/contrôleur recevait 403 et ne pouvait rien
+        // vendre. On honore le grant `travel.agent` installé par le manifest
+        // (SolutionPermissionInstaller), sans ouvrir l'écriture aux autres
+        // employés (fail-closed).
+        return $actor->hasManagerRole('principal', 'rh')
+            || $actor->hasModuleGrant('travel.agent');
     }
 
     public function update(Employee $actor, TravelBooking $booking): bool

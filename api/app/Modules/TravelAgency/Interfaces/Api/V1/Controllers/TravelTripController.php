@@ -505,6 +505,28 @@ class TravelTripController extends Controller
             ];
         })->values()->all();
 
+        // #EVAL — la matrice RBAC (docs/security/TRAVEL_RBAC_MATRIX.md) promet
+        // un manifeste « lecture (sans PII) » pour un employé simple, mais le
+        // resource exposait `full_name`, `birth_date`, `document_type` et
+        // `unit_price_minor` à TOUT employé du tenant. On renvoie désormais une
+        // vue anonymisée (siège + catégorie d'âge uniquement) hors du périmètre
+        // d'exploitation `travel.manage` / `travel.checkin`.
+        if (! $actor->hasManagerRole('principal', 'rh')) {
+            $anonymized = $passengers->map(static fn (TravelPassenger $p): array => [
+                'id' => $p->id,
+                'booking_id' => $p->booking_id,
+                'age_category' => $p->age_category->value,
+                'class_id' => $p->class_id,
+                'seat_number' => $p->seat_number,
+            ])->values()->all();
+
+            return response()->json([
+                'data' => $anonymized,
+                'crew' => $crew,
+                'anonymized' => true,
+            ]);
+        }
+
         return TravelPassengerResource::collection($passengers)
             ->additional(['crew' => $crew])
             ->response();
