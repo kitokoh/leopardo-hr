@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { AlertTriangle, ClipboardList, FileText, Globe2, Handshake, Megaphone, Package, RefreshCw, ShoppingCart, Store, Truck, Users } from 'lucide-react';
+import { AlertTriangle, ClipboardList, FileText, Globe2, Megaphone, Package, RefreshCw, ShoppingCart, Store, Truck, Users } from 'lucide-react';
 import { ApiError, apiFetch } from '@/lib/api-client';
 import { getPreferredLocale } from '@/lib/i18n';
 import { getStoredUser } from '@/lib/auth-session';
@@ -244,11 +244,18 @@ const TABS: { key: TradeTab; labelKey: string; icon: typeof Globe2 }[] = [
   // Le catalogue est l'outil du VENDEUR : sans lui, il ne peut pas alimenter
   // les lignes de ses offres (`trade_product_id` restait vide).
   { key: 'catalog', labelKey: 'trade.catalog.title', icon: Package },
-  // Les commandes et l'annuaire sont les deux outils qui manquaient au
-  // "GERER" : sans eux, une offre acceptee ne produisait rien de visible et
-  // aucune RFQ ne pouvait etre diffusee (il faut une contrepartie).
+  // Les commandes sont l'outil qui manquait au "GERER" : sans lui, une offre
+  // acceptee ne produisait rien de visible.
+  //
+  // #9859 — `counterparties` etait declare une SECONDE fois ici (avec l'icone
+  // `Handshake`), alors qu'il figure deja plus haut (`Users`). Consequence
+  // reelle, pas theorique : deux onglets identiques a l'ecran, deux cles
+  // React egales dans `TABS.map()` (avertissement de reconciliation), et une
+  // requete `getByRole('tab', { name: /contreparties/i })` qui trouve deux
+  // elements donc echoue — c'est ce qui rendait `counterparties.test.tsx`
+  // rouge. Le repertoire etant deja accessible, l'entree en double est
+  // supprimee ; `orders` et `costs` restent.
   { key: 'orders', labelKey: 'trade.orders.title', icon: ClipboardList },
-  { key: 'counterparties', labelKey: 'trade.counterparties.title', icon: Handshake },
   { key: 'costs', labelKey: 'trade.costs.title', icon: Truck },
   // ── PROMOUVOIR (#9831 #9832 #9833) ────────────────────────────────────────
   // `GET|PUT /trade/profile`, `PUT /trade/profile/publication`,
