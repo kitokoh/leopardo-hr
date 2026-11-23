@@ -17,8 +17,10 @@ use App\Core\AI\Infrastructure\Adapters\GroqWhisperAdapter;
 use App\Core\AI\Infrastructure\Adapters\UnavailableSpeechToTextAdapter;
 use App\Core\Auth\Domain\Contracts\InvitationActivationContract;
 use App\Core\Auth\Domain\Contracts\SmsCodeSenderContract;
+use App\Core\Auth\Domain\Contracts\TokenRevocationContract;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\AccountStatusGuard;
+use App\Core\Auth\Infrastructure\Services\TokenRevocationService;
 use App\Core\Auth\Infrastructure\Sms\LogOnlySmsCodeSender;
 use App\Core\Notifications\Contracts\InAppNotifier;
 use App\Core\Outbox\Contracts\OutboxPublisher;
@@ -172,6 +174,14 @@ class AppServiceProvider extends ServiceProvider
         // fournisseur de production n'est contractualise : brancher un vrai
         // fournisseur ne demande que de re-lier cette interface.
         $this->app->singleton(SmsCodeSenderContract::class, LogOnlySmsCodeSender::class);
+
+        // #9852 — contrat de revocation/bannissement. Le contrat vit dans
+        // Core/Auth/Domain/Contracts pour que les Modules (ex. Platform) n'aient
+        // pas a importer la classe concrete d'Infrastructure (garde #8717).
+        $this->app->singleton(
+            TokenRevocationContract::class,
+            TokenRevocationService::class,
+        );
 
         // Activation d'invitation employé — contrat dans Core/Auth, implémentation
         // dans le module HR (garde #8717 : Core ne dépend pas d'un service

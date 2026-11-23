@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Auth\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Contracts\TokenRevocationContract;
 use App\Core\Auth\Domain\Models\AuditLog;
 use App\Core\Auth\Domain\Models\Employee;
 use Carbon\CarbonImmutable;
@@ -55,7 +56,7 @@ use Illuminate\Support\Facades\Log;
  * réservé aux tests locaux — il est refusé en production (`forget()`), voir
  * `config/auth-revocation.php`.
  */
-final class TokenRevocationService
+final class TokenRevocationService implements TokenRevocationContract
 {
     /** Préfixe des clés : `auth:revoked:token:{id}`. */
     public const TOKEN_KEY_PREFIX = 'auth:revoked:token:';
@@ -63,13 +64,16 @@ final class TokenRevocationService
     /** Préfixe des clés de bannissement : `auth:banned:{type}:{id}`. */
     public const BAN_KEY_PREFIX = 'auth:banned:';
 
-    public const TYPE_EMPLOYEE = 'employee';
+    // Les types de compte sont définis par le contrat (#9852) : une seule
+    // source de vérité, pour que les appelants qui valident un type ne
+    // dupliquent pas la liste.
+    public const TYPE_EMPLOYEE = TokenRevocationContract::TYPE_EMPLOYEE;
 
-    public const TYPE_USER = 'user';
+    public const TYPE_USER = TokenRevocationContract::TYPE_USER;
 
-    public const TYPE_TRAVEL_CUSTOMER = 'travel_customer';
+    public const TYPE_TRAVEL_CUSTOMER = TokenRevocationContract::TYPE_TRAVEL_CUSTOMER;
 
-    public const TYPE_SUPER_ADMIN = 'super_admin';
+    public const TYPE_SUPER_ADMIN = TokenRevocationContract::TYPE_SUPER_ADMIN;
 
     public function __construct(
         private readonly CacheRepository $cache,
