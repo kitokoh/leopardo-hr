@@ -128,11 +128,25 @@ abstract class TestCase extends BaseTestCase
         }
 
         if ($this->isRunningInsideDocker() && in_array($host, ['127.0.0.1', 'localhost'], true)) {
-            // Check for CI environment variables explicitly using getenv for robustness
-            $isCI = getenv('GITHUB_ACTIONS') === 'true' || getenv('CI') === 'true';
-
-            if (! $isCI) {
-                $host = 'pgsql';
+            // #9855 — l'ancienne version substituait `pgsql` (nom de service
+            // Docker Compose) dès qu'elle voyait `/.dockerenv`, SAUF si
+            // `CI=true`. Conséquence : dans n'importe quel conteneur qui n'est
+            // pas le docker-compose de l'auteur (devcontainer, image de CI
+            // tierce, sandbox), TOUTE la suite échouait en
+            // `could not translate host name "pgsql"` — un rouge sans rapport
+            // avec le code testé, et un `CI=true` magique à deviner.
+            //
+            // On ne devine plus : on SONDE. Si l'hôte configuré répond, on le
+            // garde (c'est le cas d'un PostgreSQL local ou d'un service
+            // joignable). On ne bascule sur `pgsql` que si l'hôte configuré est
+            // injoignable ET que le nom `pgsql` résout — c'est-à-dire qu'on est
+            // bien dans le compose du dépôt. Sinon on laisse la valeur
+            // configurée : l'erreur de connexion qui suit nomme alors l'hôte
+            // réellement tenté, au lieu d'un `pgsql` fantôme.
+            if (! $this->hostIsReachable($host, (int) $this->envValueForTesting('DB_PORT', '5432'))) {
+                if ($this->hostResolves('pgsql')) {
+                    $host = 'pgsql';
+                }
             }
         }
 
@@ -349,5 +363,38 @@ abstract class TestCase extends BaseTestCase
         }
 
         return file_exists('/.dockerenv');
+    }
+
+    /**
+     * L'hôte:port accepte-t-il une connexion TCP ? (#9855)
+     *
+     * Sonde courte (200 ms) : on ne veut pas payer un timeout complet par
+     * setUp. Un refus immédiat (ECONNREFUSED) et un timeout sont traités
+     * pareil — « pas joignable » — car dans les deux cas la valeur configurée
+     * ne peut pas servir.
+     */
+    private function hostIsReachable(string $host, int $port): bool
+    {
+        $socket = @fsockopen($host, $port, $errno, $errstr, 0.2);
+
+        if ($socket === false) {
+            return false;
+        }
+
+        fclose($socket);
+
+        return true;
+    }
+
+    /**
+     * Le nom d'hôte résout-il en DNS ? (#9855)
+     *
+     * Sert uniquement à décider si `pgsql` (le service du docker-compose du
+     * dépôt) existe dans CET environnement. Un nom qui ne résout pas ne doit
+     * jamais être substitué à la valeur configurée.
+     */
+    private function hostResolves(string $host): bool
+    {
+        return gethostbyname($host) !== $host;
     }
 }
