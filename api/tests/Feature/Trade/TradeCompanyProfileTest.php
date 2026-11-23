@@ -117,6 +117,54 @@ class TradeCompanyProfileTest extends TestCase
             ->assertJsonPath('data.is_public', false);
     }
 
+    /**
+     * #9755 — créer un profil SANS `hq_country` ne doit pas partir en 500.
+     *
+     * `trade_company_profiles.hq_country` est NOT NULL ; le contrôleur passait
+     * `null` (le champ est facultatif dans le payload) et PostgreSQL refusait
+     * l'insertion. Le repli doit venir du TENANT, pas d'un `'DZ'` codé en dur :
+     * une société camerounaise dont le siège n'est pas saisi a son siège au
+     * Cameroun, pas en Algérie.
+     */
+    public function test_profile_creation_without_hq_country_falls_back_to_tenant_country(): void
+    {
+        $company = $this->createCompany();
+        $this->actingAsEmployee($company);
+
+        $this->putJson('/api/v1/trade/profile', [
+            'import_enabled' => true,
+        ])
+            ->assertStatus(200)
+            ->assertJsonPath('data.hq_country', 'CM')
+            ->assertJsonPath('data.default_currency', 'XAF');
+
+        $stored = TradeCompanyProfile::query()->where('company_id', $company->id)->firstOrFail();
+
+        $this->assertSame('CM', $stored->hq_country);
+        $this->assertSame('XAF', $stored->default_currency);
+    }
+
+    /**
+     * #9755 — un `hq_country` EXPLICITE reste prioritaire sur celui du tenant.
+     *
+     * Le repli ne doit jamais écraser une saisie : un tenant camerounais peut
+     * avoir son siège opérationnel en Côte d'Ivoire.
+     */
+    public function test_explicit_hq_country_wins_over_tenant_country(): void
+    {
+        $company = $this->createCompany();
+        $this->actingAsEmployee($company);
+
+        $this->putJson('/api/v1/trade/profile', [
+            'import_enabled' => true,
+            'hq_country' => 'CI',
+            'default_currency' => 'XOF',
+        ])
+            ->assertStatus(200)
+            ->assertJsonPath('data.hq_country', 'CI')
+            ->assertJsonPath('data.default_currency', 'XOF');
+    }
+
     public function test_invalid_incoterm_is_rejected(): void
     {
         $company = $this->createCompany();

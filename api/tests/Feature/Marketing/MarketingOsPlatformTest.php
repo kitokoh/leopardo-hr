@@ -650,6 +650,61 @@ class MarketingOsPlatformTest extends TestCase
      * « Peut-on réutiliser cette ressource ? » dépend de droits RÉELS, pas
      * d'une constante : des droits expirés bloquent, l'absence de droits non.
      */
+    /**
+     * #9758 — un fichier RÉELLEMENT vide est refusé avec un message actionnable.
+     *
+     * Le cas se produisait en production : un client envoyait `application/x-empty`
+     * pour un `.mp4` (formulaire interrompu, corps non joint). La garde MIME
+     * refusait bien, mais avec « le contenu (application/x-empty) ne correspond
+     * pas à son extension » — un message qui parle de MIME à un utilisateur qui
+     * a simplement oublié de joindre sa vidéo. Le refus doit rester, le message
+     * doit guider.
+     */
+    public function test_a_really_empty_file_is_rejected_with_an_actionable_message(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $path = tempnam(sys_get_temp_dir(), 'empty');
+        file_put_contents($path, '');
+        $empty = new UploadedFile($path, 'vide.mp4', 'video/mp4', null, true);
+
+        $response = $this->call('POST', $this->url($company, '/assets'), [
+            'name' => 'Vidéo vide',
+            'kind' => 'video',
+        ], [], ['file' => $empty], ['Accept' => 'application/json']);
+
+        $response->assertStatus(422);
+
+        $message = (string) $response->json('errors.file.0');
+
+        $this->assertStringContainsString('vide', mb_strtolower($message));
+        $this->assertStringContainsString('0 octet', $message);
+        // Le message ne doit PAS parler de MIME : ce n'est pas la cause.
+        $this->assertStringNotContainsString('x-empty', $message);
+    }
+
+    /**
+     * #9758 — un `.mp4` dont le CONTENU est un vrai MP4 est accepté.
+     *
+     * Contre-épreuve du test précédent : le refus du fichier vide ne doit pas
+     * se transformer en refus de toute vidéo. C'est exactement la régression
+     * que #9758 décrivait — un `.mp4` valide rejeté parce que le client
+     * annonçait `application/x-empty`.
+     */
+    public function test_a_valid_mp4_is_accepted(): void
+    {
+        $company = $this->company();
+        $this->actingAsPlatform();
+
+        $this->call('POST', $this->url($company, '/assets'), [
+            'name' => 'Vidéo valide',
+            'kind' => 'video',
+        ], [], ['file' => $this->fakeMp4('valide.mp4')], ['Accept' => 'application/json'])
+            ->assertCreated()
+            ->assertJsonPath('data.name', 'Vidéo valide');
+    }
+
     public function test_asset_reuse_reflects_real_rights_expiry(): void
     {
         $company = $this->company();
