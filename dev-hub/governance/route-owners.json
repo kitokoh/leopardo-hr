@@ -23,6 +23,7 @@
     "api/routes/modules/catalog.php": "tenant",
     "api/routes/modules/catalog_public.php": "public",
     "api/routes/modules/communication.php": "tenant",
+    "api/routes/modules/connectors.php": "tenant",
     "api/routes/modules/crm.php": "tenant",
     "api/routes/modules/dashboard.php": "tenant",
     "api/routes/modules/delivery.php": "tenant",

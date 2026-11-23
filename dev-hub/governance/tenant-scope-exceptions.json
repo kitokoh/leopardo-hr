@@ -100,6 +100,11 @@
       "model": "App\\Modules\\Platform\\Domain\\Models\\PublicNotification",
       "reason": "Table PLATEFORME (schema public) SANS colonne company_id : la boite de notifications appartient au CLIENT, pas au commercant, et un client recoit des notifications de plusieurs commercants de plusieurs tenants. company_id n'y est qu'une coordonnee de routage (nom commercial, reference publique), jamais un critere d'isolation : la lecture filtre par user_id, l'identite authentifiee (#9142). Trait inapplicable (meme regime que PublicActivityIndex #9105).",
       "added": "2026-11-07"
+    },
+    {
+      "model": "App\\Modules\\Connectors\\Domain\\Models\\PlatformConnectorConnection",
+      "reason": "Table PLATEFORME (schema public) : une ligne = un compte externe que l'EDITEUR utilise lui-meme (ses banques, ses comptes PSP, sa messagerie transactionnelle), pas un tenant. Le modele ne porte AUCUNE colonne company_id ; la garde le signale parce que le docblock mentionne le mot `company_id` pour expliquer precisement pourquoi le trait est inapplicable. Un scope global fail-closed exclurait tout, faute de contexte tenant sur la surface plateforme (Superadmin). Trait inapplicable (meme regime que FundraiserPublicLink #9846).",
+      "added": "2026-11-23"
     }
   ],
   "legacy_pending_review": [

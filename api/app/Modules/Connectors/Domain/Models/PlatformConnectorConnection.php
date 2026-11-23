@@ -25,6 +25,11 @@ use Illuminate\Support\Carbon;
  * fail-closed exclurait tout, faute de contexte tenant sur la surface
  * plateforme).
  *
+ * EXCEPTION TENANT-SCOPE (#7999) — le mot `company_id` n'apparaît ci-dessus
+ * que pour expliquer pourquoi le trait est inapplicable : la table ne porte
+ * AUCUNE colonne `company_id`. Entrée justifiée dans
+ * `dev-hub/governance/tenant-scope-exceptions.json`.
+ *
  * SÉCURITÉ : `secrets` chiffré au repos (cast `encrypted:array`) + `$hidden` ;
  * l'API ne renvoie que des masques, en écriture seule.
  *
