@@ -101,6 +101,87 @@ export async function createBooking(payload: BookingPayload): Promise<CreatedBoo
   };
 }
 
+/**
+ * Moyens de paiement proposés au voyageur en ligne.
+ *
+ * `cash` est volontairement exclu : il n'a de sens qu'au guichet, où un agent
+ * encaisse physiquement. L'API accepte la valeur, la vitrine ne la propose pas.
+ */
+export const ONLINE_PAYMENT_PROVIDERS = ['momo', 'card', 'pvit'] as const;
+
+export type OnlinePaymentProvider = (typeof ONLINE_PAYMENT_PROVIDERS)[number];
+
+/** Paiement initié côté serveur. */
+export interface InitiatedPayment {
+  readonly reference: string;
+  readonly providerReference: string | null;
+  readonly status: string;
+}
+
+/**
+ * Initie le paiement en ligne d'une réservation.
+ *
+ * Lève sur échec : un `null` silencieux laisserait croire à un paiement engagé
+ * alors qu'aucune transaction n'existe. L'idempotence est portée par
+ * `idempotencyKey` côté serveur — un rejeu réseau renvoie le MÊME paiement.
+ */
+export async function initiatePayment(params: {
+  readonly bookingReference: string;
+  readonly provider: OnlinePaymentProvider;
+  readonly idempotencyKey: string;
+}): Promise<InitiatedPayment> {
+  const response = await request<unknown>(`${MARKETPLACE}/payments/initiate`, {
+    method: 'POST',
+    body: JSON.stringify({
+      booking_reference: params.bookingReference,
+      provider_code: params.provider,
+      idempotency_key: params.idempotencyKey,
+    }),
+  });
+
+  const record = isRecord(response) ? response : {};
+  const raw = isRecord(record.data) ? record.data : record;
+
+  return {
+    reference: typeof raw.reference === 'string' ? raw.reference : '',
+    providerReference:
+      typeof raw.provider_reference === 'string' ? raw.provider_reference : null,
+    status: typeof raw.status === 'string' ? raw.status : 'pending',
+  };
+}
+
+/** E-billet téléchargeable (URL signée à durée limitée). */
+export interface TicketPdfLink {
+  readonly ticketNumber: string;
+  readonly pdfUrl: string;
+  readonly expiresInMinutes: number;
+}
+
+/**
+ * Demande l'URL signée du PDF d'un billet.
+ *
+ * Le code de validation est le secret partagé du billet : il est requis à
+ * chaque appel et vérifié côté API (403 sinon). L'URL renvoyée expire
+ * (`expires_in_minutes`) — elle n'est jamais mise en cache ni stockée.
+ */
+export async function fetchTicketPdf(
+  ticketId: number,
+  code: string,
+): Promise<TicketPdfLink> {
+  const response = await request<unknown>(
+    `${MARKETPLACE}/tickets/${ticketId}/pdf?code=${encodeURIComponent(code)}`,
+  );
+
+  const record = isRecord(response) ? response : {};
+  const raw = isRecord(record.data) ? record.data : record;
+
+  return {
+    ticketNumber: typeof raw.ticket_number === 'string' ? raw.ticket_number : '',
+    pdfUrl: typeof raw.pdf_url === 'string' ? raw.pdf_url : '',
+    expiresInMinutes: toNumber(raw.expires_in_minutes, 30),
+  };
+}
+
 /** Réservation suivie (payload public minimal, sans PII). */
 export interface TrackedBooking {
   readonly reference: string;

@@ -107,6 +107,17 @@ export const TEAM_ROLES_FR = {
   moduleShowcase: 'Site vitrine',
   moduleHr: 'RH (équipe, pointage, paie)',
   moduleBillingView: 'Facturation (lecture)',
+  // #EVAL — permissions VERTICALES (travel.agent, travel.checkin, …) : surface
+  // distincte des modules horizontaux, bornée aux solutions actives du tenant.
+  verticalTitle: 'Permissions métier',
+  verticalHint:
+    'Attribuez les permissions de votre métier (vente au guichet, embarquement, rapports) — ce qui n’est pas coché est révoqué. Seules les permissions de vos solutions actives sont proposées.',
+  verticalSave: 'Enregistrer les permissions',
+  verticalSaved: 'Permissions métier mises à jour.',
+  verticalLoadError: 'Impossible de charger les permissions métier.',
+  verticalEmpty: 'Aucune permission métier disponible : activez d’abord une solution.',
+  verticalPrincipalNote:
+    'Le manager principal a déjà toutes les permissions de ses solutions actives.',
   errorManagerRoleRequired:
     'Choisissez le type de manager (RH, département, comptable, superviseur, marketing).',
   errorPrincipalForbidden: 'Seul un manager principal peut créer un manager principal.',

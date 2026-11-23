@@ -130,3 +130,6 @@ dev-hub/sdk/python/leopardo_client.py
 # Vercel CLI local link metadata (jamais committe — IDs de projet/orga)
 .vercel/
 api/phpstan.ci.neon
+
+# Dump Redis genere au demarrage du service (jamais committe)
+api/dump.rdb

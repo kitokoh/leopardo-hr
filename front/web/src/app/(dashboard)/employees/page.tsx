@@ -29,6 +29,7 @@ import {
 } from '@/lib/i18n/team-roles';
 
 import { ModuleGrantsPanel } from './module-grants-panel';
+import { VerticalPermissionsPanel } from './vertical-permissions-panel';
 import { ResourceAccessPanel } from './resource-access-panel';
 import { CustomRolesPanel } from './custom-roles-panel';
 
@@ -1061,6 +1062,20 @@ export default function EmployeesPage() {
                       {/* Modules délégués (#7762) — manager principal, hors propre ligne */}
                       {isPrincipalViewer && !isSelf ? (
                         <ModuleGrantsPanel
+                          employeeId={employee.id}
+                          locale={locale}
+                          onSaved={(message) => {
+                            setError(null);
+                            setNotice(message);
+                          }}
+                        />
+                      ) : null}
+
+                      {/* #EVAL — Permissions métier (travel.agent, …) : surface
+                          distincte des modules horizontaux, bornée aux solutions
+                          actives du tenant. Manager principal, hors propre ligne. */}
+                      {isPrincipalViewer && !isSelf ? (
+                        <VerticalPermissionsPanel
                           employeeId={employee.id}
                           locale={locale}
                           onSaved={(message) => {

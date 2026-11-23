@@ -23,6 +23,7 @@ use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeImportController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeModuleGrantController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeResourceAssignmentController;
+use App\Modules\HR\Interfaces\Api\V1\Controllers\EmployeeVerticalPermissionController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\EvaluationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\InvitationController;
 use App\Modules\HR\Interfaces\Api\V1\Controllers\MeController;
@@ -74,6 +75,15 @@ ModuleRoutes::tenantModule('', function (): void {
     // principal du tenant par la policy `EmployeePolicy::manageModuleGrants`.
     Route::get('/employees/{employee}/module-grants', [EmployeeModuleGrantController::class, 'index'])->whereNumber('employee');
     Route::put('/employees/{employee}/module-grants', [EmployeeModuleGrantController::class, 'update'])->whereNumber('employee');
+
+    // #EVAL — permissions VERTICALES d'un collaborateur (travel.agent,
+    // travel.checkin, …). Surface DISTINCTE de `module-grants` : le registre
+    // n'est pas `ModuleKey` (fermé, horizontal) mais le catalogue DYNAMIQUE des
+    // permissions des solutions ACTIVES du tenant. Même doctrine : `PUT`
+    // remplace le jeu complet, réservé au principal par la policy
+    // `EmployeePolicy::manageModuleGrants`.
+    Route::get('/employees/{employee}/vertical-permissions', [EmployeeVerticalPermissionController::class, 'index'])->whereNumber('employee');
+    Route::put('/employees/{employee}/vertical-permissions', [EmployeeVerticalPermissionController::class, 'update'])->whereNumber('employee');
 
     // Catalogue des ressources assignables (le sélecteur du responsable) :
     // filtré par ce que l'acteur voit du type, fail-closed sur un type inconnu.

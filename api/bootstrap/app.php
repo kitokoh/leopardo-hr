@@ -38,6 +38,7 @@ use App\Modules\RestaurantManager\Domain\Exceptions\PaymentGatewayException as R
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -295,6 +296,24 @@ return Application::configure(basePath: dirname(__DIR__))
             }
 
             return new JsonResponse($payload, $status);
+        });
+
+        // #EVAL — une violation d'unicité (code de gare/transporteur/véhicule/
+        // ligne déjà pris, clé d'idempotence rejouée…) remontait en 500 avec la
+        // trace SQL. C'est une erreur de SAISIE : on renvoie un 422 stable et
+        // lisible, sans jamais exposer le nom de la contrainte ni la requête.
+        $exceptions->render(function (UniqueConstraintViolationException $exception, Request $request) {
+            if (! ($request->expectsJson() || $request->is('api/*'))) {
+                return null;
+            }
+
+            report($exception);
+
+            return new JsonResponse([
+                'error' => 'DUPLICATE_RESOURCE',
+                'message' => 'DUPLICATE_RESOURCE',
+                'localized_message' => __('errors.DUPLICATE_RESOURCE'),
+            ], 422);
         });
 
         $exceptions->render(function (DomainException $exception, Request $request) {

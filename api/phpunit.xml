@@ -1432,6 +1432,7 @@
             <file>tests/Feature/Travel/TravelCustomerContactAdminApiTest.php</file>
             <file>tests/Feature/Travel/TravelDistributorKeyTest.php</file>
             <file>tests/Feature/Travel/TravelEngagementApiTest.php</file>
+            <file>tests/Feature/Travel/TravelEvalRegressionTest.php</file>
             <file>tests/Feature/Travel/TravelExpirePendingBookingsTest.php</file>
             <file>tests/Feature/Travel/TravelExportTest.php</file>
             <file>tests/Feature/Travel/TravelFeatureFlagTest.php</file>
@@ -1442,6 +1443,7 @@
             <file>tests/Feature/Travel/TravelGoldenJourneyGjTravel01Test.php</file>
             <file>tests/Feature/Travel/TravelGoldenJourneyTest.php</file>
             <file>tests/Feature/Travel/TravelHotelApiTest.php</file>
+            <file>tests/Feature/Travel/TravelHotelInventoryTest.php</file>
             <file>tests/Feature/Travel/TravelHotelTest.php</file>
             <file>tests/Feature/Travel/TravelIsolationTest.php</file>
             <file>tests/Feature/Travel/TravelLegacyGeoImportTest.php</file>
@@ -1514,6 +1516,7 @@
             <file>tests/Feature/Travel/TravelVehicleApiTest.php</file>
             <file>tests/Feature/Travel/TravelVehiclePositionHistoryTest.php</file>
             <file>tests/Feature/Travel/TravelVehicleTest.php</file>
+            <file>tests/Feature/Travel/TravelVerticalPermissionDelegationTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookApiTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookDispatchTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookTest.php</file>
@@ -2797,6 +2800,7 @@
             <file>tests/Feature/Travel/TravelCustomerContactAdminApiTest.php</file>
             <file>tests/Feature/Travel/TravelDistributorKeyTest.php</file>
             <file>tests/Feature/Travel/TravelEngagementApiTest.php</file>
+            <file>tests/Feature/Travel/TravelEvalRegressionTest.php</file>
             <file>tests/Feature/Travel/TravelExpirePendingBookingsTest.php</file>
             <file>tests/Feature/Travel/TravelExportTest.php</file>
             <file>tests/Feature/Travel/TravelFeatureFlagTest.php</file>
@@ -2807,6 +2811,7 @@
             <file>tests/Feature/Travel/TravelGoldenJourneyGjTravel01Test.php</file>
             <file>tests/Feature/Travel/TravelGoldenJourneyTest.php</file>
             <file>tests/Feature/Travel/TravelHotelApiTest.php</file>
+            <file>tests/Feature/Travel/TravelHotelInventoryTest.php</file>
             <file>tests/Feature/Travel/TravelHotelTest.php</file>
             <file>tests/Feature/Travel/TravelIsolationTest.php</file>
             <file>tests/Feature/Travel/TravelLegacyGeoImportTest.php</file>
@@ -2879,6 +2884,7 @@
             <file>tests/Feature/Travel/TravelVehicleApiTest.php</file>
             <file>tests/Feature/Travel/TravelVehiclePositionHistoryTest.php</file>
             <file>tests/Feature/Travel/TravelVehicleTest.php</file>
+            <file>tests/Feature/Travel/TravelVerticalPermissionDelegationTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookApiTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookDispatchTest.php</file>
             <file>tests/Feature/Travel/TravelWebhookTest.php</file>

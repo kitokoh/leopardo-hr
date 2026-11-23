@@ -32,4 +32,9 @@ return [
     'marketplace' => [
         'booking_not_found' => 'Réservation marketplace introuvable.',
     ],
+    'hotel' => [
+        'departure_after_arrival' => 'La date de départ doit être postérieure à la date d\'arrivée.',
+        'room_unavailable' => 'Chambre indisponible le :date : plus assez de disponibilités.',
+        'below_sold_rooms' => 'Impossible de descendre sous le nombre de chambres déjà vendues le :date.',
+    ],
 ];

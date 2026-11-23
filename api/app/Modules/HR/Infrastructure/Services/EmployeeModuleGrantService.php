@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\HR\Infrastructure\Services;
 
+use App\Core\Auth\Domain\Enums\ModuleKey;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\EmployeeModuleGrant;
 use Illuminate\Support\Facades\DB;
@@ -41,8 +42,20 @@ class EmployeeModuleGrantService
     {
         $desired = array_values(array_unique($moduleKeys));
 
-        DB::transaction(function () use ($employee, $actor, $companyId, $desired): void {
+        // #EVAL — le remplacement est borné au registre HORIZONTAL `ModuleKey`.
+        // Sans ce filtre, enregistrer les modules d'un vendeur supprimait ses
+        // permissions VERTICALES (`travel.agent`, …) posées par l'activation :
+        // le PUT « modules délégués » révoquait silencieusement un droit métier
+        // que l'écran ne montrait même pas. Les deux surfaces sont désormais
+        // indépendantes (cf. `syncVertical()`).
+        $horizontal = ModuleKey::keys();
+
+        DB::transaction(function () use ($employee, $actor, $companyId, $desired, $horizontal): void {
             foreach ($employee->moduleGrants()->get() as $existing) {
+                if (! in_array($existing->module_key, $horizontal, true)) {
+                    continue; // permission verticale : hors périmètre de ce PUT
+                }
+
                 if (! in_array($existing->module_key, $desired, true)) {
                     $existing->delete();
                 }
@@ -68,5 +81,71 @@ class EmployeeModuleGrantService
         });
 
         return $this->list($employee);
+    }
+
+    /**
+     * #EVAL — permissions VERTICALES explicitement accordées au collaborateur
+     * (sous-ensemble des permissions des solutions actives du tenant).
+     *
+     * @param  list<string>  $delegable  codes autorisés pour ce tenant
+     * @return list<string>
+     */
+    public function listVertical(Employee $employee, array $delegable): array
+    {
+        return array_values(array_filter(
+            $employee->grantedModuleKeys(),
+            static fn (string $key): bool => in_array($key, $delegable, true),
+        ));
+    }
+
+    /**
+     * #EVAL — remplace le jeu COMPLET des permissions verticales du
+     * collaborateur, sans toucher aux modules horizontaux.
+     *
+     * @param  list<string>  $permissionKeys  codes déjà validés contre le
+     *                                        catalogue des verticales actives
+     * @param  list<string>  $delegable  codes autorisés pour ce tenant
+     * @return list<string> le jeu effectif après remplacement
+     */
+    public function syncVertical(
+        Employee $employee,
+        array $permissionKeys,
+        Employee $actor,
+        string $companyId,
+        array $delegable,
+    ): array {
+        $desired = array_values(array_unique($permissionKeys));
+
+        DB::transaction(function () use ($employee, $actor, $companyId, $desired, $delegable): void {
+            foreach ($employee->moduleGrants()->get() as $existing) {
+                if (! in_array($existing->module_key, $delegable, true)) {
+                    continue; // module horizontal : hors périmètre de ce PUT
+                }
+
+                if (! in_array($existing->module_key, $desired, true)) {
+                    $existing->delete();
+                }
+            }
+
+            foreach ($desired as $permissionKey) {
+                $exists = $employee->moduleGrants()
+                    ->where('module_key', $permissionKey)
+                    ->exists();
+
+                if ($exists) {
+                    continue;
+                }
+
+                $grant = new EmployeeModuleGrant([
+                    'employee_id' => $employee->id,
+                    'module_key' => $permissionKey,
+                ]);
+                $grant->company_id = $companyId;
+                $grant->granted_by_employee_id = $actor->id;
+                $grant->save();
+            }
+        });
+
+        return $this->listVertical($employee, $delegable);
     }
 }

@@ -126,7 +126,24 @@ export const TRAVEL_BOOKING_COPY = {
     'Un siège que vous aviez choisi vient d’être pris. Il a été retiré de votre sélection.',
   autoAssignHint: '— sinon, attribution automatique',
   submitting: 'Envoi…',
+  // Paiement en ligne (TRAVEL-1002) — la réservation seule ne délivre pas de billet.
+  pay: 'Payer',
+  paymentPending: 'Paiement en cours…',
+  paymentFailed: 'Le paiement n’a pas pu être initié.',
+  downloadTicket: 'Télécharger le billet',
+  ticketDownloadFailed: 'Le billet n’a pas pu être téléchargé.',
 } as const;
+
+/**
+ * Libellés des moyens de paiement en ligne proposés au voyageur.
+ *
+ * `cash` n'y figure pas : il n'est encaissable qu'au guichet.
+ */
+export const PAYMENT_PROVIDER_LABELS: Readonly<Record<string, string>> = {
+  momo: 'Mobile money',
+  card: 'Carte bancaire',
+  pvit: 'PVit',
+};
 
 /** Copie du compte voyageur (verticale Billets). */
 export const TRAVEL_ACCOUNT_COPY = {

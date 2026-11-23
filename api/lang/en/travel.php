@@ -32,4 +32,9 @@ return [
     'marketplace' => [
         'booking_not_found' => 'Marketplace booking not found.',
     ],
+    'hotel' => [
+        'departure_after_arrival' => 'The departure date must be after the arrival date.',
+        'room_unavailable' => 'Room unavailable on :date: not enough availability.',
+        'below_sold_rooms' => 'Cannot go below the number of rooms already sold on :date.',
+    ],
 ];

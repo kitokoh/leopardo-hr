@@ -96,6 +96,11 @@ jobs:
 
       - name: Build Next.js
         working-directory: front/web
+        env:
+          # #OOM — `next build` était tué par l'OOM du runner (phase TypeScript)
+          # alors que `tsc --noEmit` passait seul. Le tas Node par défaut
+          # (~2 Go) ne suffit pas au build complet de l'app.
+          NODE_OPTIONS: --max-old-space-size=6144
         run: npm run build
 
       - name: Start Next.js server

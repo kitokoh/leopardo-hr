@@ -364,6 +364,11 @@ const nextConfig: NextConfig = {
     // sous App Router (le portail web est entièrement en `app/`), et son
     // `require('critters')` différé masquait l'erreur réelle derrière un 500.
     scrollRestoration: true,
+    // #OOM — le build de production dépassait la mémoire par défaut de Node
+    // (≈2 Go) : la phase TypeScript de `next build` était tuée (OOM) alors que
+    // `tsc --noEmit` passait seul. Ces deux réglages réduisent le pic mémoire
+    // du build sans changer le bundle produit.
+    webpackMemoryOptimizations: true,
   },
 };
 
