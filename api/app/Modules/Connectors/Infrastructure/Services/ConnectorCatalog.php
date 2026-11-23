@@ -31,11 +31,14 @@ class ConnectorCatalog
      */
     public function forAudience(string $audience): array
     {
-        return $this->all()
+        /** @var list<ConnectorCatalogEntry> $entries */
+        $entries = $this->all()
             ->filter(static fn (ConnectorCatalogEntry $entry): bool => $entry->isAvailableFor($audience))
             ->sortBy([['sort_order', 'asc'], ['label', 'asc']])
             ->values()
             ->all();
+
+        return $entries;
     }
 
     /**

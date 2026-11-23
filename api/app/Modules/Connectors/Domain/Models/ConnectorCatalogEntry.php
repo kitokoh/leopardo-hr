@@ -105,10 +105,13 @@ class ConnectorCatalogEntry extends Model
     {
         $schema = $this->field_schema ?? [];
 
-        return array_values(array_filter(
+        /** @var list<array<string, mixed>> $fields */
+        $fields = array_values(array_filter(
             $schema,
-            static fn (mixed $field): bool => is_array($field) && isset($field['key']) && is_string($field['key']),
+            static fn (mixed $field): bool => isset($field['key']) && is_string($field['key']),
         ));
+
+        return $fields;
     }
 
     /**

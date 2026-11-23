@@ -299,12 +299,15 @@ class PlatformConnectorController extends Controller
     }
 
     /**
-     * @param  list<PlatformConnectorConnection>  $connections
+     * @param  array<int, PlatformConnectorConnection>  $connections
      * @return list<array<string, mixed>>
      */
     private function presentMany(array $connections): array
     {
-        return array_map(fn (PlatformConnectorConnection $connection): array => $this->present($connection), $connections);
+        /** @var list<array<string, mixed>> $items */
+        $items = array_map(fn (PlatformConnectorConnection $connection): array => $this->present($connection), $connections);
+
+        return $items;
     }
 
     private function unknownCatalogKey(string $key): JsonResponse

@@ -245,12 +245,15 @@ class TenantConnectorController extends Controller
     }
 
     /**
-     * @param  list<ConnectorConnection>  $connections
+     * @param  array<int, ConnectorConnection>  $connections
      * @return list<array<string, mixed>>
      */
     private function presentMany(array $connections): array
     {
-        return array_map(fn (ConnectorConnection $connection): array => $this->present($connection), $connections);
+        /** @var list<array<string, mixed>> $items */
+        $items = array_map(fn (ConnectorConnection $connection): array => $this->present($connection), $connections);
+
+        return $items;
     }
 
     private function schemaViolation(ConnectorSchemaViolationException $exception): JsonResponse

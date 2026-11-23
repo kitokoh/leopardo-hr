@@ -116,7 +116,9 @@ class ConnectorConnectionTester
             ];
         }
 
-        $allOk = $checks !== [] && array_reduce(
+        // `$checks` est toujours non vide ici : l'IBAN a déjà ajouté son
+        // contrôle. On ne teste donc que la conjonction des verdicts.
+        $allOk = array_reduce(
             $checks,
             static fn (bool $carry, array $check): bool => $carry && $check['ok'],
             true,
