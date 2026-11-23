@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Routes du module Connecteurs (BC-14 INTEGRATION, #9840).
+ * Routes du module Connecteurs (BC-14 INTEGRATION, #9848).
  *
  * Onglet « Connecteurs » côté TENANT : un client branche ses surfaces externes
  * (site WordPress, page produit Facebook, boutique Shopify/Instagram/TikTok

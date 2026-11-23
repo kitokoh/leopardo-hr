@@ -7,7 +7,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * #9838 (BC-14 INTEGRATION) — connexions de la PLATEFORME.
+ * #9846 (BC-14 INTEGRATION) — connexions de la PLATEFORME.
  *
  * Une ligne = un compte externe que la plateforme elle-même utilise : ses
  * banques (celles qui reçoivent les paiements des tenants), ses comptes PSP,

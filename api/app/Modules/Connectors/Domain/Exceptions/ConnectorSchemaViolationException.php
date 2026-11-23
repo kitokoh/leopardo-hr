@@ -7,7 +7,7 @@ namespace App\Modules\Connectors\Domain\Exceptions;
 use App\Exceptions\DomainException;
 
 /**
- * #9838 (BC-14 INTEGRATION) — la saisie ne respecte pas le schéma du catalogue.
+ * #9846 (BC-14 INTEGRATION) — la saisie ne respecte pas le schéma du catalogue.
  *
  * Hérite de `App\Exceptions\DomainException` (et NON du `\DomainException`
  * global) : c'est la seule classe que le renderer de `bootstrap/app.php`

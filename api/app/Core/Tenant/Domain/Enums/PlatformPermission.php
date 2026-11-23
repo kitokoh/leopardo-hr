@@ -72,7 +72,7 @@ enum PlatformPermission: string
     case PaymentsManage = 'payments.manage';
 
     /**
-     * BC-14 INTEGRATION (#9839) — onglet « Connecteurs » côté plateforme.
+     * BC-14 INTEGRATION (#9847) — onglet « Connecteurs » côté plateforme.
      *
      * `connectors.view` ouvre le catalogue et la liste des connexions de
      * l'éditeur (banques, PSP) ; `connectors.manage` autorise la création,

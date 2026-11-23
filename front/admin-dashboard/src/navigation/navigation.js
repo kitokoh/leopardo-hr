@@ -623,7 +623,7 @@ export const NAV_ENTRIES = [
     permission: 'billing.manage',
     group: 'parametres',
   },
-  // #9841 (BC-14 INTEGRATION) — onglet « Connecteurs » côté plateforme :
+  // #9849 (BC-14 INTEGRATION) — onglet « Connecteurs » côté plateforme :
   // banques qui reçoivent les paiements des tenants, PSP, services externes.
   // Permission alignée sur les routes `/platform/connectors/*`.
   {

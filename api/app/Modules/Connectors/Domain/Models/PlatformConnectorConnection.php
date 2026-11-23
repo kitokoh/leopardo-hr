@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- * #9838 (BC-14 INTEGRATION) — connexion de la PLATEFORME à un service externe.
+ * #9846 (BC-14 INTEGRATION) — connexion de la PLATEFORME à un service externe.
  *
  * Une ligne = un compte externe que l'éditeur utilise lui-même : ses banques
  * (celles qui reçoivent les paiements des tenants), ses comptes PSP, ses

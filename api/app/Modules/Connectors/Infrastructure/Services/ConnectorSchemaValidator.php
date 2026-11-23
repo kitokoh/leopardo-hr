@@ -8,7 +8,7 @@ use App\Modules\Connectors\Domain\Exceptions\ConnectorSchemaViolationException;
 use App\Modules\Connectors\Domain\Models\ConnectorCatalogEntry;
 
 /**
- * #9838 (BC-14 INTEGRATION) — validation d'une saisie CONTRE le schéma du
+ * #9846 (BC-14 INTEGRATION) — validation d'une saisie CONTRE le schéma du
  * catalogue.
  *
  * C'est la pièce qui rend l'onglet « Connecteurs » réellement dynamique : le

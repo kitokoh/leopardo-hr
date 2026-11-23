@@ -8,7 +8,7 @@ use App\Modules\Connectors\Domain\Models\ConnectorCatalogEntry;
 use Illuminate\Support\Collection;
 
 /**
- * #9838 (BC-14 INTEGRATION) — accès au catalogue, filtré par audience.
+ * #9846 (BC-14 INTEGRATION) — accès au catalogue, filtré par audience.
  *
  * Point unique de lecture du catalogue : les deux surfaces (plateforme et
  * tenant) passent par ici, ce qui garantit qu'une entrée `audience = platform`

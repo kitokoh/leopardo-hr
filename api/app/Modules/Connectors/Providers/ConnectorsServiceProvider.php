@@ -10,7 +10,7 @@ use App\Modules\Connectors\Infrastructure\Services\ConnectorSchemaValidator;
 use Illuminate\Support\ServiceProvider;
 
 /**
- * #9838 (BC-14 INTEGRATION) — enregistrement du module Connecteurs.
+ * #9846 (BC-14 INTEGRATION) — enregistrement du module Connecteurs.
  *
  * Les trois services sont des singletons : `ConnectorCatalog` met le catalogue
  * en cache pour la durée de la requête (un écran qui liste N connexions ne

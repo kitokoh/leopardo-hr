@@ -142,7 +142,7 @@ export class ApiError extends Error {
    * Corps JSON de la réponse d'erreur, quand il y en a un.
    *
    * `message` ne porte qu'un texte déjà résumé (`localized_message`). Certaines
-   * erreurs — notamment les violations de schéma des connecteurs (#9838) —
+   * erreurs — notamment les violations de schéma des connecteurs (#9846) —
    * portent un détail PAR CHAMP dans `violations` : sans le corps brut, l'écran
    * ne pourrait afficher qu'un message générique et l'utilisateur ne saurait
    * pas quel champ corriger.

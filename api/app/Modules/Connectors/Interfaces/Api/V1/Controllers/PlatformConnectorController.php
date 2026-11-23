@@ -18,7 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 /**
- * #9839 (BC-14 INTEGRATION) — onglet « Connecteurs », surface SUPERADMIN.
+ * #9847 (BC-14 INTEGRATION) — onglet « Connecteurs », surface SUPERADMIN.
  *
  * Objet : connecter dynamiquement les comptes externes de la PLATEFORME —
  * d'abord ses banques (celles qui reçoivent les paiements des tenants), qui

@@ -15,7 +15,7 @@ use App\Modules\SearchIntelligence\Domain\Models\Integration as SearchIntelligen
 use Throwable;
 
 /**
- * #9838 (BC-14 INTEGRATION) — index des intégrations DÉJÀ existantes.
+ * #9846 (BC-14 INTEGRATION) — index des intégrations DÉJÀ existantes.
  *
  * L'onglet « Connecteurs » doit « regrouper tout ce qui existe déjà comme
  * intégrations extérieures ». Il le fait en LECTURE, pas en duplication :

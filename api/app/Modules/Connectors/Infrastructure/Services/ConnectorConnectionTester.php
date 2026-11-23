@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Http;
 use Throwable;
 
 /**
- * #9838 (BC-14 INTEGRATION) — « Tester la connexion », honnêtement.
+ * #9846 (BC-14 INTEGRATION) — « Tester la connexion », honnêtement.
  *
  * Règle de base : **on ne prétend jamais qu'une connexion fonctionne quand on
  * ne l'a pas vérifiée.** Un bouton « Tester » qui répond toujours « OK » est

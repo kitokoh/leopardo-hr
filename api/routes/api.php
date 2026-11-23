@@ -668,7 +668,7 @@ Route::prefix('v1')->group(function (): void {
     // Superadmin est enregistrée dans le groupe `platform` ci-dessous.
     require __DIR__.'/modules/paiements.php';
 
-    // BC-14 INTEGRATION (#9840) — onglet « Connecteurs » côté tenant :
+    // BC-14 INTEGRATION (#9848) — onglet « Connecteurs » côté tenant :
     // surfaces externes du client (site, page produit Facebook, boutiques) et
     // index des intégrations déjà existantes. La surface Superadmin est
     // enregistrée dans le groupe `platform` ci-dessous.
@@ -787,7 +787,7 @@ Route::prefix('v1')->group(function (): void {
         Route::post('/billing/gateways/{gateway}/test', [PlatformPaymentGatewayController::class, 'test'])
             ->where('gateway', '[a-z]+')->middleware('platform.permission:billing.manage');
 
-        // BC-14 INTEGRATION (#9839) — onglet « Connecteurs » côté plateforme :
+        // BC-14 INTEGRATION (#9847) — onglet « Connecteurs » côté plateforme :
         // connexion DYNAMIQUE des comptes externes de l'éditeur (banques qui
         // reçoivent les paiements des tenants, PSP, services), plus un index
         // en lecture des intégrations existantes. Les secrets sont chiffrés au

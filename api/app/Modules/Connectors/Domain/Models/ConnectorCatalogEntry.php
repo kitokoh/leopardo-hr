@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- * #9838 (BC-14 INTEGRATION) — entrée du CATALOGUE des connecteurs.
+ * #9846 (BC-14 INTEGRATION) — entrée du CATALOGUE des connecteurs.
  *
  * Cette table est la raison pour laquelle l'onglet « Connecteurs » est
  * dynamique : le formulaire de saisie n'est pas écrit dans le front, il est

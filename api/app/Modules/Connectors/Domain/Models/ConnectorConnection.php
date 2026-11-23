@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
- * #9838 (BC-14 INTEGRATION) — connexion d'un TENANT à un service externe.
+ * #9846 (BC-14 INTEGRATION) — connexion d'un TENANT à un service externe.
  *
  * Une ligne = un compte externe qu'un client branche sur son espace : son site
  * WordPress/WooCommerce, sa page produit Facebook, sa boutique Shopify, sa

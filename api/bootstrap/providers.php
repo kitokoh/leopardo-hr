@@ -93,7 +93,7 @@ return [
     HealthManagerServiceProvider::class,
     RestaurantManagerServiceProvider::class,
     CatalogServiceProvider::class,
-    // BC-14 INTEGRATION (#9838) — onglet « Connecteurs » : catalogue dynamique
+    // BC-14 INTEGRATION (#9846) — onglet « Connecteurs » : catalogue dynamique
     // de types de connecteur + connexions plateforme et tenant.
     ConnectorsServiceProvider::class,
     RetailServiceProvider::class,

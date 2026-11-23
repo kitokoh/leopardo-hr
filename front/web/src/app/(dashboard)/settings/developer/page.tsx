@@ -335,7 +335,7 @@ export default function DeveloperSettingsPage() {
           </section>
         </div>
 
-        {/* #9842 (BC-14 INTEGRATION) — onglet « Connecteurs » côté tenant.
+        {/* #9850 (BC-14 INTEGRATION) — onglet « Connecteurs » côté tenant.
             Monté DANS cet onglet « Intégrations » plutôt que sur une page
             séparée : la mission demande d'étendre l'existant, pas de créer un
             doublon. Les clés API et les webhooks gardent leurs sections

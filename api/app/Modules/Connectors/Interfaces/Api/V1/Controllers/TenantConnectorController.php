@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 /**
- * #9840 (BC-14 INTEGRATION) — onglet « Connecteurs », surface TENANT.
+ * #9848 (BC-14 INTEGRATION) — onglet « Connecteurs », surface TENANT.
  *
  * Objet : un client branche SES surfaces externes — son site WordPress, sa page
  * produit Facebook, sa boutique Shopify/Instagram/TikTok Shop, sa fiche Google

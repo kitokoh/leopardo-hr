@@ -7,7 +7,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * #9838 (BC-14 INTEGRATION) — connexions d'un TENANT.
+ * #9846 (BC-14 INTEGRATION) — connexions d'un TENANT.
  *
  * Une ligne = un compte externe qu'un client branche sur SON espace : son site
  * WordPress/WooCommerce, sa page produit Facebook, sa boutique Shopify, sa

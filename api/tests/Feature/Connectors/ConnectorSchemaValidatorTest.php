@@ -11,7 +11,7 @@ use App\Modules\Connectors\Domain\Exceptions\ConnectorSchemaViolationException;
 use Tests\TestCase;
 
 /**
- * #9838 (BC-14 INTEGRATION) — le socle qui rend l'onglet « Connecteurs »
+ * #9846 (BC-14 INTEGRATION) — le socle qui rend l'onglet « Connecteurs »
  * dynamique : validation d'une saisie CONTRE le schéma du catalogue.
  *
  * Ce que ces tests verrouillent :

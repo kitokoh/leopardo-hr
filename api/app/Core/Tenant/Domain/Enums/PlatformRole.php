@@ -80,7 +80,7 @@ enum PlatformRole: string
                 // BC-10 (#9100) — le support lit les offres pour répondre aux
                 // questions des clients ; il ne publie pas en leur nom.
                 PlatformPermission::RecruitmentView,
-                // BC-14 (#9839) — le support diagnostique une connexion en
+                // BC-14 (#9847) — le support diagnostique une connexion en
                 // erreur (banque, PSP, site) pour répondre à un client ; il ne
                 // modifie pas les coordonnées qui reçoivent l'argent.
                 PlatformPermission::ConnectorsView,
@@ -108,7 +108,7 @@ enum PlatformRole: string
                 // d'acquisition, donc suit les offres ; publier au nom d'un
                 // client reste à admin.
                 PlatformPermission::RecruitmentView,
-                // BC-14 (#9839) — les comptes bancaires de la plateforme SONT
+                // BC-14 (#9847) — les comptes bancaires de la plateforme SONT
                 // le métier de finance : il connecte, corrige et teste une
                 // banque ou un PSP sans passer par un administrateur.
                 PlatformPermission::ConnectorsView,
@@ -140,7 +140,7 @@ enum PlatformRole: string
                 // BC-10 (#9100) — ops diagnostique un connecteur d'agrégateur
                 // en erreur : lecture seule, comme pour GSI et Pages.
                 PlatformPermission::RecruitmentView,
-                // BC-14 (#9839) — ops diagnostique une banque ou un PSP
+                // BC-14 (#9847) — ops diagnostique une banque ou un PSP
                 // injoignable : lecture seule, l'écriture reste à finance/admin.
                 PlatformPermission::ConnectorsView,
             ],
@@ -168,7 +168,7 @@ enum PlatformRole: string
                 // publiquement — cela reste à admin/super_admin, comme pour
                 // Marketing OS.
                 PlatformPermission::RecruitmentView,
-                // BC-14 (#9839) — marketing suit les connecteurs de diffusion
+                // BC-14 (#9847) — marketing suit les connecteurs de diffusion
                 // (Meta, TikTok, Merchant Center) en lecture seule.
                 PlatformPermission::ConnectorsView,
             ],

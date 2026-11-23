@@ -15,7 +15,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * #9840 (BC-14 INTEGRATION) — onglet « Connecteurs », surface TENANT.
+ * #9848 (BC-14 INTEGRATION) — onglet « Connecteurs », surface TENANT.
  *
  * Contrat verrouillé ici :
  *   1. un tenant connecte SON site WordPress et SA page produit Facebook ;

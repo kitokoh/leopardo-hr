@@ -7,7 +7,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * #9838 (BC-14 INTEGRATION) — catalogue des TYPES de connecteur.
+ * #9846 (BC-14 INTEGRATION) — catalogue des TYPES de connecteur.
  *
  * C'est la pièce qui rend l'onglet « Connecteurs » DYNAMIQUE : le formulaire
  * de saisie n'est pas codé dans le front, il est DÉCRIT ici par `field_schema`.

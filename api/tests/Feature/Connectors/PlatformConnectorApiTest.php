@@ -16,7 +16,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * #9839 (BC-14 INTEGRATION) — onglet « Connecteurs », surface SUPERADMIN.
+ * #9847 (BC-14 INTEGRATION) — onglet « Connecteurs », surface SUPERADMIN.
  *
  * Contrat verrouillé ici :
  *   1. le catalogue expose les banques de la plateforme avec leur schéma ;

@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ApiError, apiFetch } from '@/lib/api-client';
 
 /**
- * #9842 (BC-14 INTEGRATION) — onglet « Connecteurs », surface TENANT.
+ * #9850 (BC-14 INTEGRATION) — onglet « Connecteurs », surface TENANT.
  *
  * Ce panneau est monté DANS l'onglet « Intégrations » existant
  * (`/settings/developer`) : la mission demande d'étendre l'existant plutôt que

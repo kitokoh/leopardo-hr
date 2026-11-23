@@ -8,7 +8,7 @@ use App\Modules\Connectors\Domain\Models\ConnectorCatalogEntry;
 use Illuminate\Database\Seeder;
 
 /**
- * #9838 (BC-14 INTEGRATION) — catalogue initial des connecteurs.
+ * #9846 (BC-14 INTEGRATION) — catalogue initial des connecteurs.
  *
  * Ce seeder est IDEMPOTENT (`updateOrCreate` sur `key`) : le rejouer met à
  * jour les schémas sans dupliquer les entrées, et sans toucher aux connexions

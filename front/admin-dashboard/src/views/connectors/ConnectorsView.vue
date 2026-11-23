@@ -317,7 +317,7 @@ import { translate } from '@/i18n/index.js'
 import { useLocaleStore } from '@/stores/locale.js'
 
 /**
- * #9841 (BC-14 INTEGRATION) — onglet « Connecteurs », surface SUPERADMIN.
+ * #9849 (BC-14 INTEGRATION) — onglet « Connecteurs », surface SUPERADMIN.
  *
  * Trois zones :
  *   1. les connexions de la PLATEFORME (banques qui reçoivent les paiements des

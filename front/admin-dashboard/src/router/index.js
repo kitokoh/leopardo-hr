@@ -754,7 +754,7 @@ const routes = [
         }
       },
       {
-        // #9841 (BC-14 INTEGRATION) — onglet « Connecteurs » côté plateforme :
+        // #9849 (BC-14 INTEGRATION) — onglet « Connecteurs » côté plateforme :
         // connexion dynamique des comptes externes de l'éditeur (banques qui
         // reçoivent les paiements des tenants, PSP) + index des intégrations
         // existantes. Permission alignée sur les routes
