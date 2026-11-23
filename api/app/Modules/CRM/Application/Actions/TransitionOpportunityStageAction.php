@@ -92,7 +92,10 @@ final class TransitionOpportunityStageAction
                 // Journal append-only : chaque ligne raconte un deplacement.
                 // On horodate, sinon un retour en arriere et un aller simple
                 // seraient indistinguables.
-                $entry = sprintf('[%s] %s -> %s (%s)', now()->toIso8601String(), $from, $to, $actor->id);
+                // La fleche est un caractere typographique (`→`), pas `->` :
+                // c'est le contrat que la timeline et les tests de #9790
+                // attendent, et `notes` est un texte lu par un humain.
+                $entry = sprintf('[%s] %s → %s (%s)', now()->toIso8601String(), $from, $to, $actor->id);
 
                 if (! empty($data['lost_reason'])) {
                     // La raison de la perte voyage AVEC le deplacement : c'est
