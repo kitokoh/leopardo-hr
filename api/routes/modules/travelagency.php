@@ -271,6 +271,16 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::put('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'updateRoom']);
         Route::delete('/hotels/{travelHotel}/rooms/{travelHotelRoom}', [TravelHotelController::class, 'destroyRoom']);
 
+        // M4 — inventaire hôtelier PAR DATE + réservations (contrôle de
+        // surréservation). Le catalogue seul ne permettait pas de vendre une
+        // nuit : `rooms_total`/`rooms_booked` par (chambre, date) portent
+        // désormais la disponibilité, et `BookHotelRoomAction` verrouille les
+        // nuits avant de décider (409 si une nuit manque).
+        Route::get('/hotels/{travelHotel}/rooms/{travelHotelRoom}/inventory', [TravelHotelController::class, 'inventory']);
+        Route::put('/hotels/{travelHotel}/rooms/{travelHotelRoom}/inventory', [TravelHotelController::class, 'updateInventory']);
+        Route::get('/hotels/{travelHotel}/rooms/{travelHotelRoom}/bookings', [TravelHotelController::class, 'bookings']);
+        Route::post('/hotels/{travelHotel}/rooms/{travelHotelRoom}/bookings', [TravelHotelController::class, 'storeBooking']);
+
         // Formulaire de contact → lead CRM (TRAVEL-416/#6068) — publication
         // asynchrone de l'événement travel.contact.submitted.v1 (outbox).
         Route::post('/contact', [TravelContactController::class, 'store']);
