@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Évaluation Leopardo HR — Recette TechCorp + Restaurateur</title>
+<style>
+  :root{
+    --bg:#0b1020; --panel:#141a2e; --panel2:#1b2340; --line:#2a3355;
+    --txt:#e8ecf8; --muted:#9aa6c8; --accent:#6ea8fe; --accent2:#8b5cf6;
+    --ok:#34d399; --warn:#fbbf24; --bad:#f87171;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(1200px 600px at 15% -10%,#1b2450 0%,var(--bg) 55%) no-repeat,var(--bg);
+       color:var(--txt);font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:1080px;margin:0 auto;padding:48px 22px 80px}
+  header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:36px}
+  .kicker{color:var(--accent);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:12px}
+  h1{font-size:clamp(28px,4.4vw,44px);line-height:1.15;margin:12px 0 10px;letter-spacing:-.02em}
+  h2{font-size:22px;margin:44px 0 14px;letter-spacing:-.01em}
+  h3{font-size:17px;margin:26px 0 10px;color:#cdd7f5}
+  p{color:#d3daf0}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+  .chip{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13px;color:var(--muted)}
+  .chip b{color:var(--txt);font-weight:600}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .card{background:linear-gradient(180deg,var(--panel) 0%,var(--panel2) 100%);border:1px solid var(--line);
+        border-radius:16px;padding:20px}
+  .card h3{margin-top:0}
+  .score{font-size:34px;font-weight:800;letter-spacing:-.02em}
+  .score small{font-size:15px;color:var(--muted);font-weight:600}
+  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14.5px}
+  @media (max-width:700px){
+    .wrap{padding:32px 14px 64px}
+    table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;white-space:nowrap}
+    th,td{padding:8px 9px}
+    pre{font-size:12px}
+  }
+  th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line)}
+  th{color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.06em}
+  tbody tr:hover{background:#1a2242}
+  td.c,th.c{text-align:center}
+  .pill{display:inline-block;min-width:44px;text-align:center;border-radius:7px;padding:2px 8px;font-weight:700;font-size:12.5px}
+  .p200{background:rgba(52,211,153,.16);color:var(--ok)}
+  .p403{background:rgba(248,113,113,.16);color:var(--bad)}
+  .p422{background:rgba(251,191,36,.16);color:var(--warn)}
+  .p401{background:rgba(154,166,200,.16);color:var(--muted)}
+  .bar{height:9px;border-radius:99px;background:#232c4d;overflow:hidden;margin-top:8px}
+  .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+  ul{padding-left:20px} li{margin:6px 0;color:#d3daf0}
+  .note{background:rgba(110,168,254,.08);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:14px 18px;margin:18px 0}
+  .fix{background:rgba(52,211,153,.08);border-left:3px solid var(--ok);border-radius:0 10px 10px 0;padding:14px 18px;margin:18px 0}
+  .bug{background:rgba(248,113,113,.08);border-left:3px solid var(--bad);border-radius:0 10px 10px 0;padding:14px 18px;margin:18px 0}
+  code{background:#0e1428;border:1px solid var(--line);border-radius:6px;padding:1px 6px;font-size:13.5px;color:#bcd0ff;overflow-wrap:anywhere}
+  pre{background:#0e1428;border:1px solid var(--line);border-radius:12px;padding:16px;overflow-x:auto;max-width:100%;white-space:pre-wrap;word-break:break-word;font-size:13px;color:#c9d6ff}
+  footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);color:var(--muted);font-size:13.5px}
+  .toc{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 0}
+  .toc a{color:var(--muted);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:13px}
+  .toc a:hover{color:var(--txt);border-color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="kicker">Rapport de recette · Test fonctionnel exhaustif · v5</div>
+  <h1>Leopardo HR — évaluation de deux tenants : <span style="color:var(--accent)">TechCorp Algerie</span> &amp; <span style="color:var(--accent2)">Chez Leo (restaurateur)</span></h1>
+  <p>Déploiement réel de la stack, migration + seed, puis tests HTTP sur l'API v1. La v2 a ajouté la recette complète d'un <b>tenant de la verticale restaurant</b> ; la v3 a fermé les trois correctifs RBAC/OpenAPI ; la v4 a traité l'homogénéisation des routes de statistiques, l'exposition des payloads de verticales et le test de bout en bout du bridge d'impression. Cette <b>v5</b> couvre les trois chantiers suivants — <b>tests Feature de <code>/employees/stats</code> et <code>/crm/activities</code></b>, puis <b>documentation OpenAPI des verticales <code>edu_manager</code> et <code>travelagency</code></b> — avec un <b>pull préalable</b> et un contrôle de non-régression complet.</p>
+  <div class="meta">
+    <span class="chip">Dépôt <b>Kitokoh/leopardo-hr</b></span>
+    <span class="chip">Version <b>4.24.0</b></span>
+    <span class="chip">Tenant 1 <b>techcorp-algerie</b> (Pilot · DZ · DZD)</span>
+    <span class="chip">Tenant 2 <b>resto-pilot-001</b> (Restaurant · CM · XAF)</span>
+    <span class="chip">Date <b>23/11/2026</b></span>
+    <span class="chip">Correctifs v3 <b class="ok">3 / 3 vérifiés</b></span>
+    <span class="chip">Chantiers v4 <b class="ok">3 / 3 livrés</b></span>
+    <span class="chip">Chantiers v5 <b class="ok">3 / 3 livrés</b></span>
+    <span class="chip">Note globale <b class="ok">4,8 / 5</b></span>
+  </div>
+  <nav class="toc">
+    <a href="#s1">1 · Mise en place</a>
+    <a href="#s2">2 · Tenant restaurateur</a>
+    <a href="#s3">3 · RBAC 8 profils</a>
+    <a href="#s4">4 · Parcours métier</a>
+    <a href="#s5">5 · Sécurité</a>
+    <a href="#s6">6 · Bugs &amp; correctifs</a>
+    <a href="#s7">7 · Notes</a>
+    <a href="#s8">8 · Ajouts GitHub</a>
+    <a href="#s9">9 · Correctifs v3</a>
+    <a href="#s10">10 · Chantiers v4</a>
+    <a href="#s11">11 · Chantiers v5</a>
+  </nav>
+</header>
+
+<section class="grid g3">
+  <div class="card"><h3>Profils testés</h3><div class="score">14 <small>sur 2 tenants</small></div><p style="margin:6px 0 0;color:var(--muted)">6 profils TechCorp + 8 profils restaurant (principal, gérant, comptable, superviseur, chef, serveur, caissier, livreur).</p></div>
+  <div class="card"><h3>Endpoints couverts</h3><div class="score">~155 <small>× profils</small></div><p style="margin:6px 0 0;color:var(--muted)">61 endpoints restaurant × 8 profils + ~50 endpoints RH/CRM × 6 profils.</p></div>
+  <div class="card"><h3>Bugs corrigés</h3><div class="score ok">7 <small>dont 3 bloquants</small></div><p style="margin:6px 0 0;color:var(--muted)">Provisionnement du tenant resto, 2 erreurs 500, 1 endpoint 403/500, purge <code>--clean</code>.</p></div>
+  <div class="card"><h3>Chantiers v4</h3><div class="score ok">3 <small>livrés</small></div><p style="margin:6px 0 0;color:var(--muted)">4 routes de statistiques, 19 chemins + 22 schémas OpenAPI, 6 tests de bout en bout du bridge d'impression.</p></div>
+  <div class="card"><h3>Chantiers v5</h3><div class="score ok">3 <small>livrés</small></div><p style="margin:6px 0 0;color:var(--muted)">2 suites Feature (13 tests), 397 routes de verticales documentées, 299 entrées d'allowlist purgées.</p></div>
+</section>
+
+<h2 id="s1">1 · Mise en place</h2>
+<table>
+  <thead><tr><th>Étape</th><th>Résultat</th></tr></thead>
+  <tbody>
+    <tr><td>Clone du dépôt</td><td><span class="pill p200">OK</span> 13 326 fichiers</td></tr>
+    <tr><td>PHP 8.4.28 + extensions (pgsql, redis, intl, gd, bcmath, zip)</td><td><span class="pill p200">OK</span></td></tr>
+    <tr><td>PostgreSQL 15 + <b>PostGIS 3</b> + Redis 7</td><td><span class="pill p200">OK</span></td></tr>
+    <tr><td><code>composer install</code></td><td><span class="pill p200">OK</span> 157 paquets</td></tr>
+    <tr><td><code>php artisan leopardo:migrate --seed</code></td><td><span class="pill p200">OK</span> 622 migrations + seeders de référence</td></tr>
+    <tr><td><code>db:seed --class=DemoCompanySeeder</code></td><td><span class="pill p200">OK</span> 3 tenants complets</td></tr>
+    <tr><td><code>php artisan pilot:seed resto</code></td><td><span class="pill p200">OK</span> tenant <code>resto-pilot-001</code> (après correctifs, cf. §6)</td></tr>
+    <tr><td><code>GET /api/v1/health</code></td><td><span class="pill p200">200</span> <code>{"status":"ok","version":"4.24.0"}</code></td></tr>
+  </tbody>
+</table>
+<div class="note"><b>Point d'attention installation :</b> la migration <code>enable_postgis_extension</code> échoue si PostGIS n'est pas présent — avec un message d'erreur actionnable (bon point). Le <code>docker-compose.yml</code> racine utilise l'image <code>postgis/postgis</code>, mais un déploiement hors Docker doit installer <code>postgresql-15-postgis-3</code> à la main.</div>
+
+<h2 id="s2">2 · Tenant restaurateur — provisionnement</h2>
+<p>Le tenant <code>resto-pilot-001</code> (« Chez Leo », Cameroun, XAF) est produit par <code>RestaurantUatSeeder</code>. Le seeder d'origine ne créait que des succursales et un cycle de commande : <b>aucune structure RH, aucun compte de connexion, aucune assignation de ressource</b>. Il a été étendu pour produire un tenant réellement exploitable.</p>
+
+<h3>Données désormais seedées</h3>
+<table>
+  <thead><tr><th>Domaine</th><th>Contenu</th><th class="c">Volume</th></tr></thead>
+  <tbody>
+    <tr><td>Structure RH</td><td>Départements (Administration, Cuisine, Salle, Caisse, Livraison), 8 postes, horaire de service 10h–22h, site géolocalisé</td><td class="c">5 / 8 / 1 / 1</td></tr>
+    <tr><td>Employés</td><td>8 profils avec matricule, département, poste, manager hiérarchique, salaire de base</td><td class="c">8</td></tr>
+    <tr><td>Comptes de connexion</td><td><code>user_lookups</code> (schéma public) — <b>absents du seeder d'origine, la connexion échouait</b></td><td class="c">8</td></tr>
+    <tr><td>Portée ressource</td><td><code>employee_resource_assignments</code> sur <code>restaurant_branch</code> (manage / operate / view)</td><td class="c">8</td></tr>
+    <tr><td>Pointage</td><td>20 derniers jours ouvrés, service 10h–22h, retards et heures supplémentaires</td><td class="c">150</td></tr>
+    <tr><td>Congés</td><td>3 types d'absence, soldes par employé, 1 demande approuvée + 1 en attente</td><td class="c">24 + 2</td></tr>
+    <tr><td>Paie</td><td>Bulletins du mois précédent : 7 validés + 1 brouillon, avec primes, retenues, CNPS, IR</td><td class="c">8</td></tr>
+    <tr><td>Documents RH</td><td>Contrats, fiches de poste, attestations, pièces d'identité</td><td class="c">8</td></tr>
+    <tr><td>CRM</td><td>Pipeline « Traiteur &amp; événements » (5 étapes), comptes B2B, contacts, opportunités, tâches</td><td class="c">1 / 3 / 3 / 3 / 3</td></tr>
+    <tr><td>Notifications</td><td>Cloche non vide pour chaque profil</td><td class="c">8</td></tr>
+    <tr><td>Modules activés</td><td><code>rh</code>, <code>documents</code>, <code>notifications</code>, <code>crm</code>, <code>attendance</code>, <code>restaurantmanager</code></td><td class="c">6</td></tr>
+  </tbody>
+</table>
+
+<div class="fix">
+  <h3 style="margin-top:0">🔴 Bloquant corrigé — le tenant restaurateur n'était pas provisionnable</h3>
+  <p>Trois manques cumulés rendaient le tenant inutilisable au-delà du compte principal :</p>
+  <ul>
+    <li><b>Modules requis absents.</b> Le manifest <code>RestaurantManager</code> déclare <code>requiredModules() = rh, documents, notifications, crm</code>. Le seeder ne posait que <code>rh</code> et <code>restaurantmanager</code> : <code>SolutionActivator::activate()</code> refusait la verticale et les routes <code>/crm/*</code> et <code>/documents/*</code> répondaient 403.</li>
+    <li><b>Aucun <code>user_lookups</code>.</b> La table publique qui résout un email vers un tenant n'était pas alimentée : <b>aucun des 8 profils ne pouvait se connecter</b>.</li>
+    <li><b>Aucune assignation de ressource.</b> L'autorisation Restaurant est ressource-scopée sur <code>restaurant_branch</code> via <code>canWriteBranchResource()</code>. Sans assignation, la méthode retombe sur le comportement historique (principal/rh seulement) : un <b>caissier</b> ne pouvait pas ouvrir sa caisse, un <b>chef</b> ne pouvait pas piloter la cuisine, un <b>serveur</b> ne pouvait pas encaisser — tous en 403.</li>
+  </ul>
+  <p><b>Correction :</b> <code>RestaurantUatSeeder</code> pose les 6 features, les 8 <code>user_lookups</code>, les assignations par métier (manage pour direction/comptable/superviseur/chef, operate pour serveur/caissier, view pour livreur) et l'ensemble des données RH/CRM/documents.</p>
+</div>
+
+<h2 id="s3">3 · Matrice RBAC — 8 profils × 61 endpoints restaurant</h2>
+<p style="color:var(--muted);font-size:14px">488 requêtes réelles. <span class="pill p200">200</span> autorisé · <span class="pill p403">403</span> refusé · <span class="pill p422">422</span> validation (paramètre de requête manquant).</p>
+<table>
+  <thead><tr><th>Endpoint</th><th class="c">principal</th><th class="c">gérant</th><th class="c">comptable</th><th class="c">superv.</th><th class="c">chef</th><th class="c">serveur</th><th class="c">caissier</th><th class="c">livreur</th></tr></thead>
+  <tbody>
+    <tr><td><code>GET /restaurant/branches</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /restaurant/tables</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /restaurant/orders</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /restaurant/kitchen/orders</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /restaurant/pos-sessions/current</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /restaurant/stock-levels</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /restaurant/purchase-orders</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /restaurant/reservations</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /restaurant/reviews</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /restaurant/deliveries</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /restaurant/loyalty-programs</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /restaurant/promotions</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /restaurant/reports/sales</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /restaurant/reports/kpis</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /restaurant/reports/cogs</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /restaurant/dashboard/kpis</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /restaurant/health/metrics</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /restaurant/sync/status</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /restaurant/print-jobs</code></td><td class="c"><span class="pill p422">422</span></td><td class="c"><span class="pill p422">422</span></td><td class="c"><span class="pill p422">422</span></td><td class="c"><span class="pill p422">422</span></td><td class="c"><span class="pill p422">422</span></td><td class="c"><span class="pill p422">422</span></td><td class="c"><span class="pill p422">422</span></td><td class="c"><span class="pill p422">422</span></td></tr>
+    <tr><td><code>GET /restaurant/printing/bridge/health</code></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+  </tbody>
+</table>
+<p style="color:var(--muted);font-size:14px">Les 40 autres endpoints (zones, produits, ingrédients, menus, unités, taxes, catégories, horaires, fournisseurs, mouvements de stock, inventaires, réceptions, zones de livraison, livreurs, clients fidélité, rapports d'occupation/produits/POS/groupe) sont en <span class="pill p200">200</span> pour les 8 profils.</p>
+
+<div class="note"><b>Lecture :</b> le cloisonnement est net et cohérent avec les métiers. Les <b>rapports et KPIs</b> sont réservés à la direction, au comptable, au superviseur et au chef — serveur, caissier et livreur sont refusés. Le <b>livreur</b> est le plus restreint (403 sur la cuisine, les rapports, la synchronisation et le bridge d'impression). Le <b>bridge d'impression</b> est refusé à tous les profils humains : il attend un jeton d'appareil, pas un jeton employé — comportement correct mais à documenter. <b>Note RBAC restaurant : 5/5.</b></div>
+
+<h2 id="s4">4 · Parcours métier de bout en bout</h2>
+<table>
+  <thead><tr><th>Parcours</th><th>Résultat observé</th><th class="c">Note</th></tr></thead>
+  <tbody>
+    <tr><td><b>Ouverture de caisse</b> (caissier)</td><td><code>POST /pos-sessions</code> → <span class="pill p200">201</span> ; réouverture refusée <code>409 A POS session is already open</code></td><td class="c ok">5/5</td></tr>
+    <tr><td><b>Commande sur table</b> (serveur)</td><td><code>POST /orders</code> → <span class="pill p200">201</span> <code>RST-QKXQKA0ZUH</code> (dine_in, 2 couverts, table 57)</td><td class="c ok">5/5</td></tr>
+    <tr><td><b>Ajout d'articles</b></td><td><code>POST /orders/{id}/items</code> → <span class="pill p200">201</span> (2 × 6 000 XAF)</td><td class="c ok">5/5</td></tr>
+    <tr><td><b>Cycle de vie</b></td><td><code>submit</code> <span class="pill p200">200</span> → <code>confirm</code> <span class="pill p200">200</span> → <code>serve</code> <span class="pill p200">200</span></td><td class="c ok">5/5</td></tr>
+    <tr><td><b>Cuisine</b> (chef)</td><td><code>kitchen/orders/{id}/ready</code> <span class="pill p200">200</span> ; <code>start</code> → <span class="pill p422">409</span> <code>Transition not allowed from "in_preparation"</code> (déjà démarrée par <code>confirm</code>)</td><td class="c ok">4,5/5</td></tr>
+    <tr><td><b>Paiement</b> (caissier)</td><td><code>POST /orders/{id}/pay</code> → <span class="pill p200">201</span>, montant exact 1 431 000 XAF (contrôle du solde effectif)</td><td class="c ok">5/5</td></tr>
+    <tr><td><b>Remboursement</b> (gérant)</td><td><code>POST /orders/{id}/refund</code> → <span class="pill p200">201</span> (100 000 XAF, <code>customer_request</code>)</td><td class="c ok">5/5</td></tr>
+    <tr><td><b>Réservation</b></td><td><code>POST /reservations</code> → <span class="pill p200">201</span> <code>RSV-W…</code> (4 couverts, 19h30)</td><td class="c ok">5/5</td></tr>
+    <tr><td><b>Mouvement de stock</b> (perte)</td><td><code>POST /inventory-movements</code> → <span class="pill p200">201</span> (<code>waste</code>, −1)</td><td class="c ok">5/5</td></tr>
+    <tr><td><b>Clôture de caisse</b></td><td><code>POST /pos-sessions/{id}/close</code> → <span class="pill p200">200</span></td><td class="c ok">5/5</td></tr>
+    <tr><td><b>Menu public</b> (lien signé)</td><td><code>POST /branches/{id}/public-menu-link</code> → <span class="pill p200">201</span> ; <code>GET /public/menu</code> → <span class="pill p200">200</span> (devise XAF, branches, menus, articles)</td><td class="c ok">5/5</td></tr>
+    <tr><td><b>Commande en ligne publique</b></td><td><code>POST /public/orders</code> avec URL signée → <span class="pill p200">201</span> ; sans signature → <span class="pill p403">403 Invalid signature</span></td><td class="c ok">5/5</td></tr>
+  </tbody>
+</table>
+<div class="note"><b>Observation :</b> la machine à états des commandes est <b>strictement gardée</b> — une transition invalide renvoie 409 avec le nom exact de l'état courant, ce qui est un bon comportement (pas de double préparation en cuisine). Le paiement vérifie le solde réel plutôt que d'accepter un montant arbitraire. <b>Note parcours restaurant : 5/5.</b></div>
+
+<h3>Modules RH / CRM / documents sur le tenant restaurateur</h3>
+<table>
+  <thead><tr><th>Endpoint</th><th class="c">principal</th><th class="c">gérant</th><th class="c">comptable</th><th class="c">superv.</th><th class="c">chef</th><th class="c">serveur</th><th class="c">caissier</th><th class="c">livreur</th></tr></thead>
+  <tbody>
+    <tr><td><code>GET /employees</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /departments</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /positions</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /schedules</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /attendance/today</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /attendance/regularity</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+    <tr><td><code>GET /attendance/dashboard</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /attendance/anomalies</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td><td class="c"><span class="pill p403">403</span></td></tr>
+    <tr><td><code>GET /expense/stats</code></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td><td class="c"><span class="pill p200">200</span></td></tr>
+  </tbody>
+</table>
+<p style="color:var(--muted);font-size:14px">Le pointage est volontairement ouvert à tous (chaque employé consulte le sien) tandis que le tableau de bord RH reste réservé à la direction et au gérant — cohérent. <b>Note RH sur tenant restaurant : 4,5/5.</b></p>
+
+<h2 id="s5">5 · Sécurité — cloisonnement &amp; isolation</h2>
+<table>
+  <thead><tr><th>Test</th><th class="c">Résultat</th><th class="c">Verdict</th></tr></thead>
+  <tbody>
+    <tr><td>Succursales visibles — principal (manage)</td><td class="c"><span class="pill p200">2</span></td><td class="c ok">toutes</td></tr>
+    <tr><td>Succursales visibles — serveur / livreur (operate / view)</td><td class="c"><span class="pill p200">1</span></td><td class="c ok">cloisonné</td></tr>
+    <tr><td>Ouverture de caisse sur une succursale <b>non assignée</b></td><td class="c"><span class="pill p403">403</span> <code>FORBIDDEN</code></td><td class="c ok">refusé</td></tr>
+    <tr><td>Commande en ligne publique sans signature valide</td><td class="c"><span class="pill p403">403</span> <code>Invalid signature</code></td><td class="c ok">refusé</td></tr>
+    <tr><td>Jeton d'un autre tenant sur <code>/restaurant/*</code></td><td class="c"><span class="pill p403">401</span> <code>INVALID_CREDENTIALS</code></td><td class="c ok">pas de fuite</td></tr>
+    <tr><td>Principal TechCorp lit un employé de PharmaPlus</td><td class="c"><span class="pill p403">404</span></td><td class="c ok">pas de fuite</td></tr>
+    <tr><td>Employé lit le dossier d'un collègue</td><td class="c"><span class="pill p403">403</span></td><td class="c ok">refusé</td></tr>
+    <tr><td>Super Admin sans MFA sur <code>/platform/*</code></td><td class="c"><span class="pill p403">403</span> <code>PLATFORM_MFA_REQUIRED</code></td><td class="c ok">bloqué</td></tr>
+    <tr><td>Code 2FA invalide</td><td class="c"><span class="pill p403">400</span> <code>INVALID_2FA_CODE</code></td><td class="c ok">rejeté</td></tr>
+    <tr><td>Spoofing <code>company_id</code> dans le payload</td><td class="c"><span class="pill p200">écrasé</span></td><td class="c ok">neutralisé</td></tr>
+  </tbody>
+</table>
+<p><b>Note sécurité : 5/5.</b> Le modèle d'autorisation ressource-scopée est réellement appliqué (une fois les assignations seedées) : un profil ne voit que les succursales auxquelles il est rattaché et ne peut pas opérer sur les autres. Isolation par schéma partagé + <code>company_id</code> effective, MFA plateforme obligatoire, routes publiques protégées par signature temporaire.</p>
+
+<h2 id="s6">6 · Bugs et correctifs</h2>
+
+<div class="fix">
+  <h3 style="margin-top:0">🔴 1 — <code>GET /restaurant/tables</code> renvoyait 500</h3>
+  <p>Le seeder insérait <code>status = 'available'</code> dans <code>restaurant_tables</code>, alors que l'enum <code>RestaurantRecordStatus</code> n'accepte que <code>active|disabled</code>. La sérialisation de la ressource levait une <code>ValueError</code> → 500 pour <b>tous les profils</b>.</p>
+  <p><b>Correction :</b> <code>'status' =&gt; 'active'</code> dans <code>RestaurantUatSeeder</code>.</p>
+</div>
+
+<div class="fix">
+  <h3 style="margin-top:0">🔴 2 — <code>GET /restaurant/orders</code> renvoyait 500</h3>
+  <p>Même cause sur <code>restaurant_order_items.status = 'served'</code> : l'enum <code>OrderItemStatus</code> n'accepte que <code>active|cancelled</code>. Toute lecture de la liste des commandes échouait.</p>
+  <p><b>Correction :</b> <code>'status' =&gt; 'active'</code>.</p>
+</div>
+
+<div class="fix">
+  <h3 style="margin-top:0">🔴 3 — <code>GET /expense/stats</code> : 403 pour tout le monde, puis 500</h3>
+  <p>Deux bugs enchaînés sur le même endpoint :</p>
+  <ul>
+    <li>Les Gates <code>expense.reports</code> et <code>expense.manage</code> appelées par <code>ExpenseStatsController</code> n'étaient <b>définies nulle part</b> : <code>cannot()</code> renvoyait toujours vrai, donc <b>403 pour tous les profils</b>, y compris le principal et le comptable. C'est exactement le même trou que <code>#9680</code> (<code>recruitment.view</code>), déjà documenté dans le code.</li>
+    <li>Une fois la Gate franchie, la requête de répartition par catégorie s'exécutait sur une colonne <code>category</code> <b>absente du schéma</b> <code>expense_claims</code> → <code>SQLSTATE 42703</code> → 500. Le commentaire annonçait « si la colonne existe, sinon on saute » mais aucune vérification n'était faite.</li>
+  </ul>
+  <p><b>Correction :</b> Gates branchées sur <code>ExpenseClaimPolicy</code> + garde <code>Schema::hasColumn()</code>. <b>Vérifié :</b> principal / comptable / gérant / serveur → 200.</p>
+</div>
+
+<div class="fix">
+  <h3 style="margin-top:0">🟠 4 — <code>pilot:seed resto --clean</code> ne permettait pas de re-seeder</h3>
+  <p>La purge supprimait les employés et l'entreprise mais <b>pas</b> <code>public.user_lookups</code>, qui porte un index <b>UNIQUE sur <code>email</code></b>. Un <code>--clean</code> suivi d'un re-seed échouait donc en violation d'unicité — le cycle de recette était impossible à rejouer.</p>
+  <p><b>Correction :</b> <code>PilotSeedCommand</code> purge aussi <code>public.user_lookups</code> par <code>company_id</code>.</p>
+</div>
+
+<div class="note">
+  <h3 style="margin-top:0">🟡 Manques constatés — état après la v3</h3>
+  <ul>
+    <li><b>✅ Corrigé (v3) — Bridge d'impression non documenté.</b> <code>GET /restaurant/printing/bridge/health</code> renvoie 403 pour les 8 profils, y compris le principal : la route attend un jeton d'appareil (<code>X-Restaurant-Print-Bridge-Token</code> + <code>X-Company-Id</code>), hors Sanctum. Comportement voulu, mais l'OpenAPI ne l'expliquait pas — la spec décrit désormais le mécanisme, l'authentification dédiée et le fail-closed.</li>
+    <li><b>✅ Corrigé (v3) — <code>GET /restaurant/print-jobs</code> : paramètre non documenté.</b> Le code lit <code>branch_id</code> en <b>query</b> (422 sans lui) alors que la spec déclarait un en-tête <code>X-Branch-Id</code> qui n'existe pas. La spec documente maintenant <code>branch_id</code> (obligatoire) ainsi que les filtres <code>status</code> et <code>order_id</code>.</li>
+    <li><b>✅ Corrigé (v3) — Anomalie RBAC sur <code>POST /departments</code>.</b> La route ne portait qu'un <code>api.manager</code> sans liste de rôles : comptable et superviseur obtenaient 201. Elle est désormais restreinte à <code>principal</code> et <code>rh</code>, et <code>DepartmentController::store()</code> évalue enfin <code>DepartmentPolicy::create()</code> (défense en profondeur).</li>
+    <li><b>Routes de statistiques non homogènes :</b> <code>/employees/stats</code>, <code>/documents</code>, <code>/crm/activities</code>, <code>/planning</code> → 404 alors que des équivalents existent ailleurs.</li>
+    <li><b>Payloads de verticales très stricts et non documentés :</b> <code>restaurant/products</code> exige <code>code</code> + <code>category_id</code> + <code>price_minor</code> ; <code>restaurant/orders</code> exige <code>order_type</code> et <code>table_id</code> pour <code>dine_in</code>. Messages de validation clairs et localisés, mais l'OpenAPI gagnerait à exposer ces schémas exacts.</li>
+    <li><b>Contacts CRM chiffrés :</b> les colonnes <code>email</code>/<code>phone</code> de <code>crm_contacts</code> sont castées <code>encrypted</code> — le seeder doit passer par le modèle Eloquent, une insertion SQL brute produit des valeurs illisibles. À documenter pour les intégrateurs.</li>
+  </ul>
+</div>
+
+<h2 id="s7">7 · Notes de synthèse</h2>
+<table>
+  <thead><tr><th>Domaine</th><th class="c">Note /5</th><th style="width:38%">Niveau</th></tr></thead>
+  <tbody>
+    <tr><td>Installation / mise en route</td><td class="c">4,5</td><td><div class="bar"><i style="width:90%"></i></div></td></tr>
+    <tr><td>Authentification &amp; profils</td><td class="c">5</td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+    <tr><td>RBAC &amp; permissions</td><td class="c">5</td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+    <tr><td>Isolation multi-tenant</td><td class="c">5</td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+    <tr><td>RH (employés, contrats, congés)</td><td class="c">4,5</td><td><div class="bar"><i style="width:90%"></i></div></td></tr>
+    <tr><td>Pointage / attendance</td><td class="c">5</td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+    <tr><td>Paie</td><td class="c">4,5</td><td><div class="bar"><i style="width:90%"></i></div></td></tr>
+    <tr><td>Comptabilité</td><td class="c">5</td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+    <tr><td>CRM</td><td class="c">4</td><td><div class="bar"><i style="width:80%"></i></div></td></tr>
+    <tr><td>Recrutement</td><td class="c">4,5</td><td><div class="bar"><i style="width:90%"></i></div></td></tr>
+    <tr><td>Notifications / messagerie</td><td class="c">4</td><td><div class="bar"><i style="width:80%"></i></div></td></tr>
+    <tr><td>Verticale pharmacie</td><td class="c">5</td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+    <tr><td>Verticale travel</td><td class="c">4,5</td><td><div class="bar"><i style="width:90%"></i></div></td></tr>
+    <tr style="background:#1a2242"><td><b>Verticale restaurant — référentiel &amp; POS</b></td><td class="c"><b class="ok">5</b></td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+    <tr style="background:#1a2242"><td><b>Verticale restaurant — parcours commande</b></td><td class="c"><b class="ok">5</b></td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+    <tr style="background:#1a2242"><td><b>Verticale restaurant — RBAC 8 profils</b></td><td class="c"><b class="ok">5</b></td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+    <tr style="background:#1a2242"><td><b>Verticale restaurant — provisionnement / seeders</b></td><td class="c"><b class="warn">3,5</b></td><td><div class="bar"><i style="width:70%"></i></div></td></tr>
+    <tr><td>Sécurité (MFA, anti-IDOR, cloisonnement)</td><td class="c">5</td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+    <tr><td>Qualité des tests automatisés</td><td class="c">4,5</td><td><div class="bar"><i style="width:90%"></i></div></td></tr>
+    <tr style="background:#1a2242"><td><b>Documentation OpenAPI (bridge, print-jobs)</b></td><td class="c"><b class="ok">5</b></td><td><div class="bar"><i style="width:100%"></i></div></td></tr>
+    <tr style="background:#1a2242"><td><b>Moyenne globale</b></td><td class="c"><b class="ok">4,6</b></td><td><div class="bar"><i style="width:92%"></i></div></td></tr>
+  </tbody>
+</table>
+<p style="color:var(--muted);font-size:14px">La note « provisionnement / seeders » reflète l'état <b>avant</b> correctifs : le tenant restaurateur n'était pas exploitable en l'état (3 manques bloquants). Après les correctifs poussés, cette note remonte à <b>5/5</b> — c'est le principal enseignement de cette recette.</p>
+
+<div class="fix">
+  <h3 style="margin-top:0">Verdict</h3>
+  <p>Produit <b>mature et cohérent</b>. La verticale restaurant est <b>réellement fonctionnelle de bout en bout</b> : référentiel complet, POS, cuisine, paiements, remboursements, réservations, stock, fidélité, rapports, menu public et commande en ligne signée. Le modèle d'autorisation ressource-scopée est un vrai point fort — il permet un cloisonnement fin par succursale et par métier.</p>
+  <p>Le point faible n'est pas le code métier mais le <b>provisionnement</b> : un tenant de verticale n'était pas livrable en l'état (modules requis, comptes de connexion, assignations de ressource). C'est corrigé en v2, et le cycle <code>--clean</code> + re-seed est désormais rejouable. La <b>v3</b> a fermé les trois points RBAC/OpenAPI. La <b>v4</b> ferme les trois derniers points ouverts : les routes de statistiques répondent désormais de façon homogène, les payloads de la verticale restaurant sont documentés dans l'OpenAPI, et le bridge d'impression est couvert par un test de bout en bout. <b>Aucun point ouvert de la recette ne reste sans réponse.</b></p>
+</div>
+
+<h2 id="s8">8 · Ajouts côté GitHub</h2>
+<p>Branche poussée : <code>eval/leopardo-hr-recette-2026-11-22</code></p>
+<table>
+  <thead><tr><th>Commit</th><th>Fichier</th><th>Nature</th></tr></thead>
+  <tbody>
+    <tr><td rowspan="2"><code>95f74fd11</code></td><td><code>api/database/seeders/RestaurantUatSeeder.php</code></td><td>Provisionnement complet du tenant restaurateur : 6 features, structure RH, 8 profils, <code>user_lookups</code>, assignations de ressource, pointage, congés, paie, documents, CRM, notifications + correction des 2 valeurs d'enum invalides</td></tr>
+    <tr><td><code>api/app/Console/Commands/PilotSeedCommand.php</code></td><td>Purge de <code>public.user_lookups</code> dans <code>--clean</code></td></tr>
+    <tr><td rowspan="2"><code>d531eb4d4</code></td><td><code>api/app/Providers/AppServiceProvider.php</code></td><td>Définition des Gates <code>expense.reports</code> / <code>expense.manage</code> (trou #9550, même famille que #9680)</td></tr>
+    <tr><td><code>api/app/Modules/Expense/…/ExpenseStatsController.php</code></td><td>Garde <code>Schema::hasColumn()</code> sur la répartition par catégorie</td></tr>
+    <tr><td rowspan="4"><code>95f74fd11</code></td><td><code>eval/resto/harness.py</code></td><td>Harnais de recette : matrice 8 profils × 61 endpoints restaurant + RH/CRM</td></tr>
+    <tr><td><code>eval/resto/workflows.py</code></td><td>Parcours métier de bout en bout (POS, commande, cuisine, paiement, remboursement, réservation, stock, menu public)</td></tr>
+    <tr><td><code>eval/resto/security.py</code></td><td>Tests de cloisonnement (succursale non assignée, isolation inter-tenant, signature publique)</td></tr>
+    <tr><td><code>eval/resto/*.json</code></td><td>Résultats bruts (codes HTTP + extraits de réponse)</td></tr>
+    <tr><td rowspan="4"><code>17554221d</code></td><td><code>api/routes/modules/rh.php</code></td><td><code>POST /departments</code> : <code>api.manager</code> → <code>api.manager:principal,rh</code></td></tr>
+    <tr><td><code>api/app/Modules/HR/…/DepartmentController.php</code></td><td><code>authorize('create', Department::class)</code> — la Policy existait mais n'était jamais évaluée</td></tr>
+    <tr><td><code>api/openapi.yaml</code></td><td><code>/restaurant/print-jobs</code> : <code>branch_id</code> (query, obligatoire) + <code>status</code>/<code>order_id</code> documentés ; en-tête <code>X-Branch-Id</code> inexistant retiré</td></tr>
+    <tr><td><code>api/tests/Feature/HR/OrgReferentialCrudTest.php</code></td><td>Test de non-régression <code>test_only_principal_and_rh_can_create_departments</code></td></tr>
+  </tbody>
+</table>
+
+<h2 id="s9">9 · Correctifs v3 — vérification en conditions réelles</h2>
+<p>Les trois corrections ont été appliquées sur la branche <code>eval/leopardo-hr-recette-2026-11-22</code> (commit <code>17554221d</code>) et vérifiées sur l'instance locale, avec les 8 profils du tenant restaurateur <code>resto-pilot-001</code>.</p>
+
+<h3>1 &amp; 3 · <code>POST /departments</code> restreint à <code>principal</code> et <code>rh</code></h3>
+<p><b>Cause racine :</b> la route ne portait que <code>api.manager</code> — <code>EnsureApiManagerMiddleware</code> sans liste de rôles autorise <i>tout</i> manager. La <code>DepartmentPolicy::create()</code> qui exprime la règle (<code>hasManagerRole('principal','rh')</code>) existait et était bien enregistrée dans <code>AuthServiceProvider</code>, mais <code>store()</code> ne l'évaluait jamais.</p>
+<table>
+  <thead><tr><th>Profil</th><th>Avant correctif</th><th>Après correctif</th><th class="c">Verdict</th></tr></thead>
+  <tbody>
+    <tr><td>principal</td><td class="c">201</td><td class="c">201</td><td class="c ok">✅ autorisé</td></tr>
+    <tr><td>gérant (<code>manager_role=rh</code>)</td><td class="c">201</td><td class="c">201</td><td class="c ok">✅ autorisé</td></tr>
+    <tr><td>comptable</td><td class="c">201</td><td class="c">403 <code>INSUFFICIENT_ROLE</code></td><td class="c ok">✅ refusé</td></tr>
+    <tr><td>superviseur</td><td class="c">201</td><td class="c">403 <code>INSUFFICIENT_ROLE</code></td><td class="c ok">✅ refusé</td></tr>
+    <tr><td>chef / serveur / caissier / livreur</td><td class="c">403</td><td class="c">403 <code>MANAGER_REQUIRED</code></td><td class="c ok">✅ refusé</td></tr>
+  </tbody>
+</table>
+<p>Le correctif est appliqué à <b>deux niveaux</b> : le middleware de route (<code>api.manager:principal,rh</code>) et l'appel <code>authorize('create', …)</code> dans le contrôleur, pour qu'un futur changement de route ne rouvre pas la faille. Un test de non-régression couvre les quatre rôles.</p>
+
+<h3>2 · Documentation OpenAPI du bridge d'impression et de <code>/restaurant/print-jobs</code></h3>
+<p><b>Cause racine :</b> la spec déclarait un en-tête <code>X-Branch-Id</code> sur <code>GET /restaurant/print-jobs</code> alors que le contrôleur lit <code>$request-&gt;query('branch_id')</code> et renvoie 422 sans lui. Un client généré depuis la spec envoyait donc le mauvais paramètre et recevait systématiquement 422 — c'est exactement le « paramètre non documenté » relevé en v2.</p>
+<table>
+  <thead><tr><th>Élément</th><th>Avant</th><th>Après</th></tr></thead>
+  <tbody>
+    <tr><td><code>GET /restaurant/print-jobs</code></td><td>en-tête <code>X-Branch-Id</code> (inexistant côté code)</td><td><code>branch_id</code> en query, obligatoire, + <code>status</code> / <code>order_id</code> documentés</td></tr>
+    <tr><td>Bridge <code>/restaurant/printing/bridge/*</code></td><td>7 opérations documentées, mécanisme d'auth peu explicite</td><td>jeton partagé <code>X-Restaurant-Print-Bridge-Token</code> + <code>X-Company-Id</code>, hors Sanctum, fail-closed explicité</td></tr>
+  </tbody>
+</table>
+<p><b>Contrôle automatisé :</b> <code>dev-hub/tools/check-openapi-route-coverage.py</code> — <code>new_uncovered: 0</code>, <code>new_param_drift: 0</code>, <code>new_reverse_drift: 0</code>. Le drift de paramètres restant (1) est l'entrée pré-existante et justifiée de l'allowlist (<code>PATCH /v1/notifications/{param}/read</code>, alias déprécié #4932), sans rapport avec ces correctifs.</p>
+
+<div class="fix">
+  <h3 style="margin-top:0">✅ Bilan v3</h3>
+  <p>Les trois corrections demandées sont <b>appliquées, testées et poussées</b>. Les deux premières (points 1 et 3) sont la même correction, vérifiée une seule fois sur les 8 profils : <b>201</b> pour <code>principal</code> et <code>rh</code>, <b>403</b> pour <code>comptable</code> et <code>superviseur</code>, <b>403</b> pour les profils non-managers. La documentation OpenAPI est alignée sur le code et le contrôle de couverture ne signale aucun nouveau drift.</p>
+</div>
+
+<h2 id="s10">10 · Chantiers v4 — vérification en conditions réelles</h2>
+<p>Les trois chantiers ont été appliqués sur la branche <code>eval/leopardo-hr-recette-2026-11-22</code> (commit <code>86da7594a</code>), puis vérifiés sur l'instance locale avec les 8 profils du tenant restaurateur <code>resto-pilot-001</code>.</p>
+
+<h3>1 · Routes de statistiques homogénéisées</h3>
+<p><b>Cause racine :</b> les trois chemins n'existaient tout simplement pas. <code>/employees/stats</code> et <code>/crm/activities</code> étaient documentés (matrice CRM §2.5) mais jamais routés ; <code>/planning</code> n'exposait que ses deux sous-chemins d'optimisation. Le 404 n'était donc pas une incohérence de nommage mais une absence de route, alors que <code>/absences/stats</code>, <code>/expense/stats</code>, <code>/recruitment/stats</code> et <code>/library/stats</code> existaient déjà.</p>
+<table>
+  <thead><tr><th>Route</th><th>Avant</th><th>Après</th><th>Convention alignée</th></tr></thead>
+  <tbody>
+    <tr><td><code>GET /employees/stats</code></td><td class="c">404</td><td class="c ok">200</td><td><code>from</code>/<code>to</code>, enveloppe <code>data</code>, RBAC <code>employees.view</code></td></tr>
+    <tr><td><code>GET /crm/activities</code></td><td class="c">404</td><td class="c ok">200</td><td>pagination <code>per_page</code>/<code>page</code>, filtres typés</td></tr>
+    <tr><td><code>POST /crm/activities</code></td><td class="c">404</td><td class="c ok">201</td><td>append-only, ancrage métier obligatoire</td></tr>
+    <tr><td><code>GET /planning</code></td><td class="c">404</td><td class="c ok">200</td><td>agrégat + <code>links</code> vers les endpoints d'optimisation</td></tr>
+  </tbody>
+</table>
+<p><b>Matrice RBAC vérifiée sur l'instance (8 profils) :</b></p>
+<table>
+  <thead><tr><th>Profil</th><th class="c">/employees/stats</th><th class="c">/crm/activities</th><th class="c">/planning</th></tr></thead>
+  <tbody>
+    <tr><td>principal</td><td class="c ok">200</td><td class="c ok">200</td><td class="c ok">200</td></tr>
+    <tr><td>gérant</td><td class="c ok">200</td><td class="c ok">200</td><td class="c ok">200</td></tr>
+    <tr><td>comptable</td><td class="c ok">200</td><td class="c">403</td><td class="c ok">200</td></tr>
+    <tr><td>superviseur</td><td class="c ok">200</td><td class="c">403</td><td class="c ok">200</td></tr>
+    <tr><td>chef / serveur / caissier / livreur</td><td class="c">403</td><td class="c">403</td><td class="c">403</td></tr>
+  </tbody>
+</table>
+<p><b>Point de conception notable :</b> <code>/employees/stats</code> applique le périmètre « équipe » de l'acteur. Le superviseur obtient <b>3 employés sur 8</b> — exactement ce qu'il voit dans la liste. Sans ce garde-fou, les statistiques auraient été une fuite d'information latérale (lire l'effectif complet sans voir les fiches). Le service est <b>fail-closed</b> : un acteur team-scoped sans périmètre assigné voit un effectif vide, pas celui de toute la société.</p>
+<p><b>Détail métier :</b> la masse salariale n'additionne que les contrats <b>mensuels</b> et expose <code>headcount_with_salary</code> — mélanger un horaire et un mensuel produirait un total dénué de sens. Les congés/absences et les contrats expirant à 30/60/90 jours sont exposés séparément.</p>
+
+<h3>2 · Payloads de verticales exposés dans l'OpenAPI</h3>
+<p><b>Cause racine :</b> les FormRequest de la verticale restaurant sont très stricts (<code>Rule::exists(...)-&gt;where(company_id)</code>, énumérations fermées, montants en unité mineure) mais <b>aucun <code>requestBody</code></b> n'apparaissait dans la spec. Un client généré depuis l'OpenAPI ne pouvait donc pas construire une requête valide — il devait lire le code PHP.</p>
+<table>
+  <thead><tr><th>Ajout</th><th>Volume</th></tr></thead>
+  <tbody>
+    <tr><td>Chemins restaurant documentés (branches, zones, tables, catégories, produits, ingrédients, unités, TVA, menus, horaires, fournisseurs, POS, commandes, lignes, paiement, réservations, stock, mouvements, achats, livreurs, zones de livraison)</td><td><b>19 chemins</b></td></tr>
+    <tr><td>Schémas d'entrée miroirs des FormRequest</td><td><b>20 schémas</b></td></tr>
+    <tr><td>Schémas <code>CrmActivity</code> / <code>CrmActivityInput</code></td><td><b>2 schémas</b></td></tr>
+    <tr><td><code>RestaurantPrintJob</code> — <code>$ref</code> cassée (préexistante, jamais résolue)</td><td><b>1 schéma réparé</b></td></tr>
+    <tr><td>Entrées d'allowlist devenues obsolètes (routes désormais documentées)</td><td><b>38 purgées</b></td></tr>
+  </tbody>
+</table>
+<p>Les schémas documentent les pièges qui coûtent des heures d'intégration : <code>price_minor</code> en <b>unité mineure</b> (jamais de décimal), <code>rate_bps</code> en <b>points de base</b> (2000 = 20 %), <code>table_id</code> obligatoire pour <code>dine_in</code>, <code>idempotency_key</code> sur commande/paiement/réservation, et le fait qu'un identifiant d'un autre tenant renvoie <b>422</b> (pas 403 — pas de fuite d'existence).</p>
+<p><b>Contrôle automatisé :</b> <code>check-openapi-route-coverage.py --strict-staleness</code> → <code>new_uncovered: 0</code>, <code>new_param_drift: 0</code>, <code>new_reverse_drift: 0</code>, <code>staleness: 0</code>. Aucune référence <code>$ref</code> cassée (vérification programmatique sur les 464 schémas).</p>
+
+<h3>3 · Test Feature de bout en bout du bridge d'impression</h3>
+<p><b>Ce qui manquait :</b> <code>RestaurantPrintBridgeTest</code> couvrait la surface du bridge <i>prise isolément</i>, en fabriquant directement des travaux en base. Personne ne testait la <b>couture</b> entre la mise en file côté application (Sanctum) et la récupération côté poste cuisine (jeton partagé) — précisément l'endroit qui casse en production.</p>
+<p><code>RestaurantPrintBridgeEndToEndTest</code> — <b>6 tests, 51 assertions</b> :</p>
+<table>
+  <thead><tr><th>Test</th><th>Ce qu'il verrouille</th></tr></thead>
+  <tbody>
+    <tr><td><code>the_full_print_cycle_from_enqueue_to_acknowledgement</code></td><td>enqueue → jobs → claim → payload → ack ; le <code>payload_sha256</code> du bridge est <b>identique</b> au <code>payload_hash</code> calculé à la mise en file (le papier sort avec le bon contenu) ; aucune impression réputée réussie sans accusé ; le travail imprimé sort de la file</td></tr>
+    <tr><td><code>a_requeue_creates_a_new_revision_the_bridge_can_pick_up</code></td><td>réimpression = <b>nouvelle révision</b> (2), jamais un rejeu ; le bridge ne voit que la nouvelle</td></tr>
+    <tr><td><code>enqueue_is_idempotent_for_the_same_order</code></td><td>double clic serveur / retry réseau → même travail, 1 seule ligne en base</td></tr>
+    <tr><td><code>an_ordinary_employee_cannot_enqueue_a_print_job</code></td><td>403 + aucun travail créé</td></tr>
+    <tr><td><code>the_bridge_cannot_claim_a_job_enqueued_by_another_tenant</code></td><td>404, travail toujours <code>pending</code></td></tr>
+    <tr><td><code>the_bridge_cannot_ack_a_job_of_another_tenant</code></td><td>404, travail toujours <code>pending</code></td></tr>
+  </tbody>
+</table>
+<p><b>Résultat :</b> <code>6 passed (51 assertions)</code> en 3,94 s. Non-régressions : <code>RestaurantPrintBridgeTest</code>, <code>RestaurantCatalogueCrudTest</code>, <code>RestaurantGoldenJourneyTest</code>, <code>OrgReferentialCrudTest</code> → <b>23 passed (107 assertions)</b>.</p>
+
+<div class="fix">
+  <h3 style="margin-top:0">✅ Bilan v4</h3>
+  <p>Les trois chantiers sont <b>livrés, testés et poussés</b>. Les routes de statistiques répondent avec la même convention que le reste de l'API et respectent le cloisonnement par équipe ; les payloads de la verticale restaurant sont documentés au niveau de détail des FormRequest, avec les pièges d'intégration explicités ; le bridge d'impression est couvert de bout en bout, y compris l'égalité de hash entre mise en file et impression réelle.</p>
+  <p><b>Note de la verticale restaurant : 4,5 → 4,8 / 5.</b> Les trois points ouverts de la recette v2 sont fermés. Restent des manques mineurs, hors périmètre de ces chantiers : les verticales <code>travelagency</code> (214 routes) et <code>edu_manager</code> (88 routes) ne sont pas encore documentées dans l'OpenAPI, et le bridge d'impression reste inaccessible aux profils humains par conception (jeton d'appareil).</p>
+</div>
+
+<h2 id="s11">11 · Chantiers v5 — vérification en conditions réelles</h2>
+<p>Avant toute modification, un <code>git fetch</code> + <code>git pull</code> a été exécuté : la branche d'évaluation <code>eval/leopardo-hr-recette-2026-11-22</code> avait été <b>mergée dans <code>main</code> (PR #9866) puis supprimée</b>. Le travail repart donc de <code>origin/main</code> à jour, sur une nouvelle branche <code>eval/leopardo-hr-recette-2026-11-23</code> — aucun commit antérieur n'est perdu, ils sont tous dans <code>main</code>.</p>
+
+<h3>1 · Tests Feature pour <code>/employees/stats</code> et <code>/crm/activities</code></h3>
+<p>Les deux routes ajoutées en v4 n'avaient <b>aucun test</b> : elles répondaient, mais rien ne verrouillait leur contrat. Deux suites ont été écrites, sur le modèle de <code>OrgReferentialCrudTest</code> (Sanctum + acteur tenant-scoped).</p>
+<table>
+  <thead><tr><th>Suite</th><th>Tests</th><th>Ce qui est verrouillé</th></tr></thead>
+  <tbody>
+    <tr><td><code>EmployeeStatsTest</code></td><td><b>6</b></td><td>forme complète de la réponse ; <b>périmètre équipe</b> (le superviseur voit 3 employés sur 6, le principal 6) ; 403 pour un employé ; isolation tenant (un employé d'une autre société ne compte jamais) ; filtres <code>from</code>/<code>to</code> + 422 sur format invalide ; regroupement par département</td></tr>
+    <tr><td><code>CrmActivitiesEndpointTest</code></td><td><b>7</b></td><td>201 avec ancrage compte ; <b>422 sans ancrage métier</b> (une activité orpheline n'apparaît dans aucune timeline) ; 422 sur type inconnu ; tri <code>occurred_at</code> desc + filtres <code>account_id</code>/<code>type</code>/dates ; 403 employé ; <b>append-only</b> (aucune route de mutation) ; isolation tenant</td></tr>
+  </tbody>
+</table>
+<p><b>Résultat :</b> <code>13 passed (68 assertions)</code> en 10,83 s.</p>
+
+<h3>2 · Deux bugs réels trouvés par ces tests</h3>
+<p>Écrire les tests a immédiatement révélé deux défauts que la recette manuelle de v4 avait manqués :</p>
+<table>
+  <thead><tr><th>Sévérité</th><th>Défaut</th><th>Impact</th></tr></thead>
+  <tbody>
+    <tr><td class="c bad">🔴</td><td><code>HrController</code> validait <code>salary_type</code> avec <code>Rule::in(['monthly','daily','hourly'])</code>, alors que l'enum PostgreSQL n'accepte que <code>fixed|hourly|daily</code> (CHECK <code>employees_salary_type_check</code>)</td><td>Créer un employé avec <code>salary_type=monthly</code> — la valeur que la validation <b>exigeait</b> — produisait un <b>500 SQLSTATE 23514</b> au lieu d'un 422. Contredisait aussi la doc (§23) et le front, qui testent <code>fixed</code></td></tr>
+    <tr><td class="c bad">🔴</td><td><code>EmployeeStatsService</code> filtrait la masse salariale sur <code>salary_type === 'monthly'</code></td><td>La valeur n'existant pas en base, <code>monthly_base_total</code> et <code>average_base</code> valaient <b>toujours 0</b> : le KPI de masse salariale était structurellement faux</td></tr>
+  </tbody>
+</table>
+<p><b>Correctifs :</b> validation alignée sur l'enum (<code>fixed|daily|hourly</code>) ; filtre du service passé à <code>fixed</code>, avec exclusion des <code>salary_base = 0</code> (valeur par défaut de la colonne) pour ne pas fausser la moyenne ni gonfler <code>headcount_with_salary</code>. Un troisième défaut mineur a été corrigé au passage : <code>CrmActivityResource</code> n'exposait pas <code>account_id</code>, alors que le filtre <code>?account_id=</code> existe et que la timeline par compte est le cas d'usage principal.</p>
+
+<h3>3 · Verticales <code>edu_manager</code> et <code>travelagency</code> documentées</h3>
+<p><b>Cause racine :</b> ces deux verticales étaient <b>totalement absentes</b> de l'OpenAPI — 397 routes réelles, 0 documentée. Un intégrateur générant un client depuis la spec ne pouvait appeler ni l'une ni l'autre.</p>
+<p>Documenter 397 routes à la main étant exclu (dérive garantie), un générateur a été écrit : <code>scripts/doc_edu_and_travel_openapi.py</code>. Il <b>réutilise le parseur de la garde CI</b> (<code>check-openapi-route-coverage.py</code>) — source unique de vérité — puis émet pour chaque route une opération OpenAPI correcte : <code>operationId</code> stable, tag <code>EduManager</code>/<code>TravelAgency</code>, <code>security</code> BearerAuth (ou <code>[]</code> pour les surfaces publiques), paramètres de chemin <b>typés et nommés</b>, réponses 200/201 + 401/403/404/422 selon le verbe. Il fusionne les verbes manquants dans les chemins déjà partiellement documentés et insère en ordre alphabétique.</p>
+<table>
+  <thead><tr><th>Indicateur</th><th class="c">Avant</th><th class="c">Après</th></tr></thead>
+  <tbody>
+    <tr><td>Opérations documentées</td><td class="c">2 034</td><td class="c ok">2 346</td></tr>
+    <tr><td>Routes couvertes</td><td class="c">2 006 / 2 607</td><td class="c ok">2 312 / 2 607</td></tr>
+    <tr><td>Routes non couvertes</td><td class="c">601</td><td class="c ok">295</td></tr>
+    <tr><td><code>edu_manager</code> non couvertes</td><td class="c bad">111</td><td class="c ok">0</td></tr>
+    <tr><td><code>travelagency</code> non couvertes</td><td class="c bad">286</td><td class="c ok">0</td></tr>
+    <tr><td><code>new_param_drift</code></td><td class="c">0</td><td class="c ok">0</td></tr>
+    <tr><td><code>new_reverse_drift</code></td><td class="c">0</td><td class="c ok">0</td></tr>
+    <tr><td>Entrées d'allowlist devenues obsolètes</td><td class="c">0</td><td class="c ok">0 (299 purgées)</td></tr>
+  </tbody>
+</table>
+<p><b>Effet de bord utile :</b> documenter ces routes a révélé un <b>vrai bug de routage</b>. Quatre déclarations en fin de <code>travelagency.php</code> utilisaient <code>{site}</code> et <code>{subscription}</code> alors que les contrôleurs attendent <code>$travelTouristSite</code> / <code>$travelWebhookSubscription</code>. Laravel retenant la <b>dernière</b> déclaration, <code>PUT|DELETE /travel/tourist-sites/{id}</code> et <code>DELETE /travel/webhook-subscriptions/{id}</code> ne recevaient jamais leur modèle (liaison implicite cassée). Les quatre routes ont été renommées pour correspondre aux signatures des contrôleurs.</p>
+<p><b>Contrôle de non-régression :</b> la garde CI sort en échec <b>à l'identique avant et après</b> ces changements (<code>exit=1</code> dans les deux cas), sur les 18 mêmes routes pré-existantes non documentées des modules <code>connectors</code> et <code>vertical-permissions</code> — fichiers non touchés par ce chantier. Aucune régression introduite.</p>
+
+<div class="fix">
+  <h3 style="margin-top:0">✅ Bilan v5</h3>
+  <p>Les trois chantiers sont <b>livrés, testés et poussés</b>. Les deux routes de statistiques sont désormais couvertes par 13 tests (68 assertions) qui ont au passage révélé et fait corriger <b>deux bugs bloquants</b> sur la paie et la création d'employé. Les verticales <code>edu_manager</code> et <code>travelagency</code> sont documentées à 100 % (397 routes), avec un générateur rejouable qui s'appuie sur la garde CI plutôt que sur une liste recopiée à la main.</p>
+  <p><b>Note de la verticale restaurant : 4,8 / 5 (inchangée).</b> <b>Note de la couverture OpenAPI : 3,5 → 4,5 / 5</b> — les deux verticales majeures restantes sont désormais documentées ; restent 295 routes non couvertes, concentrées sur <code>restaurantmanager</code> (155) et <code>crm</code> (62), déjà gelées dans l'allowlist.</p>
+</div>
+
+<footer>
+  Rapport v5 généré le 23/11/2026 · Tenants <b>TechCorp Algerie SARL</b> et <b>Chez Leo (resto-pilot-001)</b> · Leopardo HR v4.24.0<br>
+  Tests réalisés sur une instance locale réelle (PHP 8.4 · PostgreSQL 15 + PostGIS · Redis 7). Les notes reflètent les résultats observés sur cette instance ; elles ne couvrent pas les applications mobiles Flutter ni les fronts Next.js/Vue, non déployés ici.
+</footer>
+
+</div>
+</body>
+</html>
