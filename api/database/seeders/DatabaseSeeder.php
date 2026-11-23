@@ -60,6 +60,11 @@ class DatabaseSeeder extends Seeder
             // Placé après FeaturePlanMatrixSeeder qui laisse le search_path à
             // `shared_tenants,public` ; semeur idempotent (updateOrInsert).
             AIToolRegistrySeeder::class,
+            // #9838 (BC-14 INTEGRATION) — catalogue des connecteurs
+            // (public.connector_catalog). Donnée de RÉFÉRENCE : sans elle,
+            // l'onglet « Connecteurs » n'a aucun type à proposer et l'écran
+            // reste vide. Semeur idempotent (updateOrInsert par `key`).
+            \App\Modules\Connectors\Database\Seeders\ConnectorCatalogSeeder::class,
         ]);
 
         $this->command->info('');
