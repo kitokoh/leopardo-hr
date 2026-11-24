@@ -11,8 +11,6 @@ use App\Modules\CRM\Interfaces\Api\V1\Requests\CrmActivityIndexRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Requests\StoreCrmActivityRequest;
 use App\Modules\CRM\Interfaces\Api\V1\Resources\CrmActivityResource;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 
 /**
  * Issue #5720 — Journal d'activités CRM du tenant (`/crm/activities`).

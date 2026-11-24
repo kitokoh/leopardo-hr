@@ -56,7 +56,7 @@ final class LastAdministratorGuard
      * L'opération retire-t-elle le dernier principal actif ?
      *
      * @param  string|null  $newManagerRole  `manager_role` demandé (null = inchangé)
-     * @param  string|null  $newStatus       `status` demandé (null = inchangé)
+     * @param  string|null  $newStatus  `status` demandé (null = inchangé)
      */
     public function wouldRemoveLastPrincipal(
         Employee $employee,

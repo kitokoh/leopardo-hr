@@ -92,7 +92,16 @@ final class TransitionOpportunityStageAction
                 // Journal append-only : chaque ligne raconte un deplacement.
                 // On horodate, sinon un retour en arriere et un aller simple
                 // seraient indistinguables.
-                $entry = sprintf('[%s] %s -> %s (%s)', now()->toIso8601String(), $from, $to, $actor->id);
+                // #9886 — separateur canonique partage avec la timeline :
+                // `CrmOpportunityStage::formatTransition()` est la seule source
+                // de verite, pour que `notes` et `CrmActivity.description` ne
+                // puissent plus diverger.
+                $entry = sprintf(
+                    '[%s] %s (%s)',
+                    now()->toIso8601String(),
+                    CrmOpportunityStage::formatTransition($from, $to),
+                    $actor->id,
+                );
 
                 if (! empty($data['lost_reason'])) {
                     // La raison de la perte voyage AVEC le deplacement : c'est
@@ -210,7 +219,7 @@ final class TransitionOpportunityStageAction
                 'opportunity_id' => $opportunity->id,
                 'type' => CrmActivity::TYPE_STAGE_CHANGED,
                 'subject' => __('crm.opportunities.activity_stage_changed'),
-                'description' => sprintf('%s -> %s', $from, $to),
+                'description' => CrmOpportunityStage::formatTransition($from, $to),
                 'occurred_at' => now(),
                 'created_by' => $actor->id,
             ]);

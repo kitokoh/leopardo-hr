@@ -2,10 +2,10 @@
   "_comment": "Budget de réduction des baselines PHPStan (#7961). Le cliquet check-phpstan-baseline-budget.sh ÉCHOUE si le total d'occurrences (somme des count:) croît vs origin/main ; ce fichier fixe l'objectif de DÉCROISSANCE (informatif dans la garde, opposable en revue). Mettre à jour snapshot.date/total_occurrences à chaque campagne de réduction (jamais à la hausse). Doc : docs/qa/BUDGET_PHPSTAN_7961.md — cartographie détaillée : docs/qa/DETTE_PHPSTAN_7655.md.",
   "issue": "7961",
   "snapshot": {
-    "date": "2026-09-20",
-    "total_occurrences": 2719,
+    "date": "2026-11-24",
+    "total_occurrences": 2610,
     "by_baseline": {
-      "phpstan-strict-baseline.neon": 1553,
+      "phpstan-strict-baseline.neon": 1444,
       "phpstan-baseline.neon": 1160,
       "phpstan-modules-baseline.neon": 6
     }
