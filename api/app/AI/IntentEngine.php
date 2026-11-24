@@ -52,11 +52,8 @@ class IntentEngine
         private readonly ToolRegistry $toolRegistry,
         private readonly WriteToolPolicy $writeToolPolicy,
         private readonly PendingActionStore $pendingActionStore,
-        private readonly WriteActionRunner $writeActionRunner,
         // BC-23-D05 (issue #6237) : matrice de permissions par outil AI.
         private readonly ToolPermissionPolicy $toolPermissionPolicy,
-        // BOS-032 (#8222) : idempotence metier des write-tools confirmes.
-        private readonly WriteIdempotencyStore $writeIdempotencyStore,
         // BOS-034 (#8223) : validation runtime des schemas d'outils.
         private readonly ToolSchemaGuard $schemaGuard,
         private readonly ReadToolRegistry $readTools,
