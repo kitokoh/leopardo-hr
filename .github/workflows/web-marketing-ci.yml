@@ -104,6 +104,12 @@ jobs:
           # #4600/#3452 : le build production échoue sans URL de marque réelle
           # (leopardo-rh.com NXDOMAIN) — la var pointe la vitrine live.
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          # #OOM — `next build` était tué par l'OOM du runner en phase
+          # TypeScript (exit 137, « Killed » APRÈS « Compiled successfully »)
+          # alors que `tsc --noEmit` passait seul : le tas Node par défaut
+          # (~2 Go) ne suffit pas au build complet de l'app. Même correctif que
+          # `lighthouse.yml` — les deux jobs construisent la MÊME app.
+          NODE_OPTIONS: --max-old-space-size=6144
         run: npm run build
 
   web-marketing-funnel-e2e:
