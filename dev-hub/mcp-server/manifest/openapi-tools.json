@@ -1383,6 +1383,35 @@
       }
     },
     {
+      "name": "api_get_employee_vertical_permissions",
+      "description": "Permissions verticales déléguées à un collaborateur (#EVAL) — GET /api/v1/employees/{employee}/vertical-permissions. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "employee": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "employee"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/employees/{employee}/vertical-permissions",
+        "pathParams": [
+          "employee"
+        ],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
       "name": "api_get_employees",
       "description": "Lister les employes — GET /api/v1/employees. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -1549,6 +1578,40 @@
         "path": "/api/v1/employees/import-template",
         "pathParams": [],
         "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_employees_stats",
+      "description": "Statistiques de l'effectif — GET /api/v1/employees/stats. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date",
+            "description": "Borne basse sur contract_start (Y-m-d)."
+          },
+          "to": {
+            "type": "string",
+            "format": "date",
+            "description": "Borne haute sur contract_start (Y-m-d)."
+          }
+        }
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/employees/stats",
+        "pathParams": [],
+        "queryParams": [
+          "from",
+          "to"
+        ],
         "hasBody": false
       }
     },
@@ -2816,6 +2879,26 @@
       }
     },
     {
+      "name": "api_get_restaurant_branches",
+      "description": "Lister les succursales du tenant — GET /api/v1/restaurant/branches. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/branches",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
       "name": "api_get_restaurant_branches_by_restaurantbranch_public_profile",
       "description": "Lire le profil public d'une succursale (gestion tenant) — GET /api/v1/restaurant/branches/{restaurantBranch}/public-profile. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -2882,8 +2965,8 @@
       }
     },
     {
-      "name": "api_get_restaurant_print_jobs",
-      "description": "Lister les travaux d'impression de la succursale (REST-OS-1) — GET /api/v1/restaurant/print-jobs. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "name": "api_get_restaurant_categories",
+      "description": "Lister les catégories de produits — GET /api/v1/restaurant/categories. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
         "type": "object",
         "properties": {}
@@ -2895,9 +2978,175 @@
       "version": 1,
       "route": {
         "method": "GET",
-        "path": "/api/v1/restaurant/print-jobs",
+        "path": "/api/v1/restaurant/categories",
         "pathParams": [],
         "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_delivery_riders",
+      "description": "Lister les livreurs — GET /api/v1/restaurant/delivery-riders. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/delivery-riders",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_delivery_zones",
+      "description": "Lister les zones de livraison — GET /api/v1/restaurant/delivery-zones. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/delivery-zones",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_hours",
+      "description": "Lister les horaires d'ouverture — GET /api/v1/restaurant/hours. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/hours",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_ingredients",
+      "description": "Lister les ingrédients — GET /api/v1/restaurant/ingredients. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/ingredients",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_menus",
+      "description": "Lister les menus — GET /api/v1/restaurant/menus. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/menus",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_orders",
+      "description": "Lister les commandes — GET /api/v1/restaurant/orders. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/orders",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_print_jobs",
+      "description": "Lister les travaux d'impression de la succursale (REST-OS-1) — GET /api/v1/restaurant/print-jobs. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "branch_id": {
+            "type": "integer",
+            "description": "Identifiant de la succursale dont on liste les travaux. Absent ou non numerique -> 422 (`branch_id is required to list print jobs.`)."
+          },
+          "order_id": {
+            "type": "integer",
+            "description": "Filtre sur la commande d'origine (ignore si non numerique)."
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "claimed",
+              "printed",
+              "failed"
+            ],
+            "description": "Filtre sur l'etat du travail (`pending`, `claimed`, `printed`, `failed`)."
+          }
+        },
+        "required": [
+          "branch_id"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/print-jobs",
+        "pathParams": [],
+        "queryParams": [
+          "branch_id",
+          "order_id",
+          "status"
+        ],
         "hasBody": false
       }
     },
@@ -3039,6 +3288,46 @@
       }
     },
     {
+      "name": "api_get_restaurant_products",
+      "description": "Lister les produits (carte) — GET /api/v1/restaurant/products. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/products",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_purchase_orders",
+      "description": "Lister les bons de commande fournisseur — GET /api/v1/restaurant/purchase-orders. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/purchase-orders",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
       "name": "api_get_restaurant_reports_group",
       "description": "Vue consolidee GROUPE des rapports (REST-OS-8, — GET /api/v1/restaurant/reports/group. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -3069,6 +3358,26 @@
           "from",
           "to"
         ],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_reservations",
+      "description": "Lister les réservations — GET /api/v1/restaurant/reservations. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/reservations",
+        "pathParams": [],
+        "queryParams": [],
         "hasBody": false
       }
     },
@@ -3116,6 +3425,46 @@
           "per_page",
           "status"
         ],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_stock_levels",
+      "description": "Lister les niveaux de stock — GET /api/v1/restaurant/stock-levels. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/stock-levels",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_suppliers",
+      "description": "Lister les fournisseurs — GET /api/v1/restaurant/suppliers. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/suppliers",
+        "pathParams": [],
+        "queryParams": [],
         "hasBody": false
       }
     },
@@ -3174,6 +3523,86 @@
       "route": {
         "method": "GET",
         "path": "/api/v1/restaurant/sync/status",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_tables",
+      "description": "Lister les tables — GET /api/v1/restaurant/tables. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/tables",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_tax_rates",
+      "description": "Lister les taux de TVA — GET /api/v1/restaurant/tax-rates. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/tax-rates",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_units",
+      "description": "Lister les unités de mesure — GET /api/v1/restaurant/units. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/units",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_restaurant_zones",
+      "description": "Lister les zones de salle — GET /api/v1/restaurant/zones. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/restaurant/zones",
         "pathParams": [],
         "queryParams": [],
         "hasBody": false
@@ -3730,6 +4159,100 @@
         "pathParams": [],
         "queryParams": [
           "vehicle_id"
+        ],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_travel_hotel_room_bookings",
+      "description": "Réservations d'une chambre (M4) — GET /api/v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/bookings. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "per_page": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 200,
+            "default": 50,
+            "description": "Taille de page, bornée à 200. Défaut : 50."
+          },
+          "travelHotel": {
+            "type": "integer",
+            "description": "Identifiant de l'hôtel (BC-24 TRAVEL, M4)."
+          },
+          "travelHotelRoom": {
+            "type": "integer",
+            "description": "Identifiant de la chambre. Doit appartenir à l'hôtel du chemin, sinon 404."
+          }
+        },
+        "required": [
+          "travelHotel",
+          "travelHotelRoom"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/bookings",
+        "pathParams": [
+          "travelHotel",
+          "travelHotelRoom"
+        ],
+        "queryParams": [
+          "per_page"
+        ],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_travel_hotel_room_inventory",
+      "description": "Grille d'inventaire d'une chambre sur une période (M4) — GET /api/v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/inventory. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "from": {
+            "type": "string",
+            "format": "date",
+            "description": "Premier jour de la grille. Défaut : aujourd'hui."
+          },
+          "to": {
+            "type": "string",
+            "format": "date",
+            "description": "Dernier jour de la grille (inclus). Défaut : aujourd'hui + 30 jours."
+          },
+          "travelHotel": {
+            "type": "integer",
+            "description": "Identifiant de l'hôtel (BC-24 TRAVEL, M4)."
+          },
+          "travelHotelRoom": {
+            "type": "integer",
+            "description": "Identifiant de la chambre. Doit appartenir à l'hôtel du chemin, sinon 404."
+          }
+        },
+        "required": [
+          "travelHotel",
+          "travelHotelRoom"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/inventory",
+        "pathParams": [
+          "travelHotel",
+          "travelHotelRoom"
+        ],
+        "queryParams": [
+          "from",
+          "to"
         ],
         "hasBody": false
       }
@@ -6987,6 +7510,82 @@
       }
     },
     {
+      "name": "api_post_restaurant_branches",
+      "description": "Créer une succursale — POST /api/v1/restaurant/branches. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "maxLength": 255,
+                "nullable": true
+              },
+              "city": {
+                "type": "string",
+                "maxLength": 120,
+                "nullable": true
+              },
+              "code": {
+                "type": "string",
+                "maxLength": 40,
+                "description": "Code court unique par tenant. Généré si absent."
+              },
+              "currency": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 3,
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 150
+              },
+              "phone": {
+                "type": "string",
+                "maxLength": 40,
+                "nullable": true
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              },
+              "timezone": {
+                "type": "string",
+                "nullable": true,
+                "description": "Identifiant IANA (ex. Africa/Douala). 422 si inconnu."
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "description": "Schéma RestaurantBranchInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/branches",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
       "name": "api_post_restaurant_branches_by_restaurantbranch_staff",
       "description": "Affecter un employe a une succursale — POST /api/v1/restaurant/branches/{restaurantBranch}/staff. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -7029,6 +7628,371 @@
         "pathParams": [
           "restaurantBranch"
         ],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_categories",
+      "description": "Créer une catégorie — POST /api/v1/restaurant/categories. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer",
+                "nullable": true,
+                "description": "null = catégorie du tenant."
+              },
+              "color": {
+                "type": "string",
+                "maxLength": 7,
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "sort_order": {
+                "type": "integer",
+                "nullable": true
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "description": "Schéma RestaurantCategoryInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/categories",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_delivery_riders",
+      "description": "Créer un livreur — POST /api/v1/restaurant/delivery-riders. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer"
+              },
+              "employee_id": {
+                "type": "integer",
+                "nullable": true,
+                "description": "Employé du tenant à rattacher."
+              },
+              "is_active": {
+                "type": "boolean",
+                "default": true
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 150
+              },
+              "phone": {
+                "type": "string",
+                "maxLength": 40,
+                "nullable": true
+              },
+              "vehicle_code": {
+                "type": "string",
+                "maxLength": 40,
+                "nullable": true
+              }
+            },
+            "required": [
+              "branch_id",
+              "name"
+            ],
+            "description": "Schéma RestaurantDeliveryRiderInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/delivery-riders",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_delivery_zones",
+      "description": "Créer une zone de livraison — POST /api/v1/restaurant/delivery-zones. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer"
+              },
+              "fee_minor": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Frais de livraison en unité mineure."
+              },
+              "min_order_minor": {
+                "type": "integer",
+                "minimum": 0,
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              }
+            },
+            "required": [
+              "branch_id",
+              "fee_minor",
+              "name"
+            ],
+            "description": "Schéma RestaurantDeliveryZoneInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/delivery-zones",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_hours",
+      "description": "Créer un horaire d'ouverture — POST /api/v1/restaurant/hours. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer"
+              },
+              "closes_at": {
+                "type": "string",
+                "pattern": "^[0-2][0-9]:[0-5][0-9]$",
+                "nullable": true
+              },
+              "day_of_week": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 6,
+                "description": "0 = lundi."
+              },
+              "is_closed": {
+                "type": "boolean",
+                "default": false
+              },
+              "opens_at": {
+                "type": "string",
+                "pattern": "^[0-2][0-9]:[0-5][0-9]$",
+                "nullable": true
+              }
+            },
+            "required": [
+              "branch_id",
+              "day_of_week"
+            ],
+            "description": "Schéma RestaurantHourInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/hours",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_ingredients",
+      "description": "Créer un ingrédient — POST /api/v1/restaurant/ingredients. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "avg_cost_minor": {
+                "type": "integer",
+                "minimum": 0,
+                "nullable": true
+              },
+              "branch_id": {
+                "type": "integer",
+                "nullable": true
+              },
+              "code": {
+                "type": "string",
+                "maxLength": 40,
+                "description": "Unique par tenant."
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 150
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              },
+              "unit_code": {
+                "type": "string",
+                "maxLength": 20,
+                "description": "Doit exister dans /restaurant/units."
+              }
+            },
+            "required": [
+              "name",
+              "unit_code"
+            ],
+            "description": "Schéma RestaurantIngredientInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/ingredients",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_inventory_movements",
+      "description": "Enregistrer un mouvement de stock manuel — POST /api/v1/restaurant/inventory-movements. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer"
+              },
+              "ingredient_id": {
+                "type": "integer"
+              },
+              "note_redacted": {
+                "type": "string",
+                "maxLength": 1000,
+                "nullable": true
+              },
+              "quantity_delta": {
+                "type": "number",
+                "description": "Signé (entrée positive, sortie négative). 0 est refusé (422)."
+              },
+              "reason_code": {
+                "type": "string",
+                "description": "Allowlist fermée (waste, breakage, recount, transfer, correction…)."
+              },
+              "reference_id": {
+                "type": "integer",
+                "nullable": true
+              },
+              "reference_type": {
+                "type": "string",
+                "maxLength": 80,
+                "nullable": true
+              }
+            },
+            "required": [
+              "branch_id",
+              "ingredient_id",
+              "quantity_delta",
+              "reason_code"
+            ],
+            "description": "Schéma RestaurantInventoryMovementInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/inventory-movements",
+        "pathParams": [],
         "queryParams": [],
         "hasBody": true
       }
@@ -7085,6 +8049,335 @@
       }
     },
     {
+      "name": "api_post_restaurant_menus",
+      "description": "Créer un menu — POST /api/v1/restaurant/menus. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer",
+                "nullable": true
+              },
+              "code": {
+                "type": "string",
+                "maxLength": 40,
+                "description": "Unique par tenant."
+              },
+              "currency": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 3,
+                "nullable": true
+              },
+              "ends_at": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 150
+              },
+              "price_minor": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Prix du menu en unité mineure."
+              },
+              "starts_at": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              }
+            },
+            "required": [
+              "name",
+              "price_minor"
+            ],
+            "description": "Schéma RestaurantMenuInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/menus",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_menus_by_restaurantmenu_items",
+      "description": "Ajouter un produit à un menu — POST /api/v1/restaurant/menus/{restaurantMenu}/items. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "is_optional": {
+                "type": "boolean",
+                "default": false
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 0,
+                "nullable": true
+              },
+              "product_id": {
+                "type": "integer",
+                "description": "Produit du tenant courant."
+              }
+            },
+            "required": [
+              "product_id"
+            ],
+            "description": "Schéma RestaurantMenuItemInput (api/openapi.yaml)."
+          },
+          "restaurantMenu": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "body",
+          "restaurantMenu"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/menus/{restaurantMenu}/items",
+        "pathParams": [
+          "restaurantMenu"
+        ],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_orders",
+      "description": "Créer une commande — POST /api/v1/restaurant/orders. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer"
+              },
+              "customer_name": {
+                "type": "string",
+                "maxLength": 150,
+                "nullable": true
+              },
+              "customer_phone": {
+                "type": "string",
+                "maxLength": 40,
+                "nullable": true
+              },
+              "delivery_zone_id": {
+                "type": "integer",
+                "nullable": true,
+                "description": "Requis si order_type=delivery."
+              },
+              "idempotency_key": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Rejeu réseau : la même clé renvoie la commande existante."
+              },
+              "notes": {
+                "type": "string",
+                "maxLength": 1000,
+                "nullable": true
+              },
+              "order_type": {
+                "type": "string",
+                "enum": [
+                  "dine_in",
+                  "takeaway",
+                  "delivery"
+                ]
+              },
+              "table_id": {
+                "type": "integer",
+                "nullable": true,
+                "description": "Obligatoire si order_type=dine_in ; doit appartenir à branch_id."
+              }
+            },
+            "required": [
+              "branch_id",
+              "order_type"
+            ],
+            "description": "Schéma RestaurantOrderInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/orders",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_orders_by_restaurantorder_items",
+      "description": "Ajouter une ligne à une commande — POST /api/v1/restaurant/orders/{restaurantOrder}/items. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "modifiers": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "type": "string",
+                  "maxLength": 120
+                }
+              },
+              "notes": {
+                "type": "string",
+                "maxLength": 500,
+                "nullable": true
+              },
+              "product_id": {
+                "type": "integer"
+              },
+              "quantity": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 999
+              }
+            },
+            "required": [
+              "product_id",
+              "quantity"
+            ],
+            "description": "Schéma RestaurantOrderItemInput (api/openapi.yaml)."
+          },
+          "restaurantOrder": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "body",
+          "restaurantOrder"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/orders/{restaurantOrder}/items",
+        "pathParams": [
+          "restaurantOrder"
+        ],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_orders_by_restaurantorder_pay",
+      "description": "Encaisser une commande — POST /api/v1/restaurant/orders/{restaurantOrder}/pay. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "amount_minor": {
+                "type": "integer",
+                "minimum": 1,
+                "description": "Doit couvrir le total recalculé côté serveur (422 sinon)."
+              },
+              "idempotency_key": {
+                "type": "string",
+                "format": "uuid",
+                "nullable": true
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "cash",
+                  "card",
+                  "mobile_money",
+                  "transfer"
+                ]
+              },
+              "reference": {
+                "type": "string",
+                "maxLength": 120,
+                "nullable": true
+              }
+            },
+            "required": [
+              "amount_minor",
+              "method"
+            ],
+            "description": "Schéma RestaurantOrderPaymentInput (api/openapi.yaml)."
+          },
+          "restaurantOrder": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "body",
+          "restaurantOrder"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/orders/{restaurantOrder}/pay",
+        "pathParams": [
+          "restaurantOrder"
+        ],
+        "queryParams": [],
+        "hasBody": true,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_restaurant_orders_by_restaurantorder_print_jobs",
       "description": "Mettre un ticket de cuisine en file d'impression (REST-OS-1/2) — POST /api/v1/restaurant/orders/{restaurantOrder}/print-jobs. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -7111,6 +8404,49 @@
         ],
         "queryParams": [],
         "hasBody": false
+      }
+    },
+    {
+      "name": "api_post_restaurant_pos_sessions",
+      "description": "Ouvrir une session de caisse — POST /api/v1/restaurant/pos-sessions. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer"
+              },
+              "opening_cash_minor": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999,
+                "description": "Fond de caisse compté à l'ouverture, en unité mineure."
+              }
+            },
+            "required": [
+              "branch_id",
+              "opening_cash_minor"
+            ],
+            "description": "Schéma RestaurantPosSessionInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/pos-sessions",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
       }
     },
     {
@@ -7231,6 +8567,236 @@
       }
     },
     {
+      "name": "api_post_restaurant_products",
+      "description": "Créer un produit — POST /api/v1/restaurant/products. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer",
+                "nullable": true,
+                "description": "null = produit de la carte commune."
+              },
+              "category_id": {
+                "type": "integer",
+                "nullable": true
+              },
+              "code": {
+                "type": "string",
+                "maxLength": 40,
+                "description": "Unique par tenant. Généré si absent."
+              },
+              "currency": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 3,
+                "nullable": true
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 1000,
+                "nullable": true
+              },
+              "is_available": {
+                "type": "boolean",
+                "default": true
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 150
+              },
+              "price_minor": {
+                "type": "integer",
+                "minimum": 0,
+                "description": "Prix de vente en unité mineure (centimes). Jamais de décimal."
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              },
+              "tax_rate_id": {
+                "type": "integer",
+                "nullable": true
+              }
+            },
+            "required": [
+              "name",
+              "price_minor"
+            ],
+            "description": "Schéma RestaurantProductInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/products",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_purchase_orders",
+      "description": "Créer un bon de commande fournisseur — POST /api/v1/restaurant/purchase-orders. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer"
+              },
+              "currency": {
+                "type": "string",
+                "minLength": 3,
+                "maxLength": 3,
+                "nullable": true
+              },
+              "expected_at": {
+                "type": "string",
+                "format": "date-time",
+                "nullable": true
+              },
+              "items": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "ingredient_id": {
+                      "type": "object",
+                      "description": "Objet imbriqué."
+                    },
+                    "quantity": {
+                      "type": "object",
+                      "description": "Objet imbriqué."
+                    },
+                    "unit_cost_minor": {
+                      "type": "object",
+                      "description": "Objet imbriqué."
+                    }
+                  },
+                  "required": [
+                    "ingredient_id",
+                    "quantity"
+                  ]
+                }
+              },
+              "supplier_id": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "branch_id",
+              "supplier_id"
+            ],
+            "description": "Schéma RestaurantPurchaseOrderInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/purchase-orders",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_reservations",
+      "description": "Créer une réservation — POST /api/v1/restaurant/reservations. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer"
+              },
+              "customer_name": {
+                "type": "string",
+                "maxLength": 150
+              },
+              "customer_phone": {
+                "type": "string",
+                "maxLength": 40,
+                "nullable": true
+              },
+              "idempotency_key": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Rejeu : renvoie 200 avec la réservation existante."
+              },
+              "notes": {
+                "type": "string",
+                "maxLength": 1000,
+                "nullable": true
+              },
+              "party_size": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 100
+              },
+              "reserved_at": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "table_id": {
+                "type": "integer",
+                "nullable": true
+              }
+            },
+            "required": [
+              "branch_id",
+              "customer_name",
+              "party_size",
+              "reserved_at"
+            ],
+            "description": "Schéma RestaurantReservationInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/reservations",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
       "name": "api_post_restaurant_reviews_by_review_publish",
       "description": "Publier un avis client (moderation gerant) — POST /api/v1/restaurant/reviews/{review}/publish. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -7288,6 +8854,67 @@
         "queryParams": [],
         "hasBody": false,
         "action": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_suppliers",
+      "description": "Créer un fournisseur — POST /api/v1/restaurant/suppliers. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "address": {
+                "type": "string",
+                "maxLength": 255,
+                "nullable": true
+              },
+              "contact_phone": {
+                "type": "string",
+                "maxLength": 40,
+                "nullable": true
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "maxLength": 150,
+                "nullable": true
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 150
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              }
+            },
+            "required": [
+              "name"
+            ],
+            "description": "Schéma RestaurantSupplierInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/suppliers",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
       }
     },
     {
@@ -7416,6 +9043,239 @@
       "route": {
         "method": "POST",
         "path": "/api/v1/restaurant/sync/operations",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_tables",
+      "description": "Créer une table — POST /api/v1/restaurant/tables. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer"
+              },
+              "code": {
+                "type": "string",
+                "maxLength": 40,
+                "description": "Unique par succursale."
+              },
+              "seats": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              },
+              "zone_id": {
+                "type": "integer",
+                "nullable": true,
+                "description": "Zone de la même succursale."
+              }
+            },
+            "required": [
+              "branch_id",
+              "code",
+              "seats"
+            ],
+            "description": "Schéma RestaurantTableInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/tables",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_tax_rates",
+      "description": "Créer un taux de TVA — POST /api/v1/restaurant/tax-rates. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "maxLength": 20
+              },
+              "is_default": {
+                "type": "boolean",
+                "default": false
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "rate_bps": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000,
+                "description": "Points de base : 2000 = 20 %."
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              }
+            },
+            "required": [
+              "code",
+              "label",
+              "rate_bps"
+            ],
+            "description": "Schéma RestaurantTaxRateInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/tax-rates",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_units",
+      "description": "Créer une unité de mesure — POST /api/v1/restaurant/units. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string",
+                "maxLength": 20,
+                "description": "kg, g, l, cl, pcs…"
+              },
+              "label": {
+                "type": "string",
+                "maxLength": 80
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              }
+            },
+            "required": [
+              "code",
+              "label"
+            ],
+            "description": "Schéma RestaurantUnitInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/units",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_restaurant_zones",
+      "description": "Créer une zone de salle — POST /api/v1/restaurant/zones. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "branch_id": {
+                "type": "integer",
+                "description": "Succursale du tenant courant."
+              },
+              "color": {
+                "type": "string",
+                "maxLength": 7,
+                "nullable": true,
+                "description": "Hex #RRGGBB."
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 120
+              },
+              "sort_order": {
+                "type": "integer",
+                "nullable": true
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              }
+            },
+            "required": [
+              "branch_id",
+              "name"
+            ],
+            "description": "Schéma RestaurantZoneInput (api/openapi.yaml)."
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/zones",
         "pathParams": [],
         "queryParams": [],
         "hasBody": true
@@ -8502,6 +10362,73 @@
       }
     },
     {
+      "name": "api_post_travel_hotel_room_bookings",
+      "description": "Réserve une chambre sur un intervalle de dates (M4) — POST /api/v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/bookings. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "check_in": {
+                "type": "string",
+                "format": "date",
+                "description": "Doit être aujourd'hui ou plus tard."
+              },
+              "check_out": {
+                "type": "string",
+                "format": "date",
+                "description": "Strictement après `check_in`."
+              },
+              "idempotency_key": {
+                "type": "string",
+                "maxLength": 255
+              },
+              "rooms": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 50,
+                "default": 1
+              }
+            },
+            "required": [
+              "check_in",
+              "check_out",
+              "idempotency_key"
+            ]
+          },
+          "travelHotel": {
+            "type": "integer",
+            "description": "Identifiant de l'hôtel (BC-24 TRAVEL, M4)."
+          },
+          "travelHotelRoom": {
+            "type": "integer",
+            "description": "Identifiant de la chambre. Doit appartenir à l'hôtel du chemin, sinon 404."
+          }
+        },
+        "required": [
+          "body",
+          "travelHotel",
+          "travelHotelRoom"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/bookings",
+        "pathParams": [
+          "travelHotel",
+          "travelHotelRoom"
+        ],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
       "name": "api_post_travel_staff_assignments",
       "description": "Affecter un employe RH a un role metier travel — POST /api/v1/travel/staff-assignments. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -8881,6 +10808,51 @@
         "method": "PUT",
         "path": "/api/v1/attendance/preferences",
         "pathParams": [],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_put_employee_vertical_permissions",
+      "description": "Remplace le jeu complet de permissions verticales (#EVAL) — PUT /api/v1/employees/{employee}/vertical-permissions. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "permission_keys": {
+                "type": "array",
+                "description": "Jeu complet attendu. Tableau vide = révocation de toutes les permissions verticales.",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "permission_keys"
+            ]
+          },
+          "employee": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "body",
+          "employee"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "PUT",
+        "path": "/api/v1/employees/{employee}/vertical-permissions",
+        "pathParams": [
+          "employee"
+        ],
         "queryParams": [],
         "hasBody": true
       }
@@ -9873,6 +11845,76 @@
         "path": "/api/v1/travel/contacts/{travelCustomerContact}/consent",
         "pathParams": [
           "travelCustomerContact"
+        ],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_put_travel_hotel_room_inventory",
+      "description": "Ouvre ou ferme un intervalle d'inventaire (M4) — PUT /api/v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/inventory. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "format": "date"
+              },
+              "rooms_total": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 1000,
+                "description": "Capacité par nuit. `0` ferme la chambre sur la période."
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "active",
+                  "disabled"
+                ],
+                "default": "active"
+              },
+              "to": {
+                "type": "string",
+                "format": "date",
+                "description": "Doit être ≥ `from`. Intervalle maximal : 90 nuits."
+              }
+            },
+            "required": [
+              "from",
+              "rooms_total",
+              "to"
+            ]
+          },
+          "travelHotel": {
+            "type": "integer",
+            "description": "Identifiant de l'hôtel (BC-24 TRAVEL, M4)."
+          },
+          "travelHotelRoom": {
+            "type": "integer",
+            "description": "Identifiant de la chambre. Doit appartenir à l'hôtel du chemin, sinon 404."
+          }
+        },
+        "required": [
+          "body",
+          "travelHotel",
+          "travelHotelRoom"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "PUT",
+        "path": "/api/v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/inventory",
+        "pathParams": [
+          "travelHotel",
+          "travelHotelRoom"
         ],
         "queryParams": [],
         "hasBody": true

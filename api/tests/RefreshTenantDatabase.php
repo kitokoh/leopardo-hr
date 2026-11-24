@@ -205,7 +205,8 @@ trait RefreshTenantDatabase
         // that would remigrate before every test and exhaust Coverage timeout.
         $row = DB::selectOne(
             "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions,\n                    to_regclass('shared_tenants.employees') AS employees,\n                    to_regclass('shared_tenants.app_notifications') AS app_notifications,\n                    to_regclass('shared_tenants.migrations') AS migrations_repo,\n                    to_regclass('shared_tenants.training_enrollments') AS training_enrollments,
-                    to_regclass('shared_tenants.biometric_enrollments') AS biometric_enrollments"
+                    to_regclass('shared_tenants.biometric_enrollments') AS biometric_enrollments,
+                    to_regclass('shared_tenants.bulk_payment_claims') AS bulk_payment_claims"
         );
 
         // #9846 (BC-14) — la liste de sentinelles ci-dessus est PÉRIMÉE par
@@ -259,7 +260,51 @@ trait RefreshTenantDatabase
             // un worker qui enchaîne `CreatesMvpSchema` (fixture partielle) puis
             // `RefreshTenantDatabase` saute la re-migration et le fichier entier
             // meurt en 42P01 puis 25P02 — le job Backend ne rend aucun verdict.
-            && $row->biometric_enrollments !== null;
+            && $row->biometric_enrollments !== null
+            // Garde d'EXHAUSTIVITÉ (M4, `travel_hotel_room_inventories`) : la
+            // liste de sentinelles ci-dessus est FIGÉE. Toute migration tenant
+            // ajoutée après elle échappe donc à la détection : un worker dont
+            // le schéma canonique a été construit AVANT cette migration garde
+            // toutes les sentinelles, `canonicalSchemaReady()` répond `true`,
+            // la re-migration est sautée et la nouvelle table n'existe jamais
+            // → 42P01 sur le premier test qui la touche, de façon PERSISTANTE
+            // (le worker ne se répare jamais tout seul).
+            //
+            // Observé sur `TravelHotelInventoryTest` : 7 échecs
+            // « relation "travel_hotel_room_inventories" does not exist » alors
+            // que la migration s'exécute sans erreur (13 ms en CI) et que les
+            // 9 tests passent sur un schéma fraîchement migré.
+            //
+            // Plutôt que d'ajouter une 10e sentinelle (qui redeviendrait
+            // obsolète à la migration suivante), on compare le NOMBRE de
+            // migrations appliquées au NOMBRE de fichiers présents sur disque.
+            // La garde se maintient d'elle-même : toute migration non jouée
+            // rend le schéma « non prêt » et déclenche la re-migration.
+            && $this->appliedTenantMigrationCount() === $this->tenantMigrationFileCount();
+    }
+
+    /**
+     * Nombre de migrations tenant enregistrées dans le schéma `shared_tenants`.
+     */
+    private function appliedTenantMigrationCount(): int
+    {
+        $row = DB::selectOne('SELECT count(*) AS total FROM shared_tenants.migrations');
+
+        return $row === null ? 0 : (int) $row->total;
+    }
+
+    /**
+     * Nombre de fichiers de migration tenant présents sur disque.
+     *
+     * `glob()` plutôt que `File::files()` : pas de dépendance au disque
+     * configuré, et le tri n'a pas d'importance ici (on ne compare qu'un
+     * cardinal).
+     */
+    private function tenantMigrationFileCount(): int
+    {
+        $files = glob(database_path('migrations/tenant/*.php'));
+
+        return $files === false ? 0 : count($files);
     }
 
     /**
