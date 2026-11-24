@@ -66,6 +66,19 @@ final class TenantManager
         }
 
         app()->instance('current_company', $company);
+
+        // #9889 — RLS : le tenant courant est aussi publie dans la session
+        // PostgreSQL, pour que les politiques `USING (company_id::text =
+        // current_setting('app.current_company_id', true))` aient quelque
+        // chose a comparer.
+        //
+        // Sans cette ligne, la politique RLS livree en #9879 etait INERTE :
+        // `current_setting(..., true)` renvoie NULL quand la variable n'existe
+        // pas, donc la comparaison vaut NULL et AUCUNE ligne n'est visible —
+        // un fail-closed qui, en pratique, aurait rendu les tables couvertes
+        // illisibles. Le search_path seul ne suffit pas : il choisit le SCHEMA,
+        // il ne dit rien a RLS sur le TENANT.
+        $this->syncCompanySetting($company);
     }
 
     /**
@@ -92,6 +105,34 @@ final class TenantManager
 
         $this->restoreCompanyContext($this->previousCompany);
         $this->previousCompany = null;
+    }
+
+    /**
+     * Publie (ou efface) le tenant courant dans la session PostgreSQL.
+     *
+     * #9889 — `set_config(..., false)` : la portee est la SESSION, pas la
+     * transaction. C'est volontaire : les politiques RLS doivent rester
+     * valides a travers les transactions d'une meme requete HTTP, et un
+     * `SET LOCAL` serait perdu au premier commit.
+     *
+     * `null` efface la variable : la comparaison RLS redevient NULL, donc
+     * fail-closed. C'est le comportement voulu quand on quitte un tenant —
+     * ne PAS laisser trainer l'identifiant du tenant precedent, sinon une
+     * requete ulterieure hors contexte lirait ses lignes.
+     */
+    private function syncCompanySetting(?Company $company): void
+    {
+        if (! $this->isPostgres()) {
+            return;
+        }
+
+        if ($company === null) {
+            DB::statement("SELECT set_config('app.current_company_id', '', false)");
+
+            return;
+        }
+
+        DB::statement("SELECT set_config('app.current_company_id', ?, false)", [(string) $company->id]);
     }
 
     /**
@@ -209,6 +250,10 @@ final class TenantManager
         }
 
         app()->forgetInstance('current_company');
+
+        // #9889 — effacer le contexte applicatif sans effacer la variable de
+        // session laisserait RLS ouvert sur le tenant precedent.
+        $this->syncCompanySetting(null);
     }
 
     // ── Helpers internes ──────────────────────────────────────────────────────
@@ -220,6 +265,11 @@ final class TenantManager
         } else {
             app()->forgetInstance('current_company');
         }
+
+        // #9889 — la variable de session suit le contexte applicatif : la
+        // restaurer ici evite qu'un `withinTenant()` imbrique laisse le tenant
+        // interne actif pour le code appelant.
+        $this->syncCompanySetting($company);
     }
 
     private function isPostgres(): bool
