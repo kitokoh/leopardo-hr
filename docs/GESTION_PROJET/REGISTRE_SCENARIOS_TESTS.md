@@ -22,6 +22,23 @@ Surface : `api/database/migrations/tenant/2026_11_23_000200_add_min_connection_m
 
 **Non couvert** — le test de course n'a pas été observé sur un runner CI après correctif (processus `php` enfants). Le build `next build` de production n'est pas rejoué dans cette entrée.
 
+## 2026-11-23 — Mobile : le placeholder `{class}` cassait la génération l10n (#9872)
+
+Surface : `shared/i18n/locales/{fr,en,tr,ar}.json` (clé `eduFeechargesBatchclassbanner`), catalogues générés `front/mobile_apps/leopardo_core/lib/l10n/app_*.arb`, `front/web/src/locales/*`, `api/lang/*`.
+
+**Pourquoi c'est un scénario de test** : le build Flutter échouait à la génération des localisations, avant toute compilation, avec `'class' can't be used as an identifier because it's a keyword`. La clé `eduFeechargesBatchclassbanner` (#9792) portait un placeholder nommé `{class}` ; `gen-l10n` le transforme en **paramètre Dart** nommé `class`, qui est un mot réservé du langage. Le message d'erreur ne nomme ni la clé ni la locale : sans ce scénario, la cause se cherche dans le code Dart alors qu'elle est dans un catalogue JSON.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| aucun placeholder de `shared/i18n` ne porte un nom réservé Dart (`class`, `switch`, `default`, `new`, `var`, `final`, `const`, `if`, `else`, `for`, `while`, `return`, `this`, `super`, `void`, `int`, `double`, `bool`, `true`, `false`, `null`, `enum`, `extends`, `implements`, `with`, `is`, `as`, `in`, `do`, `try`, `catch`, `throw`, `break`, `continue`, `assert`, `static`, `abstract`, `operator`, `typedef`, `late`, `required`, `covariant`, `external`, `factory`, `get`, `set`, `mixin`, `part`, `show`, `hide`, `export`, `import`, `library`, `on`, `rethrow`, `yield`, `await`, `async`, `sync`) | `gen-l10n` produit du Dart invalide et **tout** le build mobile échoue, sur les 5 apps |
+| le placeholder renommé `{className}` est présent dans les **4** locales, pas seulement celle où l'erreur est apparue | une locale oubliée casse le build de son ARB, et le message d'erreur ne dit pas laquelle |
+| les catalogues générés (ARB mobile, web, admin, backend) sont resynchronisés après le renommage | `validate-and-sync` échoue sur `git diff --exit-code` : les surfaces générées divergent de la source |
+| aucune occurrence de `{class}` ne subsiste dans les ARB ni dans `shared/i18n` | une réintroduction par un futur sync repasserait inaperçue jusqu'au build |
+
+**Couverture exécutée** — `grep -rn "{class}"` sur `front/mobile_apps/leopardo_core/lib/l10n/*.arb` et `shared/i18n/locales/*.json` → **0 occurrence** ; `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `check-i18n-catalog-parity.sh` → parité OK ; `sync-mobile/web/backend` → idempotents (une seconde exécution ne produit plus de diff).
+
+**Non couvert** — le build Flutter lui-même n'a pas été exécuté dans le sandbox (pas de SDK Dart) : la mesure est le run CI `Mobile Smoke Build`.
+
 ## 2026-11-23 — École : reçu PDF par encaissement de lot et lot depuis la fiche d'un élève (#9793)
 
 Surface : `api/database/migrations/tenant/2026_11_23_000100_9793_add_batch_id_to_edu_fee_payments.php` (nouveau), `.../Infrastructure/Services/EduFeeBatchReceiptPdfRenderer.php` (nouveau), `api/resources/views/pdf/edu-fee-batch-receipt.blade.php` (nouveau), `.../Application/Actions/RecordEduFeeBatchPaymentsAction.php` (`batch_id`), `.../Infrastructure/Services/EduFeeService.php` (`batch_id` à l'écriture), `.../Domain/Models/EduFeePayment.php` (`batch_id` fillable), `.../Controllers/EduFeePaymentController.php` (`batchReceipt`), `.../Controllers/EduFeeChargeController.php` (`forStudent`), `api/routes/modules/edu_manager.php` (`GET /fee-payments/batches/{batch}/receipt.pdf`, `GET /students/{student}/fee-charges`), `api/lang/{fr,en,ar,tr}/pdf.php`, `api/tests/Feature/EduManager/EduFeeBatchReceiptTest.php` (nouveau, 6 tests), `front/web/src/app/(dashboard)/edu-manager/fee-charges/batch/page.tsx` (lot depuis un élève + lien reçu), `.../students/page.tsx` (action « encaisser en lot »), `.../__tests__/edu-fee-student-batch-receipt.test.tsx` (nouveau, 2 tests), `shared/i18n/locales/{fr,en,ar,tr}.json` + catalogues générés.

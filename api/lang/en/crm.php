@@ -44,6 +44,7 @@ return [
         'stage_terminal' => 'A won or lost deal is final. Create a new opportunity to start again.',
         'lost_reason_required' => 'Say why the deal was lost: without a reason the quarterly review is unexplainable.',
         'lost_reason_not_applicable' => 'A loss reason only applies to a lost deal.',
+        'lost_reason_only_when_lost' => 'A loss reason only makes sense on a lost deal: remove it for this stage change.',
         'activity_stage_changed' => 'Stage changed',
         'activity_target_required' => 'An activity must reference at least one account, contact, lead or opportunity.',
     ],
