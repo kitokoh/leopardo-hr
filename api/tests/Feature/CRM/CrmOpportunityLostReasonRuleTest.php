@@ -14,7 +14,7 @@ use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
 /**
- * #eval-2026-11-24 — verrouille la regle `prohibited_if` sur `lost_reason`.
+ * #eval-2026-11-24 — verrouille la regle `prohibited_unless` sur `lost_reason`.
  *
  * ## Pourquoi un test dedie
  *
@@ -30,9 +30,10 @@ use Tests\TestCase;
  *   1. la regle est bien presente dans `rules()` (et pas seulement son effet) ;
  *   2. elle ne se declenche PAS sur `lost` (sinon on interdirait la donnee
  *      qu'on exige par ailleurs — `required_if:stage,lost`) ;
- *   3. elle ne se declenche PAS sur les etapes ouvertes, ou `lost_reason` est
- *      simplement ignoree : un client qui renvoie le formulaire complet avec
- *      une raison heritee d'un brouillon ne doit pas etre bloque.
+ *   3. elle se declenche sur TOUTE etape qui n'est pas `lost` — y compris les
+ *      etapes ouvertes. Un motif de perte sur une affaire en cours serait
+ *      journalise dans `notes` a cote d'un `stage=negotiation` et lirait comme
+ *      une perte : c'est la donnee trompeuse que #9868 interdit.
  *
  * Le message d'erreur est aussi verifie : c'est lui que lit l'utilisateur, et
  * une cle de traduction manquante afficherait `crm.opportunities.…` en clair.
@@ -120,7 +121,7 @@ class CrmOpportunityLostReasonRuleTest extends TestCase
     // ─── La regle est bien celle qu'on croit ────────────────────────────────
 
     /**
-     * Si `prohibited_if` disparait de `rules()`, ce test tombe — meme si
+     * Si `prohibited_unless` disparait de `rules()`, ce test tombe — meme si
      * `withValidator()` masquait la regression cote HTTP.
      */
     public function test_the_rule_is_declared_on_lost_reason(): void
@@ -129,9 +130,9 @@ class CrmOpportunityLostReasonRuleTest extends TestCase
 
         $this->assertArrayHasKey('lost_reason', $rules);
         $this->assertContains(
-            'prohibited_if:stage,won',
+            'prohibited_unless:stage,lost',
             $rules['lost_reason'],
-            'La regle prohibited_if a disparu de TransitionOpportunityStageRequest::rules().',
+            'La regle prohibited_unless a disparu de TransitionOpportunityStageRequest::rules().',
         );
     }
 
@@ -189,7 +190,7 @@ class CrmOpportunityLostReasonRuleTest extends TestCase
     // ─── Les cas qui ne doivent PAS etre bloques ────────────────────────────
 
     /**
-     * `lost` EXIGE une raison (`required_if`). Si `prohibited_if` se
+     * `lost` EXIGE une raison (`required_if`). Si `prohibited_unless` se
      * declenchait aussi sur `lost`, les deux regles se contrediraient et il
      * deviendrait impossible de perdre une affaire.
      */
@@ -204,11 +205,13 @@ class CrmOpportunityLostReasonRuleTest extends TestCase
     }
 
     /**
-     * Sur une etape ouverte, `lost_reason` est ignoree — pas interdite. Un
-     * client qui renvoie le formulaire complet avec une raison heritee d'un
-     * brouillon ne doit pas etre bloque.
+     * Sur une etape ouverte, `lost_reason` est REFUSEE (#9868) : l'accepter
+     * l'ecrirait dans `notes` a cote d'un `stage` ouvert, ce qui se lit comme
+     * une perte sur une affaire en cours. Le refus est explicite (422) plutot
+     * qu'un silence, pour que l'appelant sache que son champ n'a pas ete pris
+     * en compte.
      */
-    public function test_a_lost_reason_on_an_open_stage_is_not_blocked(): void
+    public function test_a_lost_reason_on_an_open_stage_is_refused(): void
     {
         foreach (['prospecting', 'qualification', 'proposal', 'negotiation'] as $stage) {
             $validator = $this->validate([
@@ -216,16 +219,17 @@ class CrmOpportunityLostReasonRuleTest extends TestCase
                 'lost_reason' => 'reste du brouillon',
             ]);
 
-            $this->assertFalse(
+            $this->assertTrue(
                 $validator->fails(),
-                "L'etape ouverte `{$stage}` ne doit pas refuser `lost_reason`.",
+                "L'etape ouverte `{$stage}` doit refuser `lost_reason` (#9868).",
             );
+            $this->assertArrayHasKey('lost_reason', $validator->errors()->toArray());
         }
     }
 
     /**
      * Sans raison du tout sur `lost`, c'est `required_if` qui parle — pas
-     * `prohibited_if`. Les deux messages doivent rester distincts.
+     * `prohibited_unless`. Les deux messages doivent rester distincts.
      */
     public function test_a_lost_deal_without_a_reason_still_fails_on_required_if(): void
     {
