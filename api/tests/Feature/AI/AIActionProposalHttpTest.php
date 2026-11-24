@@ -8,6 +8,8 @@ use App\AI\PendingActionStore;
 use App\AI\ToolRegistry;
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Planning\Domain\Models\Absence;
+use App\Modules\Planning\Domain\Models\AbsenceType;
 use Database\Seeders\AIToolRegistrySeeder;
 use Illuminate\Support\Facades\DB;
 use Laravel\Sanctum\Sanctum;
@@ -69,6 +71,27 @@ class AIActionProposalHttpTest extends TestCase
     }
 
     /**
+     * Absence `pending` reelle du tenant, sur un type NON deductible.
+     *
+     * Le type non deductible evite le chemin `leave_balances` d'`AbsenceService`
+     * (solde de conges) : le test porte sur le flux proposition/confirmation,
+     * pas sur la comptabilite des conges.
+     */
+    private function pendingAbsence(Company $company, Employee $employee): Absence
+    {
+        $type = AbsenceType::factory()->nonDeductible()->create([
+            'company_id' => $company->id,
+        ]);
+
+        return Absence::factory()->create([
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'absence_type_id' => $type->id,
+            'status' => 'pending',
+        ]);
+    }
+
+    /**
      * @param  array<string, mixed>  $arguments
      * @return \Illuminate\Testing\TestResponse<\Illuminate\Http\JsonResponse>
      */
@@ -84,10 +107,16 @@ class AIActionProposalHttpTest extends TestCase
 
     public function test_proposition_puis_confirmation_execute_l_action_sous_le_meme_pending(): void
     {
-        ['manager' => $manager] = $this->tenant();
+        ['company' => $company, 'manager' => $manager] = $this->tenant();
+
+        // L'action confirmee porte sur une absence REELLE et `pending` : sans
+        // elle, `WriteActionRunner::decideAbsence()` repond « Absence not
+        // found » et la confirmation sort en 422. Le type est non deductible
+        // pour ne pas dependre d'un solde de conges (chemin `leave_balances`).
+        $absence = $this->pendingAbsence($company, $manager);
 
         $proposal = $this->propose($manager, 'absence_decision', [
-            'absence_id' => 1,
+            'absence_id' => $absence->id,
             'decision' => 'approve',
         ]);
 
@@ -103,8 +132,9 @@ class AIActionProposalHttpTest extends TestCase
         $proposal->assertJsonPath('data.confirm_endpoint', '/api/v1/ai/actions/'.$pendingId.'/confirm');
         $proposal->assertJsonPath('data.reject_endpoint', '/api/v1/ai/actions/'.$pendingId.'/reject');
 
-        // 1. La proposition n'a RIEN exécuté.
-        $this->assertDatabaseCount('absences', 0);
+        // 1. La proposition n'a RIEN execute : l'absence est toujours `pending`
+        //    (elle existe deja, c'est l'EFFET metier qui doit rester absent).
+        $this->assertSame('pending', $absence->refresh()->status);
 
         // 2. La confirmation humaine exécute l'action.
         $confirmation = $this->postJson('/api/v1/ai/actions/'.$pendingId.'/confirm');

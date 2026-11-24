@@ -49,11 +49,11 @@ class PlatformMetricsOverviewController extends Controller
     private function companyMetrics(): array
     {
         return $this->safeArray(fn (): array => [
-            'total' => (int) DB::table('companies')->count(),
-            'active' => (int) DB::table('companies')->where('status', 'active')->count(),
-            'trial' => (int) DB::table('companies')->where('status', 'trial')->count(),
-            'suspended' => (int) DB::table('companies')->where('status', 'suspended')->count(),
-            'expired' => (int) DB::table('companies')->where('status', 'expired')->count(),
+            'total' => (int) DB::table($this->platformTable('companies'))->count(),
+            'active' => (int) DB::table($this->platformTable('companies'))->where('status', 'active')->count(),
+            'trial' => (int) DB::table($this->platformTable('companies'))->where('status', 'trial')->count(),
+            'suspended' => (int) DB::table($this->platformTable('companies'))->where('status', 'suspended')->count(),
+            'expired' => (int) DB::table($this->platformTable('companies'))->where('status', 'expired')->count(),
         ], [
             'total' => 0,
             'active' => 0,
@@ -125,8 +125,8 @@ class PlatformMetricsOverviewController extends Controller
     private function monthlyRecurringRevenue(): float
     {
         return $this->safeFloat(function (): float {
-            $value = DB::table('companies')
-                ->join('plans', 'plans.id', '=', 'companies.plan_id')
+            $value = DB::table($this->platformTable('companies'))
+                ->join($this->platformTable('plans'), 'plans.id', '=', 'companies.plan_id')
                 ->whereIn('companies.status', ['active', 'trial'])
                 ->sum('plans.price_monthly');
 
@@ -160,7 +160,7 @@ class PlatformMetricsOverviewController extends Controller
     private function primaryCurrency(): string
     {
         return $this->safeString(function (): string {
-            $currency = DB::table('companies')
+            $currency = DB::table($this->platformTable('companies'))
                 ->select('currency', DB::raw('count(*) as count'))
                 ->groupBy('currency')
                 ->orderByDesc('count')
@@ -173,6 +173,26 @@ class PlatformMetricsOverviewController extends Controller
     private function tenantTable(string $table): string
     {
         return DB::getDriverName() === 'pgsql' ? 'shared_tenants.'.$table : $table;
+    }
+
+    /**
+     * Table de la PLATEFORME (donnee transverse, hors tenant).
+     *
+     * `companies` et `plans` vivent dans `public` — c'est la convention du
+     * depot (`Company::$table = 'public.companies'`, fix #5198). Les nommer
+     * SANS qualification les faisait resoudre par le `search_path` de la
+     * session : des qu'un schema `shared_tenants` existe et porte une table
+     * homonyme (shadow vide cree par la fixture MVP), la requete lisait la
+     * table VIDE au lieu de la table plateforme. Le tableau de bord renvoyait
+     * alors `companies.total = 0` et `mrr = 0` — silencieusement, puisque
+     * `safeArray`/`safeFloat` avalent l'erreur et rendent le fallback.
+     *
+     * C'est exactement le piege documente par #5198 : toute lecture d'une
+     * table plateforme doit etre qualifiee explicitement.
+     */
+    private function platformTable(string $table): string
+    {
+        return DB::getDriverName() === 'pgsql' ? 'public.'.$table : $table;
     }
 
     /**

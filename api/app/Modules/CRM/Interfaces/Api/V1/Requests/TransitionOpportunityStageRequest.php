@@ -115,6 +115,15 @@ final class TransitionOpportunityStageRequest extends FormRequest
             if ($this->input('stage') === $current) {
                 return;
             }
+
+            // Un motif de perte sur une affaire qui n'est PAS perdue est une
+            // donnee trompeuse : il serait journalise dans `notes` comme
+            // explication d'un deplacement qui n'a rien perdu. On le refuse
+            // explicitement (422) plutot que de l'ignorer en silence — le
+            // client croirait l'avoir enregistre.
+            if ($this->input('stage') !== 'lost' && $this->filled('lost_reason')) {
+                $validator->errors()->add('lost_reason', __('crm.opportunities.lost_reason_not_applicable'));
+            }
         });
     }
 }

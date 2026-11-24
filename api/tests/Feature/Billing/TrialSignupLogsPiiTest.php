@@ -40,19 +40,25 @@ class TrialSignupLogsPiiTest extends TestCase
             'email' => $email,
         ]);
 
+        // Capture : `channel()` est mappé sur le spy lui-même — sans cela,
+        // `Log::channel('structured')` renverrait null et casserait la requête.
+        //
+        // Le spy est posé AVANT le premier appel. Depuis #9734, `SignupTrial`
+        // reçoit un `LoggerInterface` INJECTÉ, et non plus `Log::channel(...)`
+        // résolu à l'appel : l'instance est donc figée à la construction du
+        // contrôleur, elle-même mise en cache par la `Route` au premier appel.
+        // Un spy posé après coup n'atteignait plus l'Action — le test passait
+        // à côté du chemin qu'il doit surveiller (il ne voyait que le log
+        // `http_request` du middleware, d'où l'échec sur l'assertion de hash).
+        $log = Log::spy();
+        $log->shouldReceive('channel')->andReturnSelf();
+
         // 1er signup : crée la demande.
         $this->postJson('/api/v1/trial/signup', [
             'email' => $email,
             'company' => 'PII Trial Co',
             'country' => 'DZ',
         ])->assertStatus(200);
-
-        // Capture des logs du 2e appel (chemin « doublon d'email » — c'est CE
-        // chemin qui journalisait l'email en clair). `channel()` est mappé sur
-        // le spy lui-même : sans cela, `Log::channel('structured')` renverrait
-        // null et casserait la requête.
-        $log = Log::spy();
-        $log->shouldReceive('channel')->andReturnSelf();
 
         $this->postJson('/api/v1/trial/signup', [
             'email' => $email,

@@ -25,6 +25,10 @@ use App\Core\Auth\Infrastructure\Sms\LogOnlySmsCodeSender;
 use App\Core\Notifications\Contracts\InAppNotifier;
 use App\Core\Outbox\Contracts\OutboxPublisher;
 use App\Core\Outbox\Infrastructure\DatabaseOutboxPublisher;
+use App\Core\Solutions\Contracts\SolutionPermissionInstaller;
+use App\Core\Solutions\Contracts\VerticalPermissionCatalogue;
+use App\Core\Solutions\Infrastructure\Services\CatalogueVerticalPermissionCatalogue;
+use App\Core\Solutions\Infrastructure\Services\ManifestSolutionPermissionInstaller;
 use App\Core\Privacy\Infrastructure\Services\PiiRegistry;
 use App\Core\Security\InsecureConfigurationGuard;
 use App\Core\Tenant\TenantManager;
@@ -113,6 +117,22 @@ class AppServiceProvider extends ServiceProvider
         // Modules -> Core concrete, refusee par
         // IdentityLayerBoundariesArchitectureTest (#8717, ecart I-3).
         $this->app->bind(OutboxPublisher::class, DatabaseOutboxPublisher::class);
+
+        // #8717 (ecart I-3) / BOS-013 (#8200) — le catalogue des permissions
+        // VERTICALES et l'installeur de permissions de manifest sont consommes
+        // par les modules (HR pour la delegation, TravelAgency pour
+        // l'activation). Ils passent par le CONTRAT, jamais par la classe
+        // concrete : sans cela, chaque module importait une arete
+        // Modules -> Core concrete, refusee par
+        // IdentityLayerBoundariesArchitectureTest (#8717, ecart I-3).
+        $this->app->singleton(
+            VerticalPermissionCatalogue::class,
+            CatalogueVerticalPermissionCatalogue::class,
+        );
+        $this->app->singleton(
+            SolutionPermissionInstaller::class,
+            ManifestSolutionPermissionInstaller::class,
+        );
 
         // SUPERAPP-P0 — decouverte publique cross-verticale : agregateur de
         // lecture seule (aucune table, aucune migration). Chaque verticale
@@ -308,7 +328,7 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 try {
-                    return app(AccountStatusGuard::class)->tokenIsUsable($token);
+                    return app(AccountStatusGuard::class)->tokenIsUsableForRequest($token);
                 } catch (\Throwable $e) {
                     Log::channel('structured')->error('auth.token_check_failed', [
                         'token_id' => $token->id,

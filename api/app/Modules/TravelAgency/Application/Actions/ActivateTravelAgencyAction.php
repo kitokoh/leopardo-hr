@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Application\Actions;
 
-use App\Core\Solutions\SolutionPermissionInstaller;
+use App\Core\Solutions\Contracts\SolutionPermissionInstaller;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Modules\TravelAgency\Domain\Exceptions\TravelActivationFailedException;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
