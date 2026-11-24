@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.leopardo.leopardo_accounting"
+    namespace = "com.leopardo.marketing"
     // compileSdk = 37 (et non flutter.compileSdkVersion, encore à 36) : les AAR
     // de flutter_local_notifications 23 et androidx.core 1.19 déclarent
     // `minCompileSdk 37`, et :app:checkDebugAarMetadata refuse de compiler sinon.
@@ -23,7 +23,7 @@ android {
 
     defaultConfig {
         // Convention des apps Leopardo (miroir com.leopardo.rh / .employee / .manager / .platformadmin) — #4520.
-        applicationId = "com.leopardo.accounting"
+        applicationId = "com.leopardo.marketing"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         // #8774 (D-1) — sentry_flutter ^10 exige minSdk 26 : le defaut Flutter

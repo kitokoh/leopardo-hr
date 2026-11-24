@@ -1,4 +1,4 @@
-package com.leopardo.leopardo_pos_restaurant
+package com.leopardo.marketing
 
 import io.flutter.embedding.android.FlutterActivity
 

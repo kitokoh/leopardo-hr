@@ -39,8 +39,8 @@ provisionnés sur ce dépôt. Ils sont **hors périmètre** du lot et ne peuvent
 | `FIREBASE_EMPLOYEE_ANDROID_APP_ID` | App id Firebase de `leopardo_employee` | `1:NNNNNNNNNNNN:android:XXXXXXXXXXXXXXXXXXXXXX` |
 | `FIREBASE_MANAGER_ANDROID_APP_ID` | App id Firebase de `leopardo_manager` | idem |
 | `FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID` | App id Firebase de `leopardo_platform_admin` | idem |
-| `FIREBASE_APP_ID_HR` | App id Firebase de `leopardo_hr` | idem |
-| `FIREBASE_APP_ID` | App id de repli si aucun des quatre ci-dessus | idem |
+| `FIREBASE_APP_ID_HR` | App id Firebase de `leopardo_hr` — à créer (le canal vit aujourd'hui sur `FIREBASE_APP_ID`) | idem |
+| `FIREBASE_APP_ID` | App id Firebase de `leopardo_hr` (`com.leopardo.rh`) : **seule** connexion du canal `hr` aujourd'hui, lue en repli explicite de `FIREBASE_APP_ID_HR` (#9883). Aucune autre app ne le lit | idem |
 | `GOOGLE_SERVICES_JSON` | Contenu complet du fichier `google-services.json` (non committé, #1467) | JSON, une seule ligne |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | Compte de service pour la relecture de release | JSON (optionnel) |
 | `FIREBASE_READBACK_REQUIRED` | `true` pour rendre la relecture bloquante | `true` / `false` (optionnel) |

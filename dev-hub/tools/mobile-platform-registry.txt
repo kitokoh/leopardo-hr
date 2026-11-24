@@ -1,0 +1,33 @@
+# Registre des PLATEFORMES natives de chaque app mobile.
+#
+# Pourquoi ce fichier existe (#9883) : `leopardo_cameras` et
+# `leopardo_travel_agent` n'ont AUCUN dossier `ios/`, alors que les dix autres
+# apps en ont un. Sans registre, cette absence ne se distingue pas d'un oubli :
+# personne ne peut dire si l'app est volontairement Android-only ou si quelqu'un
+# a supprime la plateforme iOS. Meme doctrine que `mobile-layer-registry.txt` :
+# ce qui n'est pas declare n'existe pas, et une app ne peut pas heriter d'un
+# defaut par omission.
+#
+# Consequences opposees par `dev-hub/tools/check-mobile-app-identities.sh` :
+#   - une app sur disque absente de ce registre          -> echec
+#   - une plateforme declaree sans dossier correspondant -> echec
+#   - un dossier `ios/` present mais non declare         -> echec
+#   - `ios` declare sans `PRODUCT_BUNDLE_IDENTIFIER`     -> echec
+#
+# Format : <app> <plateformes separees par des virgules> [note]
+#   android,ios  app publiable sur les deux stores
+#   android      app Android uniquement — decision, pas oubli
+#
+# `leopardo_core` est un package partage, pas une app : il est exclu.
+
+leopardo_public            android,ios
+leopardo_employee          android,ios
+leopardo_manager           android,ios
+leopardo_hr                android,ios
+leopardo_accounting        android,ios  (README de l'app : Android diffuse en premier, iOS present)
+leopardo_marketing         android,ios
+leopardo_platform_admin    android,ios
+leopardo_pos_retail        android,ios
+leopardo_pos_restaurant    android,ios
+leopardo_cameras           android      (mur des cameras : tablette Android du tenant)
+leopardo_travel_agent      android      (guichet agence : terminal Android)
