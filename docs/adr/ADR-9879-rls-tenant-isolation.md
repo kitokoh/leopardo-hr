@@ -70,11 +70,78 @@ Tant que l'application se connecte en superuser, la politique existe mais **ne p
 | Étape | Périmètre | Statut |
 |---|---|---|
 | 1 | `bulk_payment_claims` (table neuve, aucun accès inter-tenant légitime) | ✅ fait |
-| 2 | Rôle applicatif non-superuser (`NOSUPERUSER NOBYPASSRLS`) | ⬜ prérequis bloquant |
+| 2 | Rôle applicatif non-superuser (`NOSUPERUSER NOBYPASSRLS`) | 🟨 **outillage livré (#9896)** — bascule à faire côté exploitation |
 | 3 | `pay_slips`, `payroll_runs` (données de paie) | ✅ fait (#9889) |
-| 4 | `employees` | ⬜ après inventaire des accès (jointures cross-schema) |
+| 4 | `employees` | ⬜ après inventaire des accès (jointures cross-schema) — #9897 |
 
 L'étape 2 est **bloquante** : sans elle, les étapes 3 et 4 donneraient une fausse impression de sécurité.
+
+## Étape 2 — outillage livré (#9896)
+
+L'ADR décrivait la bascule en prose. Rien n'était exécutable ni vérifiable : impossible de savoir, depuis l'application, si RLS protège réellement dans l'environnement courant. Trois livrables comblent ce trou.
+
+### 1. Sonde `php artisan tenant:rls-status`
+
+Interroge `pg_roles` et `pg_class`, et rend un verdict explicite :
+
+| Code | Signification |
+|---|---|
+| `0` | RLS effectif : rôle non-bypass, toutes les tables attendues couvertes |
+| `1` | RLS **annoncé mais bypassé** (rôle SUPERUSER ou BYPASSRLS) |
+| `2` | Rôle conforme, mais une table attendue n'est pas couverte |
+| `3` | Environnement non-PostgreSQL |
+
+`--json` pour un usage scripté, `--strict` pour faire échouer un pipeline de déploiement sur le code 1.
+
+Le code 1 n'est pas une erreur de la commande : **c'est le verdict**. Sur ce dépôt, il sort 1 — le rôle `leopardo` est SUPERUSER.
+
+### 2. Script de bascule `database/scripts/rls/create-app-role.sql`
+
+Idempotent, avec `ALTER DEFAULT PRIVILEGES` (sans quoi chaque nouvelle migration produirait une table illisible par le rôle applicatif — une panne au déploiement suivant, pas au moment de la bascule), les requêtes de vérification avant/après, et le rollback.
+
+Le script ne bascule **pas** `DB_USERNAME` : c'est une décision d'exploitation, réversible en changeant une variable d'environnement. Un script de migration ne doit pas pouvoir couper l'accès à la base d'un déploiement en cours.
+
+### 3. ⚠️ Défaut trouvé par la sonde, et corrigé
+
+La sonde a immédiatement révélé que `bulk_payment_claims` avait `ENABLE` + `FORCE` mais **aucune politique**, alors que la migration #9879 était enregistrée comme passée.
+
+Cause mesurée dans `shared_tenants.migrations` :
+
+```
+batch 2 : 2026_11_24_000200_9879_enable_rls_on_bulk_payment_claims
+batch 3 : 2026_11_24_000100_9874_create_bulk_payment_claims_table
+```
+
+La migration RLS a tourné **avant** la création de la table. Son garde `if (! schemaTableExists(...)) { return; }` l'a silencieusement ignorée, et Laravel l'a marquée « Ran » définitivement — aucune réexécution possible.
+
+Le garde est correct en soi (il rend la migration tolérante à l'ordre de déploiement), mais il est **silencieux** : l'état final est « migration passée, protection absente ». C'est exactement le mode de défaillance que cet ADR cherche à éliminer.
+
+Correction : migration de réparation `2026_11_24_000400_9896_repair_missing_rls_policies`, idempotente, qui réconcilie l'état voulu avec l'état réel. Elle ne remplace pas les migrations d'origine (qui restent la source de vérité de la définition) ; c'est un filet, et la sonde prouve le résultat.
+
+### 4. Défaut trouvé dans le test de #9879
+
+`RlsTenantIsolationTest::resetPolicy()` faisait `ALTER TABLE ... DISABLE ROW LEVEL SECURITY` en `tearDown`. Après chaque exécution de la suite, la table ressortait **ouverte** alors que la migration était enregistrée comme passée.
+
+Un test qui laisse la base moins protégée qu'il ne l'a trouvée est un défaut de sécurité silencieux : la suite passe au vert et la table reste ouverte. `resetPolicy()` **restaure** désormais l'état de la migration, et un test dédié le vérifie.
+
+### Bascule — commandes exactes
+
+```bash
+# 1) Vérifier l'état courant (doit sortir 1 aujourd'hui)
+php artisan tenant:rls-status
+
+# 2) Créer le rôle et poser les droits
+psql "$DATABASE_URL" -v app_password="'<secret>'" -f database/scripts/rls/create-app-role.sql
+
+# 3) Vérifier AVANT bascule : les 2 requêtes du script doivent renvoyer 0 ligne / toutes les tables couvertes
+# 4) Basculer
+#    DB_USERNAME=leopardo_app  DB_PASSWORD=<secret>  puis redéploiement
+
+# 5) Vérifier APRÈS bascule (doit sortir 0)
+php artisan tenant:rls-status --strict
+```
+
+**Rollback** : `DB_USERNAME=leopardo` puis redéploiement. Aucune migration à défaire — les politiques restent en place et redeviennent inertes. Aucun risque de perte de données.
 
 ## Étape 3 — inventaire des accès légitimes (#9889)
 

@@ -71,6 +71,51 @@ class RlsTenantIsolationTest extends TestCase
         parent::tearDown();
     }
 
+    /**
+     * #9896 — le nettoyage du test ne doit pas DÉSACTIVER la protection.
+     *
+     * Constat mesuré avec `php artisan tenant:rls-status` : après une
+     * exécution de cette suite, `bulk_payment_claims` ressortait avec
+     * `relrowsecurity = false` alors que la migration #9879 était enregistrée
+     * comme passée. Cause : `resetPolicy()` faisait
+     * `ALTER TABLE ... DISABLE ROW LEVEL SECURITY` en tearDown.
+     *
+     * Le test applique lui-même la politique (il n'utilise pas
+     * RefreshDatabase, il a besoin de vraies connexions multi-rôles), donc
+     * son nettoyage doit RESTAURER l'état de la migration — pas le supprimer.
+     * Un test qui laisse la base moins protégée qu'il ne l'a trouvée est un
+     * défaut de sécurité silencieux : la suite passe au vert et la table
+     * reste ouverte.
+     */
+    public function test_teardown_restores_the_migration_policy_instead_of_disabling_it(): void
+    {
+        // Simule ce que fait tearDown après un run : la politique doit être
+        // reposée, pas retirée.
+        $this->applyPolicy();
+        $this->resetPolicy();
+
+        $row = DB::selectOne(
+            'SELECT relrowsecurity, relforcerowsecurity FROM pg_class WHERE oid = to_regclass(?)',
+            ['shared_tenants.bulk_payment_claims']
+        );
+
+        expect((bool) $row->relrowsecurity)->toBeTrue(
+            'Après nettoyage, bulk_payment_claims doit rester protégée (RLS activée).'
+        );
+        expect((bool) $row->relforcerowsecurity)->toBeTrue(
+            'Après nettoyage, FORCE RLS doit rester posé.'
+        );
+
+        $policy = DB::selectOne(
+            'SELECT 1 AS ok FROM pg_policy WHERE polrelid = to_regclass(?) AND polname = ?',
+            ['shared_tenants.bulk_payment_claims', 'bulk_payment_claims_tenant_isolation']
+        );
+
+        expect($policy)->not->toBeNull(
+            'Après nettoyage, la politique de la migration doit être reposée.'
+        );
+    }
+
     public function test_rls_isolates_tenants_and_fails_closed_without_tenant(): void
     {
         $this->applyPolicy();
@@ -233,11 +278,26 @@ class RlsTenantIsolationTest extends TestCase
             SQL);
     }
 
+    /**
+     * #9896 — RESTAURE l'état de la migration #9879, ne le supprime pas.
+     *
+     * La version précédente faisait `DISABLE ROW LEVEL SECURITY` : après un
+     * run de la suite, la table restait ouverte alors que la migration était
+     * enregistrée comme passée. Le test applique la politique lui-même, donc
+     * son nettoyage doit laisser la table dans l'état attendu par la
+     * migration — c'est-à-dire protégée.
+     */
     private function resetPolicy(): void
     {
+        DB::statement('ALTER TABLE shared_tenants.bulk_payment_claims ENABLE ROW LEVEL SECURITY');
+        DB::statement('ALTER TABLE shared_tenants.bulk_payment_claims FORCE ROW LEVEL SECURITY');
         DB::statement('DROP POLICY IF EXISTS bulk_payment_claims_tenant_isolation ON shared_tenants.bulk_payment_claims');
-        DB::statement('ALTER TABLE shared_tenants.bulk_payment_claims NO FORCE ROW LEVEL SECURITY');
-        DB::statement('ALTER TABLE shared_tenants.bulk_payment_claims DISABLE ROW LEVEL SECURITY');
+        DB::statement(<<<'SQL'
+            CREATE POLICY bulk_payment_claims_tenant_isolation
+            ON shared_tenants.bulk_payment_claims
+            USING (company_id::text = current_setting('app.current_company_id', true))
+            WITH CHECK (company_id::text = current_setting('app.current_company_id', true))
+            SQL);
     }
 
     /**
