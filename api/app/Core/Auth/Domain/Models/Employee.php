@@ -146,6 +146,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
 
     /** @use HasFactory<\Database\Factories\EmployeeFactory> */
     use HasFactory;
+
     use Notifiable;
 
     protected $table = 'employees';
