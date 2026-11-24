@@ -37,6 +37,8 @@ servers:
 security:
 - BearerAuth: []
 tags:
+- name: Connectors
+  description: 'BC-14 INTEGRATION — connecteurs tenant : catalogue des surfaces externes (WordPress, Shopify, Facebook, TikTok Shop…), connexions chiffrees, test de connexion et bascule de statut. Lecture ouverte a tout manager, ecriture reservee au `principal`.'
 - name: CRM
   description: 'BC-CRM — gestion de la relation client : comptes, contacts, opportunites, pipelines, activites, segments, canaux de messagerie (WhatsApp, e-mail, SMS), automations et exports. Tenant-scoped, feature flag `crm`.'
 - name: RestaurantManager
@@ -3636,6 +3638,702 @@ paths:
                     type: array
         '404':
           $ref: '#/components/responses/Error404'
+  /admin/blog/posts:
+    get:
+      operationId: api_get_admin_blog_posts
+      tags: [Marketing]
+      summary: GET /admin/blog/posts
+      description: |
+        Articles du blog vitrine, cote Super Admin (#8708). Permission
+        `marketing_os.view`.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_admin_blog_posts
+      tags: [Marketing]
+      summary: POST /admin/blog/posts
+      description: |
+        Cree un article de blog. Permission `marketing_os.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `title`, `slug`, `body` (markdown), `status` et metadonnees SEO.
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /admin/blog/posts/{slug}:
+    delete:
+      operationId: api_delete_admin_blog_posts_slug
+      tags: [Marketing]
+      summary: DELETE /admin/blog/posts/{slug}
+      description: |
+        Supprime un article de blog. Permission `marketing_os.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_admin_blog_posts_slug
+      tags: [Marketing]
+      summary: GET /admin/blog/posts/{slug}
+      description: |
+        Detail d'un article de blog par son slug.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_admin_blog_posts_slug
+      tags: [Marketing]
+      summary: PUT /admin/blog/posts/{slug}
+      description: |
+        Met a jour un article de blog. Permission `marketing_os.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                Champs modifiables de l'article.
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /admin/companies/{company}/marketing-os/assets:
+    get:
+      operationId: api_get_admin_companies_company_marketing_os_assets
+      tags: [Marketing]
+      summary: GET /admin/companies/{company}/marketing-os/assets
+      description: |
+        Mediatheque marketing d'un tenant. Permission `marketing_os.view`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      operationId: api_post_admin_companies_company_marketing_os_assets
+      tags: [Marketing]
+      summary: POST /admin/companies/{company}/marketing-os/assets
+      description: |
+        Televerse un media marketing. Permission `marketing_os.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                Multipart : `file` et metadonnees (`title`, `kind`).
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /admin/companies/{company}/marketing-os/assets/{asset}:
+    get:
+      operationId: api_get_admin_companies_company_marketing_os_assets_asset
+      tags: [Marketing]
+      summary: GET /admin/companies/{company}/marketing-os/assets/{asset}
+      description: |
+        Detail d'un media marketing. Permission `marketing_os.view`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: asset
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /admin/companies/{company}/marketing-os/assets/{asset}/download:
+    get:
+      operationId: api_get_admin_companies_company_marketing_os_assets_asset_download
+      tags: [Marketing]
+      summary: GET /admin/companies/{company}/marketing-os/assets/{asset}/download
+      description: |
+        Telecharge le binaire d'un media marketing (#8675 : la mediatheque etait en
+        ecriture seule avant cette route).
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: asset
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /admin/companies/{company}/marketing-os/assets/{asset}/publications:
+    get:
+      operationId: api_get_admin_companies_company_marketing_os_assets_asset_publications
+      tags: [Marketing]
+      summary: GET /admin/companies/{company}/marketing-os/assets/{asset}/publications
+      description: |
+        Publications d'un media. Permission `marketing_os.view`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: asset
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /admin/companies/{company}/marketing-os/campaigns:
+    get:
+      operationId: api_get_admin_companies_company_marketing_os_campaigns
+      tags: [Marketing]
+      summary: GET /admin/companies/{company}/marketing-os/campaigns
+      description: |
+        Campagnes marketing d'un tenant. Permission `marketing_os.view`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      operationId: api_post_admin_companies_company_marketing_os_campaigns
+      tags: [Marketing]
+      summary: POST /admin/companies/{company}/marketing-os/campaigns
+      description: |
+        Cree une campagne. Permission `marketing_os.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `name`, `objective`, periode et canaux.
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /admin/companies/{company}/marketing-os/ideas:
+    get:
+      operationId: api_get_admin_companies_company_marketing_os_ideas
+      tags: [Marketing]
+      summary: GET /admin/companies/{company}/marketing-os/ideas
+      description: |
+        Idees de contenu d'un tenant. Permission `marketing_os.view`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      operationId: api_post_admin_companies_company_marketing_os_ideas
+      tags: [Marketing]
+      summary: POST /admin/companies/{company}/marketing-os/ideas
+      description: |
+        Cree une idee de contenu. Permission `marketing_os.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `title`, `angle`, `channel` et notes.
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /admin/companies/{company}/marketing-os/ideas/{idea}:
+    patch:
+      operationId: api_patch_admin_companies_company_marketing_os_ideas_idea
+      tags: [Marketing]
+      summary: PATCH /admin/companies/{company}/marketing-os/ideas/{idea}
+      description: |
+        Met a jour une idee de contenu. Permission `marketing_os.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: idea
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                Champs modifiables de l'idee (`title`, `angle`, `status`).
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /admin/companies/{company}/marketing-os/ideas/{idea}/promote:
+    post:
+      operationId: api_post_admin_companies_company_marketing_os_ideas_idea_promote
+      tags: [Marketing]
+      summary: POST /admin/companies/{company}/marketing-os/ideas/{idea}/promote
+      description: |
+        Promeut une idee en campagne. Permission `marketing_os.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: idea
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /admin/companies/{company}/marketing-os/overview:
+    get:
+      operationId: api_get_admin_companies_company_marketing_os_overview
+      tags: [Marketing]
+      summary: GET /admin/companies/{company}/marketing-os/overview
+      description: |
+        Vue d'ensemble Marketing OS d'un tenant. Permission `marketing_os.view`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /admin/companies/{company}/marketing-os/publications:
+    get:
+      operationId: api_get_admin_companies_company_marketing_os_publications
+      tags: [Marketing]
+      summary: GET /admin/companies/{company}/marketing-os/publications
+      description: |
+        Publications marketing d'un tenant. Permission `marketing_os.view`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      operationId: api_post_admin_companies_company_marketing_os_publications
+      tags: [Marketing]
+      summary: POST /admin/companies/{company}/marketing-os/publications
+      description: |
+        Cree une publication. Permission `marketing_os.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `asset_id`, `platform`, `scheduled_at` et texte de publication.
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /admin/companies/{company}/marketing-os/publications/{publication}/stats/refresh:
+    post:
+      operationId: api_post_admin_companies_company_marketing_os_publications_publication_stats_refresh
+      tags: [Marketing]
+      summary: POST /admin/companies/{company}/marketing-os/publications/{publication}/stats/refresh
+      description: |
+        Remonte les statistiques REELLES de la plateforme de publication (#8530).
+        Aucune valeur inventee : « indisponible » est un etat explicite.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: publication
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /admin/companies/{company}/marketing-os/publications/{publication}/status:
+    patch:
+      operationId: api_patch_admin_companies_company_marketing_os_publications_publication_status
+      tags: [Marketing]
+      summary: PATCH /admin/companies/{company}/marketing-os/publications/{publication}/status
+      description: |
+        Change le statut d'une publication (brouillon → planifiee → en ligne).
+        Permission `marketing_os.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      - name: publication
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `status` cible de la publication.
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /admin/companies/{company}/marketing-os/publishing-capabilities:
+    get:
+      operationId: api_get_admin_companies_company_marketing_os_publishing_capabilities
+      tags: [Marketing]
+      summary: GET /admin/companies/{company}/marketing-os/publishing-capabilities
+      description: |
+        Matrice des capacites REELLES de publication par plateforme (#8532) :
+        quelles plateformes autorisent le direct, et pourquoi les autres restent en
+        mode assiste.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /admin/companies/{company}/marketing-os/visibility-objectives:
+    get:
+      operationId: api_get_admin_companies_company_marketing_os_visibility_objectives
+      tags: [Marketing]
+      summary: GET /admin/companies/{company}/marketing-os/visibility-objectives
+      description: |
+        Objectifs de visibilite SEO/SEA/AEO/GEO d'un tenant (#8531).
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      operationId: api_post_admin_companies_company_marketing_os_visibility_objectives
+      tags: [Marketing]
+      summary: POST /admin/companies/{company}/marketing-os/visibility-objectives
+      description: |
+        Cree un objectif de visibilite. Permission `marketing_os.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: company
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `objective_type` (SEO/SEA/AEO/GEO), cible et echeance.
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /admin/dashboard/activities:
     get:
       operationId: api_get_admin_dashboard_activities
@@ -5356,6 +6054,23 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /admin/solutions/survey-stats:
+    get:
+      operationId: api_get_admin_solutions_survey_stats
+      tags: [Platform Admin]
+      summary: GET /admin/solutions/survey-stats
+      description: |
+        Agregats des leads `solution_survey` (table `marketing_leads`) : conversion
+        du wizard vitrine par solution. Permission `crm.view`.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /admin/tax-slabs:
     get:
       tags:
@@ -12975,6 +13690,23 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /company-integration-requests/manage:
+    get:
+      operationId: api_get_company_integration_requests_manage
+      tags: [Me]
+      summary: GET /company-integration-requests/manage
+      description: |
+        Demandes d'integration d'utilisateurs dans l'entreprise, cote manager/RH
+        (#5540).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /company-integration-requests/{id}/accept:
     post:
       operationId: api_post_company_integration_requests_by_id_accept
@@ -13611,6 +14343,208 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           description: Non-principal
+  /connectors/catalog:
+    get:
+      operationId: api_get_connectors_catalog
+      tags: [Connectors]
+      summary: GET /connectors/catalog
+      description: |
+        Catalogue des connecteurs disponibles (surfaces externes supportees, champs
+        attendus, capacites). Lecture ouverte a tout manager du tenant.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /connectors/connections:
+    get:
+      operationId: api_get_connectors_connections
+      tags: [Connectors]
+      summary: GET /connectors/connections
+      description: |
+        Connexions du tenant. Les secrets sont WRITE-ONLY : la reponse expose un
+        masque, jamais la valeur stockee.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_connectors_connections
+      tags: [Connectors]
+      summary: POST /connectors/connections
+      description: |
+        Cree une connexion vers une surface externe. Reserve au `principal` :
+        connecter un compte externe engage l'entreprise (#7727). Les secrets sont
+        chiffres au repos et ne sont jamais relus.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `connector_key` (cle du catalogue), `label`, et `credentials` (objet libre
+                propre au connecteur). Les secrets sont chiffres au repos et ne sont jamais
+                relus.
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /connectors/connections/{id}:
+    delete:
+      operationId: api_delete_connectors_connections_id
+      tags: [Connectors]
+      summary: DELETE /connectors/connections/{id}
+      description: |
+        Supprime une connexion et ses secrets. Irreversible.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      operationId: api_patch_connectors_connections_id
+      tags: [Connectors]
+      summary: PATCH /connectors/connections/{id}
+      description: |
+        Met a jour une connexion. Un secret absent du payload conserve la valeur
+        existante ; un secret present la remplace.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `label` et/ou `credentials`. Un secret absent conserve la valeur existante ;
+                un secret present la remplace.
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /connectors/connections/{id}/status:
+    patch:
+      operationId: api_patch_connectors_connections_id_status
+      tags: [Connectors]
+      summary: PATCH /connectors/connections/{id}/status
+      description: |
+        Active ou desactive une connexion sans la supprimer.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `status` : `active` ou `disabled`.
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /connectors/connections/{id}/test:
+    post:
+      operationId: api_post_connectors_connections_id_test
+      tags: [Connectors]
+      summary: POST /connectors/connections/{id}/test
+      description: |
+        Teste la connexion en appelant reellement la surface externe. Le resultat
+        est journalise ; un echec ne desactive pas la connexion.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /connectors/overview:
+    get:
+      operationId: api_get_connectors_overview
+      tags: [Connectors]
+      summary: GET /connectors/overview
+      description: |
+        Vue d'ensemble : connecteurs actifs, en erreur et jamais configures.
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /contracts:
     get:
       operationId: api_get_contracts
@@ -24201,6 +25135,67 @@ paths:
           description: Manager principal du tenant requis
         '422':
           description: Type de ressource inconnu, niveau invalide, ou ressource inexistante dans cette entreprise (RESOURCE_TYPE_UNKNOWN / RESOURCE_NOT_FOUND)
+  /employees/{employee}/vertical-permissions:
+    get:
+      operationId: api_get_employees_employee_vertical_permissions
+      tags: [Employees]
+      summary: GET /employees/{employee}/vertical-permissions
+      description: |
+        Permissions verticales effectives d'un employe (verticales activees pour le
+        tenant, croisees avec les droits de l'employe).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_employees_employee_vertical_permissions
+      tags: [Employees]
+      summary: PUT /employees/{employee}/vertical-permissions
+      description: |
+        Remplace les permissions verticales d'un employe. Une verticale non activee
+        pour le tenant est refusee en 422.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: employee
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                Liste des verticales autorisees pour l'employe. Une verticale non activee
+                pour le tenant est refusee en 422.
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /establishments:
     get:
       operationId: api_get_establishments
@@ -39987,6 +40982,129 @@ paths:
           $ref: '#/components/responses/Error401'
         '404':
           $ref: '#/components/responses/Error404'
+  /kiosks/{deviceCode}/enrollments:
+    post:
+      operationId: api_post_kiosks_devicecode_enrollments
+      tags: [Employees]
+      summary: POST /kiosks/{deviceCode}/enrollments
+      description: |
+        Demarre l'enrolement biometrique d'un employe sur une borne. Retourne un
+        identifiant d'enrolement a activer.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: deviceCode
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `employee_id` et gabarit biometrique capture par la borne.
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /kiosks/{deviceCode}/enrollments/status:
+    get:
+      operationId: api_get_kiosks_devicecode_enrollments_status
+      tags: [Employees]
+      summary: GET /kiosks/{deviceCode}/enrollments/status
+      description: |
+        Etat des enrolements d'une borne (en attente, actifs, revoques).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: deviceCode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /kiosks/{deviceCode}/enrollments/{enrollment}/activate:
+    post:
+      operationId: api_post_kiosks_devicecode_enrollments_enrollment_activate
+      tags: [Employees]
+      summary: POST /kiosks/{deviceCode}/enrollments/{enrollment}/activate
+      description: |
+        Active un enrolement apres verification du gabarit biometrique.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: deviceCode
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: enrollment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /kiosks/{deviceCode}/enrollments/{enrollment}/revoke:
+    post:
+      operationId: api_post_kiosks_devicecode_enrollments_enrollment_revoke
+      tags: [Employees]
+      summary: POST /kiosks/{deviceCode}/enrollments/{enrollment}/revoke
+      description: |
+        Revoque un enrolement : le gabarit est supprime, l'employe ne peut plus
+        pointer sur cette borne.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: deviceCode
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: enrollment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /kiosks/{deviceCode}/leave-balance:
     post:
       operationId: api_post_kiosks_by_deviceCode_leave_balance
@@ -40122,6 +41240,31 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Validation422'
+  /kiosks/{deviceCode}/sync-status:
+    get:
+      operationId: api_get_kiosks_devicecode_sync_status
+      tags: [Employees]
+      summary: GET /kiosks/{deviceCode}/sync-status
+      description: |
+        Etat de synchronisation d'une borne de pointage : derniere remontee, file
+        d'attente locale, enrolements en cours.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: deviceCode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /kiosks/{deviceCode}/verify-face:
     post:
       operationId: api_post_kiosks_by_deviceCode_verify_face
@@ -40737,6 +41880,34 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /marketing/ai/suggest-production-brief:
+    post:
+      operationId: api_post_marketing_ai_suggest_production_brief
+      tags: [Marketing]
+      summary: POST /marketing/ai/suggest-production-brief
+      description: |
+        Propose un brief de production marketing a partir d'un objectif. Retourne
+        une suggestion : rien n'est publie ni facture.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `objective` (texte libre) et contexte optionnel (verticale, audience).
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /marketing/leads:
     post:
       operationId: api_post_marketing_leads
@@ -47233,6 +48404,202 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Validation422'
+  /platform/connectors/catalog:
+    get:
+      operationId: api_get_platform_connectors_catalog
+      tags: [Connectors]
+      summary: GET /platform/connectors/catalog
+      description: |
+        Catalogue des connecteurs, vu plateforme (toutes surfaces, y compris celles
+        non proposees aux tenants).
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /platform/connectors/connections:
+    get:
+      operationId: api_get_platform_connectors_connections
+      tags: [Connectors]
+      summary: GET /platform/connectors/connections
+      description: |
+        Connexions de TOUS les tenants. Les secrets restent write-only : la reponse
+        expose un masque.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_platform_connectors_connections
+      tags: [Connectors]
+      summary: POST /platform/connectors/connections
+      description: |
+        Cree une connexion au nom d'un tenant (support / onboarding).
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `company_id`, `connector_key`, `label` et `credentials`.
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /platform/connectors/connections/{id}:
+    delete:
+      operationId: api_delete_platform_connectors_connections_id
+      tags: [Connectors]
+      summary: DELETE /platform/connectors/connections/{id}
+      description: |
+        Supprime une connexion d'un tenant. Irreversible.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      operationId: api_patch_platform_connectors_connections_id
+      tags: [Connectors]
+      summary: PATCH /platform/connectors/connections/{id}
+      description: |
+        Met a jour une connexion d'un tenant.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `label` et/ou `credentials`.
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /platform/connectors/connections/{id}/status:
+    patch:
+      operationId: api_patch_platform_connectors_connections_id_status
+      tags: [Connectors]
+      summary: PATCH /platform/connectors/connections/{id}/status
+      description: |
+        Active ou desactive une connexion d'un tenant.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `status` : `active` ou `disabled`.
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /platform/connectors/connections/{id}/test:
+    post:
+      operationId: api_post_platform_connectors_connections_id_test
+      tags: [Connectors]
+      summary: POST /platform/connectors/connections/{id}/test
+      description: |
+        Teste une connexion d'un tenant depuis la console plateforme.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /platform/connectors/overview:
+    get:
+      operationId: api_get_platform_connectors_overview
+      tags: [Connectors]
+      summary: GET /platform/connectors/overview
+      description: |
+        Vue d'ensemble plateforme : connexions par tenant, taux d'echec des tests,
+        connecteurs les plus utilises.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /platform/country-defaults:
     get:
       operationId: api_get_platform_country_defaults
@@ -47357,6 +48724,73 @@ paths:
           description: Synchronisation déclenchée
         '401':
           $ref: '#/components/responses/Error401'
+  /platform/feature-kill-switches:
+    get:
+      operationId: api_get_platform_feature_kill_switches
+      tags: [Platform Admin]
+      summary: GET /platform/feature-kill-switches
+      description: |
+        Liste les interrupteurs d'urgence actifs. Permission `killswitch.manage`.
+      security:
+      - SuperAdminBearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_platform_feature_kill_switches
+      tags: [Platform Admin]
+      summary: POST /platform/feature-kill-switches
+      description: |
+        Active un interrupteur d'urgence : la fonctionnalite est coupee pour tous
+        les tenants immediatement. Geste audite.
+      security:
+      - SuperAdminBearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                `key` de la fonctionnalite, `reason` et duree optionnelle.
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /platform/feature-kill-switches/{key}:
+    delete:
+      operationId: api_delete_platform_feature_kill_switches_key
+      tags: [Platform Admin]
+      summary: DELETE /platform/feature-kill-switches/{key}
+      description: |
+        Desactive un interrupteur d'urgence et retablit la fonctionnalite.
+      security:
+      - SuperAdminBearerAuth: []
+      parameters:
+      - name: key
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /platform/growth/history:
     get:
       operationId: api_get_platform_growth_history
@@ -52417,6 +53851,154 @@ paths:
           description: Boutique publique + categories publiques
         '404':
           $ref: '#/components/responses/Error404'
+  /public/restaurant/kiosk/menu:
+    get:
+      operationId: api_get_public_restaurant_kiosk_menu
+      tags: [Restaurant]
+      summary: GET /public/restaurant/kiosk/menu
+      description: |
+        Menu du kiosque libre-service (meme jeton boutique que la boutique web,
+        RESTO-807).
+      security: []
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/restaurant/kiosk/orders:
+    post:
+      operationId: api_post_public_restaurant_kiosk_orders
+      tags: [Restaurant]
+      summary: POST /public/restaurant/kiosk/orders
+      description: |
+        Commande passee depuis le kiosque libre-service.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                Lignes de commande saisies au kiosque et numero de table.
+      responses:
+        '201':
+          description: Ressource creee
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /public/restaurant/kiosk/orders/{reference}:
+    get:
+      operationId: api_get_public_restaurant_kiosk_orders_reference
+      tags: [Restaurant]
+      summary: GET /public/restaurant/kiosk/orders/{reference}
+      description: |
+        Suivi d'une commande kiosque par sa reference.
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/restaurant/shop/menu:
+    get:
+      operationId: api_get_public_restaurant_shop_menu
+      tags: [Restaurant]
+      summary: GET /public/restaurant/shop/menu
+      description: |
+        Menu public de la boutique restaurant. Tenant resolu par le jeton signe
+        (`restaurant.public.shop`), hook anti-bot CAPTCHA configurable.
+      security: []
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/restaurant/shop/orders:
+    post:
+      operationId: api_post_public_restaurant_shop_orders
+      tags: [Restaurant]
+      summary: POST /public/restaurant/shop/orders
+      description: |
+        Commande en ligne publique. Les prix sont recalcules cote serveur ; un
+        article indisponible est refuse en 422.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                Lignes de commande (`product_id`, `quantity`), mode de service (`dine_in` |
+                `takeaway` | `delivery`) et coordonnees. Les prix sont recalcules cote
+                serveur.
+      responses:
+        '201':
+          description: Ressource creee
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /public/restaurant/shop/orders/{reference}:
+    get:
+      operationId: api_get_public_restaurant_shop_orders_reference
+      tags: [Restaurant]
+      summary: GET /public/restaurant/shop/orders/{reference}
+      description: |
+        Suivi d'une commande publique par sa reference.
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/restaurant/shop/orders/{reference}/pay:
+    post:
+      operationId: api_post_public_restaurant_shop_orders_reference_pay
+      tags: [Restaurant]
+      summary: POST /public/restaurant/shop/orders/{reference}/pay
+      description: |
+        Ouverture du paiement en ligne d'une commande publique. Le statut de la
+        commande n'est pose qu'au callback signe.
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                Moyen de paiement souhaite pour la commande.
+      responses:
+        '201':
+          description: Ressource creee
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /public/restaurants:
     get:
       operationId: api_get_public_restaurants
@@ -53309,6 +54891,77 @@ paths:
                               enum: [free, reserved, sold, blocked, unavailable]
         '404':
           $ref: '#/components/responses/Error404'
+  /public/travel/payments/initiate:
+    post:
+      operationId: api_post_public_travel_payments_initiate
+      tags: [Travel]
+      summary: POST /public/travel/payments/initiate
+      description: |
+        Ouverture du tunnel de paiement en ligne d'une reservation publique.
+        Retourne l'URL de la passerelle ; le statut n'est jamais pose ici.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                Reference de reservation et moyen de paiement souhaite.
+      responses:
+        '201':
+          description: Ressource creee
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /public/travel/shop/bookings:
+    post:
+      operationId: api_post_public_travel_shop_bookings
+      tags: [Travel]
+      summary: POST /public/travel/shop/bookings
+      description: |
+        Creation d'une reservation depuis la boutique publique. Le prix est
+        recalcule cote serveur : un montant envoye par le client est ignore.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                Trajet, date, nombre de passagers et coordonnees du passager. Le prix est
+                recalcule cote serveur.
+      responses:
+        '201':
+          description: Ressource creee
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /public/travel/shop/bookings/{reference}:
+    get:
+      operationId: api_get_public_travel_shop_bookings_reference
+      tags: [Travel]
+      summary: GET /public/travel/shop/bookings/{reference}
+      description: |
+        Suivi d'une reservation par sa reference. Aucune donnee d'un autre passager
+        n'est exposee.
+      security: []
+      parameters:
+      - name: reference
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
   /public/travel/shop/bookings/{reference}/cancel:
     post:
       operationId: api_post_public_travel_shop_bookings_by_reference_cancel
@@ -53355,6 +55008,60 @@ paths:
         '422':
           $ref: '#/components/responses/Error422'
 
+  /public/travel/shop/trips:
+    get:
+      operationId: api_get_public_travel_shop_trips
+      tags: [Travel]
+      summary: GET /public/travel/shop/trips
+      description: |
+        Recherche publique de trajets. Tenant resolu par le jeton de boutique signe
+        (`travel.public.shop`), throttling `shop-public`. Aucun compte requis.
+      security: []
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/travel/shop/trips/{travelTrip}:
+    get:
+      operationId: api_get_public_travel_shop_trips_traveltrip
+      tags: [Travel]
+      summary: GET /public/travel/shop/trips/{travelTrip}
+      description: |
+        Detail public d'un trajet publie. 404 fail-closed si le trajet n'est pas
+        publie ou n'appartient pas au tenant du jeton.
+      security: []
+      parameters:
+      - name: travelTrip
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
+  /public/travel/tickets/{ticket}/pdf:
+    get:
+      operationId: api_get_public_travel_tickets_ticket_pdf
+      tags: [Travel]
+      summary: GET /public/travel/tickets/{ticket}/pdf
+      description: |
+        E-billet PDF d'une reservation payee. 404 fail-closed si le billet n'est pas
+        emis.
+      security: []
+      parameters:
+      - name: ticket
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
   /public/vitrine/robots.txt:
     get:
       operationId: api_get_public_vitrine_robots_txt
@@ -53422,6 +55129,31 @@ paths:
                 type: object
         '404':
           description: Slug inconnu, societe suspendue ou vitrine non publiee
+  /public/vitrine/{slug}/media/{media}:
+    get:
+      operationId: api_get_public_vitrine_slug_media_media
+      tags: [Pages]
+      summary: GET /public/vitrine/{slug}/media/{media}
+      description: |
+        Binaire public d'un media d'une vitrine PUBLIEE. Brouillon → 404 ; apercu
+        prive via `?token=` (non cache).
+      security: []
+      parameters:
+      - name: slug
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: media
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
   /public/vtc/marketplace/estimate:
     post:
       operationId: api_post_public_vtc_marketplace_estimate
@@ -57407,6 +59139,29 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /restaurant/payments/{payment}/callback:
+    post:
+      operationId: api_post_restaurant_payments_payment_callback
+      tags: [Restaurant]
+      summary: POST /restaurant/payments/{payment}/callback
+      description: |
+        Callback signe de confirmation mobile money de la verticale restaurant.
+        Signature HMAC par tenant, fail-closed ; le tenant est resolu depuis le
+        payload signe puis pose via TenantManager (#5272).
+      security: []
+      parameters:
+      - name: payment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          description: Signature ou jeton invalide (fail-closed).
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/ping:
     get:
       operationId: api_get_restaurant_ping
@@ -60145,6 +61900,28 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/webhooks/delivery-apps/{provider}:
+    post:
+      operationId: api_post_restaurant_webhooks_delivery_apps_provider
+      tags: [Restaurant]
+      summary: POST /restaurant/webhooks/delivery-apps/{provider}
+      description: |
+        Webhook entrant d'une application de livraison (Uber Eats, Glovo…).
+        Signature HMAC fail-closed par adaptateur, secret par tenant.
+      security: []
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          description: Signature ou jeton invalide (fail-closed).
         '422':
           $ref: '#/components/responses/Error422'
   /restaurant/zones:
@@ -63363,6 +65140,75 @@ paths:
           description: Vitrine deja existante
         '403':
           description: Role insuffisant ou feature flag desactive
+  /showcase/media:
+    get:
+      operationId: api_get_showcase_media
+      tags: [Pages]
+      summary: GET /showcase/media
+      description: |
+        Liste les medias de la vitrine du tenant. Necessite le feature flag
+        `company_showcase` (403 sinon).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_showcase_media
+      tags: [Pages]
+      summary: POST /showcase/media
+      description: |
+        Televerse un media de vitrine (multipart). Edition reservee a `principal` et
+        `rh`.
+      security:
+      - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                Multipart : `file` (image ou video) et `alt` optionnel.
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /showcase/media/{media}:
+    delete:
+      operationId: api_delete_showcase_media_media
+      tags: [Pages]
+      summary: DELETE /showcase/media/{media}
+      description: |
+        Supprime un media de vitrine. Un media reference par une section publiee est
+        refuse en 409.
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: media
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /showcase/preview-token:
     post:
       operationId: api_post_showcase_preview_token
@@ -64133,6 +65979,89 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Validation422'
+  /solutions:
+    get:
+      operationId: api_get_solutions
+      tags: [Catalog]
+      summary: GET /solutions
+      description: |
+        Catalogue public des solutions sectorielles. Aucune authentification :
+        pre-qualification avant inscription.
+      security: []
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
+  /solutions/{code}/pack:
+    get:
+      operationId: api_get_solutions_code_pack
+      tags: [Catalog]
+      summary: GET /solutions/{code}/pack
+      description: |
+        Pack de presentation telechargeable d'une solution.
+      security: []
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
+  /solutions/{code}/survey:
+    get:
+      operationId: api_get_solutions_code_survey
+      tags: [Catalog]
+      summary: GET /solutions/{code}/survey
+      description: |
+        Questions du questionnaire de pre-qualification d'une solution.
+      security: []
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      operationId: api_post_solutions_code_survey
+      tags: [Catalog]
+      summary: POST /solutions/{code}/survey
+      description: |
+        Soumet les reponses et retourne la solution recommandee par le moteur de
+        regles. Throttle strict (10/min) : moteur CPU pur, mais gratuit.
+      security: []
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+              description: |
+                Reponses au questionnaire (objet cle → valeur). Le moteur de regles retourne
+                la solution recommandee.
+      responses:
+        '201':
+          description: Ressource creee
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /sso/configure:
     post:
       operationId: api_post_sso_configure
@@ -67381,6 +69310,22 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  /travel/carrier-sync/trips:
+    post:
+      operationId: api_post_travel_carrier_sync_trips
+      tags: [Travel]
+      summary: POST /travel/carrier-sync/trips
+      description: |
+        API entrante de synchronisation des trajets transporteurs. Jeton
+        `X-Carrier-Token`, upsert idempotent par cle externe.
+      security: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          description: Signature ou jeton invalide (fail-closed).
+        '422':
+          $ref: '#/components/responses/Error422'
   /travel/carriers:
     get:
       operationId: api_get_travel_carriers
@@ -70528,6 +72473,22 @@ paths:
       responses:
         '201':
           description: Ressource creee
+        '422':
+          $ref: '#/components/responses/Error422'
+  /travel/payments/callback:
+    post:
+      operationId: api_post_travel_payments_callback
+      tags: [Travel]
+      summary: POST /travel/payments/callback
+      description: |
+        Callback de la passerelle de paiement TravelAgency. Signature HMAC verifiee
+        dans le controleur, idempotent. Tenant resolu depuis le payload signe.
+      security: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          description: Signature ou jeton invalide (fail-closed).
         '422':
           $ref: '#/components/responses/Error422'
   /travel/payments/initiate:

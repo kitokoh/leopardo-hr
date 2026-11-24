@@ -92,7 +92,14 @@ final class TransitionOpportunityStageAction
                 // Journal append-only : chaque ligne raconte un deplacement.
                 // On horodate, sinon un retour en arriere et un aller simple
                 // seraient indistinguables.
-                $entry = sprintf('[%s] %s -> %s (%s)', now()->toIso8601String(), $from, $to, $actor->id);
+                //
+                // La fleche est U+2192 (`→`), pas `->` : c'est le separateur
+                // que la timeline du compte et les exports lisent, et le test
+                // `test_the_previous_stage_is_journaled_in_notes_and_timeline`
+                // l'exige. Les deux representations coexistaient (notes en
+                // ASCII, activite en ASCII) et rendaient le journal illisible
+                // a la relecture.
+                $entry = sprintf('[%s] %s → %s (%s)', now()->toIso8601String(), $from, $to, $actor->id);
 
                 if (! empty($data['lost_reason'])) {
                     // La raison de la perte voyage AVEC le deplacement : c'est
@@ -210,7 +217,7 @@ final class TransitionOpportunityStageAction
                 'opportunity_id' => $opportunity->id,
                 'type' => CrmActivity::TYPE_STAGE_CHANGED,
                 'subject' => __('crm.opportunities.activity_stage_changed'),
-                'description' => sprintf('%s -> %s', $from, $to),
+                'description' => sprintf('%s → %s', $from, $to),
                 'occurred_at' => now(),
                 'created_by' => $actor->id,
             ]);

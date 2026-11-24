@@ -17,53 +17,18 @@
 #   `{*_consent_given}`, documente sous PATCH/PUT) n'a pas de contrat publie :
 #   il reste un gap interne tenant, comme les 633 entrees historiques issues de
 #   BC-24 (#6818). Publication du contrat suivie par l'EPIC #6528.
-DELETE /v1/platform/feature-kill-switches/{param}
 # documentées dans api/openapi.yaml (chantier OpenAPI #6815) — remédiation à
 # ÉTAT 2026-08-18 : 744/744 routes couvertes — allowlist VIDE.
 # fait échouer la CI. Ajouter une route ici UNIQUEMENT avec justification.
-GET /v1/admin/solutions/survey-stats
-GET /v1/company-integration-requests/manage
-GET /v1/kiosks/{param}/enrollments/status
-GET /v1/kiosks/{param}/sync-status
-GET /v1/platform/feature-kill-switches
-GET /v1/public/restaurant/kiosk/menu
-GET /v1/public/restaurant/kiosk/orders/{param}
-GET /v1/public/restaurant/shop/menu
-GET /v1/public/restaurant/shop/orders/{param}
-GET /v1/public/travel/shop/bookings/{param}
-GET /v1/public/travel/shop/trips
-GET /v1/public/travel/shop/trips/{param}
-GET /v1/public/travel/tickets/{param}/pdf
-GET /v1/solutions
-GET /v1/solutions/{param}/pack
-GET /v1/solutions/{param}/survey
 # Les verbes d'action PUT/PATCH dépréciés (#4930) sont désormais documentés
 # openapi-coverage-allowlist.txt — gaps documentés (exclusions volontaires)
 # (Périmètre CRM V0-08 « Publier les contrats API et OpenAPI du CRM client »).
-POST /v1/kiosks/{param}/enrollments
-POST /v1/kiosks/{param}/enrollments/{param}/activate
-POST /v1/kiosks/{param}/enrollments/{param}/revoke
-POST /v1/platform/feature-kill-switches
-POST /v1/public/restaurant/kiosk/orders
-POST /v1/public/restaurant/shop/orders
-POST /v1/public/restaurant/shop/orders/{param}/pay
-POST /v1/public/travel/payments/initiate
-POST /v1/public/travel/shop/bookings
-POST /v1/restaurant/payments/{param}/callback
-POST /v1/restaurant/webhooks/delivery-apps/{param}
-POST /v1/solutions/{param}/survey
-POST /v1/travel/carrier-sync/trips
-POST /v1/travel/payments/callback
 # purger lors de la régénération d'openapi.yaml.
 # BC-27 SHOWCASE — V-MEDIA (#6872) : médias de vitrine (upload privé +
 # service public du binaire). Le contrat OpenAPI (api/openapi.yaml) est
 # généré par Scramble ; ces 4 opérations seront documentées à la prochaine
 # régénération (SDK/miroir inclus), en attente ici comme gap connu
 # (même règle que les gaps #1473).
-GET /v1/showcase/media
-POST /v1/showcase/media
-DELETE /v1/showcase/media/{param}
-GET /v1/public/vitrine/{param}/media/{param}
 
 # #8381 — remédiation close le 2026-10-25 (lot 4) : les 9 routes CRM de ce
 # drift (leads/accounts/contacts/imports/duplicates) sont documentées dans
@@ -79,48 +44,23 @@ GET /v1/public/vitrine/{param}/media/{param}
 # (ex. CRM client campagnes #5724). Ces routes administrent le tenant CIBLÉ
 # dans son propre contexte (TenantManager::withinTenant) et n'exposent que des
 # données marketing du tenant, jamais de secret.
-GET /v1/admin/companies/{param}/marketing-os/overview
-GET /v1/admin/companies/{param}/marketing-os/campaigns
-POST /v1/admin/companies/{param}/marketing-os/campaigns
-GET /v1/admin/companies/{param}/marketing-os/ideas
-POST /v1/admin/companies/{param}/marketing-os/ideas
-PATCH /v1/admin/companies/{param}/marketing-os/ideas/{param}
-POST /v1/admin/companies/{param}/marketing-os/ideas/{param}/promote
-GET /v1/admin/companies/{param}/marketing-os/assets
-POST /v1/admin/companies/{param}/marketing-os/assets
-GET /v1/admin/companies/{param}/marketing-os/assets/{param}/publications
 # #8675 — la mediatheque etait en ecriture seule : le binaire vivait sur le
 # disk prive mais aucune route ne le relisait. Ajout du detail d'une ressource
 # et du telechargement. Les deux routes resolvent la ressource DANS le contexte
 # du tenant cible (`TenantManager::withinTenant`), donc une ressource d'une
 # autre entreprise est introuvable (404) ; le nom propose au telechargement est
 # derive du nom d'origine sanitise, jamais du chemin de stockage interne.
-GET /v1/admin/companies/{param}/marketing-os/assets/{param}
-GET /v1/admin/companies/{param}/marketing-os/assets/{param}/download
-GET /v1/admin/companies/{param}/marketing-os/publications
-POST /v1/admin/companies/{param}/marketing-os/publications
-PATCH /v1/admin/companies/{param}/marketing-os/publications/{param}/status
 # Lots #8530-#8533 (PR #8574) : statistiques reelles des plateformes, objectifs
 # de visibilite SEO/SEA/AEO/GEO, capacites de publication par plateforme et
 # brief de production assiste par IA. Memes regles que le bloc #8528 ci-dessus :
 # contrat documente par docs/specifications/marketing-os/ en attendant la
 # publication du contrat OpenAPI canonique ; aucune donnee hors tenant, aucun
 # secret expose (les cles API restent cote serveur).
-POST /v1/admin/companies/{param}/marketing-os/publications/{param}/stats/refresh
-GET /v1/admin/companies/{param}/marketing-os/visibility-objectives
-POST /v1/admin/companies/{param}/marketing-os/visibility-objectives
-GET /v1/admin/companies/{param}/marketing-os/publishing-capabilities
-POST /v1/marketing/ai/suggest-production-brief
 
 # --- Blog plateforme (vitrine marketing, refs #8708) ---
 # CRUD blog articles gérés par le Super Admin pour la vitrine marketing.
 # Prototype en mémoire (phase 1) — contrat OpenAPI à documenter en phase 2
 # quand la table blog_posts et le modèle Eloquent seront en place.
-GET /v1/admin/blog/posts
-GET /v1/admin/blog/posts/{param}
-POST /v1/admin/blog/posts
-PUT /v1/admin/blog/posts/{param}
-DELETE /v1/admin/blog/posts/{param}
 
 # RestaurantManager — #9724 / #9713 : observabilite et moderation des avis.
 # Contrat OpenAPI canonique de la verticale non encore publie (meme statut que
