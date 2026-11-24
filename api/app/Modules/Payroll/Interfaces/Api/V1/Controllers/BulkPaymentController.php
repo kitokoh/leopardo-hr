@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Jobs\ProcessBulkPaymentJob;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Infrastructure\Services\BulkPaymentCoordinator;
+use App\Modules\Payroll\Interfaces\Api\V1\Requests\BulkPayRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -37,7 +38,7 @@ class BulkPaymentController extends Controller
      * Triggers async bulk payment processing for a validated payroll run.
      * Returns 202 Accepted immediately; actual work is done in ProcessBulkPaymentJob.
      */
-    public function bulkPay(Request $request, PayrollRun $payrollRun): JsonResponse
+    public function bulkPay(BulkPayRequest $request, PayrollRun $payrollRun): JsonResponse
     {
         /** @var Employee $actor */
         $actor = $request->user();
@@ -59,12 +60,10 @@ class BulkPaymentController extends Controller
         // dispute") instead of always paying the whole run. Omitting
         // pay_slip_ids keeps the previous "pay everyone in the run"
         // behaviour so existing integrations are unaffected.
-        /** @var array{pay_slip_ids?: array<int, int>|null} $validated */
-        $validated = $request->validate([
-            'pay_slip_ids' => ['nullable', 'array', 'min:1'],
-            'pay_slip_ids.*' => ['integer', 'distinct'],
-        ]);
-        $paySlipIds = $validated['pay_slip_ids'] ?? null;
+        //
+        // #9874 : validation extraite dans BulkPayRequest (garde
+        // check-form-request-guard.py — « FormRequest partout »).
+        $paySlipIds = $request->paySlipIds();
 
         // Prevent double-dispatch if already processing.
         //
