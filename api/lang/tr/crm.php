@@ -43,6 +43,7 @@ return [
         'stage_invalid' => 'Bu asama satis hattinda yok.',
         'stage_terminal' => 'Kazanilan veya kaybedilen firsat kesindir. Yeniden baslamak icin yeni bir firsat olusturun.',
         'lost_reason_required' => 'Firsatin neden kaybedildigini belirtin: gerekce olmadan ceyrek degerlendirmesi aciklanamaz.',
+        'lost_reason_not_applicable' => 'Kayip gerekcesi yalnizca kaybedilen bir firsat icin gecerlidir.',
         'activity_stage_changed' => 'Asama degisti',
         'activity_target_required' => 'Bir aktivite en az bir hesap, kisi, potansiyel veya firsata baglanmalidir.',
     ],
