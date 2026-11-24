@@ -26,7 +26,7 @@ use App\Modules\Payroll\Domain\Models\PaySlip;
  */
 final class PayrollReadHandlers
 {
-    // #9897 — aucune dependance : les deux handlers ci-dessous ne lisent aucun
+    // #9893 — aucune dependance : les deux handlers ci-dessous ne lisent aucun
     // argument du LLM. Un `ToolArgumentReader` injecte mais jamais lu avait ete
     // laisse par l'extraction #9887 ; PHPStan le signalait
     // (`property.onlyWritten`) et il a ete retire plutot que simule.
