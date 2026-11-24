@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Feature\Security;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\PendingCommand;
 use Tests\TestCase;
 
 /**
@@ -52,7 +53,13 @@ class TenantRlsStatusCommandTest extends TestCase
             $this->markTestSkipped('Le rôle de test ne bypass pas RLS : le scénario inverse est couvert par le test suivant.');
         }
 
-        $this->artisan('tenant:rls-status')
+        $pending = $this->artisan('tenant:rls-status');
+
+        // `artisan()` est type `PendingCommand|int` : on ne peut appeler
+        // `expectsOutputToContain()` que sur la premiere branche.
+        $this->assertInstanceOf(PendingCommand::class, $pending);
+
+        $pending
             ->expectsOutputToContain('RLS est BYPASSE')
             ->assertExitCode(1);
     }
@@ -63,7 +70,10 @@ class TenantRlsStatusCommandTest extends TestCase
      */
     public function test_probe_json_exposes_the_verdict(): void
     {
-        $this->artisan('tenant:rls-status', ['--json' => true])->assertExitCode(1);
+        $pending = $this->artisan('tenant:rls-status', ['--json' => true]);
+
+        $this->assertInstanceOf(PendingCommand::class, $pending);
+        $pending->assertExitCode(1);
 
         // On relit l'état directement : le JSON est écrit sur stdout par la
         // commande, et `artisan()` ne le capture pas de façon fiable.

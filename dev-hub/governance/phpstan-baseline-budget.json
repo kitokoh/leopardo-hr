@@ -3,9 +3,9 @@
   "issue": "7961",
   "snapshot": {
     "date": "2026-11-24",
-    "total_occurrences": 2583,
+    "total_occurrences": 2610,
     "by_baseline": {
-      "phpstan-strict-baseline.neon": 1417,
+      "phpstan-strict-baseline.neon": 1444,
       "phpstan-baseline.neon": 1160,
       "phpstan-modules-baseline.neon": 6
     }
@@ -16,17 +16,15 @@
       "module": "app/Core/Auth",
       "baseline": "phpstan-strict-baseline.neon",
       "occurrences_2026_09_20": 32,
-      "occurrences_2026_11_24": 6,
       "target": 0,
-      "rationale": "Cœur sécurité — mixed/nullables sur les actions d'authentification = risque réel. #9898 : 29 → 6. Les 6 restantes sont dans SuperAdminService (signatures de framework non modifiables) et documentées."
+      "rationale": "Cœur sécurité — mixed/nullables sur les actions d'authentification = risque réel."
     },
     {
       "module": "app/Core/Tenant",
       "baseline": "phpstan-strict-baseline.neon",
       "occurrences_2026_09_20": 4,
-      "occurrences_2026_11_24": 0,
       "target": 0,
-      "rationale": "Cœur multi-tenant — verrouillé à 0 par #9898 (quick win du budget)."
+      "rationale": "Cœur multi-tenant — quasi propre, verrouiller à 0 en premier (quick win)."
     },
     {
       "module": "app/Modules/Payroll",

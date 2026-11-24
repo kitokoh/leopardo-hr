@@ -12,23 +12,113 @@ parameters:
 			count: 1
 			path: app/Console/Commands/SendOnboardingRemindersCommand.php
 
+		-
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Core/Auth/Application/Actions/ChangePasswordAction.php
 
+		-
+			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Core/Auth/Application/Actions/ChangePasswordAction.php
 
+		-
+			message: '#^Using nullsafe property access "\?\-\>abilities" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Core/Auth/Application/Actions/ChangePasswordAction.php
 
+		-
+			message: '#^If condition is always true\.$#'
+			identifier: if.alwaysTrue
+			count: 1
+			path: app/Core/Auth/Application/Actions/LogoutAction.php
 
+		-
+			message: '#^Method App\\Core\\Auth\\Domain\\Models\\AuditLog\:\:auditable\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\MorphTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Core/Auth/Domain/Models/AuditLog.php
 
+		-
+			message: '#^Class App\\Core\\Auth\\Domain\\Models\\Employee uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Core/Auth/Domain/Models/Employee.php
 
+		-
+			message: '#^Method App\\Core\\Auth\\Domain\\Models\\Employee\:\:getAuthPassword\(\) should return string but returns string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Core/Auth/Domain/Models/Employee.php
 
+		-
+			message: '#^Method App\\Core\\Auth\\Domain\\Models\\Employee\:\:onboardingProgress\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasOne does not specify its types\: TRelatedModel, TDeclaringModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Core/Auth/Domain/Models/Employee.php
 
+		-
+			message: '#^PHPDoc tag @mixin contains generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Core/Auth/Domain/Models/Employee.php
 
+		-
+			message: '#^Using nullsafe property access "\?\-\>schema_name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
+			count: 1
+			path: app/Core/Auth/Domain/Models/Employee.php
 
+		-
+			message: '#^Class App\\Core\\Auth\\Domain\\Models\\User uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Core/Auth/Domain/Models/User.php
 
+		-
+			message: '#^PHPDoc tag @mixin contains generic class Illuminate\\Database\\Eloquent\\Builder but does not specify its types\: TModel$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Core/Auth/Domain/Models/User.php
 
+		-
+			message: '#^Method App\\Core\\Auth\\Infrastructure\\Services\\SensitiveDataEncryptor\:\:decryptArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Auth/Infrastructure/Services/SensitiveDataEncryptor.php
 
+		-
+			message: '#^Method App\\Core\\Auth\\Infrastructure\\Services\\SensitiveDataEncryptor\:\:decryptArray\(\) has parameter \$sensitiveFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Auth/Infrastructure/Services/SensitiveDataEncryptor.php
 
+		-
+			message: '#^Method App\\Core\\Auth\\Infrastructure\\Services\\SensitiveDataEncryptor\:\:decryptArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Auth/Infrastructure/Services/SensitiveDataEncryptor.php
 
+		-
+			message: '#^Method App\\Core\\Auth\\Infrastructure\\Services\\SensitiveDataEncryptor\:\:encryptArray\(\) has parameter \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Auth/Infrastructure/Services/SensitiveDataEncryptor.php
 
+		-
+			message: '#^Method App\\Core\\Auth\\Infrastructure\\Services\\SensitiveDataEncryptor\:\:encryptArray\(\) has parameter \$sensitiveFields with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Auth/Infrastructure/Services/SensitiveDataEncryptor.php
 
+		-
+			message: '#^Method App\\Core\\Auth\\Infrastructure\\Services\\SensitiveDataEncryptor\:\:encryptArray\(\) return type has no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Core/Auth/Infrastructure/Services/SensitiveDataEncryptor.php
 
 		-
 			message: '#^Call to an undefined method object\:\:generateSecretKey\(\)\.$#'
@@ -66,9 +156,29 @@ parameters:
 			count: 1
 			path: app/Core/Auth/Infrastructure/Services/SuperAdminService.php
 
+		-
+			message: '#^Parameter \#2 \$hashedValue of static method Illuminate\\Support\\Facades\\Hash\:\:check\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 2
+			path: app/Core/Auth/Interfaces/Api/V1/Controllers/PlatformAuthController.php
 
+		-
+			message: '#^Parameter \#1 \$companyId of method App\\Core\\Auth\\Infrastructure\\Services\\SSO\\SSOService\:\:configureSSO\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Core/Auth/Interfaces/Api/V1/Controllers/SSOController.php
 
+		-
+			message: '#^Parameter \#1 \$companyId of method App\\Core\\Auth\\Infrastructure\\Services\\SSO\\SSOService\:\:disableSSO\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Core/Auth/Interfaces/Api/V1/Controllers/SSOController.php
 
+		-
+			message: '#^Parameter \#1 \$companyId of method App\\Core\\Auth\\Infrastructure\\Services\\SSO\\SSOService\:\:getCompanySSO\(\) expects string, string\|null given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Core/Auth/Interfaces/Api/V1/Controllers/SSOController.php
 
 		-
 			message: '#^Method App\\Core\\Feature\\Infrastructure\\Services\\AnnotationReader\:\:extractMethodAnnotations\(\) return type has no value type specified in iterable type array\.$#'
@@ -208,9 +318,29 @@ parameters:
 			count: 1
 			path: app/Core/Feature/Interfaces/Api/V1/Requests/UpdateFeatureMatrixRequest.php
 
+		-
+			message: '#^Class App\\Core\\Tenant\\Domain\\Models\\Site uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Core/Tenant/Domain/Models/Site.php
 
+		-
+			message: '#^Method App\\Core\\Tenant\\Domain\\Models\\SuperAdmin\:\:getAuthPassword\(\) should return string but returns string\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: app/Core/Tenant/Domain/Models/SuperAdmin.php
 
+		-
+			message: '#^Parameter \#3 \$callback of static method Illuminate\\Cache\\Repository\:\:remember\(\) expects Closure\(\)\: mixed, callable\(\)\: mixed given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/Core/Tenant/Infrastructure/Services/TenantCacheService.php
 
+		-
+			message: '#^Unable to resolve the template type TCacheValue in call to static method Illuminate\\Cache\\Repository\:\:remember\(\)$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Core/Tenant/Infrastructure/Services/TenantCacheService.php
 
 		-
 			message: '#^Unsafe usage of new static\(\)\.$#'

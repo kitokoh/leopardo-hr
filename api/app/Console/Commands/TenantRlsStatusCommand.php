@@ -197,6 +197,7 @@ final class TenantRlsStatusCommand extends Command
     }
 
     /**
+     * @param  array{name: string, is_superuser: bool, bypasses_rls: bool}  $role
      * @param  list<array{table: string, step: string, exists: bool, enabled: bool, forced: bool, policy: bool, covered: bool}>  $tables
      * @param  list<array{table: string, step: string, exists: bool, enabled: bool, forced: bool, policy: bool, covered: bool}>  $uncovered
      */
