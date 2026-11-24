@@ -52,6 +52,12 @@ class RlsTenantIsolationTest extends TestCase
         }
 
         $this->createProbeRole();
+
+        // Ce test n'utilise volontairement PAS RefreshDatabase (il a besoin de
+        // vraies connexions multi-rôles, hors transaction). On nettoie donc
+        // explicitement : sans cela, une réexécution dans la même base trouve
+        // les lignes du run précédent et viole UNIQUE (payroll_run_id).
+        DB::table('bulk_payment_claims')->whereIn('payroll_run_id', [900001, 900002, 900003])->delete();
     }
 
     protected function tearDown(): void
