@@ -392,6 +392,103 @@ profils humains par conception (jeton d'appareil).
 
 ---
 
+## Recette v6 — bootstrap de test et fin de la couverture OpenAPI
+
+Trois chantiers : réparer le bootstrap de test (table `connector_catalog`
+absente), puis documenter les 62 routes `crm` et les 155 routes
+`restaurantmanager` restantes. Un `git pull` a été fait avant de commencer.
+
+### 1 · Bootstrap de test — la garde était périmée par construction
+
+**Reproduction :** `tests/Feature/Connectors` → **26 échecs / 10 succès**, tous
+en `SQLSTATE[42P01] relation "connector_catalog" does not exist`.
+
+**Cause racine :** `RefreshTenantDatabase::canonicalSchemaReady()` décidait s'il
+fallait re-migrer en vérifiant une **liste de tables sentinelles codée en dur**.
+Cette liste a dû être étendue trois fois (#5201 `employees`, #6754
+`training_enrollments`, #9115 `biometric_enrollments`) — et elle a encore manqué
+`connector_catalog` et `connector_connections`, ajoutées après. Une base migrée
+*avant* ces migrations passait la garde, la re-migration était sautée, et le
+premier test qui touchait la table mourait en 42P01, cassant la transaction et
+faisant cascader les suivants en 25P02.
+
+**Correctif :** la garde n'énumère plus de tables, elle **interroge le
+migrateur** — `getMigrationFiles()` contre `getRan()` — sur les deux dépôts
+(`public` et `tenant`), avec le bon `search_path` pour chacun. C'est la seule
+définition qui ne se périme jamais : toute migration future est couverte sans
+retoucher ce fichier. En cas d'erreur, la méthode répond « pas prêt » — on
+re-migre, on ne saute pas.
+
+| Indicateur | Avant | Après |
+|---|---|---|
+| `tests/Feature/Connectors` | 10 / 36 | **36 / 36** (144 assertions) |
+| Durée du 2ᵉ run (même base) | — | **4,5 s** — aucune re-migration inutile |
+
+Le second point compte autant que le premier : une garde qui répondrait toujours
+« pas prêt » ferait re-migrer à chaque classe (~87 fichiers), ce qui était
+précisément le problème que #6948 avait corrigé.
+
+### 2 · OpenAPI — `crm` (62) et `restaurantmanager` (155)
+
+Générateur dédié : `scripts/doc_crm_and_restaurant_openapi.py`, qui réutilise le
+parseur de la garde CI. Trois spécificités ont dû être traitées :
+
+| Cas | Traitement |
+|---|---|
+| **Surfaces publiques** — `/public/restaurants/*`, `/restaurant/public/*`, `/restaurant/marketplace/*`, `/crm/webhooks/*` | `security: []` — aucun token Sanctum. Déclarer un BearerAuth aurait été un mensonge |
+| **Bridge d'impression** — `/restaurant/printing/bridge/*` | Nouveau scheme `RestaurantPrintBridge` (`apiKey` en en-tête `X-Restaurant-Print-Bridge-Token`) |
+| **Paramètre de requête** — `GET /restaurant/printing/bridge/jobs` | `branch_id` déclaré en **query obligatoire** (le contrôleur répond 422 sans lui) — le drift identifié en recette v3 |
+
+| Indicateur | Avant | Après |
+|---|---|---|
+| Opérations documentées | 2 346 | **2 563** |
+| Routes couvertes | 2 312 / 2 607 | **2 529 / 2 607** |
+| `crm` non couvertes | 62 | **0** |
+| `restaurantmanager` non couvertes | 155 | **0** |
+| `new_uncovered` (drift) | 18 | 18 — inchangé, préexistantes |
+| `new_param_drift` / `new_reverse_drift` | 0 / 0 | **0 / 0** |
+| Allowlist : orphelines / obsolètes | 113 / 217 | **0 / 0** (437 purgées) |
+
+**Redocly :** 4 erreurs et 31 warnings — **strictement identiques à l'état
+d'avant**. Une première génération avait ajouté 2 warnings
+`operation-4xx-response` sur deux routes publiques GET ; corrigé en déclarant le
+**404 fail-closed** réel de ces surfaces plutôt qu'un 401 qui n'arrive jamais.
+Vérifié par diff des listes de warnings avant/après : aucun nouveau.
+
+### 3 · Non-régression
+
+Périmètre touché (Connectors + Restaurant + CRM + HR) : **896 passés / 2
+échoués** (3 544 assertions) en 122 s.
+
+Les 2 échecs sont dans `CrmOpportunityStageTest` (« reason on a won deal is
+refused », « the previous stage is journaled in notes and timeline »). Ils ont
+été **reproduits à l'identique avec les changements retirés** (`git stash`) :
+ce sont des échecs **préexistants**, sans rapport avec ce chantier. Ils portent
+sur le libellé du journal de changement d'étape (`prospecting → proposal`
+attendu, horodatage reçu) — un défaut de formatage, pas de logique.
+
+**Pint :** PASS sur le fichier modifié.
+
+### Bilan v6
+
+Le bootstrap de test est réparé **à la racine** : la garde ne dépend plus d'une
+liste de tables qui se périme à chaque migration ajoutée. Les 26 échecs
+Connectors sont à zéro, et le mécanisme profite à toute migration future sans
+intervention.
+
+Le contrat OpenAPI couvre désormais **2 529 des 2 607 routes** (97 %). Les deux
+derniers gros modules — `crm` et `restaurantmanager` — sont à 100 %, y compris
+leurs surfaces publiques et le bridge d'impression, avec le bon mécanisme
+d'authentification pour chacune.
+
+**Note de la couverture OpenAPI : 4,5 → 4,8 / 5.** Restent 78 routes non
+couvertes, dont 53 dans `api.php` et 8 dans `connectors` — les 18 « nouvelles »
+sont préexistantes et hors périmètre de ces trois chantiers. **Note de la
+verticale restaurant : 4,8 / 5 (inchangée)** — ce tour ne touche pas au
+comportement métier.
+
+---
+
 *Tests réalisés sur une instance locale réelle (PHP 8.4 · PostgreSQL 15 +
 PostGIS · Redis 7). Les notes reflètent les résultats observés sur cette
 instance ; elles ne couvrent pas les applications mobiles Flutter ni les fronts
