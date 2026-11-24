@@ -413,7 +413,6 @@
         "app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelCityController.php",
         "app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelClassController.php",
         "app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelCommentController.php",
-        "app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelConnectionController.php",
         "app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelContactController.php",
         "app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelCorporateController.php",
         "app/Modules/TravelAgency/Interfaces/Api/V1/Controllers/TravelCountryController.php",

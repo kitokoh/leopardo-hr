@@ -12,6 +12,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelHotel;
 use App\Modules\TravelAgency\Domain\Models\TravelHotelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelHotelRoom;
 use App\Modules\TravelAgency\Domain\Models\TravelHotelRoomInventory;
+use Illuminate\Support\Facades\DB;
 use Symfony\Component\Process\Process;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -56,8 +57,6 @@ class TravelHotelInventoryConcurrencyTest extends TestCase
 
     private Company $company;
 
-    private Employee $actor;
-
     private TravelHotel $hotel;
 
     private TravelHotelRoom $room;
@@ -74,13 +73,11 @@ class TravelHotelInventoryConcurrencyTest extends TestCase
 
         // Le worker enfant résout un manager du tenant : il doit exister en
         // base, commité, pour être visible depuis son propre processus.
-        /** @var Employee $actor */
-        $actor = Employee::factory()->create([
+        Employee::factory()->create([
             'company_id' => $company->id,
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
-        $this->actor = $actor;
 
         [$this->hotel, $this->room] = app(TenantManager::class)->withinTenant($company, function (): array {
             $city = TravelCity::factory()->create();
@@ -198,6 +195,9 @@ class TravelHotelInventoryConcurrencyTest extends TestCase
                     $checkIn,
                     $checkOut,
                     $key,
+                    // Base explicite : en `--parallel`, le worker doit viser la
+                    // base du processus PHPUnit, pas celle de `.env`/config.
+                    (string) DB::connection()->getDatabaseName(),
                 ],
                 base_path(),
                 $this->workerEnvironment(),
@@ -239,16 +239,28 @@ class TravelHotelInventoryConcurrencyTest extends TestCase
      */
     private function workerEnvironment(): array
     {
+        $name = (string) config('database.default');
+
+        // Source de vérité = la connexion RÉELLEMENT ouverte, pas `env()`.
+        //  - `env()` renvoie null dès que la config est mise en cache (CI) ;
+        //  - en `--parallel`, chaque processus PHPUnit travaille sur SA base
+        //    (`leopardo_test_<token>`), pas sur celle de `DB_DATABASE`.
+        // Se fier à l'une ou l'autre laissait les workers sur une base sans la
+        // ligne `companies` du test : d'où le 500 « ModelNotFoundException ».
+        $connection = DB::connection();
+        $config = $connection->getConfig();
+
         $env = [
             'APP_ENV' => 'testing',
-            'DB_CONNECTION' => (string) config('database.default'),
+            'DB_CONNECTION' => $name,
+            'DB_DATABASE' => $connection->getDatabaseName(),
         ];
 
-        foreach (['DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD', 'DB_SEARCH_PATH'] as $key) {
-            $value = env($key);
+        foreach (['host', 'port', 'username', 'password', 'search_path', 'sslmode'] as $key) {
+            $value = $config[$key] ?? null;
 
-            if ($value !== null) {
-                $env[$key] = (string) $value;
+            if ($value !== null && $value !== '') {
+                $env['DB_'.strtoupper($key)] = (string) $value;
             }
         }
 

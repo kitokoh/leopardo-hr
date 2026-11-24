@@ -33,11 +33,20 @@ require __DIR__.'/../../vendor/autoload.php';
 $app = require __DIR__.'/../../bootstrap/app.php';
 $app->make(Kernel::class)->bootstrap();
 
-[$script, $companyId, $hotelId, $roomId, $checkIn, $checkOut, $idempotencyKey] = $argv + array_fill(0, 7, null);
+[$script, $companyId, $hotelId, $roomId, $checkIn, $checkOut, $idempotencyKey, $database] = $argv + array_fill(0, 8, null);
 
 if ($companyId === null || $roomId === null || $checkIn === null || $checkOut === null || $idempotencyKey === null) {
     fwrite(STDERR, "Missing arguments.\n");
     exit(2);
+}
+
+// Base forcée par le test : en `--parallel`, chaque processus PHPUnit travaille
+// sur sa propre base (`leopardo_test_<token>`). Sans ce forçage, le worker
+// ouvrirait la connexion de `.env`/config et ne verrait pas les lignes commitées
+// par le test — il échouait alors en 500 « ModelNotFoundException ».
+if ($database !== null && $database !== '') {
+    config(['database.connections.'.config('database.default').'.database' => $database]);
+    DB::purge();
 }
 
 try {

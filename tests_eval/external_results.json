@@ -1,0 +1,146 @@
+[
+  {
+    "step": "gating module (tenant sans travelagency)",
+    "method": "GET",
+    "path": "/travel/ping",
+    "status": 403,
+    "ms": 41,
+    "snippet": "{\"error\":\"FEATURE_NOT_ENABLED\",\"message\":\"Your plan does not include the TravelAgency module.\"}",
+    "note": ""
+  },
+  {
+    "step": "gating module trips",
+    "method": "GET",
+    "path": "/travel/trips",
+    "status": 403,
+    "ms": 38,
+    "snippet": "{\"error\":\"FEATURE_NOT_ENABLED\",\"message\":\"Your plan does not include the TravelAgency module.\"}",
+    "note": ""
+  },
+  {
+    "step": "creer cle distributeur (scopes)",
+    "method": "POST",
+    "path": "/travel/distributor-keys",
+    "status": 201,
+    "ms": 57,
+    "snippet": "{\"data\":{\"id\":8,\"name\":\"Dist Eval\",\"scopes\":[\"catalog.read\",\"bookings.read\"],\"api_key\":\"dsk_dlZTBbgb63lAFVcjvg7u9rlDw9RryWaxk5MqqOfL\",\"created_at\":\"2026-11-22T13:29:51.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "catalogue distributeur",
+    "method": "GET",
+    "path": "/travel/distributor/catalog",
+    "status": 200,
+    "ms": 40,
+    "snippet": "{\"data\":[{\"id\":1,\"code\":\"TRP-EVAL-1\",\"route_id\":1,\"carrier_id\":1,\"vehicle_id\":1,\"departure_date\":\"2026-11-25\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-25\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"status\":\"published\",\"published_at\":\"2026-11-22T13:27:08.000000Z\",\"prices\":[],\"route\":{\"id\":1,\"code\":\"RTE-EVAL-1\",\"origin_city_id\":11,\"destination_city_id\":41,\"distance_km\":300,\"duration_min\":240,\"status\":\"active\",\"stops\":[{\"id\":1,\"route_id\":1,\"city_id\":45,\"rank\":",
+    "note": ""
+  },
+  {
+    "step": "catalogue distributeur (cle invalide)",
+    "method": "GET",
+    "path": "/travel/distributor/catalog",
+    "status": 401,
+    "ms": 61,
+    "snippet": "{\"error\":\"INVALID_DISTRIBUTOR_KEY\",\"message\":\"INVALID_DISTRIBUTOR_KEY\"}",
+    "note": ""
+  },
+  {
+    "step": "creer cle partenaire",
+    "method": "POST",
+    "path": "/travel/partner-keys",
+    "status": 201,
+    "ms": 40,
+    "snippet": "{\"data\":{\"id\":3,\"carrier_id\":1,\"label\":null,\"api_key\":\"ptk_O3Vi8ZC2R07Dt3o9ENcYMjSB8Vrl3KDeYKSQITFQ\",\"created_at\":\"2026-11-22T13:29:51.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "sync partenaire",
+    "method": "POST",
+    "path": "/travel/partner/sync",
+    "status": 422,
+    "ms": 42,
+    "snippet": "{\"error\":\"routes et trips doivent \\u00eatre des tableaux.\",\"message\":\"routes et trips doivent \\u00eatre des tableaux.\",\"localized_message\":\"Some fields are incorrect.\"}",
+    "note": ""
+  },
+  {
+    "step": "sync partenaire (cle invalide)",
+    "method": "POST",
+    "path": "/travel/partner/sync",
+    "status": 401,
+    "ms": 33,
+    "snippet": "{\"error\":\"INVALID_PARTNER_KEY\",\"message\":\"INVALID_PARTNER_KEY\"}",
+    "note": ""
+  },
+  {
+    "step": "generer lien contact public",
+    "method": "POST",
+    "path": "/travel/public-contact-link",
+    "status": 201,
+    "ms": 56,
+    "snippet": "{\"data\":{\"contact_url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/public\\/contact?company=e10857e0-8f39-47ac-91a0-a4f949f30b59&expires=1795440591&signature=3b031284df48f18d0faa6b458a9393a27b6c2d5b9e7b214e65dce2f31128aec8\",\"expires_at\":\"2026-11-23T13:29:51+00:00\"}}",
+    "note": ""
+  },
+  {
+    "step": "contact public signe",
+    "method": "POST",
+    "path": "/travel/public/contact",
+    "status": 202,
+    "ms": 38,
+    "snippet": "{\"status\":\"received\"}",
+    "note": ""
+  },
+  {
+    "step": "contact public sans signature (doit refuser)",
+    "method": "POST",
+    "path": "/travel/public/contact",
+    "status": 403,
+    "ms": 26,
+    "snippet": "{\"error\":\"Invalid signature.\",\"message\":\"Invalid signature.\",\"localized_message\":\"You do not have permission for this action.\"}",
+    "note": ""
+  },
+  {
+    "step": "rotation jeton boutique",
+    "method": "POST",
+    "path": "/travel/public-shop-token/rotate",
+    "status": 200,
+    "ms": 45,
+    "snippet": "{\"data\":{\"id\":1,\"token\":\"tshop_fFFawTSh6bKqj1O82FUjHXEvJ81rOCGqqF6jwDAbshX0Ffcc\",\"active\":true}}",
+    "note": ""
+  },
+  {
+    "step": "jeton boutique",
+    "method": "GET",
+    "path": "/travel/public-shop-token",
+    "status": 200,
+    "ms": 39,
+    "snippet": "{\"data\":{\"id\":1,\"name\":\"Public shop\",\"active\":true,\"token_prefix\":\"e6676851\\u2026\",\"created_at\":\"2026-11-22T13:29:52+00:00\",\"last_used_at\":null}}",
+    "note": ""
+  },
+  {
+    "step": "boutique: recherche",
+    "method": "GET",
+    "path": "/travel/shop/trips",
+    "status": 401,
+    "ms": 26,
+    "snippet": "{\"error\":\"UNAUTHENTICATED\",\"message\":\"UNAUTHENTICATED\",\"localized_message\":\"Connexion requise.\"}",
+    "note": ""
+  },
+  {
+    "step": "trips sans auth (doit refuser)",
+    "method": "GET",
+    "path": "/travel/trips",
+    "status": 401,
+    "ms": 29,
+    "snippet": "{\"error\":\"UNAUTHENTICATED\",\"message\":\"UNAUTHENTICATED\",\"localized_message\":\"Connexion requise.\"}",
+    "note": ""
+  },
+  {
+    "step": "dashboard sans auth (doit refuser)",
+    "method": "GET",
+    "path": "/travel/reports/dashboard",
+    "status": 401,
+    "ms": 22,
+    "snippet": "{\"error\":\"UNAUTHENTICATED\",\"message\":\"UNAUTHENTICATED\",\"localized_message\":\"Connexion requise.\"}",
+    "note": ""
+  }
+]

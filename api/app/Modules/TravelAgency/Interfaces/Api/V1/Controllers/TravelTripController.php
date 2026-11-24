@@ -451,7 +451,7 @@ class TravelTripController extends Controller
         $minConnectionMinutes = $requestedDelay === null ? null : (int) $requestedDelay;
 
         if ($minConnectionMinutes !== null && ($minConnectionMinutes < 15 || $minConnectionMinutes > 240)) {
-            abort(422, 'min_connection_minutes doit être compris entre 15 et 240.');
+            abort(422, __('travel.connections.invalid_delay'));
         }
 
         $results = $action->execute($origin, $destination, $date, $minConnectionMinutes);
