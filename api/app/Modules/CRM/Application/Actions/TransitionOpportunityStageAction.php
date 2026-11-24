@@ -92,7 +92,7 @@ final class TransitionOpportunityStageAction
                 // Journal append-only : chaque ligne raconte un deplacement.
                 // On horodate, sinon un retour en arriere et un aller simple
                 // seraient indistinguables.
-                $entry = sprintf('[%s] %s -> %s (%s)', now()->toIso8601String(), $from, $to, $actor->id);
+                $entry = sprintf('[%s] %s → %s (%s)', now()->toIso8601String(), $from, $to, $actor->id);
 
                 if (! empty($data['lost_reason'])) {
                     // La raison de la perte voyage AVEC le deplacement : c'est

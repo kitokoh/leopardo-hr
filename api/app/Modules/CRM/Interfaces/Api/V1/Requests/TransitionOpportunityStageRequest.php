@@ -48,8 +48,18 @@ final class TransitionOpportunityStageRequest extends FormRequest
                 Rule::in(['prospecting', 'qualification', 'proposal', 'negotiation', 'won', 'lost']),
             ],
             // Obligatoire pour `lost` : une affaire perdue sans raison ecrite
-            // est inexploitable au bilan trimestriel.
-            'lost_reason' => ['required_if:stage,lost', 'nullable', 'string', 'max:500'],
+            // est inexploitable au bilan trimestriel. Et INTERDIT ailleurs :
+            // un motif sur une affaire gagnee (ou en cours) est une donnee
+            // trompeuse — il serait journalise comme explication d'un
+            // deplacement qu'il n'explique pas. On le refuse plutot que de
+            // l'ignorer silencieusement.
+            'lost_reason' => [
+                'required_if:stage,lost',
+                'prohibited_unless:stage,lost',
+                'nullable',
+                'string',
+                'max:500',
+            ],
             'amount' => ['nullable', 'numeric', 'min:0'],
             'expected_close_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:5000'],
