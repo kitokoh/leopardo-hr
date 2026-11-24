@@ -553,6 +553,8 @@ Deux défauts **distincts**, chacun couvert par un test qui existait déjà.
 
 - `prohibited_unless:stage,lost` ajouté à `lost_reason`, avec message dédié FR/EN.
   Une raison de perte sur une affaire gagnée laisse croire qu'elle a échoué.
+  **⚠️ Remplacé en v8** : cette règle interdisait aussi le champ sur les étapes
+  ouvertes — voir §14.
 - La flèche `→` est utilisée dans `notes` **et** dans la `CrmActivity` : les deux
   représentaient le même événement avec deux glyphes différents.
 
@@ -581,6 +583,118 @@ validation manquante et un glyphe incohérent.
 **Note de la couverture OpenAPI : 4,8 → 5,0 / 5.** **Note du module CRM :
 4,5 → 4,8 / 5.** **Note de la verticale restaurant : 4,8 / 5 (inchangée)** — ce
 tour ne touche pas au comportement métier restaurant. **Note globale : 4,9 / 5.**
+
+---
+
+## 14 · Chantiers v8 — vérification en conditions réelles
+
+Trois points restaient ouverts au rapport v7. Le premier s'est révélé plus
+profond que « 4 erreurs à corriger » : c'était un **défaut de forme des chemins**
+qui en masquait d'autres.
+
+### 1 · Les 4 erreurs Redocly — cause racine
+
+Le bloc `servers` de la spec porte déjà `/api/v1`. Un chemin documenté
+`/v1/travel/adverts` désigne donc en réalité `/api/v1/v1/travel/adverts` — une
+URL qui n'existe pas. La garde CI neutralise ce préfixe pour comparer spec et
+routes, ce qui **masquait le problème** ; Redocly, lui, le voyait.
+
+| Défaut | Effet réel | Correctif |
+|---|---|---|
+| **122 chemins** préfixés `/v1` alors que `servers` le porte | URLs doubles dans tout client généré ; `operationId` dupliqués sur 8 opérations | Préfixe retiré, **47 blocs fusionnés** verbe par verbe (variante la plus riche conservée) |
+| `/travel/community/tourist-sites/{site}` | Le contrôleur injecte `TravelTouristSite $travelTouristSite` : la liaison implicite se fait par **nom**. Un `{site}` laissait le modèle vide → **404 sur tout identifiant valide** | Paramètre renommé `{travelTouristSite}`, y compris dans les `parameters:` de niveau chemin |
+| Tag `Pages` déclaré **deux fois** | Documentation scindée en deux entrées | Entrée la plus pauvre retirée |
+| Schéma `AuditLog` devenu inutilisé | Deux schémas concurrents pour la même ressource | `AuditLog` retiré — `AuditLogEntry` est le fidèle |
+
+| Indicateur | Avant | Après |
+|---|---|---|
+| Erreurs Redocly | 12 | **0** |
+| Warnings Redocly | 52 | 51 |
+| Chemins documentés | 2 030 | 1 983 |
+| Opérations documentées | 2 605 | 2 603 |
+| Garde de couverture | 2 607 / 2 607 | **2 607 / 2 607** |
+| `$ref` cassées | 0 | **0** |
+| `operationId` dupliqués | 8 | **0** |
+
+**Vérifié par diff des listes de problèmes avant/après :** aucun nouveau warning.
+Les 2 opérations « perdues » sont le renommage `{site}` → `{travelTouristSite}` —
+mêmes opérations, autre nom de paramètre.
+
+### 2 · Le tag `Pages`
+
+Deux entrées coexistaient : `BC PAGES (#8728/#8729/#8730) — pages d'établissement :
+CRUD et blocs (tenant), modération plateforme, rendu public SSR…` et
+`BC PAGES — Pages par établissement (surface tenant, #8728)`. La seconde est un
+sous-ensemble strict de la première : elle est retirée.
+
+### 3 · La règle `lost_reason` — le test a trouvé un défaut
+
+Le test demandé devait **verrouiller** la règle livrée en v7. Il a surtout montré
+qu'elle était **fausse**.
+
+| Règle v7 | Comportement observé | Règle v8 |
+|---|---|---|
+| `prohibited_unless:stage,lost` | Interdit `lost_reason` dès que `stage ≠ lost` — donc sur **toutes les étapes ouvertes**. Un client renvoyant le formulaire complet avec une raison héritée d'un brouillon recevait un **422 sur `prospecting`** | `prohibited_if:stage,won` — seule étape réellement trompeuse |
+
+La clé de message a suivi (`lost_reason.prohibited_if`) : sans cela, l'utilisateur
+aurait vu la clé brute au lieu du texte traduit.
+
+**Le test** — `CrmOpportunityLostReasonRuleTest`, **7 tests / 19 assertions** —
+vérifie la règle **elle-même**, pas seulement son effet HTTP :
+
+- la règle est bien **déclarée** dans `rules()` (si elle disparaît, le test tombe
+  même si `withValidator()` masquait la régression) ;
+- refus sur `won`, avec le **message traduit** ;
+- le refus est un **422** et **n'écrit rien** en base ;
+- **acceptation** sur `lost` — sinon `required_if` et `prohibited_unless` se
+  contrediraient et il deviendrait impossible de perdre une affaire ;
+- **acceptation** sur les 4 étapes ouvertes ;
+- sans raison sur `lost`, c'est bien `required_if` qui parle, avec **son** message.
+
+### 4 · Non-régression
+
+| Suite | Résultat | Assertions |
+|---|---|---|
+| `CrmOpportunityLostReasonRuleTest` (nouveau) | **7 / 7** | 19 |
+| `tests/Feature/CRM` + `tests/Feature/Connectors` | **323 / 323** | 1 152 |
+| `tests/Feature/Restaurant` + `tests/Feature/HR` | **582 / 582** | 2 415 |
+| **Total périmètre touché** | **912 / 912** | **3 586** |
+
+**Pint :** PASS sur les 2 fichiers PHP. **Garde d'orphelines :** 13 / 13
+vérifications. **Garde de couverture :** 0 nouvelle non couverte, 0 nouveau drift.
+
+### 5 · Pull préalable et conflits
+
+La branche d'évaluation était **16 commits derrière `main`**. Fusion faite avant
+tout travail, avec **2 conflits** :
+
+- `ConnectorSchemaViolationException` — les deux côtés portaient **le même
+  correctif** (résolution de `__()` à l'instanciation), seuls les commentaires
+  différaient : unifiés.
+- `openapi.yaml` — **9 blocs** de conflit, tous des insertions additives au même
+  point d'ancrage. Résolus par **union structurelle** : le travail de la branche
+  conservé, plus les **15 chemins**, **11 schémas** et **3 paramètres** propres à
+  `main` (connecteurs, permissions verticales, inventaire et réservations
+  d'hôtel). Vérifié : aucune perte, 0 `$ref` cassée.
+
+### Bilan v8
+
+Le contrat OpenAPI est désormais **valide**, pas seulement complet : **0 erreur
+Redocly** contre 12, sans un seul nouveau warning. Les chemins désignent enfin les
+URLs réellement servies — un client généré depuis la spec atteint les bons
+endpoints.
+
+Le point le plus utile de ce tour n'est pas la correction des 4 erreurs : c'est
+que **le test demandé a invalidé la règle qu'il devait protéger**. La règle v7
+refusait `lost_reason` sur toutes les étapes ouvertes, pas seulement sur `won` —
+un client renvoyant un formulaire complet était bloqué en `prospecting`. Sans ce
+test, le défaut serait resté invisible : le test HTTP existant passait, puisqu'il
+ne testait que le cas `won`.
+
+**Note de la couverture OpenAPI : 5,0 / 5 (maintenue)** — la note était déjà au
+maximum, mais elle récompensait une complétude qui n'était pas valide ; elle l'est
+maintenant. **Note du module CRM : 4,8 → 4,9 / 5.** **Note de la verticale
+restaurant : 4,8 / 5 (inchangée).** **Note globale : 4,9 / 5.**
 
 ---
 
