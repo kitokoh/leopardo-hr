@@ -6,6 +6,7 @@ namespace App\Modules\TravelAgency\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Http\Controllers\Controller;
+use App\Modules\TravelAgency\Application\Services\ConnectionDelayResolver;
 use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\StoreTravelStationRequest;
 use App\Modules\TravelAgency\Interfaces\Api\V1\Requests\UpdateTravelStationRequest;
@@ -22,6 +23,8 @@ use Illuminate\Http\Request;
  */
 class TravelStationController extends Controller
 {
+    public function __construct(private readonly ConnectionDelayResolver $delays) {}
+
     public function index(Request $request): JsonResponse
     {
         /** @var Employee $actor */
@@ -50,6 +53,11 @@ class TravelStationController extends Controller
         }
 
         $station = TravelStation::query()->create($request->validated());
+
+        // Le réglage de la gare vient de changer : le cache du résolveur doit
+        // l'oublier, sinon une recherche lancée dans la même requête servirait
+        // l'ancienne valeur.
+        $this->delays->forget((int) $station->city_id);
 
         return (new TravelStationResource($station))->response()->setStatusCode(201);
     }
@@ -80,6 +88,11 @@ class TravelStationController extends Controller
         }
 
         $travelStation->update($request->validated());
+
+        // Invalide l'ancienne ET la nouvelle ville : une gare peut avoir été
+        // déplacée, et les deux caches sont alors périmés.
+        $this->delays->forget((int) $travelStation->city_id);
+        $this->delays->forget();
 
         return (new TravelStationResource($travelStation))->response();
     }

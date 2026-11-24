@@ -25,6 +25,28 @@ use App\Modules\TravelAgency\Domain\Models\TravelStation;
  * correspondance n'est valide que si elle est tenable dans TOUTES les gares
  * concernées — retenir le minimum laisserait passer un itinéraire infaisable
  * depuis la gare la plus exigeante.
+ *
+ * ## Pourquoi un cache, et pourquoi il est sûr
+ *
+ * `ConnectionSearchAction` appelle `resolve()` dans une boucle imbriquée
+ * (chaque premier tronçon × chaque second tronçon). Sans cache, une recherche
+ * dense relit `travel_stations` une fois PAR PAIRE CANDIDATE, alors que la
+ * réponse ne dépend que de la ville intermédiaire — quelques dizaines de villes
+ * au plus. C'est un N+1 pur : le coût croît avec le nombre de combinaisons
+ * d'horaires, pas avec la donnée.
+ *
+ * Le cache est une **mémoïsation par instance**, et l'instance est enregistrée
+ * `scoped` (voir `TravelAgencyServiceProvider`) : Laravel en crée une par
+ * requête HTTP et la jette entre deux jobs de queue. La durée de vie du cache
+ * est donc exactement celle d'une requête — jamais celle du processus. Un
+ * worker de queue qui traiterait mille réservations ne peut pas servir le
+ * réglage d'une gare lu une heure plus tôt.
+ *
+ * Reste le cas « écrire puis relire dans la MÊME requête » : le cache
+ * survivrait à la mise à jour. C'est pourquoi `forget()` existe et que le CRUD
+ * des gares l'appelle après chaque écriture. Le cache n'est donc pas
+ * seulement borné dans le temps, il est aussi explicitement invalidé par le
+ * seul chemin d'écriture HTTP.
  */
 final class ConnectionDelayResolver
 {
@@ -32,6 +54,17 @@ final class ConnectionDelayResolver
     public const MIN_ALLOWED = 15;
 
     public const MAX_ALLOWED = 240;
+
+    /**
+     * Mémoïsation par ville : `cityId => délai|null`.
+     *
+     * `array_key_exists` distingue « pas encore résolu » de « résolu, aucune
+     * surcharge » — sans quoi une ville sans réglage serait relue à chaque
+     * appel, ce qui est précisément le cas le plus fréquent.
+     *
+     * @var array<int, int|null>
+     */
+    private array $memo = [];
 
     /**
      * Délai applicable pour une correspondance dans `$hubCityId`.
@@ -63,6 +96,10 @@ final class ConnectionDelayResolver
      */
     public function stationDelay(int $cityId): ?int
     {
+        if (array_key_exists($cityId, $this->memo)) {
+            return $this->memo[$cityId];
+        }
+
         $delays = TravelStation::query()
             ->where('city_id', $cityId)
             ->whereNotNull('min_connection_minutes')
@@ -70,11 +107,24 @@ final class ConnectionDelayResolver
             ->map(fn ($value): int => (int) $value)
             ->all();
 
-        if ($delays === []) {
-            return null;
+        return $this->memo[$cityId] = $delays === [] ? null : $this->clamp(max($delays));
+    }
+
+    /**
+     * Invalide le cache d'une ville, ou de toutes les villes.
+     *
+     * À appeler après toute écriture d'une gare : sans cela, une requête qui
+     * modifie un réglage puis relit une recherche servirait l'ancienne valeur.
+     */
+    public function forget(?int $cityId = null): void
+    {
+        if ($cityId === null) {
+            $this->memo = [];
+
+            return;
         }
 
-        return $this->clamp(max($delays));
+        unset($this->memo[$cityId]);
     }
 
     private function clamp(int $minutes): int

@@ -11,6 +11,7 @@ use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Solutions\Survey\SolutionSurveyRegistry;
 use App\Events\SolutionActivated;
 use App\Modules\TravelAgency\Application\Actions\ActivateTravelAgencyAction;
+use App\Modules\TravelAgency\Application\Services\ConnectionDelayResolver;
 use App\Modules\TravelAgency\Console\Commands\RecalculateTravelReadModelsCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelExpireAdvertsCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelExpirePendingBookingsCommand;
@@ -21,6 +22,7 @@ use App\Modules\TravelAgency\Console\Commands\TravelSettleSalesCommand;
 use App\Modules\TravelAgency\Console\Commands\TravelWebhookDispatchCommand;
 use App\Modules\TravelAgency\Domain\Manifests\TravelAgencyManifest;
 use App\Modules\TravelAgency\Domain\Models\TravelCustomerAccount;
+use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Domain\Survey\TravelSurvey;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\CashPaymentGateway;
 use App\Modules\TravelAgency\Infrastructure\Services\Payment\PaymentGatewayRegistry;
@@ -107,6 +109,12 @@ class TravelAgencyServiceProvider extends ServiceProvider
         $this->app->resolving(DemoDataRegistry::class, function (DemoDataRegistry $registry): void {
             $registry->register(TravelAgencyManifest::CODE, fn (): DemoDataKit => $this->app->make(TravelDemoSeederService::class));
         });
+
+        // M5 — résolveur du délai de correspondance, en `scoped` et non en
+        // `singleton` : il mémoïse les réglages de gare par ville, et ce cache
+        // ne doit PAS survivre à la requête. Un singleton de processus ferait
+        // servir à un worker de queue le réglage lu une heure plus tôt.
+        $this->app->scoped(ConnectionDelayResolver::class, static fn (): ConnectionDelayResolver => new ConnectionDelayResolver);
 
         // Passerelles de paiement (TRAVEL-405..407) — registre par code.
         $this->app->singleton(PaymentGatewayRegistry::class, function (): PaymentGatewayRegistry {
@@ -237,5 +245,26 @@ class TravelAgencyServiceProvider extends ServiceProvider
         // TOUS les rôles. Ouverte aux rôles opérationnels de l'agence
         // (TravelReportPolicy::authorize — principal/rh/manager/agent/checkin).
         Gate::define('travel.reports', static fn (Employee $actor): bool => TravelReportPolicy::authorize($actor));
+
+        // M5 — invalidation du cache du résolveur de délai de correspondance.
+        //
+        // Le cache est mémoïsé par instance `scoped` (une par requête). Le
+        // brancher sur les ÉVÉNEMENTS du modèle, et non sur le seul contrôleur,
+        // est ce qui le rend correct : une gare peut être écrite par une
+        // factory, un seeder, une commande OPS ou un import — pas seulement par
+        // `PUT /travel/stations/{id}`. Sans cela, une écriture hors HTTP
+        // laissait le cache servir l'ancien réglage.
+        //
+        // `saved` couvre create + update ; `deleted` couvre la suppression.
+        // On vide tout : une gare peut changer de ville, et l'ancienne comme la
+        // nouvelle entrée sont alors périmées.
+        $forgetDelayCache = static function (): void {
+            if (app()->bound(ConnectionDelayResolver::class)) {
+                app(ConnectionDelayResolver::class)->forget();
+            }
+        };
+
+        TravelStation::saved($forgetDelayCache);
+        TravelStation::deleted($forgetDelayCache);
     }
 }

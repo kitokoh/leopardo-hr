@@ -398,4 +398,94 @@ class TravelConnectionDelayTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.min_connection_minutes', 60);
     }
+
+    // ─── Cache du résolveur ────────────────────────────────────────────────
+
+    /**
+     * Le cache ne doit PAS servir une valeur périmée après une écriture.
+     *
+     * C'est le seul risque réel d'une mémoïsation : une requête qui modifie le
+     * réglage d'une gare puis relit une recherche dans la foulée. Le CRUD des
+     * gares appelle `forget()`, ce test le verrouille.
+     */
+    public function test_updating_a_station_invalidates_the_resolver_cache(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateTravel($company);
+        $this->principal($company);
+
+        [, $douala] = $this->threeCities($company);
+
+        $station = app(TenantManager::class)->withinTenant($company, fn (): TravelStation => TravelStation::factory()->create([
+            'city_id' => $douala->id,
+            'min_connection_minutes' => 60,
+        ]));
+
+        $resolver = app(ConnectionDelayResolver::class);
+
+        // 1. Première lecture : met la ville en cache.
+        $this->assertSame(60, $resolver->stationDelay((int) $douala->id));
+
+        // 2. Écriture par l'API (le contrôleur doit invalider).
+        $this->putJson('/api/v1/travel/stations/'.$station->id, ['min_connection_minutes' => 120])
+            ->assertOk();
+
+        // 3. La même instance ne doit plus servir 60.
+        $this->assertSame(
+            120,
+            $resolver->stationDelay((int) $douala->id),
+            'Le cache du résolveur a servi une valeur périmée après mise à jour de la gare.',
+        );
+    }
+
+    /**
+     * Une recherche dense ne doit pas relire `travel_stations` par paire
+     * candidate : c'est tout l'objet du cache.
+     *
+     * On compte les requêtes SQL émises par `resolve()` sur N villes
+     * distinctes, appelées plusieurs fois chacune.
+     */
+    public function test_resolver_reads_each_city_once_per_request(): void
+    {
+        /** @var Company $company */
+        $company = Company::factory()->create(['country' => 'CM', 'currency' => 'XAF']);
+        $this->activateTravel($company);
+        $this->principal($company);
+
+        $cities = app(TenantManager::class)->withinTenant($company, function (): array {
+            $created = [];
+
+            for ($i = 0; $i < 5; $i++) {
+                $city = TravelCity::factory()->create();
+                TravelStation::factory()->create([
+                    'city_id' => $city->id,
+                    'min_connection_minutes' => 30 + $i,
+                ]);
+                $created[] = (int) $city->id;
+            }
+
+            return $created;
+        });
+
+        $resolver = app(ConnectionDelayResolver::class);
+
+        $queries = 0;
+        \Illuminate\Support\Facades\DB::listen(function () use (&$queries): void {
+            $queries++;
+        });
+
+        // 5 villes × 10 appels = 50 résolutions, comme une recherche dense.
+        for ($round = 0; $round < 10; $round++) {
+            foreach ($cities as $cityId) {
+                $resolver->resolve($cityId);
+            }
+        }
+
+        $this->assertSame(
+            5,
+            $queries,
+            sprintf('Attendu 5 requêtes (une par ville), obtenu %d : le cache ne joue pas.', $queries),
+        );
+    }
 }
