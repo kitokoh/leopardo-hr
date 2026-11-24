@@ -205,7 +205,8 @@ trait RefreshTenantDatabase
         // that would remigrate before every test and exhaust Coverage timeout.
         $row = DB::selectOne(
             "SELECT to_regclass('public.companies') AS companies,\n                    to_regclass('shared_tenants.export_history') AS export_history,\n                    to_regclass('shared_tenants.onboarding_steps') AS onboarding_steps,\n                    to_regclass('shared_tenants.social_contributions') AS social_contributions,\n                    to_regclass('shared_tenants.employees') AS employees,\n                    to_regclass('shared_tenants.app_notifications') AS app_notifications,\n                    to_regclass('shared_tenants.migrations') AS migrations_repo,\n                    to_regclass('shared_tenants.training_enrollments') AS training_enrollments,
-                    to_regclass('shared_tenants.biometric_enrollments') AS biometric_enrollments"
+                    to_regclass('shared_tenants.biometric_enrollments') AS biometric_enrollments,
+                    to_regclass('shared_tenants.bulk_payment_claims') AS bulk_payment_claims"
         );
 
         return $row !== null
@@ -244,7 +245,11 @@ trait RefreshTenantDatabase
             // un worker qui enchaîne `CreatesMvpSchema` (fixture partielle) puis
             // `RefreshTenantDatabase` saute la re-migration et le fichier entier
             // meurt en 42P01 puis 25P02 — le job Backend ne rend aucun verdict.
-            && $row->biometric_enrollments !== null;
+            && $row->biometric_enrollments !== null
+            // #9874 : `bulk_payment_claims` porte le coordinateur du paiement
+            // en masse (ex-Redis). Une base canonique sans cette table ferait
+            // échouer tous les tests bulk-pay en « relation does not exist ».
+            && $row->bulk_payment_claims !== null;
     }
 
     /**
