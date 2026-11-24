@@ -25,6 +25,8 @@ class TravelStationFactory extends Factory
             'address' => $this->faker->optional()->streetAddress(),
             'contact_phone' => $this->faker->optional()->phoneNumber(),
             'timezone' => 'Africa/Douala',
+            // M5 — null par défaut : la gare hérite du délai du tenant.
+            'min_connection_minutes' => null,
             'is_terminal' => $this->faker->boolean(30),
             'status' => TravelRecordStatus::ACTIVE->value,
         ];

@@ -37,6 +37,8 @@ class StoreTravelStationRequest extends FormRequest
             'address' => ['nullable', 'string', 'max:255'],
             'contact_phone' => ['nullable', 'string', 'max:40'],
             'timezone' => ['nullable', 'string', 'timezone'],
+            // M5 — délai minimal de correspondance imposé par la gare.
+            'min_connection_minutes' => ['nullable', 'integer', 'min:15', 'max:240'],
             'is_terminal' => ['sometimes', 'boolean'],
             'status' => ['sometimes', 'string', Rule::in(['active', 'disabled'])],
         ];

@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property int $id
  * @property bool $is_terminal
+ * @property int|null $min_connection_minutes Délai minimal de correspondance imposé par la gare (M5).
  * @property string $name
  * @property \App\Modules\TravelAgency\Domain\Enums\TravelRecordStatus $status
  * @property string $timezone
@@ -47,10 +48,13 @@ class TravelStation extends Model
         'timezone',
         'is_terminal',
         'status',
+        // M5 — délai minimal de correspondance propre à la gare (null = défaut tenant).
+        'min_connection_minutes',
     ];
 
     protected $casts = [
         'is_terminal' => 'boolean',
+        'min_connection_minutes' => 'integer',
         'status' => TravelRecordStatus::class,
     ];
 

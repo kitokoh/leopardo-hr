@@ -1,0 +1,362 @@
+[
+  {
+    "step": "tarif",
+    "method": "POST",
+    "path": "/travel/trips/7/prices",
+    "status": 201,
+    "ms": 44,
+    "snippet": "{\"data\":{\"id\":4,\"trip_id\":7,\"class_id\":6,\"adult_price_minor\":300000,\"child_price_minor\":null,\"currency\":\"DZD\",\"created_at\":\"2026-11-22T13:33:24.000000Z\",\"updated_at\":\"2026-11-22T13:33:24.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "publier",
+    "method": "POST",
+    "path": "/travel/trips/7/publish",
+    "status": 200,
+    "ms": 45,
+    "snippet": "{\"data\":{\"id\":7,\"code\":\"TRP-ADV-285931\",\"route_id\":8,\"carrier_id\":7,\"vehicle_id\":7,\"departure_date\":\"2026-12-12\",\"departure_time\":\"09:00:00\",\"arrival_date\":\"2026-12-12\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":40,\"status\":\"published\",\"published_at\":\"2026-11-22T13:33:24.000000Z\",\"prices\":[{\"id\":4,\"trip_id\":7,\"class_id\":6,\"adult_price_minor\":300000,\"child_price_minor\":null,\"currency\":\"DZD\",\"created_at\":\"2026-11-22T13:33:24.000000Z\",\"updated_at\":\"2026-11-22T13:33:24.000000Z\"}],\"created_at\":\"2026-11-22T13:33:24.000000Z\",\"updated_at\":\"2026-11-22T13:33:24.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "confirmer",
+    "method": "POST",
+    "path": "/travel/bookings/15/confirm",
+    "status": 200,
+    "ms": 64,
+    "snippet": "{\"data\":{\"id\":15,\"reference\":\"GV-YPYW96GJX8\",\"trip_id\":7,\"status\":\"confirmed\",\"passenger_count\":1,\"total_amount_minor\":300000,\"currency\":\"DZD\",\"booking_source\":\"office\",\"payment_status\":\"confirmed\",\"expires_at\":null,\"version\":2,\"passengers\":[{\"id\":19,\"booking_id\":15,\"full_name\":\"Client ADV\",\"birth_date\":null,\"document_type\":null,\"has_document\":false,\"age_category\":\"adult\",\"class_id\":6,\"seat_number\":1,\"unit_price_minor\":300000}],\"contact_email\":null,\"contact_phone\":null,\"notify_consent\":false,\"round_trip_group_id\":null,\"return_booking_id\":null,\"leg\":null,\"corporate_account_id\":null,\"quote_id\":n",
+    "note": ""
+  },
+  {
+    "step": "emettre billets",
+    "method": "POST",
+    "path": "/travel/bookings/15/issue-ticket",
+    "status": 200,
+    "ms": 43,
+    "snippet": "{\"data\":[{\"id\":3,\"ticket_number\":\"#GV-77OG2QEQO3\",\"booking_id\":15,\"passenger_id\":19,\"status\":\"issued\",\"issued_at\":\"2026-11-22T13:33:25.000000Z\",\"valid_from\":\"2026-11-22T13:33:25.000000Z\",\"valid_until\":\"2026-12-12T23:59:59.000000Z\",\"checked_in_at\":null,\"created_at\":\"2026-11-22T13:33:25.000000Z\",\"validation_code\":\"7RRW-JHW2-GP5D\"}]}",
+    "note": ""
+  },
+  {
+    "step": "detail reservation",
+    "method": "GET",
+    "path": "/travel/bookings/15",
+    "status": 200,
+    "ms": 73,
+    "snippet": "{\"data\":{\"id\":15,\"reference\":\"GV-YPYW96GJX8\",\"trip_id\":7,\"status\":\"confirmed\",\"passenger_count\":1,\"total_amount_minor\":300000,\"currency\":\"DZD\",\"booking_source\":\"office\",\"payment_status\":\"confirmed\",\"expires_at\":null,\"version\":2,\"passengers\":[{\"id\":19,\"booking_id\":15,\"full_name\":\"Client ADV\",\"birth_date\":null,\"document_type\":null,\"has_document\":false,\"age_category\":\"adult\",\"class_id\":6,\"seat_number\":1,\"unit_price_minor\":300000}],\"tickets\":[{\"id\":3,\"ticket_number\":\"#GV-77OG2QEQO3\",\"booking_id\":15,\"passenger_id\":19,\"status\":\"issued\",\"issued_at\":\"2026-11-22T13:33:25.000000Z\",\"valid_from\":\"2026-11-",
+    "note": ""
+  },
+  {
+    "step": "initier paiement",
+    "method": "POST",
+    "path": "/travel/payments/initiate",
+    "status": 201,
+    "ms": 45,
+    "snippet": "{\"data\":{\"reference\":\"PAY-X633FDRVCZ\",\"provider_reference\":\"CASH-3B336890AB8C\",\"redirect_url\":null,\"status\":\"pending\"}}",
+    "note": ""
+  },
+  {
+    "step": "rembourser reservation",
+    "method": "POST",
+    "path": "/travel/bookings/15/refund",
+    "status": 200,
+    "ms": 50,
+    "snippet": "{\"data\":{\"id\":15,\"reference\":\"GV-YPYW96GJX8\",\"trip_id\":7,\"status\":\"refunded\",\"passenger_count\":1,\"total_amount_minor\":300000,\"currency\":\"DZD\",\"booking_source\":\"office\",\"payment_status\":\"refunded\",\"expires_at\":null,\"version\":3,\"passengers\":[{\"id\":19,\"booking_id\":15,\"full_name\":\"Client ADV\",\"birth_date\":null,\"document_type\":null,\"has_document\":false,\"age_category\":\"adult\",\"class_id\":6,\"seat_number\":1,\"unit_price_minor\":300000}],\"contact_email\":null,\"contact_phone\":null,\"notify_consent\":false,\"round_trip_group_id\":null,\"return_booking_id\":null,\"leg\":null,\"corporate_account_id\":null,\"quote_id\":nul",
+    "note": ""
+  },
+  {
+    "step": "annuler reservation",
+    "method": "POST",
+    "path": "/travel/bookings/16/cancel",
+    "status": 200,
+    "ms": 55,
+    "snippet": "{\"data\":{\"id\":16,\"reference\":\"GV-ST9SB8F7EQ\",\"trip_id\":7,\"status\":\"cancelled\",\"passenger_count\":1,\"total_amount_minor\":300000,\"currency\":\"DZD\",\"booking_source\":\"phone\",\"payment_status\":\"pending\",\"expires_at\":null,\"version\":2,\"passengers\":[{\"id\":20,\"booking_id\":16,\"full_name\":\"Client ADV2\",\"birth_date\":null,\"document_type\":null,\"has_document\":false,\"age_category\":\"adult\",\"class_id\":6,\"seat_number\":2,\"unit_price_minor\":300000}],\"contact_email\":null,\"contact_phone\":null,\"notify_consent\":false,\"round_trip_group_id\":null,\"return_booking_id\":null,\"leg\":null,\"corporate_account_id\":null,\"quote_id\":nul",
+    "note": ""
+  },
+  {
+    "step": "annuler trajet",
+    "method": "POST",
+    "path": "/travel/trips/7/cancel",
+    "status": 200,
+    "ms": 49,
+    "snippet": "{\"data\":{\"id\":7,\"code\":\"TRP-ADV-285931\",\"route_id\":8,\"carrier_id\":7,\"vehicle_id\":7,\"departure_date\":\"2026-12-12\",\"departure_time\":\"09:00:00\",\"arrival_date\":\"2026-12-12\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":40,\"status\":\"cancelled\",\"published_at\":\"2026-11-22T13:33:24.000000Z\",\"prices\":[{\"id\":4,\"trip_id\":7,\"class_id\":6,\"adult_price_minor\":300000,\"child_price_minor\":null,\"currency\":\"DZD\",\"created_at\":\"2026-11-22T13:33:24.000000Z\",\"updated_at\":\"2026-11-22T13:33:24.000000Z\"}],\"created_at\":\"2026-11-22T13:33:24.000000Z\",\"updated_at\":\"2026-11-22T13:33:25.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "check-in",
+    "method": "POST",
+    "path": "/travel/tickets/3/check-in",
+    "status": 200,
+    "ms": 52,
+    "snippet": "{\"data\":{\"id\":3,\"ticket_number\":\"#GV-77OG2QEQO3\",\"booking_id\":15,\"passenger_id\":19,\"status\":\"checked_in\",\"issued_at\":\"2026-11-22T13:33:25.000000Z\",\"valid_from\":\"2026-11-22T13:33:25.000000Z\",\"valid_until\":\"2026-12-12T23:59:59.000000Z\",\"checked_in_at\":\"2026-11-22T13:33:25.000000Z\",\"created_at\":\"2026-11-22T13:33:25.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "manifeste",
+    "method": "GET",
+    "path": "/travel/trips/7/manifest",
+    "status": 200,
+    "ms": 41,
+    "snippet": "{\"data\":[{\"id\":19,\"booking_id\":15,\"full_name\":\"Client ADV\",\"birth_date\":null,\"document_type\":null,\"has_document\":false,\"age_category\":\"adult\",\"class_id\":6,\"seat_number\":1,\"unit_price_minor\":300000},{\"id\":20,\"booking_id\":16,\"full_name\":\"Client ADV2\",\"birth_date\":null,\"document_type\":null,\"has_document\":false,\"age_category\":\"adult\",\"class_id\":6,\"seat_number\":2,\"unit_price_minor\":300000}],\"crew\":[]}",
+    "note": ""
+  },
+  {
+    "step": "rapport ventes",
+    "method": "GET",
+    "path": "/travel/reports/sales",
+    "status": 200,
+    "ms": 71,
+    "snippet": "{\"data\":{\"from\":\"2026-10-23T00:00:00+00:00\",\"to\":\"2026-12-22T00:00:00+00:00\",\"filters\":{\"trip_id\":null,\"route_id\":null,\"source\":null,\"status\":null,\"office_id\":null},\"bookings_count\":12,\"passengers_count\":16,\"revenue_minor\":4000000,\"by_source\":{\"office\":4,\"marketplace\":5,\"online\":3},\"by_status\":{\"confirmed\":1,\"pending\":11}}}",
+    "note": ""
+  },
+  {
+    "step": "rapport occupation",
+    "method": "GET",
+    "path": "/travel/reports/occupancy",
+    "status": 200,
+    "ms": 42,
+    "snippet": "{\"data\":{\"from\":\"2026-10-23T00:00:00+00:00\",\"to\":\"2026-12-22T00:00:00+00:00\",\"trip_id\":null,\"route_id\":null,\"trips_count\":7,\"by_trip\":[{\"trip_id\":4,\"code\":\"TRP-E2A-9930\",\"route_id\":6,\"departure_date\":\"2026-11-27\",\"seats_sold\":1,\"total_seats\":50,\"occupancy_rate\":0.02},{\"trip_id\":1,\"code\":\"TRP-EVAL-1\",\"route_id\":1,\"departure_date\":\"2026-11-25\",\"seats_sold\":0,\"total_seats\":50,\"occupancy_rate\":0},{\"trip_id\":5,\"code\":\"TRP-E2B-9930\",\"route_id\":6,\"departure_date\":\"2026-12-04\",\"seats_sold\":0,\"total_seats\":50,\"occupancy_rate\":0},{\"trip_id\":6,\"code\":\"TRP-ADV-175266\",\"route_id\":7,\"departure_date\":\"2026-1",
+    "note": ""
+  },
+  {
+    "step": "rapport revenus",
+    "method": "GET",
+    "path": "/travel/reports/revenue",
+    "status": 200,
+    "ms": 51,
+    "snippet": "{\"data\":{\"from\":\"2026-10-23T00:00:00+00:00\",\"to\":\"2026-12-22T00:00:00+00:00\",\"trip_id\":null,\"source\":null,\"office_id\":null,\"confirmed_minor\":250000,\"refunded_minor\":600000,\"net_minor\":-350000,\"by_status\":{\"confirmed\":250000,\"pending\":550000,\"refunded\":600000}}}",
+    "note": ""
+  },
+  {
+    "step": "rapport annulations",
+    "method": "GET",
+    "path": "/travel/reports/cancellations",
+    "status": 200,
+    "ms": 41,
+    "snippet": "{\"data\":{\"from\":\"2026-10-23T00:00:00+00:00\",\"to\":\"2026-12-22T00:00:00+00:00\",\"trip_id\":null,\"source\":null,\"office_id\":null,\"cancellations_count\":2,\"passengers_count\":2,\"amount_minor\":600000,\"by_source\":{\"phone\":2},\"by_reason\":[{\"reason\":\"Annulation test\",\"count\":2}]}}",
+    "note": ""
+  },
+  {
+    "step": "export rapport",
+    "method": "POST",
+    "path": "/travel/reports/export",
+    "status": 202,
+    "ms": 41,
+    "snippet": "{\"data\":{\"id\":5,\"report_type\":\"sales\",\"status\":\"pending\",\"from_at\":\"2026-10-23T00:00:00.000000Z\",\"to_at\":\"2026-12-22T00:00:00.000000Z\",\"created_at\":\"2026-11-22T13:33:25.000000Z\",\"expires_at\":null,\"error\":null}}",
+    "note": ""
+  },
+  {
+    "step": "ouvrir PDV",
+    "method": "POST",
+    "path": "/travel/pdv/session/open",
+    "status": 422,
+    "ms": 51,
+    "snippet": "{\"error\":\"Une session de caisse est d\\u00e9j\\u00e0 ouverte pour ce tenant.\",\"message\":\"Une session de caisse est d\\u00e9j\\u00e0 ouverte pour ce tenant.\",\"localized_message\":\"Some fields are incorrect.\"}",
+    "note": ""
+  },
+  {
+    "step": "PDV courante",
+    "method": "GET",
+    "path": "/travel/pdv/session/current",
+    "status": 200,
+    "ms": 63,
+    "snippet": "{\"data\":{\"id\":1,\"status\":\"open\",\"opened_at\":\"2026-11-22T13:28:06+00:00\",\"closed_at\":null,\"opening_balance_minor\":0,\"expected_balance_minor\":null,\"actual_balance_minor\":null,\"difference_minor\":null}}",
+    "note": ""
+  },
+  {
+    "step": "fermer PDV",
+    "method": "POST",
+    "path": "/travel/pdv/session/close",
+    "status": 200,
+    "ms": 40,
+    "snippet": "{\"data\":{\"id\":1,\"status\":\"closed\",\"opened_at\":\"2026-11-22T13:28:06+00:00\",\"closed_at\":\"2026-11-22T13:33:25+00:00\",\"opening_balance_minor\":0,\"expected_balance_minor\":250000,\"actual_balance_minor\":0,\"difference_minor\":-250000}}",
+    "note": ""
+  },
+  {
+    "step": "sync mobile",
+    "method": "POST",
+    "path": "/travel/mobile/sync",
+    "status": 200,
+    "ms": 39,
+    "snippet": "{\"data\":[{\"type\":\"ping\",\"status\":\"error\",\"error\":\"type d'op\\u00e9ration inconnu\"}]}",
+    "note": ""
+  },
+  {
+    "step": "fidelite opt-in",
+    "method": "POST",
+    "path": "/travel/loyalty/opt-in",
+    "status": 200,
+    "ms": 46,
+    "snippet": "{\"data\":{\"contact_identifier\":\"loy285931@e.dz\",\"opted_in\":true,\"points_balance\":0}}",
+    "note": ""
+  },
+  {
+    "step": "compte fidelite",
+    "method": "GET",
+    "path": "/travel/loyalty/account",
+    "status": 200,
+    "ms": 37,
+    "snippet": "{\"data\":{\"contact_identifier\":\"loy285931@e.dz\",\"opt_in\":true,\"points_balance\":0}}",
+    "note": ""
+  },
+  {
+    "step": "recompenses fidelite",
+    "method": "GET",
+    "path": "/travel/loyalty/rewards",
+    "status": 200,
+    "ms": 51,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "step": "compte corporate",
+    "method": "POST",
+    "path": "/travel/corporate-accounts",
+    "status": 201,
+    "ms": 36,
+    "snippet": "{\"data\":{\"company_id\":\"e10857e0-8f39-47ac-91a0-a4f949f30b59\",\"name\":\"Corp 285931\",\"contact_email\":\"corp285931@e.dz\",\"credit_limit_minor\":5000000,\"currency\":\"DZD\",\"is_active\":true,\"updated_at\":\"2026-11-22T13:33:26.000000Z\",\"created_at\":\"2026-11-22T13:33:26.000000Z\",\"id\":5}}",
+    "note": ""
+  },
+  {
+    "step": "devis corporate",
+    "method": "POST",
+    "path": "/travel/corporate-quotes",
+    "status": 201,
+    "ms": 58,
+    "snippet": "{\"data\":{\"corporate_account_id\":5,\"trip_id\":7,\"class_id\":6,\"passengers_count\":3,\"total_amount_minor\":900000,\"currency\":\"DZD\",\"status\":\"draft\",\"expires_at\":\"2026-12-06T13:33:26.000000Z\",\"created_by_user_id\":1,\"company_id\":\"e10857e0-8f39-47ac-91a0-a4f949f30b59\",\"reference\":\"QT-QCOW40ZR6W\",\"updated_at\":\"2026-11-22T13:33:26.000000Z\",\"created_at\":\"2026-11-22T13:33:26.000000Z\",\"id\":2}}",
+    "note": ""
+  },
+  {
+    "step": "affecter equipage",
+    "method": "POST",
+    "path": "/travel/staff-assignments",
+    "status": 201,
+    "ms": 40,
+    "snippet": "{\"data\":{\"id\":4,\"employee_id\":1,\"role\":\"driver\",\"office_id\":null,\"trip_id\":7,\"status\":\"active\",\"revoked_at\":null,\"created_at\":\"2026-11-22T13:33:26.000000Z\",\"updated_at\":\"2026-11-22T13:33:26.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "suivi flotte",
+    "method": "GET",
+    "path": "/travel/fleet/tracking",
+    "status": 200,
+    "ms": 61,
+    "snippet": "{\"data\":{\"vehicles\":[{\"id\":6,\"code\":\"VEH-ADV-175266\",\"registration_number\":null,\"status\":\"active\",\"position\":{\"latitude\":36.75,\"longitude\":3.05,\"source\":\"gps\",\"source_label\":\"GPS embarqu\\u00e9\",\"is_measured\":true,\"recorded_at\":\"2026-11-22T13:33:16.000000Z\"},\"freshness\":{\"state\":\"fresh\",\"label\":\"Position r\\u00e9cente\",\"is_current\":true,\"is_stale\":false,\"is_unavailable\":false,\"age_seconds\":10,\"stale_after_seconds\":1800},\"upcoming_departures\":[]},{\"id\":7,\"code\":\"VEH-ADV-285931\",\"registration_number\":null,\"status\":\"active\",\"position\":null,\"freshness\":{\"state\":\"unavailable\",\"label\":\"Position indisp",
+    "note": ""
+  },
+  {
+    "step": "position vehicule",
+    "method": "POST",
+    "path": "/travel/vehicles/7/position",
+    "status": 200,
+    "ms": 40,
+    "snippet": "{\"data\":{\"id\":7,\"code\":\"VEH-ADV-285931\",\"registration_number\":null,\"seat_capacity\":40,\"seat_layout\":{\"aisle_after\":2,\"seats_per_row\":4},\"effective_seat_layout\":{\"seats_per_row\":4,\"aisle_after\":2,\"is_configured\":true},\"carrier_id\":7,\"status\":\"active\",\"notes\":null,\"created_at\":\"2026-11-22T13:33:24.000000Z\",\"updated_at\":\"2026-11-22T13:33:26.000000Z\",\"position\":{\"latitude\":36.75,\"longitude\":3.05,\"source\":\"gps\",\"source_label\":\"GPS embarqu\\u00e9\",\"is_measured\":true,\"recorded_at\":\"2026-11-22T13:33:26.000000Z\",\"age_seconds\":0,\"freshness\":{\"state\":\"fresh\",\"label\":\"Position r\\u00e9cente\",\"is_current\":tr",
+    "note": ""
+  },
+  {
+    "step": "webhook",
+    "method": "POST",
+    "path": "/travel/webhook-subscriptions",
+    "status": 201,
+    "ms": 61,
+    "snippet": "{\"data\":{\"id\":\"b7d5c744-a17c-4980-818d-397bc6415a10\",\"name\":\"example.com\",\"url\":\"https:\\/\\/example.com\\/hook\",\"carrier_id\":null,\"events\":[\"travel.booking.confirmed.v1\"],\"active\":true,\"has_secret\":true,\"created_at\":\"2026-11-22T13:27:10+00:00\",\"updated_at\":\"2026-11-22T13:27:10+00:00\",\"secret_prefix\":\"271e536b\"}}",
+    "note": ""
+  },
+  {
+    "step": "cle distributeur",
+    "method": "POST",
+    "path": "/travel/distributor-keys",
+    "status": 201,
+    "ms": 39,
+    "snippet": "{\"data\":{\"id\":10,\"name\":\"Dist 285931\",\"scopes\":[\"catalog.read\"],\"api_key\":\"dsk_DOJPkD8gWYvuxDmHVaDdRxypb8D0MeYbd7SkjZha\",\"created_at\":\"2026-11-22T13:33:26.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "cle partenaire",
+    "method": "POST",
+    "path": "/travel/partner-keys",
+    "status": 201,
+    "ms": 37,
+    "snippet": "{\"data\":{\"id\":6,\"carrier_id\":7,\"label\":null,\"api_key\":\"ptk_TIfk1crGNJRW6SBKUF95AdgSR686T64kNWcHGf4Z\",\"created_at\":\"2026-11-22T13:33:26.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "article",
+    "method": "POST",
+    "path": "/travel/articles",
+    "status": 201,
+    "ms": 46,
+    "snippet": "{\"data\":{\"id\":7,\"category_id\":null,\"slug\":\"art-285931\",\"title\":\"Art 285931\",\"body\":\"x\",\"status\":\"draft\",\"author_type\":\"employee\",\"author_id\":1,\"published_at\":null,\"moderated_at\":null,\"created_at\":\"2026-11-22T13:33:26.000000Z\",\"updated_at\":\"2026-11-22T13:33:26.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "site touristique",
+    "method": "POST",
+    "path": "/travel/tourist-sites",
+    "status": 201,
+    "ms": 38,
+    "snippet": "{\"data\":{\"id\":7,\"name\":\"Site 285931\",\"description\":\"x\",\"city_id\":60,\"latitude\":null,\"longitude\":null,\"image_asset_id\":null,\"status\":\"active\"}}",
+    "note": ""
+  },
+  {
+    "step": "quiz",
+    "method": "POST",
+    "path": "/travel/quizzes",
+    "status": 201,
+    "ms": 42,
+    "snippet": "{\"data\":{\"id\":6,\"status\":\"draft\"}}",
+    "note": ""
+  },
+  {
+    "step": "type annonce",
+    "method": "POST",
+    "path": "/travel/advert-types",
+    "status": 201,
+    "ms": 37,
+    "snippet": "{\"data\":{\"id\":5}}",
+    "note": ""
+  },
+  {
+    "step": "contact",
+    "method": "POST",
+    "path": "/travel/contact",
+    "status": 202,
+    "ms": 58,
+    "snippet": "{\"status\":\"received\",\"message\":\"Demande envoyee.\",\"data\":{\"accepted\":true}}",
+    "note": ""
+  },
+  {
+    "step": "taux devise",
+    "method": "POST",
+    "path": "/travel/currency-rates",
+    "status": 422,
+    "ms": 36,
+    "snippet": "{\"error\":\"Une periode de taux se chevauche deja pour cette paire de devises.\",\"message\":\"Une periode de taux se chevauche deja pour cette paire de devises.\",\"localized_message\":\"Some fields are incorrect.\"}",
+    "note": ""
+  },
+  {
+    "step": "convertir devise",
+    "method": "GET",
+    "path": "/travel/currency-rates/convert",
+    "status": 200,
+    "ms": 59,
+    "snippet": "{\"data\":{\"converted_amount_minor\":17000,\"amount_minor\":17000,\"currency\":\"DZD\",\"rate_minor\":17000,\"inverse\":false}}",
+    "note": ""
+  },
+  {
+    "step": "correspondances",
+    "method": "GET",
+    "path": "/travel/trips/connections",
+    "status": 200,
+    "ms": 36,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "step": "recherche flexible",
+    "method": "GET",
+    "path": "/travel/trips/search",
+    "status": 200,
+    "ms": 37,
+    "snippet": "{\"data\":[{\"id\":7,\"code\":\"TRP-ADV-285931\",\"route_id\":8,\"carrier_id\":7,\"vehicle_id\":7,\"departure_date\":\"2026-12-12\",\"departure_time\":\"09:00:00\",\"arrival_date\":\"2026-12-12\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":40,\"status\":\"cancelled\",\"published_at\":\"2026-11-22T13:33:24.000000Z\",\"prices\":[{\"id\":4,\"trip_id\":7,\"class_id\":6,\"adult_price_minor\":300000,\"child_price_minor\":null,\"currency\":\"DZD\",\"created_at\":\"2026-11-22T13:33:24.000000Z\",\"updated_at\":\"2026-11-22T13:33:24.000000Z\"}],\"route\":{\"id\":8,\"code\":\"RTE-ADV-285931\",\"origin_city_id\":60,\"destination_city_id\":62,\"distance",
+    "note": ""
+  }
+]

@@ -37,4 +37,7 @@ return [
         'room_unavailable' => 'Chambre indisponible le :date : plus assez de disponibilités.',
         'below_sold_rooms' => 'Impossible de descendre sous le nombre de chambres déjà vendues le :date.',
     ],
+    'connections' => [
+        'invalid_delay' => 'Le délai de correspondance doit être compris entre 15 et 240 minutes.',
+    ],
 ];
