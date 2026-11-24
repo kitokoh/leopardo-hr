@@ -22,26 +22,6 @@ class SSOController extends Controller
         private readonly OidcFlowService $oidcFlowService,
     ) {}
 
-    /**
-     * #9898 — `employees.company_id` est nullable (dette historique, cf.
-     * #9897). Les trois actions SSO passaient `$actor->company_id`
-     * directement a des methodes qui attendent `string` : un manager sans
-     * tenant provoquait un `TypeError` (500) au lieu d'un refus propre.
-     *
-     * On refuse explicitement : configurer le SSO d'un tenant exige d'en
-     * avoir un. Fail-closed, et le message dit pourquoi.
-     */
-    private function requireCompanyId(Employee $actor): string
-    {
-        $companyId = $actor->company_id;
-
-        if ($companyId === null || $companyId === '') {
-            abort(403, 'Aucun tenant associe a ce compte : configuration SSO impossible.');
-        }
-
-        return $companyId;
-    }
-
     public function providers(): JsonResponse
     {
         return response()->json([
@@ -204,5 +184,31 @@ class SSOController extends Controller
 
             return response()->json(['error' => 'OIDC_CALLBACK_FAILED', 'message' => __('errors.OIDC_CALLBACK_FAILED')], 422);
         }
+    }
+
+    /**
+     * #9898 — `employees.company_id` est nullable (dette historique, cf.
+     * #9897). Les trois actions SSO passaient `$actor->company_id`
+     * directement a des methodes qui attendent `string` : un manager sans
+     * tenant provoquait un `TypeError` (500) au lieu d'un refus propre.
+     *
+     * On refuse explicitement : configurer le SSO d'un tenant exige d'en
+     * avoir un. Fail-closed, et le message dit pourquoi.
+     *
+     * Placee en fin de classe volontairement : la garde
+     * `check-form-request-guard.py` indexe les `validate()` en ligne par
+     * `fichier:ligne` et sa baseline ne peut que DECROITRE. Inserer ce bloc
+     * en tete decalait le `validate()` de `configure()` et faisait echouer la
+     * garde sur une dette qui n'existe pas.
+     */
+    private function requireCompanyId(Employee $actor): string
+    {
+        $companyId = $actor->company_id;
+
+        if ($companyId === null || $companyId === '') {
+            abort(403, 'Aucun tenant associe a ce compte : configuration SSO impossible.');
+        }
+
+        return $companyId;
     }
 }
