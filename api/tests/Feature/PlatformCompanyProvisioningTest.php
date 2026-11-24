@@ -66,7 +66,13 @@ class PlatformCompanyProvisioningTest extends TestCase
         $response->assertJsonPath('data.manager.manager_role', 'principal');
         $response->assertJsonPath('data.company.language', 'fr');
 
-        $this->assertDatabaseHas('companies', [
+        // `companies` est une table PLATEFORME (`public.companies`, cf.
+        // `Company::$table` et le fix #5198). Non qualifiee, elle se resout par
+        // le `search_path` de la session : des qu'un schema `shared_tenants`
+        // existe avec une table homonyme (shadow vide de la fixture MVP), on
+        // interroge la table VIDE et l'assertion echoue alors que la ligne a
+        // bien ete ecrite. On qualifie donc explicitement.
+        $this->assertDatabaseHas('public.companies', [
             'name' => 'Nouvelle Societe',
             'schema_name' => 'shared_tenants',
         ]);

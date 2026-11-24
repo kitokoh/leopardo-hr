@@ -2768,6 +2768,13 @@ trait CreatesMvpSchema
                 $table->uuid('company_id')->index();
                 $table->unsignedBigInteger('subscription_id')->nullable();
                 $table->string('number', 30)->unique();
+                // Issue #6549 — periode de facturation (AAAA-MM). Ajoutee par la
+                // migration `2026_08_31_000001_6549_add_period_to_invoices` ; la
+                // fixture MVP doit la porter aussi, sinon toute classe qui
+                // s'appuie sur ce schema (et non sur les migrations tenant)
+                // casse en 42703 des qu'elle ecrit une facture — c'etait le cas
+                // de QueuedListenersTest.
+                $table->string('period', 7)->nullable();
                 $table->decimal('amount', 12, 2);
                 $table->string('currency', 3)->default('DZD');
                 $table->decimal('tax_amount', 12, 2)->default(0);
