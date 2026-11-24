@@ -37,6 +37,10 @@ servers:
 security:
 - BearerAuth: []
 tags:
+- name: CRM
+  description: 'BC-CRM — gestion de la relation client : comptes, contacts, opportunites, pipelines, activites, segments, canaux de messagerie (WhatsApp, e-mail, SMS), automations et exports. Tenant-scoped, feature flag `crm`.'
+- name: RestaurantManager
+  description: 'BC-RESTO — verticale restauration : succursales, zones, tables, produits et menus, commandes (sur place, a emporter, livraison), cuisine, caisse et sessions, paiements, stock, reservations, personnel, avis, impression et surfaces publiques. Tenant-scoped, feature flag `restaurantmanager`.'
 - name: EduManager
   description: 'BC-EDU EDU-MANAGER — verticale scolaire : campus, annees scolaires, matieres, eleves, classes, admissions, presence, emplois du temps, evaluations, bulletins, frais scolaires, rapports, RGPD et portail parents. Toutes les routes sont tenant-scoped et soumises au feature flag `edumanager` (solution inactive -> 403).'
 - name: TravelAgency
@@ -15364,6 +15368,30 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /crm/accounts/{account}/timeline:
+    get:
+      operationId: api_get_crm_accounts_account_timeline
+      tags: [CRM]
+      summary: GET /crm/accounts/{account}/timeline
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: account
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /crm/activities:
     get:
       operationId: api_get_crm_activities
@@ -15467,6 +15495,756 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/automations:
+    get:
+      operationId: api_get_crm_automations
+      tags: [CRM]
+      summary: GET /crm/automations
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_crm_automations
+      tags: [CRM]
+      summary: POST /crm/automations
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/automations/emergency-stop:
+    post:
+      operationId: api_post_crm_automations_emergency_stop
+      tags: [CRM]
+      summary: POST /crm/automations/emergency-stop
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/automations/events/{event}:
+    post:
+      operationId: api_post_crm_automations_events_event
+      tags: [CRM]
+      summary: POST /crm/automations/events/{event}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: event
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/automations/{automation}:
+    delete:
+      operationId: api_delete_crm_automations_automation
+      tags: [CRM]
+      summary: DELETE /crm/automations/{automation}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: automation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_crm_automations_automation
+      tags: [CRM]
+      summary: GET /crm/automations/{automation}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: automation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_crm_automations_automation
+      tags: [CRM]
+      summary: PUT /crm/automations/{automation}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: automation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/automations/{automation}/activate:
+    post:
+      operationId: api_post_crm_automations_automation_activate
+      tags: [CRM]
+      summary: POST /crm/automations/{automation}/activate
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: automation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/automations/{automation}/pause:
+    post:
+      operationId: api_post_crm_automations_automation_pause
+      tags: [CRM]
+      summary: POST /crm/automations/{automation}/pause
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: automation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/automations/{automation}/runs:
+    get:
+      operationId: api_get_crm_automations_automation_runs
+      tags: [CRM]
+      summary: GET /crm/automations/{automation}/runs
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: automation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/automations/{automation}/simulate:
+    post:
+      operationId: api_post_crm_automations_automation_simulate
+      tags: [CRM]
+      summary: POST /crm/automations/{automation}/simulate
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: automation
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/campaigns:
+    get:
+      operationId: api_get_crm_campaigns
+      tags: [CRM]
+      summary: GET /crm/campaigns
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_crm_campaigns
+      tags: [CRM]
+      summary: POST /crm/campaigns
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/campaigns/{campaign}:
+    delete:
+      operationId: api_delete_crm_campaigns_campaign
+      tags: [CRM]
+      summary: DELETE /crm/campaigns/{campaign}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_crm_campaigns_campaign
+      tags: [CRM]
+      summary: GET /crm/campaigns/{campaign}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_crm_campaigns_campaign
+      tags: [CRM]
+      summary: PUT /crm/campaigns/{campaign}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/campaigns/{campaign}/cancel:
+    post:
+      operationId: api_post_crm_campaigns_campaign_cancel
+      tags: [CRM]
+      summary: POST /crm/campaigns/{campaign}/cancel
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/campaigns/{campaign}/finish:
+    post:
+      operationId: api_post_crm_campaigns_campaign_finish
+      tags: [CRM]
+      summary: POST /crm/campaigns/{campaign}/finish
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/campaigns/{campaign}/pause:
+    post:
+      operationId: api_post_crm_campaigns_campaign_pause
+      tags: [CRM]
+      summary: POST /crm/campaigns/{campaign}/pause
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/campaigns/{campaign}/report:
+    get:
+      operationId: api_get_crm_campaigns_campaign_report
+      tags: [CRM]
+      summary: GET /crm/campaigns/{campaign}/report
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/campaigns/{campaign}/resume:
+    post:
+      operationId: api_post_crm_campaigns_campaign_resume
+      tags: [CRM]
+      summary: POST /crm/campaigns/{campaign}/resume
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/campaigns/{campaign}/start:
+    post:
+      operationId: api_post_crm_campaigns_campaign_start
+      tags: [CRM]
+      summary: POST /crm/campaigns/{campaign}/start
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: campaign
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/channels:
+    get:
+      operationId: api_get_crm_channels
+      tags: [CRM]
+      summary: GET /crm/channels
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_crm_channels
+      tags: [CRM]
+      summary: POST /crm/channels
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/channels/{channel}:
+    patch:
+      operationId: api_patch_crm_channels_channel
+      tags: [CRM]
+      summary: PATCH /crm/channels/{channel}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: channel
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/channels/{channel}/conversations:
+    get:
+      operationId: api_get_crm_channels_channel_conversations
+      tags: [CRM]
+      summary: GET /crm/channels/{channel}/conversations
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: channel
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/channels/{channel}/messages:
+    get:
+      operationId: api_get_crm_channels_channel_messages
+      tags: [CRM]
+      summary: GET /crm/channels/{channel}/messages
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: channel
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/channels/{channel}/observability:
+    get:
+      operationId: api_get_crm_channels_channel_observability
+      tags: [CRM]
+      summary: GET /crm/channels/{channel}/observability
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: channel
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/channels/{channel}/send:
+    post:
+      operationId: api_post_crm_channels_channel_send
+      tags: [CRM]
+      summary: POST /crm/channels/{channel}/send
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: channel
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/consents:
+    get:
+      operationId: api_get_crm_consents
+      tags: [CRM]
+      summary: GET /crm/consents
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_crm_consents
+      tags: [CRM]
+      summary: POST /crm/consents
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/consents/{consent}:
+    get:
+      operationId: api_get_crm_consents_consent
+      tags: [CRM]
+      summary: GET /crm/consents/{consent}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: consent
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/consents/{consent}/revoke:
+    post:
+      operationId: api_post_crm_consents_consent_revoke
+      tags: [CRM]
+      summary: POST /crm/consents/{consent}/revoke
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: consent
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
   /crm/contacts:
@@ -15611,6 +16389,38 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+  /crm/dashboard/pipeline:
+    get:
+      operationId: api_get_crm_dashboard_pipeline
+      tags: [CRM]
+      summary: GET /crm/dashboard/pipeline
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /crm/dashboard/quality:
+    get:
+      operationId: api_get_crm_dashboard_quality
+      tags: [CRM]
+      summary: GET /crm/dashboard/quality
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /crm/dedup/suggestions:
     get:
       operationId: api_get_crm_dedup_suggestions
@@ -15741,6 +16551,159 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+  /crm/email/marketing:
+    post:
+      operationId: api_post_crm_email_marketing
+      tags: [CRM]
+      summary: POST /crm/email/marketing
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/email/transactional:
+    post:
+      operationId: api_post_crm_email_transactional
+      tags: [CRM]
+      summary: POST /crm/email/transactional
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/email/unsubscribe:
+    post:
+      operationId: api_post_crm_email_unsubscribe
+      tags: [CRM]
+      summary: POST /crm/email/unsubscribe
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/email/webhook:
+    post:
+      operationId: api_post_crm_email_webhook
+      tags: [CRM]
+      summary: POST /crm/email/webhook
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/exports:
+    get:
+      operationId: api_get_crm_exports
+      tags: [CRM]
+      summary: GET /crm/exports
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_crm_exports
+      tags: [CRM]
+      summary: POST /crm/exports
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/exports/{export}:
+    get:
+      operationId: api_get_crm_exports_export
+      tags: [CRM]
+      summary: GET /crm/exports/{export}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: export
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/exports/{export}/download:
+    get:
+      operationId: api_get_crm_exports_export_download
+      tags: [CRM]
+      summary: GET /crm/exports/{export}/download
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: export
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /crm/imports:
     post:
       operationId: api_post_crm_imports
@@ -16423,6 +17386,377 @@ paths:
           description: Opportunité absente du tenant courant
         '422':
           description: Étape inconnue, étape terminale, ou motif de perte manquant/inattendu
+  /crm/read-models:
+    get:
+      operationId: api_get_crm_read_models
+      tags: [CRM]
+      summary: GET /crm/read-models
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /crm/search:
+    get:
+      operationId: api_get_crm_search
+      tags: [CRM]
+      summary: GET /crm/search
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /crm/segments:
+    get:
+      operationId: api_get_crm_segments
+      tags: [CRM]
+      summary: GET /crm/segments
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_crm_segments
+      tags: [CRM]
+      summary: POST /crm/segments
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/segments/{segment}:
+    delete:
+      operationId: api_delete_crm_segments_segment
+      tags: [CRM]
+      summary: DELETE /crm/segments/{segment}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: segment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_crm_segments_segment
+      tags: [CRM]
+      summary: GET /crm/segments/{segment}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: segment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_crm_segments_segment
+      tags: [CRM]
+      summary: PUT /crm/segments/{segment}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: segment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/segments/{segment}/members:
+    get:
+      operationId: api_get_crm_segments_segment_members
+      tags: [CRM]
+      summary: GET /crm/segments/{segment}/members
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: segment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /crm/segments/{segment}/rebuild:
+    post:
+      operationId: api_post_crm_segments_segment_rebuild
+      tags: [CRM]
+      summary: POST /crm/segments/{segment}/rebuild
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: segment
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/tasks:
+    get:
+      operationId: api_get_crm_tasks
+      tags: [CRM]
+      summary: GET /crm/tasks
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_crm_tasks
+      tags: [CRM]
+      summary: POST /crm/tasks
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/tasks/{task}:
+    delete:
+      operationId: api_delete_crm_tasks_task
+      tags: [CRM]
+      summary: DELETE /crm/tasks/{task}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_crm_tasks_task
+      tags: [CRM]
+      summary: GET /crm/tasks/{task}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    patch:
+      operationId: api_patch_crm_tasks_task
+      tags: [CRM]
+      summary: PATCH /crm/tasks/{task}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/tasks/{task}/complete:
+    post:
+      operationId: api_post_crm_tasks_task_complete
+      tags: [CRM]
+      summary: POST /crm/tasks/{task}/complete
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/tasks/{task}/reopen:
+    post:
+      operationId: api_post_crm_tasks_task_reopen
+      tags: [CRM]
+      summary: POST /crm/tasks/{task}/reopen
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: task
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /crm/webhooks/whatsapp:
+    get:
+      operationId: api_get_crm_webhooks_whatsapp
+      tags: [CRM]
+      summary: GET /crm/webhooks/whatsapp
+      description: |
+        Surface PUBLIQUE : aucun token Sanctum. Le tenant est resolu par le slug, le lien signe ou le jeton de boutique ; 404 fail-closed si la ressource n'est pas publiee.
+      security: []
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      operationId: api_post_crm_webhooks_whatsapp
+      tags: [CRM]
+      summary: POST /crm/webhooks/whatsapp
+      description: |
+        Surface PUBLIQUE : aucun token Sanctum. Le tenant est resolu par le slug, le lien signe ou le jeton de boutique ; 404 fail-closed si la ressource n'est pas publiee.
+      security: []
+      responses:
+        '201':
+          description: Ressource creee
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /dashboard/admin:
     get:
       operationId: api_get_dashboard_admin
@@ -53472,6 +54806,130 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/branches/{restaurantBranch}:
+    delete:
+      operationId: api_delete_restaurant_branches_restaurantbranch
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/branches/{restaurantBranch}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_branches_restaurantbranch
+      tags: [RestaurantManager]
+      summary: GET /restaurant/branches/{restaurantBranch}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_branches_restaurantbranch
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/branches/{restaurantBranch}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/branches/{restaurantBranch}/cancellation-policy:
+    put:
+      operationId: api_put_restaurant_branches_restaurantbranch_cancellation_policy
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/branches/{restaurantBranch}/cancellation-policy
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/branches/{restaurantBranch}/public-menu-link:
+    post:
+      operationId: api_post_restaurant_branches_restaurantbranch_public_menu_link
+      tags: [RestaurantManager]
+      summary: POST /restaurant/branches/{restaurantBranch}/public-menu-link
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/branches/{restaurantBranch}/public-profile:
     get:
       operationId: api_get_restaurant_branches_by_restaurantBranch_public_profile
@@ -53738,6 +55196,30 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /restaurant/branches/{restaurantBranch}/zones:
+    get:
+      operationId: api_get_restaurant_branches_restaurantbranch_zones
+      tags: [RestaurantManager]
+      summary: GET /restaurant/branches/{restaurantBranch}/zones
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantBranch
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /restaurant/categories:
     get:
       operationId: api_get_restaurant_categories
@@ -53769,6 +55251,255 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/categories/{restaurantCategory}:
+    delete:
+      operationId: api_delete_restaurant_categories_restaurantcategory
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/categories/{restaurantCategory}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantCategory
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_categories_restaurantcategory
+      tags: [RestaurantManager]
+      summary: GET /restaurant/categories/{restaurantCategory}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantCategory
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_categories_restaurantcategory
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/categories/{restaurantCategory}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantCategory
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/dashboard/kpis:
+    get:
+      operationId: api_get_restaurant_dashboard_kpis
+      tags: [RestaurantManager]
+      summary: GET /restaurant/dashboard/kpis
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/deliveries:
+    get:
+      operationId: api_get_restaurant_deliveries
+      tags: [RestaurantManager]
+      summary: GET /restaurant/deliveries
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_restaurant_deliveries
+      tags: [RestaurantManager]
+      summary: POST /restaurant/deliveries
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/deliveries/{restaurantDelivery}:
+    get:
+      operationId: api_get_restaurant_deliveries_restaurantdelivery
+      tags: [RestaurantManager]
+      summary: GET /restaurant/deliveries/{restaurantDelivery}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDelivery
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/deliveries/{restaurantDelivery}/assign:
+    post:
+      operationId: api_post_restaurant_deliveries_restaurantdelivery_assign
+      tags: [RestaurantManager]
+      summary: POST /restaurant/deliveries/{restaurantDelivery}/assign
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDelivery
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/deliveries/{restaurantDelivery}/cancel:
+    post:
+      operationId: api_post_restaurant_deliveries_restaurantdelivery_cancel
+      tags: [RestaurantManager]
+      summary: POST /restaurant/deliveries/{restaurantDelivery}/cancel
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDelivery
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/deliveries/{restaurantDelivery}/deliver:
+    post:
+      operationId: api_post_restaurant_deliveries_restaurantdelivery_deliver
+      tags: [RestaurantManager]
+      summary: POST /restaurant/deliveries/{restaurantDelivery}/deliver
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDelivery
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/deliveries/{restaurantDelivery}/out-for-delivery:
+    post:
+      operationId: api_post_restaurant_deliveries_restaurantdelivery_out_for_delivery
+      tags: [RestaurantManager]
+      summary: POST /restaurant/deliveries/{restaurantDelivery}/out-for-delivery
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDelivery
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
   /restaurant/delivery-riders:
@@ -53804,6 +55535,78 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/delivery-riders/{restaurantDeliveryRider}:
+    delete:
+      operationId: api_delete_restaurant_delivery_riders_restaurantdeliveryrider
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/delivery-riders/{restaurantDeliveryRider}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDeliveryRider
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_delivery_riders_restaurantdeliveryrider
+      tags: [RestaurantManager]
+      summary: GET /restaurant/delivery-riders/{restaurantDeliveryRider}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDeliveryRider
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_delivery_riders_restaurantdeliveryrider
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/delivery-riders/{restaurantDeliveryRider}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDeliveryRider
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/delivery-zones:
     get:
       operationId: api_get_restaurant_delivery_zones
@@ -53837,6 +55640,118 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/delivery-zones/{restaurantDeliveryZone}:
+    delete:
+      operationId: api_delete_restaurant_delivery_zones_restaurantdeliveryzone
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/delivery-zones/{restaurantDeliveryZone}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDeliveryZone
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_delivery_zones_restaurantdeliveryzone
+      tags: [RestaurantManager]
+      summary: GET /restaurant/delivery-zones/{restaurantDeliveryZone}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDeliveryZone
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_delivery_zones_restaurantdeliveryzone
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/delivery-zones/{restaurantDeliveryZone}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDeliveryZone
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/delivery-zones/{restaurantDeliveryZone}/quote:
+    get:
+      operationId: api_get_restaurant_delivery_zones_restaurantdeliveryzone_quote
+      tags: [RestaurantManager]
+      summary: GET /restaurant/delivery-zones/{restaurantDeliveryZone}/quote
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDeliveryZone
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/health/metrics:
+    get:
+      operationId: api_get_restaurant_health_metrics
+      tags: [RestaurantManager]
+      summary: GET /restaurant/health/metrics
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /restaurant/hours:
     get:
       operationId: api_get_restaurant_hours
@@ -53868,6 +55783,78 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/hours/{restaurantHour}:
+    delete:
+      operationId: api_delete_restaurant_hours_restauranthour
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/hours/{restaurantHour}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantHour
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_hours_restauranthour
+      tags: [RestaurantManager]
+      summary: GET /restaurant/hours/{restaurantHour}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantHour
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_hours_restauranthour
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/hours/{restaurantHour}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantHour
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
   /restaurant/ingredients:
@@ -53903,6 +55890,218 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/ingredients/{restaurantIngredient}:
+    delete:
+      operationId: api_delete_restaurant_ingredients_restaurantingredient
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/ingredients/{restaurantIngredient}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantIngredient
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_ingredients_restaurantingredient
+      tags: [RestaurantManager]
+      summary: GET /restaurant/ingredients/{restaurantIngredient}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantIngredient
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_ingredients_restaurantingredient
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/ingredients/{restaurantIngredient}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantIngredient
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/inventory-counts:
+    get:
+      operationId: api_get_restaurant_inventory_counts
+      tags: [RestaurantManager]
+      summary: GET /restaurant/inventory-counts
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_restaurant_inventory_counts
+      tags: [RestaurantManager]
+      summary: POST /restaurant/inventory-counts
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/inventory-counts/{restaurantInventoryCount}:
+    get:
+      operationId: api_get_restaurant_inventory_counts_restaurantinventorycount
+      tags: [RestaurantManager]
+      summary: GET /restaurant/inventory-counts/{restaurantInventoryCount}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantInventoryCount
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/inventory-counts/{restaurantInventoryCount}/approve:
+    post:
+      operationId: api_post_restaurant_inventory_counts_restaurantinventorycount_approve
+      tags: [RestaurantManager]
+      summary: POST /restaurant/inventory-counts/{restaurantInventoryCount}/approve
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantInventoryCount
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}:
+    put:
+      operationId: api_put_restaurant_inventory_counts_restaurantinventorycount_items_restaurantinventorycountitem
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/inventory-counts/{restaurantInventoryCount}/items/{restaurantInventoryCountItem}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantInventoryCount
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: restaurantInventoryCountItem
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/inventory-counts/{restaurantInventoryCount}/submit:
+    post:
+      operationId: api_post_restaurant_inventory_counts_restaurantinventorycount_submit
+      tags: [RestaurantManager]
+      summary: POST /restaurant/inventory-counts/{restaurantInventoryCount}/submit
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantInventoryCount
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/inventory-movements:
     post:
       operationId: api_post_restaurant_inventory_movements
@@ -53928,6 +56127,45 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+    get:
+      operationId: api_get_restaurant_inventory_movements
+      tags: [RestaurantManager]
+      summary: GET /restaurant/inventory-movements
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/inventory-movements/{restaurantInventoryMovement}:
+    get:
+      operationId: api_get_restaurant_inventory_movements_restaurantinventorymovement
+      tags: [RestaurantManager]
+      summary: GET /restaurant/inventory-movements/{restaurantInventoryMovement}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantInventoryMovement
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /restaurant/kitchen/actions:
     post:
       operationId: api_post_restaurant_kitchen_actions
@@ -53978,6 +56216,310 @@ paths:
           $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/kitchen/orders:
+    get:
+      operationId: api_get_restaurant_kitchen_orders
+      tags: [RestaurantManager]
+      summary: GET /restaurant/kitchen/orders
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/kitchen/orders/{restaurantOrder}/ready:
+    post:
+      operationId: api_post_restaurant_kitchen_orders_restaurantorder_ready
+      tags: [RestaurantManager]
+      summary: POST /restaurant/kitchen/orders/{restaurantOrder}/ready
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/kitchen/orders/{restaurantOrder}/start:
+    post:
+      operationId: api_post_restaurant_kitchen_orders_restaurantorder_start
+      tags: [RestaurantManager]
+      summary: POST /restaurant/kitchen/orders/{restaurantOrder}/start
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/loyalty-customers:
+    get:
+      operationId: api_get_restaurant_loyalty_customers
+      tags: [RestaurantManager]
+      summary: GET /restaurant/loyalty-customers
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_restaurant_loyalty_customers
+      tags: [RestaurantManager]
+      summary: POST /restaurant/loyalty-customers
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}:
+    get:
+      operationId: api_get_restaurant_loyalty_customers_restaurantloyaltycustomer
+      tags: [RestaurantManager]
+      summary: GET /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantLoyaltyCustomer
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/credit:
+    post:
+      operationId: api_post_restaurant_loyalty_customers_restaurantloyaltycustomer_credit
+      tags: [RestaurantManager]
+      summary: POST /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/credit
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantLoyaltyCustomer
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/movements:
+    get:
+      operationId: api_get_restaurant_loyalty_customers_restaurantloyaltycustomer_movements
+      tags: [RestaurantManager]
+      summary: GET /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/movements
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantLoyaltyCustomer
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/redeem:
+    post:
+      operationId: api_post_restaurant_loyalty_customers_restaurantloyaltycustomer_redeem
+      tags: [RestaurantManager]
+      summary: POST /restaurant/loyalty-customers/{restaurantLoyaltyCustomer}/redeem
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantLoyaltyCustomer
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/loyalty-programs:
+    get:
+      operationId: api_get_restaurant_loyalty_programs
+      tags: [RestaurantManager]
+      summary: GET /restaurant/loyalty-programs
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_restaurant_loyalty_programs
+      tags: [RestaurantManager]
+      summary: POST /restaurant/loyalty-programs
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/loyalty-programs/{restaurantLoyaltyProgram}:
+    get:
+      operationId: api_get_restaurant_loyalty_programs_restaurantloyaltyprogram
+      tags: [RestaurantManager]
+      summary: GET /restaurant/loyalty-programs/{restaurantLoyaltyProgram}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantLoyaltyProgram
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_loyalty_programs_restaurantloyaltyprogram
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/loyalty-programs/{restaurantLoyaltyProgram}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantLoyaltyProgram
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/marketplace/{provider}/webhooks:
+    post:
+      operationId: api_post_restaurant_marketplace_provider_webhooks
+      tags: [RestaurantManager]
+      summary: POST /restaurant/marketplace/{provider}/webhooks
+      description: |
+        Surface PUBLIQUE : aucun token Sanctum. Le tenant est resolu par le slug, le lien signe ou le jeton de boutique ; 404 fail-closed si la ressource n'est pas publiee.
+      security: []
+      parameters:
+      - name: provider
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/menus:
     get:
       operationId: api_get_restaurant_menus
@@ -54011,6 +56553,78 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/menus/{restaurantMenu}:
+    delete:
+      operationId: api_delete_restaurant_menus_restaurantmenu
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/menus/{restaurantMenu}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_menus_restaurantmenu
+      tags: [RestaurantManager]
+      summary: GET /restaurant/menus/{restaurantMenu}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_menus_restaurantmenu
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/menus/{restaurantMenu}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/menus/{restaurantMenu}/items:
     post:
       operationId: api_post_restaurant_menus_by_restaurantMenu_items
@@ -54039,6 +56653,356 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+    get:
+      operationId: api_get_restaurant_menus_restaurantmenu_items
+      tags: [RestaurantManager]
+      summary: GET /restaurant/menus/{restaurantMenu}/items
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}:
+    delete:
+      operationId: api_delete_restaurant_menus_restaurantmenu_items_restaurantmenuitem
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: restaurantMenuItem
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_menus_restaurantmenu_items_restaurantmenuitem
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/menus/{restaurantMenu}/items/{restaurantMenuItem}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantMenu
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: restaurantMenuItem
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/mobile/manager/kpis:
+    get:
+      operationId: api_get_restaurant_mobile_manager_kpis
+      tags: [RestaurantManager]
+      summary: GET /restaurant/mobile/manager/kpis
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/mobile/manager/pos-sessions/current:
+    get:
+      operationId: api_get_restaurant_mobile_manager_pos_sessions_current
+      tags: [RestaurantManager]
+      summary: GET /restaurant/mobile/manager/pos-sessions/current
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/mobile/manager/pos-sessions/{restaurantPosSession}/close:
+    post:
+      operationId: api_post_restaurant_mobile_manager_pos_sessions_restaurantpossession_close
+      tags: [RestaurantManager]
+      summary: POST /restaurant/mobile/manager/pos-sessions/{restaurantPosSession}/close
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPosSession
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/mobile/manager/stock-alerts:
+    get:
+      operationId: api_get_restaurant_mobile_manager_stock_alerts
+      tags: [RestaurantManager]
+      summary: GET /restaurant/mobile/manager/stock-alerts
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/mobile/rider/deliveries:
+    get:
+      operationId: api_get_restaurant_mobile_rider_deliveries
+      tags: [RestaurantManager]
+      summary: GET /restaurant/mobile/rider/deliveries
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/mobile/rider/deliveries/{restaurantDelivery}:
+    get:
+      operationId: api_get_restaurant_mobile_rider_deliveries_restaurantdelivery
+      tags: [RestaurantManager]
+      summary: GET /restaurant/mobile/rider/deliveries/{restaurantDelivery}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDelivery
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/mobile/rider/deliveries/{restaurantDelivery}/deliver:
+    post:
+      operationId: api_post_restaurant_mobile_rider_deliveries_restaurantdelivery_deliver
+      tags: [RestaurantManager]
+      summary: POST /restaurant/mobile/rider/deliveries/{restaurantDelivery}/deliver
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDelivery
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/mobile/rider/deliveries/{restaurantDelivery}/out-for-delivery:
+    post:
+      operationId: api_post_restaurant_mobile_rider_deliveries_restaurantdelivery_out_for_delivery
+      tags: [RestaurantManager]
+      summary: POST /restaurant/mobile/rider/deliveries/{restaurantDelivery}/out-for-delivery
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantDelivery
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/mobile/server/orders:
+    get:
+      operationId: api_get_restaurant_mobile_server_orders
+      tags: [RestaurantManager]
+      summary: GET /restaurant/mobile/server/orders
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/mobile/server/orders/{restaurantOrder}/pay:
+    post:
+      operationId: api_post_restaurant_mobile_server_orders_restaurantorder_pay
+      tags: [RestaurantManager]
+      summary: POST /restaurant/mobile/server/orders/{restaurantOrder}/pay
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/mobile/server/orders/{restaurantOrder}/serve:
+    post:
+      operationId: api_post_restaurant_mobile_server_orders_restaurantorder_serve
+      tags: [RestaurantManager]
+      summary: POST /restaurant/mobile/server/orders/{restaurantOrder}/serve
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/mobile/server/tables:
+    get:
+      operationId: api_get_restaurant_mobile_server_tables
+      tags: [RestaurantManager]
+      summary: GET /restaurant/mobile/server/tables
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/mobile/sync:
+    post:
+      operationId: api_post_restaurant_mobile_sync
+      tags: [RestaurantManager]
+      summary: POST /restaurant/mobile/sync
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
   /restaurant/orders:
@@ -54079,6 +57043,132 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/orders/{restaurantOrder}:
+    get:
+      operationId: api_get_restaurant_orders_restaurantorder
+      tags: [RestaurantManager]
+      summary: GET /restaurant/orders/{restaurantOrder}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/orders/{restaurantOrder}/bill:
+    get:
+      operationId: api_get_restaurant_orders_restaurantorder_bill
+      tags: [RestaurantManager]
+      summary: GET /restaurant/orders/{restaurantOrder}/bill
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/orders/{restaurantOrder}/cancel:
+    post:
+      operationId: api_post_restaurant_orders_restaurantorder_cancel
+      tags: [RestaurantManager]
+      summary: POST /restaurant/orders/{restaurantOrder}/cancel
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/orders/{restaurantOrder}/confirm:
+    post:
+      operationId: api_post_restaurant_orders_restaurantorder_confirm
+      tags: [RestaurantManager]
+      summary: POST /restaurant/orders/{restaurantOrder}/confirm
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/orders/{restaurantOrder}/delivery:
+    post:
+      operationId: api_post_restaurant_orders_restaurantorder_delivery
+      tags: [RestaurantManager]
+      summary: POST /restaurant/orders/{restaurantOrder}/delivery
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/orders/{restaurantOrder}/items:
     post:
       operationId: api_post_restaurant_orders_by_restaurantOrder_items
@@ -54101,6 +57191,37 @@ paths:
       responses:
         '201':
           description: Ligne ajoutée
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/orders/{restaurantOrder}/items/{restaurantOrderItem}/cancel:
+    post:
+      operationId: api_post_restaurant_orders_restaurantorder_items_restaurantorderitem_cancel
+      tags: [RestaurantManager]
+      summary: POST /restaurant/orders/{restaurantOrder}/items/{restaurantOrderItem}/cancel
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: restaurantOrderItem
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -54187,6 +57308,84 @@ paths:
   # de `components/schemas` qui reflète EXACTEMENT les règles du FormRequest
   # correspondant (champs requis, bornes, énumérations).
   # ─────────────────────────────────────────────────────────────────────────
+  /restaurant/orders/{restaurantOrder}/refund:
+    post:
+      operationId: api_post_restaurant_orders_restaurantorder_refund
+      tags: [RestaurantManager]
+      summary: POST /restaurant/orders/{restaurantOrder}/refund
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/orders/{restaurantOrder}/serve:
+    post:
+      operationId: api_post_restaurant_orders_restaurantorder_serve
+      tags: [RestaurantManager]
+      summary: POST /restaurant/orders/{restaurantOrder}/serve
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/orders/{restaurantOrder}/submit:
+    post:
+      operationId: api_post_restaurant_orders_restaurantorder_submit
+      tags: [RestaurantManager]
+      summary: POST /restaurant/orders/{restaurantOrder}/submit
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/payments/configuration:
     get:
       tags:
@@ -54204,6 +57403,22 @@ paths:
                   data:
                     type: object
                     additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/ping:
+    get:
+      operationId: api_get_restaurant_ping
+      tags: [RestaurantManager]
+      summary: GET /restaurant/ping
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
         '401':
           $ref: '#/components/responses/Error401'
         '403':
@@ -54236,6 +57451,96 @@ paths:
           description: Une session est déjà ouverte pour cette succursale
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/pos-sessions/current:
+    get:
+      operationId: api_get_restaurant_pos_sessions_current
+      tags: [RestaurantManager]
+      summary: GET /restaurant/pos-sessions/current
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/pos-sessions/{restaurantPosSession}:
+    get:
+      operationId: api_get_restaurant_pos_sessions_restaurantpossession
+      tags: [RestaurantManager]
+      summary: GET /restaurant/pos-sessions/{restaurantPosSession}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPosSession
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/pos-sessions/{restaurantPosSession}/close:
+    post:
+      operationId: api_post_restaurant_pos_sessions_restaurantpossession_close
+      tags: [RestaurantManager]
+      summary: POST /restaurant/pos-sessions/{restaurantPosSession}/close
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPosSession
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/pos-sessions/{restaurantPosSession}/cogs:
+    get:
+      operationId: api_get_restaurant_pos_sessions_restaurantpossession_cogs
+      tags: [RestaurantManager]
+      summary: GET /restaurant/pos-sessions/{restaurantPosSession}/cogs
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPosSession
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /restaurant/print-jobs:
     get:
       operationId: api_get_restaurant_print_jobs
@@ -54618,6 +57923,156 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/products/{restaurantProduct}:
+    delete:
+      operationId: api_delete_restaurant_products_restaurantproduct
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/products/{restaurantProduct}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_products_restaurantproduct
+      tags: [RestaurantManager]
+      summary: GET /restaurant/products/{restaurantProduct}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_products_restaurantproduct
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/products/{restaurantProduct}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/products/{restaurantProduct}/ingredients:
+    get:
+      operationId: api_get_restaurant_products_restaurantproduct_ingredients
+      tags: [RestaurantManager]
+      summary: GET /restaurant/products/{restaurantProduct}/ingredients
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    post:
+      operationId: api_post_restaurant_products_restaurantproduct_ingredients
+      tags: [RestaurantManager]
+      summary: POST /restaurant/products/{restaurantProduct}/ingredients
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/products/{restaurantProduct}/ingredients/{restaurantProductIngredient}:
+    delete:
+      operationId: api_delete_restaurant_products_restaurantproduct_ingredients_restaurantproductingredient
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/products/{restaurantProduct}/ingredients/{restaurantProductIngredient}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantProduct
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: restaurantProductIngredient
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /restaurant/products/{restaurantProduct}/publication:
     patch:
       operationId: api_patch_restaurant_products_by_restaurantProduct_publication
@@ -54659,6 +58114,178 @@ paths:
         '422':
           $ref: '#/components/responses/Error422'
 
+  /restaurant/promotions:
+    get:
+      operationId: api_get_restaurant_promotions
+      tags: [RestaurantManager]
+      summary: GET /restaurant/promotions
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_restaurant_promotions
+      tags: [RestaurantManager]
+      summary: POST /restaurant/promotions
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/promotions/validate:
+    post:
+      operationId: api_post_restaurant_promotions_validate
+      tags: [RestaurantManager]
+      summary: POST /restaurant/promotions/validate
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/promotions/{restaurantPromotion}:
+    delete:
+      operationId: api_delete_restaurant_promotions_restaurantpromotion
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/promotions/{restaurantPromotion}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPromotion
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_promotions_restaurantpromotion
+      tags: [RestaurantManager]
+      summary: GET /restaurant/promotions/{restaurantPromotion}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPromotion
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_promotions_restaurantpromotion
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/promotions/{restaurantPromotion}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPromotion
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/public/menu:
+    get:
+      operationId: api_get_restaurant_public_menu
+      tags: [RestaurantManager]
+      summary: GET /restaurant/public/menu
+      description: |
+        Surface PUBLIQUE : aucun token Sanctum. Le tenant est resolu par le slug, le lien signe ou le jeton de boutique ; 404 fail-closed si la ressource n'est pas publiee.
+      security: []
+      responses:
+        '200':
+          description: Succes
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/public/orders:
+    post:
+      operationId: api_post_restaurant_public_orders
+      tags: [RestaurantManager]
+      summary: POST /restaurant/public/orders
+      description: |
+        Surface PUBLIQUE : aucun token Sanctum. Le tenant est resolu par le slug, le lien signe ou le jeton de boutique ; 404 fail-closed si la ressource n'est pas publiee.
+      security: []
+      responses:
+        '201':
+          description: Ressource creee
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/public/orders/{order}/pay:
+    post:
+      operationId: api_post_restaurant_public_orders_order_pay
+      tags: [RestaurantManager]
+      summary: POST /restaurant/public/orders/{order}/pay
+      description: |
+        Surface PUBLIQUE : aucun token Sanctum. Le tenant est resolu par le slug, le lien signe ou le jeton de boutique ; 404 fail-closed si la ressource n'est pas publiee.
+      security: []
+      parameters:
+      - name: order
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/purchase-orders:
     get:
       operationId: api_get_restaurant_purchase_orders
@@ -54692,6 +58319,326 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}:
+    delete:
+      operationId: api_delete_restaurant_purchase_orders_restaurantpurchaseorder
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/purchase-orders/{restaurantPurchaseOrder}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_purchase_orders_restaurantpurchaseorder
+      tags: [RestaurantManager]
+      summary: GET /restaurant/purchase-orders/{restaurantPurchaseOrder}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_purchase_orders_restaurantpurchaseorder
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/purchase-orders/{restaurantPurchaseOrder}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/cancel:
+    post:
+      operationId: api_post_restaurant_purchase_orders_restaurantpurchaseorder_cancel
+      tags: [RestaurantManager]
+      summary: POST /restaurant/purchase-orders/{restaurantPurchaseOrder}/cancel
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/items:
+    post:
+      operationId: api_post_restaurant_purchase_orders_restaurantpurchaseorder_items
+      tags: [RestaurantManager]
+      summary: POST /restaurant/purchase-orders/{restaurantPurchaseOrder}/items
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/items/{restaurantPurchaseOrderItem}:
+    delete:
+      operationId: api_delete_restaurant_purchase_orders_restaurantpurchaseorder_items_restaurantpurchaseorderitem
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/purchase-orders/{restaurantPurchaseOrder}/items/{restaurantPurchaseOrderItem}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: restaurantPurchaseOrderItem
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/receive:
+    post:
+      operationId: api_post_restaurant_purchase_orders_restaurantpurchaseorder_receive
+      tags: [RestaurantManager]
+      summary: POST /restaurant/purchase-orders/{restaurantPurchaseOrder}/receive
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/purchase-orders/{restaurantPurchaseOrder}/send:
+    post:
+      operationId: api_post_restaurant_purchase_orders_restaurantpurchaseorder_send
+      tags: [RestaurantManager]
+      summary: POST /restaurant/purchase-orders/{restaurantPurchaseOrder}/send
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantPurchaseOrder
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/receivings:
+    get:
+      operationId: api_get_restaurant_receivings
+      tags: [RestaurantManager]
+      summary: GET /restaurant/receivings
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+    post:
+      operationId: api_post_restaurant_receivings
+      tags: [RestaurantManager]
+      summary: POST /restaurant/receivings
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/receivings/{restaurantReceiving}:
+    get:
+      operationId: api_get_restaurant_receivings_restaurantreceiving
+      tags: [RestaurantManager]
+      summary: GET /restaurant/receivings/{restaurantReceiving}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReceiving
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+  /restaurant/reports/cogs:
+    get:
+      operationId: api_get_restaurant_reports_cogs
+      tags: [RestaurantManager]
+      summary: GET /restaurant/reports/cogs
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/reports/export:
+    post:
+      operationId: api_post_restaurant_reports_export
+      tags: [RestaurantManager]
+      summary: POST /restaurant/reports/export
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/reports/export/{export}:
+    get:
+      operationId: api_get_restaurant_reports_export_export
+      tags: [RestaurantManager]
+      summary: GET /restaurant/reports/export/{export}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: export
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
   /restaurant/reports/group:
     get:
       operationId: api_get_restaurant_reports_group
@@ -54784,6 +58731,86 @@ paths:
         '422':
           $ref: '#/components/responses/Error422'
 
+  /restaurant/reports/kpis:
+    get:
+      operationId: api_get_restaurant_reports_kpis
+      tags: [RestaurantManager]
+      summary: GET /restaurant/reports/kpis
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/reports/occupancy:
+    get:
+      operationId: api_get_restaurant_reports_occupancy
+      tags: [RestaurantManager]
+      summary: GET /restaurant/reports/occupancy
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/reports/pos:
+    get:
+      operationId: api_get_restaurant_reports_pos
+      tags: [RestaurantManager]
+      summary: GET /restaurant/reports/pos
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/reports/products:
+    get:
+      operationId: api_get_restaurant_reports_products
+      tags: [RestaurantManager]
+      summary: GET /restaurant/reports/products
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/reports/sales:
+    get:
+      operationId: api_get_restaurant_reports_sales
+      tags: [RestaurantManager]
+      summary: GET /restaurant/reports/sales
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /restaurant/reservations:
     get:
       operationId: api_get_restaurant_reservations
@@ -54821,6 +58848,201 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/reservations/availability:
+    get:
+      operationId: api_get_restaurant_reservations_availability
+      tags: [RestaurantManager]
+      summary: GET /restaurant/reservations/availability
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/reservations/{restaurantReservation}:
+    get:
+      operationId: api_get_restaurant_reservations_restaurantreservation
+      tags: [RestaurantManager]
+      summary: GET /restaurant/reservations/{restaurantReservation}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_reservations_restaurantreservation
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/reservations/{restaurantReservation}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/reservations/{restaurantReservation}/cancel:
+    post:
+      operationId: api_post_restaurant_reservations_restaurantreservation_cancel
+      tags: [RestaurantManager]
+      summary: POST /restaurant/reservations/{restaurantReservation}/cancel
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/reservations/{restaurantReservation}/check-in:
+    post:
+      operationId: api_post_restaurant_reservations_restaurantreservation_check_in
+      tags: [RestaurantManager]
+      summary: POST /restaurant/reservations/{restaurantReservation}/check-in
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/reservations/{restaurantReservation}/confirm:
+    post:
+      operationId: api_post_restaurant_reservations_restaurantreservation_confirm
+      tags: [RestaurantManager]
+      summary: POST /restaurant/reservations/{restaurantReservation}/confirm
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/reservations/{restaurantReservation}/deposit:
+    post:
+      operationId: api_post_restaurant_reservations_restaurantreservation_deposit
+      tags: [RestaurantManager]
+      summary: POST /restaurant/reservations/{restaurantReservation}/deposit
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/reservations/{restaurantReservation}/no-show:
+    post:
+      operationId: api_post_restaurant_reservations_restaurantreservation_no_show
+      tags: [RestaurantManager]
+      summary: POST /restaurant/reservations/{restaurantReservation}/no-show
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantReservation
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
   /restaurant/reviews:
@@ -54925,6 +59147,115 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
+  /restaurant/reviews/{review}/reply:
+    delete:
+      operationId: api_delete_restaurant_reviews_review_reply
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/reviews/{review}/reply
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: review
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_reviews_review_reply
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/reviews/{review}/reply
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: review
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/reviews/{review}/unpublish:
+    post:
+      operationId: api_post_restaurant_reviews_review_unpublish
+      tags: [RestaurantManager]
+      summary: POST /restaurant/reviews/{review}/unpublish
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: review
+        in: path
+        required: true
+        schema:
+          type: integer
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/shop/token:
+    get:
+      operationId: api_get_restaurant_shop_token
+      tags: [RestaurantManager]
+      summary: GET /restaurant/shop/token
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+  /restaurant/shop/token/rotate:
+    post:
+      operationId: api_post_restaurant_shop_token_rotate
+      tags: [RestaurantManager]
+      summary: POST /restaurant/shop/token/rotate
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/stock-levels:
     get:
       operationId: api_get_restaurant_stock_levels
@@ -54937,6 +59268,111 @@ paths:
           description: Niveaux de stock
         '401':
           $ref: '#/components/responses/Error401'
+    post:
+      operationId: api_post_restaurant_stock_levels
+      tags: [RestaurantManager]
+      summary: POST /restaurant/stock-levels
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/stock-levels/{restaurantStockLevel}:
+    delete:
+      operationId: api_delete_restaurant_stock_levels_restaurantstocklevel
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/stock-levels/{restaurantStockLevel}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantStockLevel
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_stock_levels_restaurantstocklevel
+      tags: [RestaurantManager]
+      summary: GET /restaurant/stock-levels/{restaurantStockLevel}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantStockLevel
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_stock_levels_restaurantstocklevel
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/stock-levels/{restaurantStockLevel}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantStockLevel
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/stock/alerts:
+    get:
+      operationId: api_get_restaurant_stock_alerts
+      tags: [RestaurantManager]
+      summary: GET /restaurant/stock/alerts
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
   /restaurant/suppliers:
     get:
       operationId: api_get_restaurant_suppliers
@@ -54968,6 +59404,78 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/suppliers/{restaurantSupplier}:
+    delete:
+      operationId: api_delete_restaurant_suppliers_restaurantsupplier
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/suppliers/{restaurantSupplier}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantSupplier
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_suppliers_restaurantsupplier
+      tags: [RestaurantManager]
+      summary: GET /restaurant/suppliers/{restaurantSupplier}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantSupplier
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_suppliers_restaurantsupplier
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/suppliers/{restaurantSupplier}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantSupplier
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
   /restaurant/sync/conflicts:
@@ -55302,6 +59810,130 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/tables/{restaurantTable}:
+    delete:
+      operationId: api_delete_restaurant_tables_restauranttable
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/tables/{restaurantTable}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTable
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_tables_restauranttable
+      tags: [RestaurantManager]
+      summary: GET /restaurant/tables/{restaurantTable}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTable
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_tables_restauranttable
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/tables/{restaurantTable}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTable
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/tables/{restaurantTable}/close:
+    post:
+      operationId: api_post_restaurant_tables_restauranttable_close
+      tags: [RestaurantManager]
+      summary: POST /restaurant/tables/{restaurantTable}/close
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTable
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/tables/{restaurantTable}/open:
+    post:
+      operationId: api_post_restaurant_tables_restauranttable_open
+      tags: [RestaurantManager]
+      summary: POST /restaurant/tables/{restaurantTable}/open
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTable
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '201':
+          description: Ressource creee
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/tax-rates:
     get:
       operationId: api_get_restaurant_tax_rates
@@ -55338,6 +59970,78 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/tax-rates/{restaurantTaxRate}:
+    delete:
+      operationId: api_delete_restaurant_tax_rates_restauranttaxrate
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/tax-rates/{restaurantTaxRate}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTaxRate
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_tax_rates_restauranttaxrate
+      tags: [RestaurantManager]
+      summary: GET /restaurant/tax-rates/{restaurantTaxRate}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTaxRate
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_tax_rates_restauranttaxrate
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/tax-rates/{restaurantTaxRate}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantTaxRate
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/units:
     get:
       operationId: api_get_restaurant_units
@@ -55371,6 +60075,78 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
+  /restaurant/units/{restaurantUnit}:
+    delete:
+      operationId: api_delete_restaurant_units_restaurantunit
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/units/{restaurantUnit}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantUnit
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_units_restaurantunit
+      tags: [RestaurantManager]
+      summary: GET /restaurant/units/{restaurantUnit}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantUnit
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_units_restaurantunit
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/units/{restaurantUnit}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantUnit
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
   /restaurant/zones:
     get:
       operationId: api_get_restaurant_zones
@@ -55402,6 +60178,78 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /restaurant/zones/{restaurantZone}:
+    delete:
+      operationId: api_delete_restaurant_zones_restaurantzone
+      tags: [RestaurantManager]
+      summary: DELETE /restaurant/zones/{restaurantZone}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantZone
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    get:
+      operationId: api_get_restaurant_zones_restaurantzone
+      tags: [RestaurantManager]
+      summary: GET /restaurant/zones/{restaurantZone}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantZone
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+    put:
+      operationId: api_put_restaurant_zones_restaurantzone
+      tags: [RestaurantManager]
+      summary: PUT /restaurant/zones/{restaurantZone}
+      description: |
+        Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      security:
+      - BearerAuth: []
+      parameters:
+      - name: restaurantZone
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Succes
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
         '422':
           $ref: '#/components/responses/Error422'
   /retail/categories:
@@ -77418,6 +82266,15 @@ components:
       type: http
       scheme: bearer
       bearerFormat: Sanctum
+    RestaurantPrintBridge:
+      type: apiKey
+      in: header
+      name: X-Restaurant-Print-Bridge-Token
+      description: |
+        Jeton d'appareil partage, enrole par un manager de la succursale.
+        Le bridge envoie aussi `X-Company-Id` pour resoudre le tenant.
+        Ce n'est PAS un Bearer utilisateur : un agent d'impression n'a
+        aucun compte et ne peut appeler aucune autre route.
   parameters:
     TravelAdvertId:
       name: travelAdvert

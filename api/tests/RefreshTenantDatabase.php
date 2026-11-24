@@ -208,6 +208,21 @@ trait RefreshTenantDatabase
                     to_regclass('shared_tenants.biometric_enrollments') AS biometric_enrollments"
         );
 
+        // #9846 (BC-14) — la liste de sentinelles ci-dessus est PÉRIMÉE par
+        // construction : elle a dû être étendue trois fois (#5201, #6754,
+        // #9115) et a encore manqué `connector_catalog` / `connector_connections`,
+        // ajoutées après. Une base migrée AVANT ces migrations passait la garde,
+        // la re-migration était sautée, et les 26 tests Connectors mouraient en
+        // 42P01 puis 25P02 — sans qu'aucune sentinelle ne bronche.
+        //
+        // On ne remplace pas la liste par une autre liste : on demande au
+        // MIGRATEUR s'il reste des migrations à jouer. C'est la seule
+        // définition qui ne se périme jamais, et elle couvre les deux dépôts
+        // (public + tenant) d'un coup.
+        if (! $this->hasNoPendingMigrations()) {
+            return false;
+        }
+
         return $row !== null
             && $row->companies !== null
             && $row->export_history !== null
@@ -245,6 +260,62 @@ trait RefreshTenantDatabase
             // `RefreshTenantDatabase` saute la re-migration et le fichier entier
             // meurt en 42P01 puis 25P02 — le job Backend ne rend aucun verdict.
             && $row->biometric_enrollments !== null;
+    }
+
+    /**
+     * Reste-t-il des migrations à jouer dans l'un des deux dépôts ?
+     *
+     * #9846 (BC-14) — remplace la garde par liste de sentinelles. On interroge
+     * le migrateur lui-même (`getMigrationFiles()` vs `getRan()`), ce qui :
+     *   - couvre TOUTE migration future sans avoir à toucher ce fichier ;
+     *   - couvre les deux dépôts (`public` et `tenant`) séparément, avec le
+     *     bon `search_path` pour chacun — le dépôt `migrations` d'un schéma
+     *     n'est pas celui de l'autre ;
+     *   - reste bon marché : deux requêtes `SELECT migration FROM migrations`
+     *     et un listing de répertoire, pas de re-migration.
+     *
+     * En cas d'erreur (base absente, schéma non créé), on répond `false` :
+     * « pas prêt » est le côté sûr — on re-migre, on ne saute pas.
+     */
+    private function hasNoPendingMigrations(): bool
+    {
+        if (DB::getDriverName() !== 'pgsql') {
+            return true;
+        }
+
+        $connection = DB::connection()->getName();
+        $originalSearchPath = config("database.connections.{$connection}.search_path");
+
+        try {
+            foreach ([
+                'public' => 'database/migrations/public',
+                'shared_tenants' => 'database/migrations/tenant',
+            ] as $schema => $path) {
+                config(["database.connections.{$connection}.search_path" => $schema]);
+                DB::purge($connection);
+                DB::reconnect($connection);
+
+                $migrator = app('migrator');
+                $migrator->setConnection($connection);
+
+                $files = $migrator->getMigrationFiles(base_path($path));
+                $ran = $migrator->getRepository()->getRan();
+
+                if (array_diff(array_keys($files), $ran) !== []) {
+                    return false;
+                }
+            }
+
+            return true;
+        } catch (\Throwable) {
+            // Base/schéma absent ou dépôt illisible : on considère la base
+            // comme NON prête, ce qui déclenche la re-migration (côté sûr).
+            return false;
+        } finally {
+            config(["database.connections.{$connection}.search_path" => $originalSearchPath]);
+            DB::purge($connection);
+            DB::reconnect($connection);
+        }
     }
 
     /**
