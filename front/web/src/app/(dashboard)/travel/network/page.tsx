@@ -453,11 +453,7 @@ export default function TravelNetworkPage() {
             nullable: true,
             min: 15,
             max: 240,
-            hint: t(
-              locale,
-              'travel.field.minConnectionHint',
-              '15 à 240 minutes. Vide = défaut de l’agence.',
-            ),
+            hint: t(locale, 'travel.field.minConnectionHint'),
           },
           { name: 'status', label: t(locale, 'travel.field.status', 'Statut'), type: 'select', options: STATUSES },
         ],

@@ -48,10 +48,10 @@
   "surfaces": {
     "web": {
       "checksums": {
-        "ar": "21553888161a02f71bd10e6bc55f78f688f09abd15013c36eb0275fe86ddf588",
-        "en": "fce976d5870dfd1b95b4dd64588895a7374f8cf4688972b68726b4f0ee609a13",
-        "fr": "e588e6e7032095808b29ddebf3fae847f2cad1fff9c5f5f54f2f8356bdb29e24",
-        "tr": "8afc63b9397bb41d61cfffd21bd5e8e71e42db7455d54c6a635a95943221163d"
+        "ar": "78d8ccb5d150d56253e72c9d7890f93be65d1435be31f99db6b778e6a91b1eb1",
+        "en": "ae210343c378ab324a11b9fbfa505b73464da7362fc4e3ba096116ef9b1ede07",
+        "fr": "43221521f2fba2cc4687095f4146548006544256fc1457a1aa234da0a0a2d2d7",
+        "tr": "39e39c97517cc117c5d190e19e05f9b0012036528cfb4e4281912f1ac64b0cd9"
       },
       "updated_at": "2026-11-24T05:09:05.571Z"
     },
