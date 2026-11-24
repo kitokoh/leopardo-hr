@@ -143,7 +143,18 @@ $apiFeatureChanged = $false
 $mobileFeatureChanged = $false
 $webFeatureChanged = $false
 
+# Catalogues i18n GENERES (sync-web.js / sync-mobile.js) : ce ne sont pas des
+# surfaces fonctionnelles. Ils sont deja gardes par `validate-and-sync`
+# (validate.js + `git diff --exit-code` apres les 3 syncs), qui echoue si un
+# catalogue n'est pas regenere. Les compter ici obligeait a ecrire une entree
+# de scenario de test pour une simple regeneration de checksums, ce qui vide
+# le registre de son sens (#9901).
+$generatedI18nPattern = '^(front/admin-dashboard/src/i18n/locales/|front/web/src/lib/i18n/locales/|front/mobile_apps/[^/]+/lib/l10n/)'
+
 foreach ($line in $changedList) {
+    if ($line -match $generatedI18nPattern) {
+        continue
+    }
     if ($line -match '^(api/app/Http/Controllers/|api/routes/|api/app/Policies/|api/app/Http/Requests/Api/)') {
         $apiFeatureChanged = $true
     }

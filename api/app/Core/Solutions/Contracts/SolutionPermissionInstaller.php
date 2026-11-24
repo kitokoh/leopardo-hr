@@ -42,7 +42,6 @@ interface SolutionPermissionInstaller
     /**
      * Installe les permissions du manifest pour le(s) `principal` du tenant.
      *
-     * @param  \App\Core\Solutions\Contracts\SolutionManifest  $manifest
      * @return list<string> codes de permissions nouvellement installés
      *                      (les déjà présentes ne sont pas retournées)
      */
@@ -54,7 +53,6 @@ interface SolutionPermissionInstaller
      * solution encore active du tenant sont conservées (partage de code entre
      * manifests, cf. la verticale restaurant).
      *
-     * @param  \App\Core\Solutions\Contracts\SolutionManifest  $manifest
      * @param  list<string>  $keptCodes  clés à conserver bien que présentes
      *                                   dans le manifest (déclarées par une
      *                                   autre solution active)
