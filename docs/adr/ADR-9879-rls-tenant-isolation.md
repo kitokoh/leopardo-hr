@@ -72,7 +72,7 @@ Tant que l'application se connecte en superuser, la politique existe mais **ne p
 | 1 | `bulk_payment_claims` (table neuve, aucun accès inter-tenant légitime) | ✅ fait |
 | 2 | Rôle applicatif non-superuser (`NOSUPERUSER NOBYPASSRLS`) | 🟨 **outillage livré (#9896)** — bascule à faire côté exploitation |
 | 3 | `pay_slips`, `payroll_runs` (données de paie) | ✅ fait (#9889) |
-| 4 | `employees` | ⬜ après inventaire des accès (jointures cross-schema) — #9897 |
+| 4 | `employees` | ✅ fait (#9897) |
 
 L'étape 2 est **bloquante** : sans elle, les étapes 3 et 4 donneraient une fausse impression de sécurité.
 
@@ -142,6 +142,47 @@ php artisan tenant:rls-status --strict
 ```
 
 **Rollback** : `DB_USERNAME=leopardo` puis redéploiement. Aucune migration à défaire — les politiques restent en place et redeviennent inertes. Aucun risque de perte de données.
+
+## Étape 4 — `employees` (#9897)
+
+### Inventaire des accès légitimes (exigé par l'ADR)
+
+| Accès | Fichier | Verdict |
+|---|---|---|
+| Jointures SQL sur `employees` | `app/AI/Predictions/AbsenteeismPredictor.php` (2), `ProactiveNotificationService.php` (4) | **OK** — partent d'une table tenant déjà filtrée ; la jointure hérite du tenant. |
+| `Employee::withoutGlobalScopes()` | `app/Core/Auth/Infrastructure/Services/AuthService.php` (8) | **OK, et c'est le point critique** — voir ci-dessous. |
+| `Employee::factory()` | `database/factories/EmployeeFactory.php` | **Corrigé** — ne renseignait pas `company_id`. |
+| Jobs multi-tenant | `app/Console/Commands/PrecalculatePayrollRuns.php` | **OK** — itère par `company_id` via `TenantManager::withinTenant()`. |
+
+### Pourquoi `AuthService::withoutGlobalScopes()` ne casse pas
+
+C'est l'accès qui aurait dû bloquer cette étape : la connexion lit `employees` **avant** qu'un tenant ne soit connu. Le flux réel est :
+
+1. `public.user_lookups` (email → `company_id`, `employee_id`) est lu **hors** RLS (table plateforme) ;
+2. `TenantManager::setTenant()` publie `app.current_company_id` ;
+3. **puis** `Employee::withoutGlobalScopes()->where('company_id', $lookup->company_id)`.
+
+Le `where('company_id', ...)` explicite satisfait la politique : la ligne demandée est bien celle du tenant publié. `withoutGlobalScopes()` ne contourne que le scope Eloquent, pas RLS — et c'est précisément ce qu'on veut : le scope applicatif peut être retiré par erreur, la politique PostgreSQL non.
+
+### Le blocage : `company_id` était nullable
+
+La politique des étapes 1 et 3 est `USING (company_id::text = current_setting('app.current_company_id', true))`. Avec `company_id IS NULL`, la comparaison vaut `NULL` → **la ligne devient invisible**. Poser la politique telle quelle aurait masqué tous les employés sans tenant.
+
+Mesures : `EmployeeFactory` ne renseignait pas `company_id` ; **2 336** appels `Employee::factory()` dans les tests, **12** seulement passaient `->for(...)` ; `tenancy_type` est verrouillé à `'shared'` (ADR-0028), donc le mode « schéma isolé » qui justifiait le nullable n'est plus créable. Le nullable était une **dette historique**, pas un besoin.
+
+### Décision : backfill bloquant, pas de contrainte NOT NULL
+
+La migration **backfill** `company_id` (sources : `user_lookups`, puis `pay_slips`→`payroll_runs`, puis la company unique si l'installation est mono-tenant) et **échoue explicitement** s'il reste un seul NULL. Elle ne pose **pas** `NOT NULL` au niveau DDL : 326 sites de test font `new Employee([...])->save()` puis renseignent `company_id` dans un second `save()`, et la contrainte casserait le premier INSERT. Corriger 326 appels pour une garantie que le backfill apporte déjà serait un mauvais échange.
+
+Ce qui protège réellement :
+
+1. le backfill **échoue** si un NULL subsiste — la migration ne peut pas se terminer sur une base trouée ;
+2. la politique rend toute ligne à NULL **invisible** (`NULL = 'x'` vaut NULL, pas TRUE) : un NULL futur serait une panne d'affichage bruyante, **jamais une fuite cross-tenant** ;
+3. `Employee::creating` renseigne `company_id` depuis le tenant courant quand il existe.
+
+### Preuve
+
+`RlsTenantIsolationTest::test_employees_isolates_tenants_and_fails_closed` crée un rôle **non-superuser**, applique la politique et compte depuis ce rôle : tenant A → 1, tenant B → 1, aucun tenant → **0**, écriture hors tenant → **0 ligne affectée**. Un test qui compterait en tant qu'utilisateur applicatif (SUPERUSER) passerait au vert sans rien prouver.
 
 ## Étape 3 — inventaire des accès légitimes (#9889)
 

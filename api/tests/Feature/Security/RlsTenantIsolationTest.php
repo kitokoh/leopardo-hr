@@ -252,6 +252,126 @@ class RlsTenantIsolationTest extends TestCase
         expect((string) $cleared->c)->toBe('', 'clearTenant() doit effacer le tenant (fail-closed).');
     }
 
+    /**
+     * #9897 — `employees` isole les tenants, et refuse l'ecriture hors tenant.
+     *
+     * Ce test est le seul qui prouve la politique de l'etape 4 : il cree un
+     * role NON-superuser, applique la politique de la migration, et compte
+     * depuis ce role. Un test qui compterait en tant qu'utilisateur
+     * applicatif (SUPERUSER) passerait au vert sans rien prouver.
+     *
+     * Il verifie aussi le point qui a bloque la migration : `company_id` doit
+     * etre NOT NULL, sinon les lignes a NULL deviennent invisibles.
+     */
+    public function test_employees_isolates_tenants_and_fails_closed(): void
+    {
+        $exists = DB::selectOne("SELECT to_regclass('shared_tenants.employees') AS t");
+
+        if ($exists === null || $exists->t === null) {
+            $this->markTestSkipped('employees absente de cette base.');
+        }
+
+        // La table de test vient d'une fixture, pas de la migration #9897 :
+        // on applique donc la politique nous-memes, comme pour
+        // bulk_payment_claims. On verifie d'abord qu'aucun NULL ne subsiste —
+        // une ligne a NULL serait invisible sous la politique.
+        $nulls = DB::table('employees')->whereNull('company_id')->count();
+
+        if ($nulls > 0) {
+            $this->markTestSkipped(
+                'employees contient '.$nulls.' ligne(s) sans company_id sur cette base (fixture) : '
+                .'la migration #9897 backfill et refuse cet etat sur une base migree.'
+            );
+        }
+
+        DB::statement('ALTER TABLE shared_tenants.employees ENABLE ROW LEVEL SECURITY');
+        DB::statement('ALTER TABLE shared_tenants.employees FORCE ROW LEVEL SECURITY');
+        DB::statement('DROP POLICY IF EXISTS employees_tenant_isolation ON shared_tenants.employees');
+        DB::statement(<<<'SQL'
+            CREATE POLICY employees_tenant_isolation
+            ON shared_tenants.employees
+            USING (company_id::text = current_setting('app.current_company_id', true))
+            WITH CHECK (company_id::text = current_setting('app.current_company_id', true))
+            SQL);
+
+        DB::statement('GRANT SELECT, INSERT, UPDATE, DELETE ON shared_tenants.employees TO '.self::ROLE);
+
+        // Deux employes, deux tenants. On nettoie d'abord : ce test n'utilise
+        // pas de transaction (connexions multi-roles).
+        DB::table('employees')->whereIn('email', ['rls-a@probe.test', 'rls-b@probe.test'])->delete();
+
+        DB::table('employees')->insert([
+            [
+                'company_id' => self::TENANT_A,
+                'matricule' => 'RLS-A',
+                'first_name' => 'A',
+                'last_name' => 'Probe',
+                'email' => 'rls-a@probe.test',
+                'password_hash' => bcrypt('x'),
+                'role' => 'employee',
+                'contract_type' => 'CDI',
+                'contract_start' => now()->toDateString(),
+                'salary_base' => 1000,
+                'salary_type' => 'fixed',
+                'payment_method' => 'bank_transfer',
+                'leave_balance' => 0,
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+            [
+                'company_id' => self::TENANT_B,
+                'matricule' => 'RLS-B',
+                'first_name' => 'B',
+                'last_name' => 'Probe',
+                'email' => 'rls-b@probe.test',
+                'password_hash' => bcrypt('x'),
+                'role' => 'employee',
+                'contract_type' => 'CDI',
+                'contract_start' => now()->toDateString(),
+                'salary_base' => 1000,
+                'salary_type' => 'fixed',
+                'payment_method' => 'bank_transfer',
+                'leave_balance' => 0,
+                'status' => 'active',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+        ]);
+
+        $countA = $this->countEmployeesAsProbe(self::TENANT_A);
+        expect($countA)->toBe(1, 'RLS doit masquer l\'employe du tenant B.');
+
+        $countB = $this->countEmployeesAsProbe(self::TENANT_B);
+        expect($countB)->toBe(1, 'RLS doit masquer l\'employe du tenant A.');
+
+        $countNone = $this->countEmployeesAsProbe(null);
+        expect($countNone)->toBe(0, 'Sans tenant, RLS doit ne rien laisser passer (fail-closed).');
+
+        // Ecriture hors tenant : le WITH CHECK la refuse.
+        $affected = $this->affectedAsProbe(
+            self::TENANT_B,
+            "UPDATE shared_tenants.employees SET first_name = 'hijacked' WHERE email = 'rls-a@probe.test'"
+        );
+        expect($affected)->toBe(0, 'RLS doit empecher toute ecriture hors du tenant courant.');
+
+        // Nettoyage : on restaure l'etat de la migration (politique posee).
+        DB::table('employees')->whereIn('email', ['rls-a@probe.test', 'rls-b@probe.test'])->delete();
+    }
+
+    private function countEmployeesAsProbe(?string $tenantId): int
+    {
+        $connection = $this->probeConnection($tenantId);
+
+        try {
+            $row = $connection->selectOne('SELECT count(*) AS c FROM shared_tenants.employees');
+
+            return (int) ($row->c ?? 0);
+        } finally {
+            DB::purge('rls_probe');
+        }
+    }
+
     private function createProbeRole(): void
     {
         DB::statement('DROP ROLE IF EXISTS '.self::ROLE);

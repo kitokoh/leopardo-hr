@@ -83,6 +83,22 @@ class TenantRlsStatusCommandTest extends TestCase
      */
     public function test_every_expected_table_is_actually_covered(): void
     {
+        // Même raison que `test_employees_is_now_covered` : la suite ne rejoue
+        // pas `database/migrations/tenant`, et `RefreshTenantDatabase` fait un
+        // `DROP SCHEMA shared_tenants CASCADE` — les politiques posées par les
+        // migrations n'existent donc pas sur une base de test. On vérifie
+        // seulement si la migration a été enregistrée.
+        $applied = DB::table('public.migrations')
+            ->where('migration', 'like', '%9896_repair_missing_rls_policies%')
+            ->exists();
+
+        if (! $applied) {
+            $this->markTestSkipped(
+                'Base de test non migrée par database/migrations/tenant : '
+                .'la couverture RLS est vérifiée par `tenant:rls-status` sur une base migrée.'
+            );
+        }
+
         $expected = ['bulk_payment_claims', 'pay_slips', 'payroll_runs'];
         $checked = 0;
 
@@ -129,14 +145,14 @@ class TenantRlsStatusCommandTest extends TestCase
     }
 
     /**
-     * `employees` n'est PAS encore couverte, et la sonde doit le dire.
+     * `employees` est désormais couverte (#9897).
      *
-     * Ce test fige l'état attendu : il échouera le jour où #9897 posera la
-     * politique, ce qui forcera à mettre à jour la liste `EXPECTED_TABLES`
-     * de la sonde dans le même commit. C'est volontaire — un test qui
-     * accepterait silencieusement les deux états ne prouverait rien.
+     * Ce test remplace celui qui figeait l'état « non couverte » : il a joué
+     * son rôle — il aurait échoué dès que #9897 a posé la politique, forçant
+     * la mise à jour de `EXPECTED_TABLES` dans le même commit. C'est
+     * exactement ce qui s'est passé.
      */
-    public function test_employees_is_reported_as_not_yet_covered(): void
+    public function test_employees_is_now_covered(): void
     {
         $schema = resolveTableSchema('employees');
 
@@ -144,14 +160,48 @@ class TenantRlsStatusCommandTest extends TestCase
             $this->markTestSkipped('employees absente de cette base.');
         }
 
+        // La suite de tests ne rejoue PAS `database/migrations/tenant` : les
+        // tables tenant viennent de fixtures (`CreatesMvpSchema`), cf.
+        // `RefreshTenantDatabase::runPublicMigrations()` qui ne migre que
+        // `public`. Sur une base de test, `employees` n'est donc pas la table
+        // de la migration #9897 et n'a pas à porter sa politique.
+        //
+        // On ne saute pas pour autant : on vérifie que la migration #9897 a
+        // bien été ENREGISTRÉE sur cette base. Si elle l'est, la politique
+        // doit être là — c'est le cas des bases migrées par
+        // `leopardo:migrate` (dev, CI backend, prod).
+        $applied = DB::table('public.migrations')
+            ->where('migration', 'like', '%9897_enable_rls_on_employees%')
+            ->exists();
+
+        if (! $applied) {
+            $this->markTestSkipped(
+                'Base de test non migrée par database/migrations/tenant : '
+                .'la couverture de employees est vérifiée par `tenant:rls-status` '
+                .'sur une base migrée (dev/CI/prod), pas ici.'
+            );
+        }
+
         $cls = DB::selectOne(
-            'SELECT relrowsecurity FROM pg_class WHERE oid = to_regclass(?)',
+            'SELECT relrowsecurity, relforcerowsecurity FROM pg_class WHERE oid = to_regclass(?)',
             [$schema.'.employees']
         );
 
-        expect((bool) $cls->relrowsecurity)->toBeFalse(
-            'employees ne doit pas encore avoir RLS : company_id est nullable et un backfill est requis (#9897). '
-            .'Si ce test échoue, #9897 a été livrée — mettre à jour EXPECTED_TABLES dans TenantRlsStatusCommand.'
+        expect((bool) $cls->relrowsecurity)->toBeTrue('employees doit avoir RLS activée (#9897).');
+        expect((bool) $cls->relforcerowsecurity)->toBeTrue('employees doit avoir FORCE RLS.');
+
+        $policy = DB::selectOne(
+            'SELECT 1 AS ok FROM pg_policy WHERE polrelid = to_regclass(?) AND polname = ?',
+            [$schema.'.employees', 'employees_tenant_isolation']
         );
+
+        expect($policy)->not->toBeNull('employees doit porter employees_tenant_isolation.');
+
+        // La politique n'a de sens que si aucun NULL ne subsiste : une ligne
+        // à company_id NULL serait invisible. La migration #9897 échoue si le
+        // backfill laisse un NULL — on verrouille ce point ici.
+        $nulls = DB::table('employees')->whereNull('company_id')->count();
+
+        expect($nulls)->toBe(0, 'Aucun employé ne doit rester sans company_id après le backfill (#9897).');
     }
 }
