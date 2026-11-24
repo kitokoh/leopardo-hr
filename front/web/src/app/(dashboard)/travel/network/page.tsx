@@ -422,6 +422,16 @@ export default function TravelNetworkPage() {
           { key: 'city_id', label: t(locale, 'travel.field.city', 'Ville'), render: (row) => cityName(row.city_id) },
           { key: 'contact_phone', label: t(locale, 'travel.field.contactPhone', 'Téléphone') },
           { key: 'is_terminal', label: t(locale, 'travel.field.isTerminal', 'Terminal (grande gare)') },
+          {
+            key: 'min_connection_minutes',
+            label: t(locale, 'travel.field.minConnectionMinutes', 'Correspondance min.'),
+            // `null` = la gare n'impose rien : on affiche le repli explicite
+            // plutôt qu'une cellule vide, qui se lirait comme « 0 minute ».
+            render: (row) =>
+              row.min_connection_minutes === null || row.min_connection_minutes === undefined
+                ? t(locale, 'travel.field.minConnectionInherited', 'Défaut agence')
+                : `${String(row.min_connection_minutes)} min`,
+          },
           { key: 'status', label: t(locale, 'travel.field.status', 'Statut') },
         ],
         fields: [
@@ -432,6 +442,23 @@ export default function TravelNetworkPage() {
           { name: 'contact_phone', label: t(locale, 'travel.field.contactPhone', 'Téléphone'), type: 'text', nullable: true, maxLength: 40 },
           { name: 'timezone', label: t(locale, 'travel.field.timezone', 'Fuseau'), type: 'text', hint: 'Africa/Lome' },
           { name: 'is_terminal', label: t(locale, 'travel.field.isTerminal', 'Terminal (grande gare)'), type: 'checkbox' },
+          // M5 — délai minimal de correspondance imposé par CETTE gare.
+          // Bornes alignées sur la contrainte CHECK de la base (15..240) :
+          // l'écran refuse en amont ce que le serveur refuserait en 422.
+          // Vide = `null` = la gare retombe sur le défaut de l'agence.
+          {
+            name: 'min_connection_minutes',
+            label: t(locale, 'travel.field.minConnectionMinutes', 'Correspondance min.'),
+            type: 'number',
+            nullable: true,
+            min: 15,
+            max: 240,
+            hint: t(
+              locale,
+              'travel.field.minConnectionHint',
+              '15 à 240 minutes. Vide = défaut de l’agence.',
+            ),
+          },
           { name: 'status', label: t(locale, 'travel.field.status', 'Statut'), type: 'select', options: STATUSES },
         ],
       },
