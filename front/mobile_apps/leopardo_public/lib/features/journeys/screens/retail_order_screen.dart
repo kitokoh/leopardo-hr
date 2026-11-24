@@ -7,7 +7,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/i18n/app_strings.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../discovery/data/public_discovery_repository.dart';
-import '../data/retail_order_gateway.dart';
 import '../domain/journey_models.dart';
 import '../providers/journey_providers.dart';
 import '../widgets/journey_widgets.dart';
