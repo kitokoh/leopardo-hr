@@ -112,14 +112,26 @@ if any(critical.match(c) for c in changed):
 else:
     ok("No critical scope change requiring changelog.")
 
+# Catalogues i18n GENERES (sync-web.js / sync-mobile.js) : ce ne sont pas des
+# surfaces fonctionnelles. Ils sont deja gardes par `validate-and-sync`
+# (validate.js + `git diff --exit-code` apres les 3 syncs), qui echoue si un
+# catalogue n'est pas regenere. Les compter ici obligeait a ecrire une entree
+# de scenario de test pour une simple regeneration de checksums, ce qui vide
+# le registre de son sens (#9901).
+generated_i18n = re.compile(
+    r"^(front/admin-dashboard/src/i18n/locales/|front/web/src/lib/i18n/locales/"
+    r"|front/mobile_apps/[^/]+/lib/l10n/)"
+)
+feature_changed = [c for c in changed if not generated_i18n.match(c)]
+
 api_feature = any(
     re.match(r"^(api/app/Http/Controllers/|api/routes/|api/app/Policies/|api/app/Http/Requests/Api/)", c)
-    for c in changed
+    for c in feature_changed
 )
-mobile_feature = any(re.match(r"^(front/mobile_apps/)", c) for c in changed)
+mobile_feature = any(re.match(r"^(front/mobile_apps/)", c) for c in feature_changed)
 web_feature = any(
     re.match(r"^(front/admin-dashboard/src/|front/admin-dashboard/e2e/|front/admin-dashboard/playwright\.config\.js)", c)
-    for c in changed
+    for c in feature_changed
 )
 
 
