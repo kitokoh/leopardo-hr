@@ -14,6 +14,7 @@ use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelStation;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
+use Illuminate\Support\Carbon;
 use Laravel\Sanctum\Sanctum;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
@@ -34,6 +35,28 @@ use Tests\TestCase;
 class TravelConnectionDelayTest extends TestCase
 {
     use RefreshTenantDatabase;
+
+    /**
+     * Horloge figée sur la date des trajets de ces tests.
+     *
+     * Les trajets sont datés en absolu ('2026-10-01') : sans horloge maîtrisée,
+     * le test dépendrait du jour où il tourne (une date qui devient passée fait
+     * échouer la recherche de correspondances) et la garde #8396 signalerait le
+     * fichier. `setTestNow` rend ces littéraux relatifs à une origine fixée.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Carbon::setTestNow('2026-10-01 06:00:00');
+    }
+
+    protected function tearDown(): void
+    {
+        Carbon::setTestNow();
+
+        parent::tearDown();
+    }
 
     private function principal(Company $company): Employee
     {
