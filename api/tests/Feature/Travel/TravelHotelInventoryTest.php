@@ -54,7 +54,6 @@ class TravelHotelInventoryTest extends TestCase
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
-
         Sanctum::actingAs($principal);
 
         [$this->hotel, $this->room] = app(TenantManager::class)->withinTenant($company, function (): array {

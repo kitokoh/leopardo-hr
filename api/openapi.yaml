@@ -71741,6 +71741,116 @@ components:
           schema:
             $ref: '#/components/schemas/ValidationErrorResponse'
   schemas:
+    ConnectorCatalogEntry:
+      type: object
+      description: >-
+        BC-14 INTEGRATION (#9846/#9848) — un type de connecteur proposable. Le
+        catalogue est une DONNEE (table `connector_catalog`), pas une liste en
+        dur : ajouter une banque ou un PSP ne demande pas de redeploiement.
+      properties:
+        key:
+          type: string
+          description: Cle stable du type (referencee par `catalog_key`).
+        label:
+          type: string
+        audience:
+          type: string
+          enum: [platform, tenant]
+        category:
+          type: string
+          nullable: true
+        config_fields:
+          type: array
+          items:
+            type: object
+            additionalProperties: true
+          description: Champs de configuration non secrets attendus.
+        secret_fields:
+          type: array
+          items:
+            type: string
+          description: >-
+            Champs secrets attendus. Jamais renvoyes en clair : l'API ne rend
+            que des masques.
+    ConnectorConnection:
+      type: object
+      description: >-
+        BC-14 INTEGRATION — une connexion a un service externe. `secrets` n'est
+        JAMAIS rendu en clair : la reponse porte un masque par champ secret
+        (`configured` + `mask`), en ecriture seule.
+      properties:
+        id:
+          type: integer
+        catalog_key:
+          type: string
+        label:
+          type: string
+        status:
+          type: string
+          enum: [draft, active, error, revoked]
+        config:
+          type: object
+          additionalProperties: true
+        secrets:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              configured:
+                type: boolean
+              mask:
+                type: string
+                nullable: true
+        last_check_status:
+          type: string
+          nullable: true
+          enum: [validated, invalid, unreachable, unsupported]
+        last_checked_at:
+          type: string
+          format: date-time
+          nullable: true
+        is_default:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
+        updated_at:
+          type: string
+          format: date-time
+          nullable: true
+    TravelHotelBooking:
+      type: object
+      description: >-
+        M4 (#9844) — une reservation de chambre sur un intervalle de nuits.
+        `total_amount_minor` est en unite mineure de `currency`.
+      properties:
+        id:
+          type: integer
+        reference:
+          type: string
+        room_id:
+          type: integer
+        check_in:
+          type: string
+          format: date
+        check_out:
+          type: string
+          format: date
+        rooms:
+          type: integer
+        nights:
+          type: integer
+        total_amount_minor:
+          type: integer
+        currency:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          nullable: true
     TradeCounterpartyRole:
       type: string
       description: >-

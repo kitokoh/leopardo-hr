@@ -28,9 +28,10 @@ class ConnectorSchemaViolationException extends DomainException
         private readonly array $violations,
         ?string $message = null,
     ) {
-        // `__()` n'est pas une expression constante : il ne peut pas être la
-        // valeur par défaut d'un paramètre (fatal « Constant expression contains
-        // invalid operations »). On résout le libellé à l'instanciation.
+        // `__()` ne peut PAS etre une valeur par defaut de parametre : PHP
+        // refuse tout appel de fonction dans une expression constante
+        // (`Constant expression contains invalid operations`, fatal au
+        // chargement de la classe). On resout le libelle dans le corps.
         parent::__construct($message ?? __('connectors.schema_violation'), 422, self::ERROR_CODE);
     }
 
