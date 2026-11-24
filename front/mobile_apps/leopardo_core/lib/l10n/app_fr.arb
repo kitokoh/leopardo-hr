@@ -4175,7 +4175,7 @@
   "eduFeechargesMethodmobilemoney": "Paiement mobile",
   "eduFeechargesMethodother": "Autre",
   "eduFeechargesBatchfromclass": "Encaisser en lot pour cette classe",
-  "eduFeechargesBatchclassbanner": "Classe {class} — {students} élève(s), {charges} facturation(s) à encaisser.",
+  "eduFeechargesBatchclassbanner": "Classe {className} — {students} élève(s), {charges} facturation(s) à encaisser.",
   "eduFeechargesBatchclearclass": "Revenir à toutes les facturations",
   "eduFeechargesBatchfilters": "Filtres",
   "eduFeechargesBatchfiltershint": "Restreindre les facturations proposées avant de composer le lot.",

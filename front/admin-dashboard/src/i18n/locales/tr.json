@@ -5318,7 +5318,7 @@
       "methodMobileMoney": "Mobil ödeme",
       "methodOther": "Diğer",
       "batchFromClass": "Bu sınıf için toplu tahsilat",
-      "batchClassBanner": "Sınıf {class} — {students} öğrenci, {charges} tahsil edilecek borç.",
+      "batchClassBanner": "Sınıf {className} — {students} öğrenci, {charges} tahsil edilecek borç.",
       "batchClearClass": "Tüm borçlara dön",
       "batchFilters": "Filtreler",
       "batchFiltersHint": "Toplu işlemi oluşturmadan önce önerilen borçları daraltın.",

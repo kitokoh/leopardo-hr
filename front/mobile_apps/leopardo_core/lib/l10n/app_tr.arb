@@ -4175,7 +4175,7 @@
   "eduFeechargesMethodmobilemoney": "Mobil ödeme",
   "eduFeechargesMethodother": "Diğer",
   "eduFeechargesBatchfromclass": "Bu sınıf için toplu tahsilat",
-  "eduFeechargesBatchclassbanner": "Sınıf {class} — {students} öğrenci, {charges} tahsil edilecek borç.",
+  "eduFeechargesBatchclassbanner": "Sınıf {className} — {students} öğrenci, {charges} tahsil edilecek borç.",
   "eduFeechargesBatchclearclass": "Tüm borçlara dön",
   "eduFeechargesBatchfilters": "Filtreler",
   "eduFeechargesBatchfiltershint": "Toplu işlemi oluşturmadan önce önerilen borçları daraltın.",
