@@ -218,7 +218,12 @@ def is_action_path(path: str) -> bool:
 
 
 def is_excluded_path(path: str) -> bool:
-    return path.startswith("/public/") or path.startswith("/webhooks/") or "/public/" in path
+    # #9751 — l'exclusion doit porter sur le SEGMENT, pas sur le prefixe : une
+    # verticale peut porter son webhook sous son propre namespace
+    # (`/restaurant/webhooks/delivery-apps/{provider}`), qui ne commence donc
+    # pas par `/webhooks/`. Sans le test « contient », ces routes entraient
+    # dans la surface MCP alors qu'elles n'ont pas d'authentification tenant.
+    return "/public/" in path or "/webhooks/" in path
 
 
 def collect_parameters(spec: dict[str, Any], operation: dict[str, Any], path_item: dict[str, Any]) -> list[dict[str, Any]]:

@@ -9433,35 +9433,6 @@
       }
     },
     {
-      "name": "api_post_restaurant_webhooks_delivery_apps_provider",
-      "description": "POST /restaurant/webhooks/delivery-apps/{provider} — POST /api/v1/restaurant/webhooks/delivery-apps/{provider}. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
-      "inputSchema": {
-        "type": "object",
-        "properties": {
-          "provider": {
-            "type": "string"
-          }
-        },
-        "required": [
-          "provider"
-        ]
-      },
-      "outputSchema": {},
-      "permission": "api:write",
-      "sensitivity": "write",
-      "bc": "BC-23",
-      "version": 1,
-      "route": {
-        "method": "POST",
-        "path": "/api/v1/restaurant/webhooks/delivery-apps/{provider}",
-        "pathParams": [
-          "provider"
-        ],
-        "queryParams": [],
-        "hasBody": false
-      }
-    },
-    {
       "name": "api_post_restaurant_zones",
       "description": "Créer une zone de salle — POST /api/v1/restaurant/zones. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
