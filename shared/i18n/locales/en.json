@@ -5354,7 +5354,7 @@
       "methodMobileMoney": "Mobile money",
       "methodOther": "Other",
       "batchFromClass": "Collect in batch for this class",
-      "batchClassBanner": "Class {class} — {students} student(s), {charges} charge(s) to collect.",
+      "batchClassBanner": "Class {className} — {students} student(s), {charges} charge(s) to collect.",
       "batchClearClass": "Back to all charges",
       "batchFilters": "Filters",
       "batchFiltersHint": "Narrow the charges offered before building the batch.",

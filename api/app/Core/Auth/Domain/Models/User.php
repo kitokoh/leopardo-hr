@@ -39,19 +39,13 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
- * @mixin Builder
- *
- * @method static \Illuminate\Database\Eloquent\Builder<static> query()
- * @method static static create(array<string, mixed> $attributes = [])
- * @method static static|null find(mixed $id, array<int, string> $columns = ['*'])
- * @method static static findOrFail(mixed $id, array<int, string> $columns = ['*'])
- * @method static static|null first()
- * @method static static firstOrCreate(array<string, mixed> $attributes, array<string, mixed> $values = [])
- * @method static \Illuminate\Database\Eloquent\Builder<static> where(string|\Closure|array<mixed> $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @mixin Builder<static>
  */
 class User extends Authenticatable implements HasApiTokensContract
 {
     use HasApiTokens;
+
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory;
 
     protected $table = 'users';

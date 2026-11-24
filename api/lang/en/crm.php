@@ -43,6 +43,7 @@ return [
         'stage_invalid' => 'This stage does not exist in the pipeline.',
         'stage_terminal' => 'A won or lost deal is final. Create a new opportunity to start again.',
         'lost_reason_required' => 'Say why the deal was lost: without a reason the quarterly review is unexplainable.',
+        'lost_reason_not_applicable' => 'A loss reason only applies to a lost deal.',
         'activity_stage_changed' => 'Stage changed',
         'activity_target_required' => 'An activity must reference at least one account, contact, lead or opportunity.',
     ],

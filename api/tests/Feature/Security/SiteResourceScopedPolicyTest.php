@@ -72,7 +72,12 @@ class SiteResourceScopedPolicyTest extends TestCase
         // Les états de la factory sont utilisés (et non des attributs passés à
         // `create()`) : `role`/`manager_role` ne sont pas mass-assignables.
         $this->principal = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
-        $this->manager = Employee::factory()->manager()->create(['company_id' => $this->company->id]);
+        // `manager()` de la factory produit un `manager_role = 'principal'`, et
+        // `Employee::hasResourceAccess()` court-circuite alors a `true` : le
+        // scenario « manager assigne a A seulement » ne pouvait pas etre
+        // reproduit. Le sujet du test est un manager NON principal (le
+        // principal a son propre cas, plus bas) : on prend donc l'etat `dept`.
+        $this->manager = Employee::factory()->managerDept()->create(['company_id' => $this->company->id]);
 
         $this->siteA = Site::query()->create([
             'company_id' => $this->company->id,

@@ -25,6 +25,7 @@ class PaySlipResource extends JsonResource
      */
     private static array $complianceCache = [];
 
+    /** @return array<string, mixed> */
     public function toArray(Request $request): array
     {
         return [

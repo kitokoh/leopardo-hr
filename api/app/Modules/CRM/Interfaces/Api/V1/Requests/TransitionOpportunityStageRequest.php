@@ -49,7 +49,20 @@ final class TransitionOpportunityStageRequest extends FormRequest
             ],
             // Obligatoire pour `lost` : une affaire perdue sans raison ecrite
             // est inexploitable au bilan trimestriel.
-            'lost_reason' => ['required_if:stage,lost', 'nullable', 'string', 'max:500'],
+            //
+            // #9886 — et INTERDIT partout ailleurs. `required_if` seul laissait
+            // passer un motif sur `won` : l'action l'ecrivait alors dans
+            // `notes`, et une affaire gagnee portait un motif de perte dans son
+            // historique commercial. `prohibited_unless` refuse en 422 au lieu
+            // d'ignorer en silence — une donnee trompeuse doit etre rejetee,
+            // pas filtree.
+            'lost_reason' => [
+                'nullable',
+                'string',
+                'max:500',
+                'required_if:stage,lost',
+                'prohibited_unless:stage,lost',
+            ],
             'amount' => ['nullable', 'numeric', 'min:0'],
             'expected_close_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:5000'],
@@ -101,6 +114,15 @@ final class TransitionOpportunityStageRequest extends FormRequest
             // d'un etat terminal.
             if ($this->input('stage') === $current) {
                 return;
+            }
+
+            // Un motif de perte sur une affaire qui n'est PAS perdue est une
+            // donnee trompeuse : il serait journalise dans `notes` comme
+            // explication d'un deplacement qui n'a rien perdu. On le refuse
+            // explicitement (422) plutot que de l'ignorer en silence — le
+            // client croirait l'avoir enregistre.
+            if ($this->input('stage') !== 'lost' && $this->filled('lost_reason')) {
+                $validator->errors()->add('lost_reason', __('crm.opportunities.lost_reason_not_applicable'));
             }
         });
     }

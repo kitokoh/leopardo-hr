@@ -89,6 +89,75 @@ final class AccountStatusGuard
     }
 
     /**
+     * Variante utilisee par le hook Sanctum des requetes HTTP.
+     *
+     * ## Pourquoi elle differe de `tokenIsUsable()`
+     *
+     * `tokenIsUsable()` refuse tout compte non `active` (#9809). Appliquee au
+     * hook Sanctum, cette regle repond **401** AVANT que le middleware de la
+     * route ne s'execute — et pour un employe, c'est le middleware qui porte
+     * le contrat d'erreur attendu par les clients : `TenantMiddleware` et
+     * `AITenantInjector` repondent **403 `EMPLOYEE_ARCHIVED` /
+     * `EMPLOYEE_SUSPENDED`** (contrat verrouille par `AuthMeLogoutTest`,
+     * `AuthenticatedGuardrailsTest` et `TenantScopeFailClosedTest`).
+     *
+     * Le 401 du hook gagnait donc la course et cassait ce contrat : un
+     * employe archive recevait `401 UNAUTHENTICATED` au lieu de
+     * `403 EMPLOYEE_ARCHIVED`, et le front le renvoyait a l'ecran de
+     * connexion au lieu d'afficher le motif.
+     *
+     * ## Ce qui est conserve ici
+     *
+     *  - la REVOCATION de jeton (#9808) : aucun middleware ne la verifie ;
+     *  - le BANNISSEMENT de compte (#9808) : idem ;
+     *  - le statut des comptes qui ne sont PAS des `Employee` (super-admin
+     *    plateforme, compte public `user_api`, client travel) : c'est le trou
+     *    reel que #9809 a comble, et aucun `TenantMiddleware` ne les couvre.
+     *
+     * Pour un `Employee`, le statut reste verifie a chaque requete — par le
+     * middleware de la route, avec le bon code HTTP. L'invariant « un compte
+     * archive n'a plus d'acces » est donc preserve ; seul le code de refus
+     * change, et il redevient celui que les clients attendent.
+     */
+    public function tokenIsUsableForRequest(PersonalAccessToken $token): bool
+    {
+        if ($this->revocations->isRevoked((int) $token->id)) {
+            Log::channel('structured')->warning('auth.token_rejected_revoked', [
+                'token_id' => $token->id,
+            ]);
+
+            return false;
+        }
+
+        $user = $token->tokenable;
+
+        if (! $user instanceof Model) {
+            return false;
+        }
+
+        $type = $this->revocations->typeOf($user);
+
+        if ($type !== null && $this->revocations->isBanned($type, (int) $user->getKey())) {
+            Log::channel('structured')->warning('auth.token_rejected_banned', [
+                'account_type' => $type,
+                'account_id' => $user->getKey(),
+            ]);
+
+            return false;
+        }
+
+        // Employe : statut tranche par `TenantMiddleware` / `AITenantInjector`
+        // (403 EMPLOYEE_ARCHIVED / EMPLOYEE_SUSPENDED). Toutes les routes
+        // `auth:sanctum` sont couvertes par l'un des deux — verifie sur
+        // `route:list` (2025 routes, 0 non couverte).
+        if ($user instanceof Employee) {
+            return true;
+        }
+
+        return $this->accountIsActive($user);
+    }
+
+    /**
      * Le compte est-il actif ?
      *
      * Chaque modèle porte son propre vocabulaire de statut ; on ne l'invente

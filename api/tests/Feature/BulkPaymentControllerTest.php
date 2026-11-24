@@ -9,12 +9,10 @@ use App\Core\Tenant\Domain\Models\Company;
 use App\Jobs\ProcessBulkPaymentJob;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
-use Illuminate\Redis\Connections\PhpRedisConnection;
+use App\Modules\Payroll\Infrastructure\Services\BulkPaymentCoordinator;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Redis;
 use Laravel\Sanctum\Sanctum;
-use Mockery;
-use Mockery\Expectation;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
@@ -172,30 +170,108 @@ class BulkPaymentControllerTest extends TestCase
         Bus::assertDispatchedTimes(ProcessBulkPaymentJob::class, 1);
     }
 
-    public function test_bulk_pay_fails_closed_with_503_when_redis_is_unavailable(): void
+    public function test_bulk_pay_fails_closed_with_503_when_coordinator_is_unavailable(): void
     {
-        // #3857 : FAIL-CLOSED. Redis est le coordinateur anti-doublon (claim
-        // NX du run) : s'il est indisponible, un dispatch sans claim
-        // laisserait deux requêtes concurrentes lancer deux jobs qui
-        // paieraient 2× les mêmes bulletins (mouvement d'argent). On refuse
-        // avec 503 et AUCUN job n'est dispatché.
+        // #3857 / #9874 : FAIL-CLOSED conservé. Le coordinateur est désormais
+        // PostgreSQL (contrainte UNIQUE), plus Redis. Si la base est
+        // injoignable, on refuse le dispatch avec 503 et AUCUN job n'est
+        // lancé — deux jobs concurrents paieraient 2× les mêmes bulletins.
         Bus::fake();
 
         [$company, $manager, $run, $slipA, $slipB] = $this->fixture();
         Sanctum::actingAs($manager);
 
-        $client = Mockery::mock(PhpRedisConnection::class);
-        /** @var Expectation $setExpectation */
-        $setExpectation = $client->shouldReceive('set');
-        $setExpectation->andThrow(new \RuntimeException('Redis connection refused'));
-        /** @var Expectation $getExpectation */
-        $getExpectation = $client->shouldReceive('get');
-        $getExpectation->andReturn(null);
-        Redis::shouldReceive('connection')->with('default')->andReturn($client);
+        $this->mock(BulkPaymentCoordinator::class, function ($mock): void {
+            $mock->shouldReceive('claim')
+                ->andThrow(new \RuntimeException('database connection refused'));
+        });
 
         $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
             ->assertStatus(503)
             ->assertJsonPath('error', 'BULK_PAYMENT_COORDINATOR_UNAVAILABLE');
+
+        Bus::assertNotDispatched(ProcessBulkPaymentJob::class);
+    }
+
+    /**
+     * #9874 (R4) — le cœur du correctif : le paiement en masse ne dépend plus
+     * de Redis. On coupe Redis et on vérifie que le dispatch passe quand même.
+     */
+    public function test_bulk_pay_works_when_redis_is_completely_down(): void
+    {
+        Bus::fake();
+
+        [$company, $manager, $run, $slipA, $slipB] = $this->fixture();
+        Sanctum::actingAs($manager);
+
+        // Redis totalement indisponible : toute connexion lève.
+        Redis::shouldReceive('connection')->andThrow(new \RuntimeException('Redis is down'));
+
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
+            ->assertAccepted()
+            ->assertJsonPath('status', 'accepted');
+
+        Bus::assertDispatchedTimes(ProcessBulkPaymentJob::class, 1);
+    }
+
+    /**
+     * #9874 — le statut d'avancement reste lisible sans Redis.
+     */
+    public function test_bulk_pay_status_is_readable_when_redis_is_down(): void
+    {
+        [$company, $manager, $run, $slipA, $slipB] = $this->fixture();
+        Sanctum::actingAs($manager);
+
+        app(BulkPaymentCoordinator::class)->claim($run->id, $run->company_id, $manager->id);
+        app(BulkPaymentCoordinator::class)->advance($run->id, 'processing', 1, 2);
+
+        Redis::shouldReceive('connection')->andThrow(new \RuntimeException('Redis is down'));
+
+        $this->getJson("/api/v1/payroll-runs/{$run->id}/bulk-pay/status")
+            ->assertOk()
+            ->assertJsonPath('status', 'processing')
+            ->assertJsonPath('done', 1)
+            ->assertJsonPath('total', 2);
+    }
+
+    /**
+     * #9874 — un claim dont le bail est expiré (worker mort) est repris :
+     * un run ne reste jamais bloqué définitivement.
+     */
+    public function test_expired_claim_is_reclaimed(): void
+    {
+        Bus::fake();
+
+        [$company, $manager, $run, $slipA, $slipB] = $this->fixture();
+        Sanctum::actingAs($manager);
+
+        app(BulkPaymentCoordinator::class)->claim($run->id, $run->company_id, $manager->id);
+
+        // Simule un worker mort : bail dépassé.
+        \Illuminate\Support\Facades\DB::table('bulk_payment_claims')
+            ->where('payroll_run_id', $run->id)
+            ->update(['expires_at' => now()->subHour()]);
+
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
+            ->assertAccepted();
+
+        Bus::assertDispatchedTimes(ProcessBulkPaymentJob::class, 1);
+    }
+
+    /**
+     * #9874 — un claim ACTIF et non expiré bloque bien un second dispatch.
+     */
+    public function test_active_claim_blocks_second_dispatch(): void
+    {
+        Bus::fake();
+
+        [$company, $manager, $run, $slipA, $slipB] = $this->fixture();
+        Sanctum::actingAs($manager);
+
+        app(BulkPaymentCoordinator::class)->claim($run->id, $run->company_id, $manager->id);
+
+        $this->postJson("/api/v1/payroll-runs/{$run->id}/bulk-pay")
+            ->assertStatus(409);
 
         Bus::assertNotDispatched(ProcessBulkPaymentJob::class);
     }

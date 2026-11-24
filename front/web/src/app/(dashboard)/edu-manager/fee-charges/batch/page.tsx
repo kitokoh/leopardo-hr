@@ -421,7 +421,7 @@ export default function FeeBatchPage() {
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-3">
             <p className="text-sm font-bold text-emerald-800">
               {t(locale, 'edu.feeCharges.batchClassBanner')
-                .replace('{class}', className || `#${classId}`)
+                .replace('{className}', className || `#${classId}`)
                 .replace('{students}', String(students.length))
                 .replace('{charges}', String(charges.length))}
             </p>
