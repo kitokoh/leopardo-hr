@@ -2,39 +2,28 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Solutions;
+namespace App\Core\Solutions\Infrastructure\Services;
 
 use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Solutions\Contracts\SolutionManifest;
+use App\Core\Solutions\Contracts\SolutionPermissionInstaller as SolutionPermissionInstallerContract;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Core\Tenant\Domain\Models\EmployeeModuleGrant;
 
 /**
- * Installation effective des permissions déclarées par un manifest — BOS-013
- * (#8200).
+ * Implémentation du contrat {@see SolutionPermissionInstallerContract} —
+ * BOS-013 (#8200).
  *
- * Jusqu'ici `SolutionManifest::permissions()` était déclaré par chaque
- * verticale mais jamais câblé : activer une verticale n'installait aucune
- * permission. Le mécanisme choisi réutilise le socle EXISTANT de délégation
- * (#7761) — une ligne `employee_module_grants` par permission déclarée, posée
- * pour le(s) manager(s) `principal` du tenant — sans aucun nouveau système
- * de rôles (décision 09 §2.2).
+ * Voir le contrat pour les propriétés garanties (idempotence, fail-closed,
+ * `module_key` portant le code de permission du manifest sans étendre le
+ * registre `ModuleKey`).
  *
- * Propriétés :
- *  - idempotent : une permission déjà installée n'est jamais dupliquée
- *    (unicité `(company_id, employee_id, module_key)` en base) ;
- *  - fail-closed : un manifest inactif ne confère rien — l'installation ne
- *    passe que par l'activation (ici) et la révocation retire exactement les
- *    clés du manifest (moins celles encore déclarées par une autre solution
- *    ACTIVE du tenant — ex. `restaurant.manager`, déclaré par les deux
- *    manifests de la verticale restaurant) ;
- *  - `module_key` porte le code de permission du manifest (ex. `edu.admin`)
- *    SANS étendre le registre `ModuleKey` : celui-ci reste le registre fermé
- *    des modules DÉLÉGUABLES manuellement via l'API HR — ouvrir la délégation
- *    manuelle aux permissions verticales casserait le fail-closed « manifest
- *    inactif ⇒ aucune permission effective ».
+ * Déplacée de `Core/Solutions` vers `Core/Solutions/Infrastructure/Services`
+ * lors de l'extraction du contrat : les modules importaient la classe
+ * concrète, ce que refuse `IdentityLayerBoundariesArchitectureTest`
+ * (#8717, écart I-3).
  */
-final class SolutionPermissionInstaller
+final class ManifestSolutionPermissionInstaller implements SolutionPermissionInstallerContract
 {
     /**
      * Installe les permissions du manifest pour le(s) `principal` du tenant.

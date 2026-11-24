@@ -2,33 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Core\Solutions;
+namespace App\Core\Solutions\Infrastructure\Services;
 
+use App\Core\Solutions\Contracts\VerticalPermissionCatalogue as VerticalPermissionCatalogueContract;
+use App\Core\Solutions\SolutionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 
 /**
- * #EVAL — Catalogue des permissions VERTICALES délégables d'un tenant.
+ * Implémentation du contrat {@see VerticalPermissionCatalogueContract}.
  *
- * Contexte : `ModuleKey` est un registre FERMÉ de modules HORIZONTAUX
- * (`marketing`, `accounting`, …) et `PUT /employees/{id}/module-grants` refuse
- * toute clé hors registre (422, fail-closed). Les permissions déclarées par un
- * manifest de verticale (`travel.agent`, `travel.checkin`, …) n'y figurent
- * volontairement PAS : les ouvrir au registre casserait l'invariant
- * « manifest inactif ⇒ aucune permission effective ».
- *
- * Résultat : un responsable d'agence ne pouvait attribuer `travel.agent` à
- * aucun vendeur depuis l'interface — le grant n'existait qu'installé
- * automatiquement pour le `principal` à l'activation.
- *
- * Ce catalogue expose donc, pour un tenant donné, les permissions des
- * solutions RÉELLEMENT ACTIVES (feature flag posé). C'est la seule source
- * admise par la surface de délégation verticale :
- *  - fail-closed : une verticale inactive n'expose AUCUNE permission, donc
- *    aucune clé n'est attribuable (et une clé déjà posée reste sans effet,
- *    les Policies lisant le grant ET le flag tenant) ;
- *  - aucune écriture : pure lecture du catalogue + des flags du tenant.
+ * Voir le contrat pour la doctrine (fail-closed sur les verticales inactives,
+ * lecture seule). Déplacée de `Core/Solutions` vers
+ * `Core/Solutions/Infrastructure/Services` lors de l'extraction du contrat :
+ * les modules importaient la classe concrète, ce que refuse
+ * `IdentityLayerBoundariesArchitectureTest` (#8717, écart I-3).
  */
-final class VerticalPermissionCatalogue
+final class CatalogueVerticalPermissionCatalogue implements VerticalPermissionCatalogueContract
 {
     public function __construct(private readonly SolutionCatalogue $catalogue) {}
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Core\Solutions;
 
 use App\Core\Auth\Domain\Models\AuditLog;
+use App\Core\Solutions\Contracts\SolutionPermissionInstaller;
 use App\Core\Solutions\Exceptions\SolutionMissingDependencyException;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Events\SolutionActivated;

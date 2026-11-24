@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Requests;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Solutions\VerticalPermissionCatalogue;
+use App\Core\Solutions\Contracts\VerticalPermissionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;

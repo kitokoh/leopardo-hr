@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\HR\Interfaces\Api\V1\Controllers;
 
 use App\Core\Auth\Domain\Models\Employee;
-use App\Core\Solutions\VerticalPermissionCatalogue;
+use App\Core\Solutions\Contracts\VerticalPermissionCatalogue;
 use App\Core\Tenant\Domain\Models\Company;
 use App\Http\Controllers\Controller;
 use App\Modules\HR\Infrastructure\Services\EmployeeModuleGrantService;
