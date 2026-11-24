@@ -10,12 +10,9 @@ use App\Jobs\ProcessBulkPaymentJob;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Infrastructure\Services\BulkPaymentCoordinator;
-use Illuminate\Redis\Connections\PhpRedisConnection;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Redis;
 use Laravel\Sanctum\Sanctum;
-use Mockery;
-use Mockery\Expectation;
 use Tests\RefreshTenantDatabase;
 use Tests\TestCase;
 
