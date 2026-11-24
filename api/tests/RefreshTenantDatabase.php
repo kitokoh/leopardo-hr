@@ -328,7 +328,9 @@ trait RefreshTenantDatabase
             return true;
         }
 
-        $connection = DB::connection()->getName();
+        // `getName()` est typé `string|null` : on fige le nom de connexion en
+        // chaîne pour `Migrator::setConnection()` (level 8, argument.type).
+        $connection = (string) DB::connection()->getName();
         $originalSearchPath = config("database.connections.{$connection}.search_path");
 
         try {

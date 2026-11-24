@@ -451,17 +451,17 @@
     },
     {
       "name": "api_delete_travel_community_tourist_sites_by_site",
-      "description": "Supprimer un site touristique — DELETE /api/v1/travel/community/tourist-sites/{site}. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "description": "Supprimer un site touristique — DELETE /api/v1/travel/community/tourist-sites/{travelTouristSite}. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
         "type": "object",
         "properties": {
-          "site": {
+          "travelTouristSite": {
             "type": "integer",
             "description": "Identifiant du site touristique."
           }
         },
         "required": [
-          "site"
+          "travelTouristSite"
         ]
       },
       "outputSchema": {},
@@ -471,9 +471,9 @@
       "version": 1,
       "route": {
         "method": "DELETE",
-        "path": "/api/v1/travel/community/tourist-sites/{site}",
+        "path": "/api/v1/travel/community/tourist-sites/{travelTouristSite}",
         "pathParams": [
-          "site"
+          "travelTouristSite"
         ],
         "queryParams": [],
         "hasBody": false
@@ -1232,6 +1232,26 @@
       }
     },
     {
+      "name": "api_get_company_integration_requests_manage",
+      "description": "GET /company-integration-requests/manage — GET /api/v1/company-integration-requests/manage. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/company-integration-requests/manage",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
       "name": "api_get_company_qr_onboarding",
       "description": "Generer le QR onboarding entreprise — GET /api/v1/company/qr-onboarding. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -1691,6 +1711,64 @@
         "path": "/api/v1/evaluations/{evaluation}",
         "pathParams": [
           "evaluation"
+        ],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_kiosks_devicecode_enrollments_status",
+      "description": "GET /kiosks/{deviceCode}/enrollments/status — GET /api/v1/kiosks/{deviceCode}/enrollments/status. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "deviceCode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "deviceCode"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/kiosks/{deviceCode}/enrollments/status",
+        "pathParams": [
+          "deviceCode"
+        ],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
+      "name": "api_get_kiosks_devicecode_sync_status",
+      "description": "GET /kiosks/{deviceCode}/sync-status — GET /api/v1/kiosks/{deviceCode}/sync-status. Lecture. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "deviceCode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "deviceCode"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:read",
+      "sensitivity": "read",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "GET",
+        "path": "/api/v1/kiosks/{deviceCode}/sync-status",
+        "pathParams": [
+          "deviceCode"
         ],
         "queryParams": [],
         "hasBody": false
@@ -6665,6 +6743,110 @@
       }
     },
     {
+      "name": "api_post_kiosks_devicecode_enrollments",
+      "description": "POST /kiosks/{deviceCode}/enrollments — POST /api/v1/kiosks/{deviceCode}/enrollments. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "description": "`employee_id` et gabarit biometrique capture par la borne.\n"
+          },
+          "deviceCode": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "body",
+          "deviceCode"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/kiosks/{deviceCode}/enrollments",
+        "pathParams": [
+          "deviceCode"
+        ],
+        "queryParams": [],
+        "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_kiosks_devicecode_enrollments_enrollment_activate",
+      "description": "POST /kiosks/{deviceCode}/enrollments/{enrollment}/activate — POST /api/v1/kiosks/{deviceCode}/enrollments/{enrollment}/activate. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "deviceCode": {
+            "type": "string"
+          },
+          "enrollment": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "deviceCode",
+          "enrollment"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/kiosks/{deviceCode}/enrollments/{enrollment}/activate",
+        "pathParams": [
+          "deviceCode",
+          "enrollment"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
+      "name": "api_post_kiosks_devicecode_enrollments_enrollment_revoke",
+      "description": "POST /kiosks/{deviceCode}/enrollments/{enrollment}/revoke — POST /api/v1/kiosks/{deviceCode}/enrollments/{enrollment}/revoke. Action métier — PROPOSITION uniquement, confirmation humaine requise. Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "deviceCode": {
+            "type": "string"
+          },
+          "enrollment": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "deviceCode",
+          "enrollment"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/kiosks/{deviceCode}/enrollments/{enrollment}/revoke",
+        "pathParams": [
+          "deviceCode",
+          "enrollment"
+        ],
+        "queryParams": [],
+        "hasBody": false,
+        "action": true
+      }
+    },
+    {
       "name": "api_post_me_company_qr_scan",
       "description": "Soumettre une demande d'integration via QR entreprise — POST /api/v1/me/company-qr/scan. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -8407,6 +8589,35 @@
       }
     },
     {
+      "name": "api_post_restaurant_payments_payment_callback",
+      "description": "POST /restaurant/payments/{payment}/callback — POST /api/v1/restaurant/payments/{payment}/callback. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "payment": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "payment"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/payments/{payment}/callback",
+        "pathParams": [
+          "payment"
+        ],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
       "name": "api_post_restaurant_pos_sessions",
       "description": "Ouvrir une session de caisse — POST /api/v1/restaurant/pos-sessions. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -9222,6 +9433,35 @@
       }
     },
     {
+      "name": "api_post_restaurant_webhooks_delivery_apps_provider",
+      "description": "POST /restaurant/webhooks/delivery-apps/{provider} — POST /api/v1/restaurant/webhooks/delivery-apps/{provider}. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider"
+        ]
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/restaurant/webhooks/delivery-apps/{provider}",
+        "pathParams": [
+          "provider"
+        ],
+        "queryParams": [],
+        "hasBody": false
+      }
+    },
+    {
       "name": "api_post_restaurant_zones",
       "description": "Créer une zone de salle — POST /api/v1/restaurant/zones. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
@@ -9612,6 +9852,26 @@
         ],
         "queryParams": [],
         "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_travel_carrier_sync_trips",
+      "description": "POST /travel/carrier-sync/trips — POST /api/v1/travel/carrier-sync/trips. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/travel/carrier-sync/trips",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
       }
     },
     {
@@ -10426,6 +10686,26 @@
         ],
         "queryParams": [],
         "hasBody": true
+      }
+    },
+    {
+      "name": "api_post_travel_payments_callback",
+      "description": "POST /travel/payments/callback — POST /api/v1/travel/payments/callback. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      },
+      "outputSchema": {},
+      "permission": "api:write",
+      "sensitivity": "write",
+      "bc": "BC-23",
+      "version": 1,
+      "route": {
+        "method": "POST",
+        "path": "/api/v1/travel/payments/callback",
+        "pathParams": [],
+        "queryParams": [],
+        "hasBody": false
       }
     },
     {
@@ -11733,7 +12013,7 @@
     },
     {
       "name": "api_put_travel_community_tourist_sites_by_site",
-      "description": "Mettre a jour un site touristique — PUT /api/v1/travel/community/tourist-sites/{site}. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
+      "description": "Mettre a jour un site touristique — PUT /api/v1/travel/community/tourist-sites/{travelTouristSite}. Écriture (confirmation requise). Outil généré depuis api/openapi.yaml (issue #9746) : ne pas éditer à la main, régénérer avec `python3 dev-hub/tools/generate-mcp-openapi-tools.py`.",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -11774,14 +12054,14 @@
             },
             "required": []
           },
-          "site": {
+          "travelTouristSite": {
             "type": "integer",
             "description": "Identifiant du site touristique."
           }
         },
         "required": [
           "body",
-          "site"
+          "travelTouristSite"
         ]
       },
       "outputSchema": {},
@@ -11791,9 +12071,9 @@
       "version": 1,
       "route": {
         "method": "PUT",
-        "path": "/api/v1/travel/community/tourist-sites/{site}",
+        "path": "/api/v1/travel/community/tourist-sites/{travelTouristSite}",
         "pathParams": [
-          "site"
+          "travelTouristSite"
         ],
         "queryParams": [],
         "hasBody": true

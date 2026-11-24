@@ -143,6 +143,7 @@ class EmployeeStatsTest extends TestCase
 
         Sanctum::actingAs($principal);
 
+        /** @var array<int, array{id: string, name: string, count: int}> $byDepartment */
         $byDepartment = $this->getJson('/api/v1/employees/stats')->json('data.by_department');
 
         $cuisine = collect($byDepartment)->firstWhere('id', $department->id);

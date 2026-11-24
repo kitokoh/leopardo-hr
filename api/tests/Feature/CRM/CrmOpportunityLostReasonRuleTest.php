@@ -108,6 +108,9 @@ class CrmOpportunityLostReasonRuleTest extends TestCase
             {
                 public function __construct(private CrmOpportunity $opportunity) {}
 
+                /**
+                 * @param  array<int, mixed>  $arguments
+                 */
                 public function __call(string $name, array $arguments): mixed
                 {
                     return $name === 'opportunity' ? $this->opportunity : null;

@@ -485,6 +485,7 @@
             <file>tests/Feature/BusinessOs/TrialSignupIdempotencyTest.php</file>
         </testsuite>
         <testsuite name="CRM">
+            <file>tests/Feature/CRM/CrmActivitiesEndpointTest.php</file>
             <file>tests/Feature/CRM/CrmActivitiesTasksTest.php</file>
             <file>tests/Feature/CRM/CrmAutomationTest.php</file>
             <file>tests/Feature/CRM/CrmCampaignSendProcessingTest.php</file>
@@ -505,6 +506,7 @@
             <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
             <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
             <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
+            <file>tests/Feature/CRM/CrmOpportunityLostReasonRuleTest.php</file>
             <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxRuntimeTest.php</file>
@@ -809,6 +811,7 @@
             <file>tests/Feature/HR/EmployeeRequestSearchPathTest.php</file>
             <file>tests/Feature/HR/EmployeeSensitiveFillableTest.php</file>
             <file>tests/Feature/HR/EmployeeServiceCreateFillableTest.php</file>
+            <file>tests/Feature/HR/EmployeeStatsTest.php</file>
             <file>tests/Feature/HR/EmployeeTenantIsolationTest.php</file>
             <file>tests/Feature/HR/ExportHistoryTest.php</file>
             <file>tests/Feature/HR/HrControllerTest.php</file>
@@ -1322,6 +1325,7 @@
             <file>tests/Feature/Security/SiteResourceScopedPolicyTest.php</file>
             <file>tests/Feature/Security/SupervisorScopedRbacTest.php</file>
             <file>tests/Feature/Security/TenantModelIsolationTest.php</file>
+            <file>tests/Feature/Security/TenantRlsStatusCommandTest.php</file>
             <file>tests/Feature/Security/TenantScopeFailClosedTest.php</file>
             <file>tests/Feature/Security/TokenRevocationTest.php</file>
             <file>tests/Feature/Security/TradeTenantIsolationTest.php</file>
@@ -1565,7 +1569,7 @@
           et detruit le marqueur `__mvp_fixture_ready`.
 
           FeatureMvpFixture : 242 fichiers.
-          FeatureRest       : 1116 fichiers.
+          FeatureRest       : 1119 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
             <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
@@ -1984,6 +1988,7 @@
             <file>tests/Feature/BusinessOs/SiteApiContractTest.php</file>
             <file>tests/Feature/BusinessOs/SitesFirstClassTest.php</file>
             <file>tests/Feature/BusinessOs/TrialSignupIdempotencyTest.php</file>
+            <file>tests/Feature/CRM/CrmActivitiesEndpointTest.php</file>
             <file>tests/Feature/CRM/CrmActivitiesTasksTest.php</file>
             <file>tests/Feature/CRM/CrmAutomationTest.php</file>
             <file>tests/Feature/CRM/CrmCampaignSendProcessingTest.php</file>
@@ -2004,6 +2009,7 @@
             <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
             <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
             <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
+            <file>tests/Feature/CRM/CrmOpportunityLostReasonRuleTest.php</file>
             <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxRuntimeTest.php</file>
@@ -2253,6 +2259,7 @@
             <file>tests/Feature/HR/EmployeeRequestSearchPathTest.php</file>
             <file>tests/Feature/HR/EmployeeSensitiveFillableTest.php</file>
             <file>tests/Feature/HR/EmployeeServiceCreateFillableTest.php</file>
+            <file>tests/Feature/HR/EmployeeStatsTest.php</file>
             <file>tests/Feature/HR/EmployeeTenantIsolationTest.php</file>
             <file>tests/Feature/HR/ExportHistoryTest.php</file>
             <file>tests/Feature/HR/HrControllerTest.php</file>
