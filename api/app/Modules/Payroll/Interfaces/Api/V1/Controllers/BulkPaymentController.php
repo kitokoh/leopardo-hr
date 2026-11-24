@@ -59,6 +59,7 @@ class BulkPaymentController extends Controller
         // dispute") instead of always paying the whole run. Omitting
         // pay_slip_ids keeps the previous "pay everyone in the run"
         // behaviour so existing integrations are unaffected.
+        /** @var array{pay_slip_ids?: array<int, int>|null} $validated */
         $validated = $request->validate([
             'pay_slip_ids' => ['nullable', 'array', 'min:1'],
             'pay_slip_ids.*' => ['integer', 'distinct'],

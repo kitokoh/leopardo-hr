@@ -83,8 +83,13 @@ class BulkPaymentCoordinator
                 return ['acquired' => false, 'status' => 'unavailable', 'progress' => null];
             }
 
-            $status = (string) $existing->status;
-            $expired = CarbonImmutable::parse((string) $existing->expires_at)->isPast();
+            /** @var array<string, mixed> $existingRow */
+            $existingRow = (array) $existing;
+            $status = is_string($existingRow['status'] ?? null) ? $existingRow['status'] : '';
+            $expiresAtRaw = $existingRow['expires_at'] ?? null;
+            $expired = is_string($expiresAtRaw)
+                ? CarbonImmutable::parse($expiresAtRaw)->isPast()
+                : true;
 
             // Un job ACTIF et NON EXPIRÉ tient le run : on refuse (409).
             if (in_array($status, self::ACTIVE_STATUSES, true) && ! $expired) {
@@ -100,7 +105,8 @@ class BulkPaymentCoordinator
             // peuvent pas gagner tous les deux.
             $reclaimed = DB::table('bulk_payment_claims')
                 ->where('payroll_run_id', $payrollRunId)
-                ->where(function ($q) use ($expiresAt, $now): void {
+                ->where(function ($q) use ($now): void {
+                    /** @var \Illuminate\Database\Query\Builder $q */
                     $q->where('expires_at', '<', $now)
                         ->orWhereIn('status', ['completed', 'completed_with_errors', 'failed']);
                 })
@@ -195,16 +201,19 @@ class BulkPaymentCoordinator
      */
     private function progressOf(object $row): array
     {
-        $failures = $row->failures ?? null;
+        /** @var array<string, mixed> $data */
+        $data = (array) $row;
+
+        $failures = $data['failures'] ?? null;
 
         return [
-            'status' => (string) $row->status,
-            'done' => (int) $row->done,
-            'total' => (int) $row->total,
-            'failed' => (int) $row->failed,
+            'status' => is_string($data['status'] ?? null) ? $data['status'] : '',
+            'done' => is_numeric($data['done'] ?? null) ? (int) $data['done'] : 0,
+            'total' => is_numeric($data['total'] ?? null) ? (int) $data['total'] : 0,
+            'failed' => is_numeric($data['failed'] ?? null) ? (int) $data['failed'] : 0,
             'failures' => is_string($failures) ? (json_decode($failures, true) ?? []) : ($failures ?? []),
-            'expires_at' => (string) $row->expires_at,
-            'updated_at' => (string) $row->updated_at,
+            'expires_at' => is_string($data['expires_at'] ?? null) ? $data['expires_at'] : '',
+            'updated_at' => is_string($data['updated_at'] ?? null) ? $data['updated_at'] : '',
         ];
     }
 }
