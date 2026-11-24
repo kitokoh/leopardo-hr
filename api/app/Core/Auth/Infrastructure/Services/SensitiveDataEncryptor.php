@@ -36,6 +36,10 @@ class SensitiveDataEncryptor
     }
 
     /**
+     * #9898 — types de valeur explicites : `array` nu ne dit pas ce que la
+     * methode accepte ni ce qu'elle renvoie, et PHPStan (level max) le
+     * signale sur les trois positions (2 parametres + retour).
+     *
      * @param  array<string, mixed>  $data
      * @param  list<string>  $sensitiveFields
      * @return array<string, mixed>

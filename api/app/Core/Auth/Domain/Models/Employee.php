@@ -75,7 +75,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property string|null $phone
  * @property string|null $address_line
  * @property string|null $postal_code
- * @property string|null $password_hash
+ * @property string $password_hash
  * @property Carbon $date_of_birth
  * @property string|null $place_of_birth
  * @property string $gender
@@ -143,6 +143,8 @@ class Employee extends Authenticatable implements HasApiTokensContract
     use \App\Core\Auth\Domain\Models\Concerns\EmployeePermissions;
     use BelongsToCompany;
     use HasApiTokens;
+
+    /** @use HasFactory<\Database\Factories\EmployeeFactory> */
     use HasFactory;
     use Notifiable;
 
@@ -260,7 +262,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
 
     public function getAuthPassword(): string
     {
-        return (string) $this->password_hash;
+        return $this->password_hash;
     }
 
     /** @return BelongsTo<Company, $this> */
@@ -415,7 +417,7 @@ class Employee extends Authenticatable implements HasApiTokensContract
             ['email' => $this->email],
             [
                 'company_id' => $this->company_id,
-                'schema_name' => $this->company?->schema_name ?? 'shared_tenants',
+                'schema_name' => $this->company->schema_name ?? 'shared_tenants',
                 'employee_id' => $this->id,
                 'role' => $this->userLookupRole(),
             ]

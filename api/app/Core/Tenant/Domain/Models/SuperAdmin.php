@@ -58,7 +58,14 @@ class SuperAdmin extends Authenticatable
 
     public function getAuthPassword(): string
     {
-        return $this->password_hash;
+        // #9898 — `password_hash` est declare `string|null` (colonne nullable),
+        // mais `getAuthPassword()` est contractuellement `string` : Laravel
+        // l'utilise pour comparer un hash, et un `null` y produirait un
+        // `TypeError` au milieu du flux d'authentification. On normalise ici
+        // plutot que d'elargir la signature : un compte sans hash ne peut pas
+        // s'authentifier, et une chaine vide fait echouer la comparaison de
+        // facon sure (fail-closed) au lieu de lever.
+        return (string) $this->password_hash;
     }
 
     /**

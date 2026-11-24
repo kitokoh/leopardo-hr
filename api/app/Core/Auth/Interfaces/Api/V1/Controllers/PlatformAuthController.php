@@ -262,7 +262,12 @@ class PlatformAuthController extends Controller
             ]);
 
             /** @var array{current_password: string} $passwordCheck */
-            if (! Hash::check($passwordCheck['current_password'], $superAdmin->password_hash)) {
+            // #9898 — `SuperAdmin::password_hash` est declare `string|null`
+            // (colonne nullable). `Hash::check()` exige `string` : on garde la
+            // garde existante (#6956) et on normalise pour l'appel.
+            $storedHash = (string) $superAdmin->password_hash;
+
+            if ($storedHash === '' || ! Hash::check($passwordCheck['current_password'], $storedHash)) {
                 return new JsonResponse([
                     'error' => 'INVALID_PASSWORD',
                     'message' => __('auth.password_incorrect'),
@@ -319,7 +324,11 @@ class PlatformAuthController extends Controller
         /** @var SuperAdmin $superAdmin */
         $superAdmin = $request->user('super_admin_api');
 
-        if (! Hash::check($validated['current_password'], $superAdmin->password_hash)) {
+        // #9898 — meme normalisation que ci-dessus : la colonne est nullable
+        // au niveau du modele, `Hash::check()` exige `string`.
+        $storedHash = (string) $superAdmin->password_hash;
+
+        if ($storedHash === '' || ! Hash::check($validated['current_password'], $storedHash)) {
             return new JsonResponse([
                 'error' => 'INVALID_PASSWORD',
                 'message' => __('auth.current_password_incorrect'),
