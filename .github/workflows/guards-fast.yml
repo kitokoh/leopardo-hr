@@ -90,6 +90,10 @@ on:
       - "front/admin-dashboard/**"
       - "dev-hub/tools/check-web-design-tokens.sh"
       - "dev-hub/tools/web-design-hex-allowlist.txt"
+      # --- front-scripts-guard (#9875 / #9880) ---
+      - "package.json"
+      - "scripts/check-front-scripts.mjs"
+      - "front/**"
       # --- le workflow lui-même ---
       - ".github/workflows/guards-fast.yml"
   push:
@@ -164,6 +168,7 @@ jobs:
       phpunit_paths: ${{ steps.filter.outputs.phpunit_paths }}
       validation_catch: ${{ steps.filter.outputs.validation_catch }}
       web_tokens: ${{ steps.filter.outputs.web_tokens }}
+      front_scripts: ${{ steps.filter.outputs.front_scripts }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -244,6 +249,11 @@ jobs:
               - "docs/REFERENTIEL_PRODUIT/COULEURS.md"
               - "dev-hub/tools/check-web-design-tokens.sh"
               - "dev-hub/tools/web-design-hex-allowlist.txt"
+              - ".github/workflows/guards-fast.yml"
+            front_scripts:
+              - "package.json"
+              - "scripts/check-front-scripts.mjs"
+              - "front/**"
               - ".github/workflows/guards-fast.yml"
 
   # ---------------------------------------------------------------------------
@@ -491,3 +501,29 @@ jobs:
           lfs: false
       - name: Run web design tokens guard
         run: bash dev-hub/tools/check-web-design-tokens.sh
+
+  # ---------------------------------------------------------------------------
+  # 11/11 — Cohérence des scripts npm racine avec l'arborescence front/
+  # (#9875 / #9880)
+  #
+  # `front/marketplace` et `front/travel-web` ont été retirés (#9630) mais le
+  # `package.json` racine les référençait encore : `npm run lint`, `build` et
+  # `test` échouaient en ENOENT. Aucune garde ne couvrait l'outillage — elles
+  # ne vérifiaient que le code. Cette garde ferme ce trou.
+  # ---------------------------------------------------------------------------
+  front-scripts:
+    name: Scripts npm racine cohérents avec front/
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.front_scripts == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Vérifier la cohérence package.json ↔ front/
+        shell: bash
+        run: node scripts/check-front-scripts.mjs
