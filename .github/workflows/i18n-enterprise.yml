@@ -21,6 +21,7 @@ on:
       # workflow, sinon le correctif n'est jamais vérifié (issue #7482).
       - 'dev-hub/tools/check-i18n-diff.js'
       - 'dev-hub/tools/check-i18n-diff-test.sh'
+      - 'dev-hub/tools/check-i18n-dart-placeholders.sh'
       - '.github/workflows/i18n-enterprise.yml'
   push:
     branches:
@@ -42,6 +43,7 @@ on:
       - 'api/resources/views/emails/**'
       - 'dev-hub/tools/check-i18n-diff.js'
       - 'dev-hub/tools/check-i18n-diff-test.sh'
+      - 'dev-hub/tools/check-i18n-dart-placeholders.sh'
       - '.github/workflows/i18n-enterprise.yml'
 
 permissions:
@@ -76,6 +78,16 @@ jobs:
         # shared/i18n/locales et les ARB de leopardo_core. Bloquant sur toute
         # PR touchant les catalogues (déclencheurs paths ci-dessus).
         run: bash dev-hub/tools/check-i18n-catalog-parity.sh
+
+      - name: Check i18n placeholders generate valid Dart (#9903)
+        # Une cle dont le placeholder est un mot reserve Dart (`{class}`) passe la
+        # parite, la validation et les 3 syncs, puis fait echouer `flutter gen-l10n`
+        # et `dart format` (exit 65) sur les 23 jobs mobiles, avec un message qui ne
+        # nomme jamais la cle. Le 2026-11-24, une seule cle a coute ces 23 jobs (#9901).
+        # Cette garde est placee AVANT les syncs : elle nomme la cle fautive.
+        run: |
+          bash dev-hub/tools/check-i18n-dart-placeholders.sh --self-test
+          bash dev-hub/tools/check-i18n-dart-placeholders.sh
 
       - name: Validate shared catalogs
         run: node shared/i18n/validators/validate.js
