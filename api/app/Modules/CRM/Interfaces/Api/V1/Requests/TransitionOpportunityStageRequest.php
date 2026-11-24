@@ -50,15 +50,22 @@ final class TransitionOpportunityStageRequest extends FormRequest
             // Obligatoire pour `lost` : une affaire perdue sans raison ecrite
             // est inexploitable au bilan trimestriel.
             //
-            // `prohibited_unless` est le pendant manquant : une raison de perte
-            // sur une affaire GAGNEE est une donnee trompeuse (elle laisse
-            // croire que l'affaire a echoue). Sans cette regle, le champ etait
-            // accepte puis ecrit dans `notes` — le test
+            // `prohibited_if:stage,won` est le pendant manquant : une raison de
+            // perte sur une affaire GAGNEE est une donnee trompeuse (elle
+            // laisse croire que l'affaire a echoue). Sans cette regle, le champ
+            // etait accepte puis ecrit dans `notes` — le test
             // `test_reason_on_a_won_deal_is_refused` le refusait deja, la
             // requete ne suivait pas.
+            //
+            // Pourquoi `prohibited_if` et non `prohibited_unless:stage,lost` :
+            // `prohibited_unless` interdit le champ des que la condition n'est
+            // PAS satisfaite, donc sur TOUTES les etapes ouvertes aussi. Un
+            // client qui renvoie le formulaire complet avec une raison heritee
+            // d'un brouillon recevait un 422 sur `prospecting`. Seul `won` est
+            // reellement trompeur : c'est la seule etape a interdire.
             'lost_reason' => [
                 'required_if:stage,lost',
-                'prohibited_unless:stage,lost',
+                'prohibited_if:stage,won',
                 'nullable',
                 'string',
                 'max:500',
@@ -77,7 +84,7 @@ final class TransitionOpportunityStageRequest extends FormRequest
         return [
             'stage.in' => __('crm.opportunities.stage_invalid'),
             'lost_reason.required_if' => __('crm.opportunities.lost_reason_required'),
-            'lost_reason.prohibited_unless' => __('crm.opportunities.lost_reason_only_when_lost'),
+            'lost_reason.prohibited_if' => __('crm.opportunities.lost_reason_only_when_lost'),
         ];
     }
 

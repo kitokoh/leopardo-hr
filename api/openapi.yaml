@@ -99,8 +99,6 @@ tags:
   description: Groupe d'opérations Privacy
 - name: Kiosks
   description: Groupe d'opérations Kiosks
-- name: Pages
-  description: BC PAGES — Pages par établissement (surface tenant, #8728)
 - name: Cameras
   description: Groupe d'opérations Cameras
 - name: Vehicle Tracking
@@ -8856,37 +8854,69 @@ paths:
           description: Log introuvable ou aucune photo enregistree
   /audit-logs:
     get:
-      operationId: api_get_admin_audit_logs
+      operationId: api_get_audit_logs
       tags:
-      - Admin
-      summary: Journal d'audit
+      - Auth
+      summary: Piste d'audit du tenant (liste paginée)
+      description: >-
+        Issue #9333 — consultation de la piste d'audit tenant (obligation
+        RGPD). Réservé au principal du tenant (gate `viewTenantAudit`). Le
+        scope `BelongsToCompany` cloisonne automatiquement par entreprise.
+        La fenêtre de rétention vient de `CompanySetting.audit_retention_months`.
+      security:
+      - BearerAuth: []
       parameters:
-      - name: action
+      - name: page
         in: query
-        schema:
-          type: string
-      - name: user_id
-        in: query
+        required: false
         schema:
           type: integer
-      - name: from
-        in: query
-        schema:
-          type: string
-          format: date
-      - name: to
-        in: query
-        schema:
-          type: string
-          format: date
+          minimum: 1
       - name: per_page
         in: query
+        required: false
         schema:
           type: integer
-          default: 50
+          minimum: 1
+          maximum: 100
+      - name: actor
+        in: query
+        required: false
+        description: Identifiant de l'employé auteur de l'action
+        schema:
+          type: integer
+      - name: action
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 200
+      - name: resource_type
+        in: query
+        required: false
+        schema:
+          type: string
+          maxLength: 200
+      - name: resource_id
+        in: query
+        required: false
+        schema:
+          type: integer
+      - name: date_from
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
+      - name: date_to
+        in: query
+        required: false
+        schema:
+          type: string
+          format: date
       responses:
         '200':
-          description: Liste des evenements
+          description: Liste paginée des entrées d'audit
           content:
             application/json:
               schema:
@@ -8895,13 +8925,13 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: '#/components/schemas/AuditLog'
+                      $ref: '#/components/schemas/AuditLogEntry'
                   meta:
-                    $ref: '#/components/schemas/PaginationMeta'
+                    type: object
         '401':
-          $ref: '#/components/responses/Error401'
+          description: Non authentifié
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Rôle sans droit de lecture de l'audit tenant
   /audit-logs/export-csv:
     get:
       operationId: api_get_audit_logs_export_csv
@@ -8946,11 +8976,15 @@ paths:
           $ref: '#/components/responses/Error403'
   /audit-logs/{id}:
     get:
-      operationId: api_get_admin_audit_log
+      operationId: api_get_audit_log
       tags:
-      - Admin
-      summary: Voir un evenement d'audit
-      description: Reserve au manager `principal`. Journal en lecture seule (append-only), pas de update/delete.
+      - Auth
+      summary: Détail d'une entrée d'audit
+      description: >-
+        Issue #9333 — une entrée d'une autre entreprise répond 404, jamais
+        403, pour rester indistinguable d'une absence.
+      security:
+      - BearerAuth: []
       parameters:
       - name: id
         in: path
@@ -8959,20 +8993,20 @@ paths:
           type: integer
       responses:
         '200':
-          description: Detail de l'evenement
+          description: Entrée d'audit
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   data:
-                    $ref: '#/components/schemas/AuditLog'
+                    $ref: '#/components/schemas/AuditLogEntry'
         '401':
-          $ref: '#/components/responses/Error401'
+          description: Non authentifié
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Rôle sans droit de lecture de l'audit tenant
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Entrée absente ou appartenant à une autre entreprise
   /auth/2fa/confirm:
     post:
       operationId: api_post_auth_2fa_confirm
@@ -14346,67 +14380,97 @@ paths:
   /connectors/catalog:
     get:
       operationId: api_get_connectors_catalog
-      tags: [Connectors]
-      summary: GET /connectors/catalog
-      description: |
-        Catalogue des connecteurs disponibles (surfaces externes supportees, champs
-        attendus, capacites). Lecture ouverte a tout manager du tenant.
-      security:
-      - BearerAuth: []
+      tags:
+      - Connectors
+      summary: Types de connecteur proposables à un tenant (#9848)
+      description: 'Catalogue des surfaces externes qu''un client peut brancher sur son espace. Filtré par `audience = tenant` : les entrées `audience = platform` (les banques de l''éditeur) n''apparaissent jamais ici, même si un contrôleur l''oubliait.
+
+        Chaque entrée porte son `field_schema` : le front génère le formulaire à partir de lui, donc ajouter un type de connecteur est une écriture de données, pas un déploiement.'
       responses:
         '200':
-          description: Succes
+          description: Entrées de catalogue visibles par le tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ConnectorCatalogEntry'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Feature `connectors` inactive pour ce tenant
+        '429':
+          $ref: '#/components/responses/Error429'
   /connectors/connections:
     get:
       operationId: api_get_connectors_connections
-      tags: [Connectors]
-      summary: GET /connectors/connections
-      description: |
-        Connexions du tenant. Les secrets sont WRITE-ONLY : la reponse expose un
-        masque, jamais la valeur stockee.
-      security:
-      - BearerAuth: []
+      tags:
+      - Connectors
+      summary: Connexions externes du tenant courant (#9848)
+      description: 'Isolation tenant appliquée par `BelongsToCompany` : une connexion d''une autre entreprise est introuvable (404), jamais 403.
+
+        Les secrets ne redescendent JAMAIS en clair : `secrets` ne contient que `{configured, mask}` par champ secret du catalogue.'
       responses:
         '200':
-          description: Succes
+          description: Connexions du tenant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ConnectorConnection'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Feature `connectors` inactive pour ce tenant
+        '429':
+          $ref: '#/components/responses/Error429'
     post:
       operationId: api_post_connectors_connections
-      tags: [Connectors]
-      summary: POST /connectors/connections
-      description: |
-        Cree une connexion vers une surface externe. Reserve au `principal` :
-        connecter un compte externe engage l'entreprise (#7727). Les secrets sont
-        chiffres au repos et ne sont jamais relus.
-      security:
-      - BearerAuth: []
+      tags:
+      - Connectors
+      summary: Connecte une surface externe (#9848)
+      description: 'Réservé au `principal` du tenant : connecter un compte externe engage l''entreprise, comme les profils d''encaissement (#7727).
+
+        La connexion est créée en `draft` : elle ne devient `active` que par `PATCH .../status`. `company_id` n''est jamais accepté — il est posé par `BelongsToCompany` depuis le contexte tenant (anti-spoof #7646).
+
+        La validation de SCHÉMA (champs requis du connecteur, types, options de `select`) dépend du `catalog_key` et rend un 422 détaillé par champ dans `violations`.'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              description: |
-                `connector_key` (cle du catalogue), `label`, et `credentials` (objet libre
-                propre au connecteur). Les secrets sont chiffres au repos et ne sont jamais
-                relus.
+              $ref: '#/components/schemas/ConnectorConnectionInput'
       responses:
         '201':
-          description: Ressource creee
+          description: Connexion créée (statut `draft`)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Acteur autre que `principal`
         '422':
-          $ref: '#/components/responses/Error422'
+          description: Enveloppe invalide, `catalog_key` inconnu (`CONNECTOR_CATALOG_KEY_UNKNOWN`) ou schéma du connecteur violé (`CONNECTOR_SCHEMA_VIOLATION`, détail dans `violations`)
+        '429':
+          $ref: '#/components/responses/Error429'
   /connectors/connections/{id}:
     delete:
       operationId: api_delete_connectors_connections_id
@@ -14432,119 +14496,139 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
     patch:
-      operationId: api_patch_connectors_connections_id
-      tags: [Connectors]
-      summary: PATCH /connectors/connections/{id}
-      description: |
-        Met a jour une connexion. Un secret absent du payload conserve la valeur
-        existante ; un secret present la remplace.
-      security:
-      - BearerAuth: []
+      operationId: api_patch_connectors_connection
+      tags:
+      - Connectors
+      summary: Met à jour une connexion du tenant (#9848)
+      description: 'PATCH partiel : la configuration et les secrets sont FUSIONNÉS avec l''existant avant validation, pour qu''un champ requis déjà en base ne fasse pas échouer la requête.
+
+        Un secret absent ou vide conserve la valeur en place ; un secret fourni REMPLACE l''ancien.'
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
+      - $ref: '#/components/parameters/ConnectorConnectionId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              description: |
-                `label` et/ou `credentials`. Un secret absent conserve la valeur existante ;
-                un secret present la remplace.
+              $ref: '#/components/schemas/ConnectorConnectionUpdateInput'
       responses:
         '200':
-          description: Succes
+          description: Connexion mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Acteur autre que `principal`
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Connexion inconnue ou hors tenant (fail-closed)
+        '409':
+          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
         '422':
-          $ref: '#/components/responses/Error422'
+          description: Schéma du connecteur violé (`violations` détaille le champ fautif)
+        '429':
+          $ref: '#/components/responses/Error429'
   /connectors/connections/{id}/status:
     patch:
-      operationId: api_patch_connectors_connections_id_status
-      tags: [Connectors]
-      summary: PATCH /connectors/connections/{id}/status
-      description: |
-        Active ou desactive une connexion sans la supprimer.
-      security:
-      - BearerAuth: []
+      operationId: api_patch_connectors_connection_status
+      tags:
+      - Connectors
+      summary: Active ou révoque une connexion du tenant (#9848)
+      description: 'Le statut est un champ FERMÉ (`draft`, `active`, `error`, `revoked`). Révoquer conserve la configuration : c''est une suspension, pas une suppression.'
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
+      - $ref: '#/components/parameters/ConnectorConnectionId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              description: |
-                `status` : `active` ou `disabled`.
+              $ref: '#/components/schemas/ConnectorStatusInput'
       responses:
         '200':
-          description: Succes
+          description: Statut appliqué
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Acteur autre que `principal`
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Connexion inconnue ou hors tenant (fail-closed)
         '422':
           $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /connectors/connections/{id}/test:
     post:
-      operationId: api_post_connectors_connections_id_test
-      tags: [Connectors]
-      summary: POST /connectors/connections/{id}/test
-      description: |
-        Teste la connexion en appelant reellement la surface externe. Le resultat
-        est journalise ; un echec ne desactive pas la connexion.
-      security:
-      - BearerAuth: []
+      operationId: api_post_connectors_connection_test
+      tags:
+      - Connectors
+      summary: Vérifie réellement une connexion du tenant (#9848)
+      description: 'Le verdict est celui du contrôle réellement exécuté (`ConnectorConnectionTester`) : jamais un succès inventé. Un connecteur qui exigerait un appel authentifié au fournisseur rend `unsupported` plutôt que de prétendre l''avoir vérifié.
+
+        Le résultat est persisté (`last_check_status`, `last_checked_at`) pour que l''écran affiche le dernier état connu sans relancer un test à chaque ouverture. Un test en échec fait passer une connexion `active` en `error` : l''écran reflète la réalité, pas l''intention.'
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
+      - $ref: '#/components/parameters/ConnectorConnectionId'
       responses:
-        '201':
-          description: Ressource creee
+        '200':
+          description: Verdict du contrôle et connexion mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      connection:
+                        $ref: '#/components/schemas/ConnectorConnection'
+                      check:
+                        $ref: '#/components/schemas/ConnectorCheckResult'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Acteur autre que `principal`
         '404':
-          $ref: '#/components/responses/Error404'
-        '422':
-          $ref: '#/components/responses/Error422'
+          description: Connexion inconnue ou hors tenant (fail-closed)
+        '409':
+          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
+        '429':
+          $ref: '#/components/responses/Error429'
   /connectors/overview:
     get:
       operationId: api_get_connectors_overview
-      tags: [Connectors]
-      summary: GET /connectors/overview
-      description: |
-        Vue d'ensemble : connecteurs actifs, en erreur et jamais configures.
-      security:
-      - BearerAuth: []
+      tags:
+      - Connectors
+      summary: Index des intégrations déjà existantes du tenant (#9848)
+      description: 'LECTURE seule : chaque intégration existante garde son écran natif comme source de vérité. L''onglet les regroupe, il ne les duplique pas — deux vérités divergentes seraient pires qu''aucun index.
+
+        Une source indisponible (table absente, module non activé pour ce tenant) disparaît de l''index au lieu de faire échouer tout l''écran.'
       responses:
         '200':
-          description: Succes
+          description: Index des intégrations et compteurs de connexions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorOverview'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Feature `connectors` inactive pour ce tenant
+        '429':
+          $ref: '#/components/responses/Error429'
   /contracts:
     get:
       operationId: api_get_contracts
@@ -18269,13 +18353,29 @@ paths:
                         type: integer
   /crm/opportunities/{opportunity}/stage:
     patch:
-      operationId: api_patch_crm_opportunities_by_opportunity_stage
+      operationId: api_patch_crm_opportunity_stage
       tags:
       - CRM
-      summary: Déplacer une opportunité dans le pipeline
-      description: "Contrat #9790 — fait avancer une affaire dans le kanban. `stage` est validé contre la whitelist `CrmOpportunityStage` (422 sinon). `status` est DÉRIVÉ de `stage` (`won`/`lost` → `closed`, sinon `open`) : une seule source de vérité. `won` et `lost` sont TERMINAUX (422) — rouvrir réécrirait l'historique commercial. `lost_reason` est obligatoire pour `lost` et interdit ailleurs. L'étape précédente est journalisée en append-only dans `notes` et dans la timeline (`CrmActivity`). Écriture : `principal` ou `marketing` (api.manager)."
-      security:
-      - BearerAuth: []
+      summary: Deplacer une opportunite dans le pipeline (#9780)
+      description: >-
+        `GET /v1/crm/opportunities` existait et alimentait le kanban par
+        `stage`, mais AUCUNE route ne changeait `stage` : le pipeline etait en
+        lecture seule. Une affaire convertie restait figee et rien ne pouvait
+        etre marque gagne ou perdu.
+
+        `status` est DERIVE de `stage` (`won`/`lost` -> `closed`, sinon
+        `open`) : la requete ne l'accepte pas, pour qu'une ligne ne porte
+        jamais deux verites contradictoires.
+
+        `won` et `lost` sont TERMINAUX : en sortir renvoie 422. Rouvrir une
+        affaire gagnee reecrirait l'historique commercial (un CA deja compte
+        redeviendrait « en cours ») ; pour repartir, on cree une nouvelle
+        opportunite. Un retour en arriere dans le parcours OUVERT
+        (`prospecting` -> `qualification` -> `proposal` -> `negotiation`) est
+        en revanche permis : un client peut revenir a l'etape precedente.
+
+        `lost_reason` est EXIGE pour `lost` : une affaire perdue sans motif
+        rend le bilan trimestriel inexplicable.
       parameters:
       - name: opportunity
         in: path
@@ -18288,38 +18388,36 @@ paths:
           application/json:
             schema:
               type: object
-              required:
-              - stage
+              required: [stage]
               properties:
                 stage:
                   type: string
-                  enum:
-                  - prospecting
-                  - qualification
-                  - proposal
-                  - negotiation
-                  - won
-                  - lost
+                  enum: [prospecting, qualification, proposal, negotiation, won, lost]
                 lost_reason:
                   type: string
                   maxLength: 500
-                  description: Obligatoire si `stage` vaut `lost`, interdit sinon.
+                  description: Exige quand `stage` vaut `lost`
+                amount:
+                  type: number
+                  minimum: 0
+                expected_close_date:
+                  type: string
+                  format: date
+                notes:
+                  type: string
+                  maxLength: 5000
       responses:
         '200':
-          description: Opportunité déplacée
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/CrmOpportunity'
-        '403':
-          description: Rôle insuffisant (ni principal ni marketing)
+          description: Opportunite a sa nouvelle etape
+        '401':
+          $ref: '#/components/responses/Error401'
         '404':
-          description: Opportunité absente du tenant courant
+          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
         '422':
-          description: Étape inconnue, étape terminale, ou motif de perte manquant/inattendu
+          $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
+
   /crm/read-models:
     get:
       operationId: api_get_crm_read_models
@@ -25137,65 +25235,85 @@ paths:
           description: Type de ressource inconnu, niveau invalide, ou ressource inexistante dans cette entreprise (RESOURCE_TYPE_UNKNOWN / RESOURCE_NOT_FOUND)
   /employees/{employee}/vertical-permissions:
     get:
-      operationId: api_get_employees_employee_vertical_permissions
-      tags: [Employees]
-      summary: GET /employees/{employee}/vertical-permissions
-      description: |
-        Permissions verticales effectives d'un employe (verticales activees pour le
-        tenant, croisees avec les droits de l'employe).
-      security:
-      - BearerAuth: []
+      operationId: api_get_employee_vertical_permissions
+      tags:
+      - Employees
+      summary: Permissions verticales déléguées à un collaborateur (#EVAL)
+      description: 'Ce que le collaborateur détient aujourd''hui, plus le catalogue des permissions qu''on peut lui déléguer. Le front compose ses cases à cocher avec `available` : il ne peut donc jamais proposer une permission d''une verticale inactive (fail-closed côté UI ET côté API).
+
+        Surface distincte de `module-grants` : `ModuleKey` est un registre FERMÉ de modules HORIZONTAUX, l''ouvrir aux permissions de manifest casserait l''invariant « manifest inactif ⇒ aucune permission effective ». Ici le registre est DYNAMIQUE et borné au tenant.
+
+        Autorisation : `principal` du tenant uniquement, jamais sur un employé d''une autre société (policy `EmployeePolicy::manageModuleGrants`).'
       parameters:
-      - name: employee
-        in: path
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/EmployeeId'
       responses:
         '200':
-          description: Succes
+          description: Permissions détenues et catalogue délégable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/EmployeeVerticalPermissions'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Acteur sans droit de gestion des grants, ou hors tenant
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Employé inconnu ou hors tenant (fail-closed)
+        '429':
+          $ref: '#/components/responses/Error429'
     put:
-      operationId: api_put_employees_employee_vertical_permissions
-      tags: [Employees]
-      summary: PUT /employees/{employee}/vertical-permissions
-      description: |
-        Remplace les permissions verticales d'un employe. Une verticale non activee
-        pour le tenant est refusee en 422.
-      security:
-      - BearerAuth: []
+      operationId: api_put_employee_vertical_permissions
+      tags:
+      - Employees
+      summary: Remplace le jeu complet de permissions verticales (#EVAL)
+      description: 'PUT = remplacement du jeu COMPLET, seule forme qui rende la révocation possible en un geste : une permission absente du corps est retirée.
+
+        Fail-closed : une clé inconnue, une permission d''une verticale inactive ou une permission horizontale (`marketing`, …) est refusée en 422, jamais ignorée silencieusement. Les doublons sont dédoublonnés.'
       parameters:
-      - name: employee
-        in: path
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/EmployeeId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              additionalProperties: true
-              description: |
-                Liste des verticales autorisees pour l'employe. Une verticale non activee
-                pour le tenant est refusee en 422.
+              required:
+              - permission_keys
+              properties:
+                permission_keys:
+                  type: array
+                  description: Jeu complet attendu. Tableau vide = révocation de toutes les permissions verticales.
+                  items:
+                    type: string
+                    example: travel.agent
       responses:
         '200':
-          description: Succes
+          description: Jeu appliqué
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      permission_keys:
+                        type: array
+                        items:
+                          type: string
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Acteur sans droit de gestion des grants, ou hors tenant
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Employé inconnu ou hors tenant (fail-closed)
         '422':
-          $ref: '#/components/responses/Error422'
+          description: '`permission_keys` absent (`MODULE_KEYS_REQUIRED`) ou clé hors du registre délégable (`VERTICAL_PERMISSION_UNKNOWN`)'
+        '429':
+          $ref: '#/components/responses/Error429'
   /establishments:
     get:
       operationId: api_get_establishments
@@ -48407,63 +48525,95 @@ paths:
   /platform/connectors/catalog:
     get:
       operationId: api_get_platform_connectors_catalog
-      tags: [Connectors]
-      summary: GET /platform/connectors/catalog
-      description: |
-        Catalogue des connecteurs, vu plateforme (toutes surfaces, y compris celles
-        non proposees aux tenants).
-      security:
-      - SuperAdminBearerAuth: []
+      tags:
+      - Connectors
+      summary: Types de connecteur proposables à la plateforme (#9847)
+      description: 'Catalogue filtré par `audience = platform` : les comptes externes de l''éditeur, d''abord ses banques (celles qui reçoivent les paiements des tenants), qui étaient jusqu''ici saisies en dur dans la configuration d''environnement.
+
+        Permission requise : `connectors.view`.'
       responses:
         '200':
-          description: Succes
+          description: Entrées de catalogue visibles par la plateforme
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ConnectorCatalogEntry'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Permission `connectors.view` absente
+        '429':
+          $ref: '#/components/responses/Error429'
   /platform/connectors/connections:
     get:
       operationId: api_get_platform_connectors_connections
-      tags: [Connectors]
-      summary: GET /platform/connectors/connections
-      description: |
-        Connexions de TOUS les tenants. Les secrets restent write-only : la reponse
-        expose un masque.
-      security:
-      - SuperAdminBearerAuth: []
+      tags:
+      - Connectors
+      summary: Connexions externes de la plateforme (#9847)
+      description: 'Triées par `is_default` puis `catalog_key`. Les secrets ne redescendent jamais en clair : `secrets` ne contient que `{configured, mask}`.
+
+        Permission requise : `connectors.view`.'
       responses:
         '200':
-          description: Succes
+          description: Connexions de la plateforme
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      items:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/ConnectorConnection'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Permission `connectors.view` absente
+        '429':
+          $ref: '#/components/responses/Error429'
     post:
       operationId: api_post_platform_connectors_connections
-      tags: [Connectors]
-      summary: POST /platform/connectors/connections
-      description: |
-        Cree une connexion au nom d'un tenant (support / onboarding).
-      security:
-      - SuperAdminBearerAuth: []
+      tags:
+      - Connectors
+      summary: Connecte un compte externe de la plateforme (#9847)
+      description: 'Permission requise : `connectors.manage`.
+
+        La connexion est créée en `draft`. Chaque écriture est auditée SANS valeur de secret : le journal ne retient que QUELLES clés secrètes ont été fournies, jamais leur contenu.'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              description: |
-                `company_id`, `connector_key`, `label` et `credentials`.
+              $ref: '#/components/schemas/ConnectorConnectionInput'
       responses:
         '201':
-          description: Ressource creee
+          description: Connexion créée (statut `draft`)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Permission `connectors.manage` absente
         '422':
-          $ref: '#/components/responses/Error422'
+          description: Enveloppe invalide, `catalog_key` inconnu (`CONNECTOR_CATALOG_KEY_UNKNOWN`) ou schéma du connecteur violé (`CONNECTOR_SCHEMA_VIOLATION`, détail dans `violations`)
+        '429':
+          $ref: '#/components/responses/Error429'
   /platform/connectors/connections/{id}:
     delete:
       operationId: api_delete_platform_connectors_connections_id
@@ -48489,117 +48639,139 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
     patch:
-      operationId: api_patch_platform_connectors_connections_id
-      tags: [Connectors]
-      summary: PATCH /platform/connectors/connections/{id}
-      description: |
-        Met a jour une connexion d'un tenant.
-      security:
-      - SuperAdminBearerAuth: []
+      operationId: api_patch_platform_connectors_connection
+      tags:
+      - Connectors
+      summary: Met à jour une connexion de la plateforme (#9847)
+      description: 'Permission requise : `connectors.manage`.
+
+        PATCH partiel : configuration et secrets sont FUSIONNÉS avec l''existant avant validation. Un secret absent ou vide conserve la valeur en base — on peut corriger un libellé sans retaper un IBAN ; un secret fourni REMPLACE l''ancien.'
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
+      - $ref: '#/components/parameters/ConnectorConnectionId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              description: |
-                `label` et/ou `credentials`.
+              $ref: '#/components/schemas/ConnectorConnectionUpdateInput'
       responses:
         '200':
-          description: Succes
+          description: Connexion mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Permission `connectors.manage` absente
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Connexion inconnue
+        '409':
+          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
         '422':
-          $ref: '#/components/responses/Error422'
+          description: Schéma du connecteur violé (`violations` détaille le champ fautif)
+        '429':
+          $ref: '#/components/responses/Error429'
   /platform/connectors/connections/{id}/status:
     patch:
-      operationId: api_patch_platform_connectors_connections_id_status
-      tags: [Connectors]
-      summary: PATCH /platform/connectors/connections/{id}/status
-      description: |
-        Active ou desactive une connexion d'un tenant.
-      security:
-      - SuperAdminBearerAuth: []
+      operationId: api_patch_platform_connectors_connection_status
+      tags:
+      - Connectors
+      summary: Active ou révoque une connexion de la plateforme (#9847)
+      description: 'Permission requise : `connectors.manage`. Le statut est un champ FERMÉ (`draft`, `active`, `error`, `revoked`) ; le changement est audité (`connector.status_changed`).'
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
+      - $ref: '#/components/parameters/ConnectorConnectionId'
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              additionalProperties: true
-              description: |
-                `status` : `active` ou `disabled`.
+              $ref: '#/components/schemas/ConnectorStatusInput'
       responses:
         '200':
-          description: Succes
+          description: Statut appliqué
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorConnection'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Permission `connectors.manage` absente
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Connexion inconnue
         '422':
           $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /platform/connectors/connections/{id}/test:
     post:
-      operationId: api_post_platform_connectors_connections_id_test
-      tags: [Connectors]
-      summary: POST /platform/connectors/connections/{id}/test
-      description: |
-        Teste une connexion d'un tenant depuis la console plateforme.
-      security:
-      - SuperAdminBearerAuth: []
+      operationId: api_post_platform_connectors_connection_test
+      tags:
+      - Connectors
+      summary: Vérifie réellement une connexion de la plateforme (#9847)
+      description: 'Permission requise : `connectors.manage`.
+
+        Le verdict est celui du contrôle réellement exécuté : pour un compte bancaire, IBAN (clé mod-97), BIC (ISO 9362) et titulaire sont contrôlés localement. Aucun succès n''est inventé ; un connecteur non vérifiable rend `unsupported`.
+
+        Le résultat est persisté, et un échec fait passer une connexion `active` en `error`.'
       parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
+      - $ref: '#/components/parameters/ConnectorConnectionId'
       responses:
-        '201':
-          description: Ressource creee
+        '200':
+          description: Verdict du contrôle et connexion mise à jour
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      connection:
+                        $ref: '#/components/schemas/ConnectorConnection'
+                      check:
+                        $ref: '#/components/schemas/ConnectorCheckResult'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Permission `connectors.manage` absente
         '404':
-          $ref: '#/components/responses/Error404'
-        '422':
-          $ref: '#/components/responses/Error422'
+          description: Connexion inconnue
+        '409':
+          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
+        '429':
+          $ref: '#/components/responses/Error429'
   /platform/connectors/overview:
     get:
       operationId: api_get_platform_connectors_overview
-      tags: [Connectors]
-      summary: GET /platform/connectors/overview
-      description: |
-        Vue d'ensemble plateforme : connexions par tenant, taux d'echec des tests,
-        connecteurs les plus utilises.
-      security:
-      - SuperAdminBearerAuth: []
+      tags:
+      - Connectors
+      summary: Index des intégrations existantes de la plateforme (#9847)
+      description: 'Permission requise : `connectors.view`. LECTURE seule : chaque intégration garde son écran natif comme source de vérité.'
       responses:
         '200':
-          description: Succes
+          description: Index des intégrations et compteurs de connexions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorOverview'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Permission `connectors.view` absente
+        '429':
+          $ref: '#/components/responses/Error429'
   /platform/country-defaults:
     get:
       operationId: api_get_platform_country_defaults
@@ -49866,103 +50038,137 @@ paths:
           $ref: '#/components/responses/Error403'
   /platform/search-intel/aeo/questions:
     get:
-      operationId: api_get_platform_search_intel_aeo_questions
-      tags:
-      - Search Intelligence
-      summary: Liste des questions AEO
+      operationId: api_get_v1_platform_search_intel_aeo_questions
+      tags: [Search Intelligence]
+      summary: Bibliotheque Q/R AEO (GSI-4, #8515)
+      description: |
+        Questions/réponses destinees aux moteurs de reponse. Une reponse n'est
+        publiable qu'apres **revision humaine** : le workflow est
+        `draft -> submitted -> approved -> published`, et `to-update` renvoie
+        une reponse publiee en revision quand la source a change.
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [draft, submitted, approved, published, to_update]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
       responses:
         '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Questions filtrees
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
     post:
-      operationId: api_post_platform_search_intel_aeo_questions
-      tags:
-      - Search Intelligence
-      summary: Cree une question AEO (toujours en brouillon)
+      operationId: api_post_v1_platform_search_intel_aeo_questions
+      tags: [Search Intelligence]
+      summary: Creer une question AEO (GSI-4, #8515)
+      security:
+        - BearerAuth: []
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [question]
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                answer:
+                  type: string
+                  maxLength: 5000
+                intent:
+                  type: string
+                  maxLength: 100
       responses:
-        '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+        '201':
+          description: Question creee
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
   /platform/search-intel/aeo/questions/{question}:
     patch:
-      operationId: api_patch_platform_search_intel_aeo_question
-      tags:
-      - Search Intelligence
-      summary: Modifie le brouillon d'une question AEO
+      operationId: api_patch_v1_platform_search_intel_aeo_questions
+      tags: [Search Intelligence]
+      summary: Modifier une question AEO (GSI-4, #8515)
+      security:
+        - BearerAuth: []
       parameters:
-      - name: question
-        in: path
-        required: true
-        schema:
-          type: integer
+        - name: question
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              properties:
+                question:
+                  type: string
+                  maxLength: 500
+                answer:
+                  type: string
+                  maxLength: 5000
+                intent:
+                  type: string
+                  maxLength: 100
       responses:
         '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Question mise a jour
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
   /platform/search-intel/aeo/questions/{question}/approve:
     post:
-      operationId: api_post_platform_search_intel_aeo_question_approve
-      tags:
-      - Search Intelligence
-      summary: Valide une question AEO et FIGE la reponse publiee
+      operationId: api_post_v1_platform_search_intel_aeo_questions_approve
+      tags: [Search Intelligence]
+      summary: Valider une question AEO — fige la reponse (GSI-4, #8515)
+      description: |
+        La validation **fige** la reponse : c'est le point de revision humaine
+        obligatoire avant toute publication.
+      security:
+        - BearerAuth: []
       parameters:
-      - name: question
-        in: path
-        required: true
-        schema:
-          type: integer
+        - name: question
+          in: path
+          required: true
+          schema:
+            type: integer
       responses:
         '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Question validee
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Validation422'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition non autorisee depuis l'etat courant
   /platform/search-intel/aeo/questions/{question}/publish:
     post:
       operationId: api_post_platform_search_intel_aeo_question_publish
@@ -50040,146 +50246,199 @@ paths:
           $ref: '#/components/responses/Validation422'
   /platform/search-intel/competitors:
     get:
-      operationId: api_get_platform_search_intel_competitors
-      tags:
-      - Search Intelligence
-      summary: Liste des concurrents et fraicheur de la veille
+      operationId: api_get_v1_platform_search_intel_competitors
+      tags: [Search Intelligence]
+      summary: Veille concurrentielle (GSI-7, #8518)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
       responses:
         '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Concurrents suivis
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
     post:
-      operationId: api_post_platform_search_intel_competitors
-      tags:
-      - Search Intelligence
-      summary: Cree une fiche concurrent (sources datees obligatoires pour un prix)
+      operationId: api_post_v1_platform_search_intel_competitors
+      tags: [Search Intelligence]
+      summary: Ajouter un concurrent (GSI-7, #8518)
+      security:
+        - BearerAuth: []
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [name]
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                website:
+                  type: string
+                  maxLength: 2000
       responses:
-        '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+        '201':
+          description: Concurrent cree
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
   /platform/search-intel/competitors/{competitor}:
     patch:
-      operationId: api_patch_platform_search_intel_competitor
-      tags:
-      - Search Intelligence
-      summary: Modifie une fiche concurrent
+      operationId: api_patch_v1_platform_search_intel_competitors
+      tags: [Search Intelligence]
+      summary: Modifier un concurrent (GSI-7, #8518)
+      security:
+        - BearerAuth: []
       parameters:
-      - name: competitor
-        in: path
-        required: true
-        schema:
-          type: integer
+        - name: competitor
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              properties:
+                name:
+                  type: string
+                  maxLength: 255
+                website:
+                  type: string
+                  maxLength: 2000
       responses:
         '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Concurrent mis a jour
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
   /platform/search-intel/competitors/{competitor}/review:
     post:
-      operationId: api_post_platform_search_intel_competitor_review
-      tags:
-      - Search Intelligence
-      summary: Marque une fiche comme revue (ne rajeunit PAS l'observation)
+      operationId: api_post_v1_platform_search_intel_competitors_review
+      tags: [Search Intelligence]
+      summary: Enregistrer une observation concurrentielle datee (GSI-7, #8518)
+      description: |
+        Une observation **sans source datee** est refusee (422) : la veille
+        concurrentielle ne doit pas produire d'affirmation non verifiable.
+      security:
+        - BearerAuth: []
       parameters:
-      - name: competitor
-        in: path
-        required: true
-        schema:
-          type: integer
-      responses:
-        '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Validation422'
-  /platform/search-intel/content:
-    get:
-      operationId: api_get_platform_search_intel_content
-      tags:
-      - Search Intelligence
-      summary: Liste des contenus marketing
-      responses:
-        '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Validation422'
-    post:
-      operationId: api_post_platform_search_intel_content
-      tags:
-      - Search Intelligence
-      summary: Cree un contenu marketing
+        - name: competitor
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [observed_at, source_url]
+              properties:
+                observed_at:
+                  type: string
+                  format: date-time
+                source_url:
+                  type: string
+                  maxLength: 2000
+                note:
+                  type: string
+                  maxLength: 5000
+      responses:
+        '201':
+          description: Observation enregistree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '422':
+          $ref: '#/components/responses/Error422'
+  /platform/search-intel/content:
+    get:
+      operationId: api_get_v1_platform_search_intel_content
+      tags: [Search Intelligence]
+      summary: Contenus marketing (GSI-6, #8517)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [idea, drafting, review, scheduled, published, archived]
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
       responses:
         '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Contenus filtres
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
+    post:
+      operationId: api_post_v1_platform_search_intel_content
+      tags: [Search Intelligence]
+      summary: Creer un contenu marketing (GSI-6, #8517)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title:
+                  type: string
+                  maxLength: 500
+                channel:
+                  type: string
+                  maxLength: 100
+                body:
+                  type: string
+                  maxLength: 50000
+      responses:
+        '201':
+          description: Contenu cree
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          $ref: '#/components/responses/Error403'
+        '422':
+          $ref: '#/components/responses/Error422'
   /platform/search-intel/content/export:
     get:
       operationId: api_get_platform_search_intel_content_export
@@ -50201,109 +50460,134 @@ paths:
           $ref: '#/components/responses/Validation422'
   /platform/search-intel/content/{content}:
     patch:
-      operationId: api_patch_platform_search_intel_content
-      tags:
-      - Search Intelligence
-      summary: Modifie un contenu non publie
+      operationId: api_patch_v1_platform_search_intel_content
+      tags: [Search Intelligence]
+      summary: Modifier un contenu marketing (GSI-6, #8517)
+      security:
+        - BearerAuth: []
       parameters:
-      - name: content
-        in: path
-        required: true
-        schema:
-          type: integer
+        - name: content
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              properties:
+                title:
+                  type: string
+                  maxLength: 500
+                channel:
+                  type: string
+                  maxLength: 100
+                body:
+                  type: string
+                  maxLength: 50000
       responses:
         '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Contenu mis a jour
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
   /platform/search-intel/content/{content}/transition:
     post:
-      operationId: api_post_platform_search_intel_content_transition
-      tags:
-      - Search Intelligence
-      summary: Transition de statut d'un contenu marketing
+      operationId: api_post_v1_platform_search_intel_content_transition
+      tags: [Search Intelligence]
+      summary: Transition de statut d'un contenu (GSI-6, #8517)
+      security:
+        - BearerAuth: []
       parameters:
-      - name: content
-        in: path
-        required: true
-        schema:
-          type: integer
+        - name: content
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [idea, drafting, review, scheduled, published, archived]
       responses:
         '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Contenu mis a jour
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition non autorisee depuis l'etat courant
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
   /platform/search-intel/geo/queries:
     get:
-      operationId: api_get_platform_search_intel_geo_queries
-      tags:
-      - Search Intelligence
-      summary: Liste des requetes strategiques GEO
+      operationId: api_get_v1_platform_search_intel_geo_queries
+      tags: [Search Intelligence]
+      summary: Requetes strategiques GEO (GSI-5, #8516)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
       responses:
         '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Requetes strategiques
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
     post:
-      operationId: api_post_platform_search_intel_geo_queries
-      tags:
-      - Search Intelligence
-      summary: Cree une requete strategique GEO
+      operationId: api_post_v1_platform_search_intel_geo_queries
+      tags: [Search Intelligence]
+      summary: Declarer une requete strategique GEO (GSI-5, #8516)
+      security:
+        - BearerAuth: []
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [query]
+              properties:
+                query:
+                  type: string
+                  maxLength: 500
+                locale:
+                  type: string
+                  maxLength: 10
       responses:
-        '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+        '201':
+          description: Requete creee
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
   /platform/search-intel/geo/queries/{geoQuery}/checks:
     get:
       operationId: api_get_platform_search_intel_geo_checks
@@ -50330,35 +50614,50 @@ paths:
         '422':
           $ref: '#/components/responses/Validation422'
     post:
-      operationId: api_post_platform_search_intel_geo_checks
-      tags:
-      - Search Intelligence
-      summary: Ajoute une observation de presence avec methode de preuve explicite
+      operationId: api_post_v1_platform_search_intel_geo_queries_checks
+      tags: [Search Intelligence]
+      summary: Enregistrer un check de presence GEO (GSI-5, #8516)
+      description: |
+        La **methode de preuve** est obligatoire : une presence annoncee sans
+        methode ni source datee est refusee (422).
+      security:
+        - BearerAuth: []
       parameters:
-      - name: geoQuery
-        in: path
-        required: true
-        schema:
-          type: integer
+        - name: geoQuery
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [method, checked_at]
+              properties:
+                method:
+                  type: string
+                  maxLength: 100
+                checked_at:
+                  type: string
+                  format: date-time
+                present:
+                  type: boolean
+                evidence_url:
+                  type: string
+                  maxLength: 2000
       responses:
-        '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+        '201':
+          description: Check enregistre
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
   /platform/search-intel/integrations:
     get:
       operationId: api_get_platform_search_intel_integrations
@@ -50603,54 +50902,86 @@ paths:
           $ref: '#/components/responses/Validation422'
   /platform/search-intel/seo/issues:
     get:
-      operationId: api_get_platform_search_intel_seo_issues
-      tags:
-      - Search Intelligence
-      summary: Liste des issues SEO techniques
+      operationId: api_get_v1_platform_search_intel_seo_issues
+      tags: [Search Intelligence]
+      summary: File des anomalies SEO, triee par gravite (GSI-2, #8513)
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [open, acknowledged, in_progress, resolved, ignored]
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [critical, high, medium, low]
+        - name: actionable
+          in: query
+          description: Ne retourner que les anomalies encore actionnables.
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 500
+            default: 100
       responses:
         '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Anomalies triees par gravite puis date de detection
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
   /platform/search-intel/seo/issues/{issue}/transition:
     patch:
-      operationId: api_patch_platform_search_intel_seo_issue_transition
-      tags:
-      - Search Intelligence
-      summary: Transition d'une issue SEO (recommended, applied, verified, dismissed)
+      operationId: api_patch_v1_platform_search_intel_seo_issues_transition
+      tags: [Search Intelligence]
+      summary: Transition de workflow d'une anomalie SEO (GSI-2, #8513)
+      description: |
+        Transition auditee. Une transition non autorisee par l'etat courant est
+        refusee (409) — le workflow est la source de verite, pas le client.
+      security:
+        - BearerAuth: []
       parameters:
-      - name: issue
-        in: path
-        required: true
-        schema:
-          type: integer
+        - name: issue
+          in: path
+          required: true
+          schema:
+            type: integer
       requestBody:
-        required: false
+        required: true
         content:
           application/json:
             schema:
               type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [open, acknowledged, in_progress, resolved, ignored]
+                note:
+                  type: string
+                  maxLength: 2000
       responses:
         '200':
-          description: Succes
-          content:
-            application/json:
-              schema:
-                type: object
+          description: Anomalie mise a jour
         '401':
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
+        '404':
+          $ref: '#/components/responses/Error404'
+        '409':
+          description: Transition non autorisee depuis l'etat courant
         '422':
-          $ref: '#/components/responses/Validation422'
+          $ref: '#/components/responses/Error422'
   /platform/search-intel/seo/meta:
     get:
       operationId: api_get_platform_search_intel_seo_meta
@@ -68454,52 +68785,129 @@ paths:
   /travel/adverts:
     get:
       operationId: api_get_travel_adverts
-      tags: [TravelAgency]
-      summary: GET /travel/adverts
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      tags:
+      - TravelAgency
+      summary: Liste des annonces voyage (publique ou gestion)
+      description: >-
+        BC-24 TRAVEL (#6416) — mode public par défaut : seules les annonces
+        VISIBLES (payées + validées + non expirées) sont renvoyées. Les rôles
+        gestion (`principal`, `rh`) basculent en mode gestion et voient toutes
+        les annonces du tenant, filtrables par `?status=`.
       security:
       - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        description: Filtre de statut (mode gestion uniquement)
+        schema:
+          type: string
+          enum: [draft, submitted, paid, validated, rejected, expired, archived]
       responses:
         '200':
-          description: Succes
+          description: Liste des annonces
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelAdvert'
         '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
+          description: Non authentifié
     post:
       operationId: api_post_travel_adverts
-      tags: [TravelAgency]
-      summary: POST /travel/adverts
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      tags:
+      - TravelAgency
+      summary: Soumettre une annonce voyage
+      description: >-
+        BC-24 TRAVEL — crée une annonce en statut `submitted` et calcule son
+        prix à partir du type et de l'emplacement d'annonce. Requiert la
+        capacité `create` sur TravelAdvert.
       security:
       - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [advert_type_id, advert_position_id, title, content]
+              properties:
+                advert_type_id:
+                  type: integer
+                advert_position_id:
+                  type: integer
+                title:
+                  type: string
+                  maxLength: 255
+                content:
+                  type: string
+                image_asset_id:
+                  type: integer
+                  nullable: true
+                validity_days:
+                  type: integer
+                  minimum: 1
+                  default: 30
       responses:
         '201':
-          description: Ressource creee
-        '401':
-          $ref: '#/components/responses/Error401'
+          description: Annonce créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      status:
+                        type: string
+                      price_minor:
+                        type: integer
+                      currency:
+                        type: string
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Capacité `create` refusée
         '422':
-          $ref: '#/components/responses/Error422'
+          description: Validation échouée
   /travel/adverts/manage:
     get:
       operationId: api_get_travel_adverts_manage
-      tags: [TravelAgency]
-      summary: GET /travel/adverts/manage
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      tags:
+      - TravelAgency
+      summary: Liste admin des annonces (modération)
+      description: >-
+        TRAVEL-914 (#6422) — toutes les annonces du tenant quel que soit leur
+        statut, pour l'écran de modération. Réservé aux rôles gestion
+        (`principal`, `rh`) ; 403 sinon.
       security:
       - BearerAuth: []
+      parameters:
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: string
+          enum: [draft, submitted, paid, validated, rejected, expired, archived]
       responses:
         '200':
-          description: Succes
-        '401':
-          $ref: '#/components/responses/Error401'
+          description: Liste admin des annonces
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelAdvert'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Rôle gestion requis
   /travel/adverts/{travelAdvert}:
     delete:
       operationId: api_delete_travel_adverts_traveladvert
@@ -68525,132 +68933,150 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
     get:
-      operationId: api_get_travel_adverts_traveladvert
-      tags: [TravelAgency]
-      summary: GET /travel/adverts/{travelAdvert}
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      operationId: api_get_travel_adverts_by_id
+      tags:
+      - TravelAgency
+      summary: Détail d'une annonce voyage
+      description: >-
+        BC-24 TRAVEL — renvoie l'annonce si elle appartient au tenant de
+        l'appelant ; 404 uniforme sinon (pas de fuite inter-tenant).
       security:
       - BearerAuth: []
       parameters:
-      - name: travelAdvert
-        in: path
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/TravelAdvertId'
       responses:
         '200':
-          description: Succes
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
+          description: Annonce
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelAdvert'
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Annonce introuvable pour ce tenant
   /travel/adverts/{travelAdvert}/pay:
     post:
-      operationId: api_post_travel_adverts_traveladvert_pay
-      tags: [TravelAgency]
-      summary: POST /travel/adverts/{travelAdvert}/pay
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      operationId: api_post_travel_adverts_pay
+      tags:
+      - TravelAgency
+      summary: Payer une annonce voyage
+      description: >-
+        BC-24 TRAVEL — enregistre le paiement de l'annonce et la fait passer en
+        statut `paid`, en attente de validation.
       security:
       - BearerAuth: []
       parameters:
-      - name: travelAdvert
-        in: path
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/TravelAdvertId'
       responses:
-        '201':
-          description: Ressource creee
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
+        '200':
+          description: Paiement enregistré
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelAdvert'
         '404':
-          $ref: '#/components/responses/Error404'
-        '422':
-          $ref: '#/components/responses/Error422'
+          description: Annonce introuvable pour ce tenant
+        '409':
+          description: Statut incompatible avec le paiement
   /travel/adverts/{travelAdvert}/reject:
     post:
-      operationId: api_post_travel_adverts_traveladvert_reject
-      tags: [TravelAgency]
-      summary: POST /travel/adverts/{travelAdvert}/reject
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      operationId: api_post_travel_adverts_reject
+      tags:
+      - TravelAgency
+      summary: Rejeter une annonce voyage
+      description: >-
+        BC-24 TRAVEL — modération : passe l'annonce en `rejected` avec un motif
+        obligatoire. Réservé aux rôles gestion.
       security:
       - BearerAuth: []
       parameters:
-      - name: travelAdvert
-        in: path
+      - $ref: '#/components/parameters/TravelAdvertId'
+      requestBody:
         required: true
-        schema:
-          type: string
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason:
+                  type: string
+                  maxLength: 500
       responses:
-        '201':
-          description: Ressource creee
-        '401':
-          $ref: '#/components/responses/Error401'
+        '200':
+          description: Annonce rejetée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelAdvert'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Rôle gestion requis
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Annonce introuvable pour ce tenant
         '422':
-          $ref: '#/components/responses/Error422'
+          description: Motif manquant
   /travel/adverts/{travelAdvert}/renew:
     post:
-      operationId: api_post_travel_adverts_traveladvert_renew
-      tags: [TravelAgency]
-      summary: POST /travel/adverts/{travelAdvert}/renew
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      operationId: api_post_travel_adverts_renew
+      tags:
+      - TravelAgency
+      summary: Renouveler une annonce voyage
+      description: >-
+        BC-24 TRAVEL — prolonge une annonce expirée d'une nouvelle période de
+        validité (nouveau paiement requis).
       security:
       - BearerAuth: []
       parameters:
-      - name: travelAdvert
-        in: path
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/TravelAdvertId'
       responses:
-        '201':
-          description: Ressource creee
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
+        '200':
+          description: Annonce renouvelée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelAdvert'
         '404':
-          $ref: '#/components/responses/Error404'
-        '422':
-          $ref: '#/components/responses/Error422'
+          description: Annonce introuvable pour ce tenant
+        '409':
+          description: Annonce non expirée
   /travel/adverts/{travelAdvert}/validate:
     post:
-      operationId: api_post_travel_adverts_traveladvert_validate
-      tags: [TravelAgency]
-      summary: POST /travel/adverts/{travelAdvert}/validate
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
+      operationId: api_post_travel_adverts_validate
+      tags:
+      - TravelAgency
+      summary: Valider une annonce voyage
+      description: >-
+        BC-24 TRAVEL — modération : passe l'annonce payée en `validated` et
+        calcule sa date d'expiration. Réservé aux rôles gestion.
       security:
       - BearerAuth: []
       parameters:
-      - name: travelAdvert
-        in: path
-        required: true
-        schema:
-          type: string
+      - $ref: '#/components/parameters/TravelAdvertId'
       responses:
-        '201':
-          description: Ressource creee
-        '401':
-          $ref: '#/components/responses/Error401'
+        '200':
+          description: Annonce validée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelAdvert'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Rôle gestion requis
         '404':
-          $ref: '#/components/responses/Error404'
-        '422':
-          $ref: '#/components/responses/Error422'
+          description: Annonce introuvable pour ce tenant
   /travel/article-categories:
     get:
       operationId: api_get_travel_article_categories
@@ -70844,7 +71270,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           description: Charge utile invalide.
-  /travel/community/tourist-sites/{site}:
+  /travel/community/tourist-sites/{travelTouristSite}:
     put:
       operationId: api_put_travel_community_tourist_sites_by_site
       tags:
@@ -70858,7 +71284,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: site
+      - name: travelTouristSite
         in: path
         required: true
         schema:
@@ -70917,7 +71343,7 @@ paths:
       security:
       - BearerAuth: []
       parameters:
-      - name: site
+      - name: travelTouristSite
         in: path
         required: true
         schema:
@@ -70932,55 +71358,6 @@ paths:
           description: 'Ressource introuvable ou hors du tenant de l''acteur (404 sur, jamais 403).'
         '204':
           description: Suppression effectuee (aucun corps).
-  /travel/community/tourist-sites/{travelTouristSite}:
-    delete:
-      operationId: api_delete_travel_community_tourist_sites_traveltouristsite
-      tags: [TravelAgency]
-      summary: DELETE /travel/community/tourist-sites/{travelTouristSite}
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: travelTouristSite
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Succes
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-    put:
-      operationId: api_put_travel_community_tourist_sites_traveltouristsite
-      tags: [TravelAgency]
-      summary: PUT /travel/community/tourist-sites/{travelTouristSite}
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: travelTouristSite
-        in: path
-        required: true
-        schema:
-          type: string
-      responses:
-        '200':
-          description: Succes
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '422':
-          $ref: '#/components/responses/Error422'
   /travel/contact:
     post:
       operationId: api_post_travel_contact
@@ -72012,122 +72389,213 @@ paths:
           $ref: '#/components/responses/Error422'
   /travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/bookings:
     get:
-      operationId: api_get_travel_hotels_travelhotel_rooms_travelhotelroom_bookings
-      tags: [TravelAgency]
-      summary: GET /travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/bookings
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
-      security:
-      - BearerAuth: []
+      operationId: api_get_travel_hotel_room_bookings
+      tags:
+      - Travel
+      summary: Réservations d'une chambre (M4)
+      description: Réservations de la chambre, les plus récentes d'abord, paginées au format Laravel (`data`, `links`, `meta`).
       parameters:
-      - name: travelHotel
-        in: path
-        required: true
+      - $ref: '#/components/parameters/TravelHotelId'
+      - $ref: '#/components/parameters/TravelHotelRoomId'
+      - name: per_page
+        in: query
+        required: false
+        description: 'Taille de page, bornée à 200. Défaut : 50.'
         schema:
-          type: string
-      - name: travelHotelRoom
-        in: path
-        required: true
-        schema:
-          type: string
+          type: integer
+          minimum: 1
+          maximum: 200
+          default: 50
       responses:
         '200':
-          description: Succes
+          description: Liste paginée des réservations de la chambre
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelHotelBooking'
+                  links:
+                    type: object
+                  meta:
+                    type: object
         '401':
           $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
+        '429':
+          $ref: '#/components/responses/Error429'
     post:
-      operationId: api_post_travel_hotels_travelhotel_rooms_travelhotelroom_bookings
-      tags: [TravelAgency]
-      summary: POST /travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/bookings
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
-      security:
-      - BearerAuth: []
+      operationId: api_post_travel_hotel_room_bookings
+      tags:
+      - Travel
+      summary: Réserve une chambre sur un intervalle de dates (M4)
+      description: 'Le montant n''est JAMAIS accepté du client : il est calculé par l''action (prix par nuit × nuits × chambres). `idempotency_key` est obligatoire — rejouer la même clé ne crée pas une seconde réservation.
+
+        Le contrôle de surréservation est porté par `BookHotelRoomAction` (verrou `FOR UPDATE` sur les nuits) : si une nuit manque, la requête est refusée en 409 et rien n''est écrit.'
       parameters:
-      - name: travelHotel
-        in: path
+      - $ref: '#/components/parameters/TravelHotelId'
+      - $ref: '#/components/parameters/TravelHotelRoomId'
+      requestBody:
         required: true
-        schema:
-          type: string
-      - name: travelHotelRoom
-        in: path
-        required: true
-        schema:
-          type: string
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - check_in
+              - check_out
+              - idempotency_key
+              properties:
+                check_in:
+                  type: string
+                  format: date
+                  description: Doit être aujourd'hui ou plus tard.
+                check_out:
+                  type: string
+                  format: date
+                  description: Strictement après `check_in`.
+                rooms:
+                  type: integer
+                  minimum: 1
+                  maximum: 50
+                  default: 1
+                idempotency_key:
+                  type: string
+                  maxLength: 255
       responses:
         '201':
-          description: Ressource creee
+          description: Réservation créée
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/TravelHotelBooking'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Acteur sans droit de modification sur l'hôtel
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
+        '409':
+          description: Une des nuits demandées n'est plus disponible (surréservation)
         '422':
           $ref: '#/components/responses/Error422'
+        '429':
+          $ref: '#/components/responses/Error429'
   /travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/inventory:
     get:
-      operationId: api_get_travel_hotels_travelhotel_rooms_travelhotelroom_inventory
-      tags: [TravelAgency]
-      summary: GET /travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/inventory
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
-      security:
-      - BearerAuth: []
+      operationId: api_get_travel_hotel_room_inventory
+      tags:
+      - Travel
+      summary: Grille d'inventaire d'une chambre sur une période (M4)
+      description: 'Grille CONTINUE sur `[from, to]` inclus : une nuit sans ligne est rendue avec la capacité par défaut (1), donc la grille n''a jamais de trou et l''appelant n''a pas à interpréter une absence comme « fermé ».
+
+        Isolation : l''hôtel et la chambre doivent appartenir à la société de l''acteur, et la chambre à l''hôtel — sinon 404 (jamais 403, qui révélerait l''existence de la ressource d''un autre tenant).'
       parameters:
-      - name: travelHotel
-        in: path
-        required: true
+      - $ref: '#/components/parameters/TravelHotelId'
+      - $ref: '#/components/parameters/TravelHotelRoomId'
+      - name: from
+        in: query
+        required: false
+        description: 'Premier jour de la grille. Défaut : aujourd''hui.'
         schema:
           type: string
-      - name: travelHotelRoom
-        in: path
-        required: true
+          format: date
+      - name: to
+        in: query
+        required: false
+        description: 'Dernier jour de la grille (inclus). Défaut : aujourd''hui + 30 jours.'
         schema:
           type: string
+          format: date
       responses:
         '200':
-          description: Succes
+          description: Grille d'inventaire, une entrée par nuit
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelHotelRoomInventoryDay'
         '401':
           $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
+        '429':
+          $ref: '#/components/responses/Error429'
     put:
-      operationId: api_put_travel_hotels_travelhotel_rooms_travelhotelroom_inventory
-      tags: [TravelAgency]
-      summary: PUT /travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/inventory
-      description: |
-        Route de la verticale documentee par #eval-2026-11-23. Tenant-scoped : le `company_id` est resolu depuis le token, jamais depuis la requete. Un identifiant appartenant a un autre tenant repond 404 (jamais 403, pour ne pas divulguer son existence).
-      security:
-      - BearerAuth: []
+      operationId: api_put_travel_hotel_room_inventory
+      tags:
+      - Travel
+      summary: Ouvre ou ferme un intervalle d'inventaire (M4)
+      description: '`rooms_total = 0` ferme la chambre sur la période (maintenance). L''intervalle est borné à 90 nuits : au-delà, c''est du remplissage de masse, pas de la gestion d''inventaire.
+
+        Une baisse de capacité sous le nombre déjà vendu est refusée (422) : elle rendrait l''inventaire incohérent (`rooms_booked > rooms_total`).
+
+        La réponse rend l''intervalle DEMANDÉ, pas la fenêtre par défaut de `GET` (qui lit `from`/`to` en query string, absents d''un PUT en JSON).'
       parameters:
-      - name: travelHotel
-        in: path
+      - $ref: '#/components/parameters/TravelHotelId'
+      - $ref: '#/components/parameters/TravelHotelRoomId'
+      requestBody:
         required: true
-        schema:
-          type: string
-      - name: travelHotelRoom
-        in: path
-        required: true
-        schema:
-          type: string
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - from
+              - to
+              - rooms_total
+              properties:
+                from:
+                  type: string
+                  format: date
+                to:
+                  type: string
+                  format: date
+                  description: 'Doit être ≥ `from`. Intervalle maximal : 90 nuits.'
+                rooms_total:
+                  type: integer
+                  minimum: 0
+                  maximum: 1000
+                  description: Capacité par nuit. `0` ferme la chambre sur la période.
+                status:
+                  type: string
+                  enum:
+                  - active
+                  - disabled
+                  default: active
       responses:
         '200':
-          description: Succes
+          description: Grille d'inventaire de l'intervalle demandé
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TravelHotelRoomInventoryDay'
         '401':
           $ref: '#/components/responses/Error401'
         '403':
-          $ref: '#/components/responses/Error403'
+          description: Acteur sans droit de modification sur l'hôtel
         '404':
-          $ref: '#/components/responses/Error404'
+          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
         '422':
-          $ref: '#/components/responses/Error422'
+          description: Intervalle invalide, supérieur à 90 nuits, ou capacité inférieure au nombre de chambres déjà vendues sur une nuit
+        '429':
+          $ref: '#/components/responses/Error429'
   /travel/loyalty/account:
     get:
       operationId: api_get_travel_loyalty_account
@@ -77187,87 +77655,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/audit-logs:
-    get:
-      operationId: api_get_audit_logs
-      tags:
-      - Auth
-      summary: Piste d'audit du tenant (liste paginée)
-      description: >-
-        Issue #9333 — consultation de la piste d'audit tenant (obligation
-        RGPD). Réservé au principal du tenant (gate `viewTenantAudit`). Le
-        scope `BelongsToCompany` cloisonne automatiquement par entreprise.
-        La fenêtre de rétention vient de `CompanySetting.audit_retention_months`.
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: page
-        in: query
-        required: false
-        schema:
-          type: integer
-          minimum: 1
-      - name: per_page
-        in: query
-        required: false
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 100
-      - name: actor
-        in: query
-        required: false
-        description: Identifiant de l'employé auteur de l'action
-        schema:
-          type: integer
-      - name: action
-        in: query
-        required: false
-        schema:
-          type: string
-          maxLength: 200
-      - name: resource_type
-        in: query
-        required: false
-        schema:
-          type: string
-          maxLength: 200
-      - name: resource_id
-        in: query
-        required: false
-        schema:
-          type: integer
-      - name: date_from
-        in: query
-        required: false
-        schema:
-          type: string
-          format: date
-      - name: date_to
-        in: query
-        required: false
-        schema:
-          type: string
-          format: date
-      responses:
-        '200':
-          description: Liste paginée des entrées d'audit
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AuditLogEntry'
-                  meta:
-                    type: object
-        '401':
-          description: Non authentifié
-        '403':
-          description: Rôle sans droit de lecture de l'audit tenant
-  /v1/audit-logs/export:
+  /audit-logs/export:
     get:
       operationId: api_get_audit_logs_export
       tags:
@@ -77325,40 +77713,7 @@ paths:
           description: Rôle sans droit de lecture de l'audit tenant
         '422':
           description: Dates manquantes ou incohérentes
-  /v1/audit-logs/{id}:
-    get:
-      operationId: api_get_audit_log
-      tags:
-      - Auth
-      summary: Détail d'une entrée d'audit
-      description: >-
-        Issue #9333 — une entrée d'une autre entreprise répond 404, jamais
-        403, pour rester indistinguable d'une absence.
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-      responses:
-        '200':
-          description: Entrée d'audit
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/AuditLogEntry'
-        '401':
-          description: Non authentifié
-        '403':
-          description: Rôle sans droit de lecture de l'audit tenant
-        '404':
-          description: Entrée absente ou appartenant à une autre entreprise
-  /v1/brands:
+  /brands:
     get:
       operationId: api_get_brands
       tags:
@@ -77388,7 +77743,7 @@ paths:
         '401': {description: Non authentifié}
         '422':
           description: Données invalides (slug, palette, verticale)
-  /v1/brands/{brand}:
+  /brands/{brand}:
     get:
       operationId: api_get_brands_by_id
       tags:
@@ -77424,7 +77779,7 @@ paths:
         '401': {description: Non authentifié}
         '404': {description: Marque inconnue ou hors tenant (fail-closed)}
         '422': {description: Données invalides}
-  /v1/brands/{brand}/publish:
+  /brands/{brand}/publish:
     post:
       operationId: api_post_brands_by_id_publish
       tags:
@@ -77445,7 +77800,7 @@ paths:
         '401': {description: Non authentifié}
         '404': {description: Marque inconnue ou hors tenant (fail-closed)}
         '422': {description: Identité publique incomplète}
-  /v1/brands/{brand}/suspend:
+  /brands/{brand}/suspend:
     post:
       operationId: api_post_brands_by_id_suspend
       tags:
@@ -77464,7 +77819,7 @@ paths:
           description: Marque suspendue
         '401': {description: Non authentifié}
         '404': {description: Marque inconnue ou hors tenant (fail-closed)}
-  /v1/brands/{brand}/unpublish:
+  /brands/{brand}/unpublish:
     post:
       operationId: api_post_brands_by_id_unpublish
       tags:
@@ -77481,7 +77836,7 @@ paths:
           description: Marque dépubliée
         '401': {description: Non authentifié}
         '404': {description: Marque inconnue ou hors tenant (fail-closed)}
-  /v1/brands/{brand}/unsuspend:
+  /brands/{brand}/unsuspend:
     post:
       operationId: api_post_brands_by_id_unsuspend
       tags:
@@ -77498,74 +77853,7 @@ paths:
           description: Marque réactivée
         '401': {description: Non authentifié}
         '404': {description: Marque inconnue ou hors tenant (fail-closed)}
-  /v1/crm/opportunities/{opportunity}/stage:
-    patch:
-      operationId: api_patch_crm_opportunity_stage
-      tags:
-      - CRM
-      summary: Deplacer une opportunite dans le pipeline (#9780)
-      description: >-
-        `GET /v1/crm/opportunities` existait et alimentait le kanban par
-        `stage`, mais AUCUNE route ne changeait `stage` : le pipeline etait en
-        lecture seule. Une affaire convertie restait figee et rien ne pouvait
-        etre marque gagne ou perdu.
-
-        `status` est DERIVE de `stage` (`won`/`lost` -> `closed`, sinon
-        `open`) : la requete ne l'accepte pas, pour qu'une ligne ne porte
-        jamais deux verites contradictoires.
-
-        `won` et `lost` sont TERMINAUX : en sortir renvoie 422. Rouvrir une
-        affaire gagnee reecrirait l'historique commercial (un CA deja compte
-        redeviendrait « en cours ») ; pour repartir, on cree une nouvelle
-        opportunite. Un retour en arriere dans le parcours OUVERT
-        (`prospecting` -> `qualification` -> `proposal` -> `negotiation`) est
-        en revanche permis : un client peut revenir a l'etape precedente.
-
-        `lost_reason` est EXIGE pour `lost` : une affaire perdue sans motif
-        rend le bilan trimestriel inexplicable.
-      parameters:
-      - name: opportunity
-        in: path
-        required: true
-        schema:
-          type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [stage]
-              properties:
-                stage:
-                  type: string
-                  enum: [prospecting, qualification, proposal, negotiation, won, lost]
-                lost_reason:
-                  type: string
-                  maxLength: 500
-                  description: Exige quand `stage` vaut `lost`
-                amount:
-                  type: number
-                  minimum: 0
-                expected_close_date:
-                  type: string
-                  format: date
-                notes:
-                  type: string
-                  maxLength: 5000
-      responses:
-        '200':
-          description: Opportunite a sa nouvelle etape
-        '401':
-          $ref: '#/components/responses/Error401'
-        '404':
-          description: Inexistante OU appartenant a une autre entreprise (jamais 403)
-        '422':
-          $ref: '#/components/responses/Error422'
-        '429':
-          $ref: '#/components/responses/Error429'
-
-  /v1/library/progress:
+  /library/progress:
     get:
       operationId: api_get_library_progress
       tags:
@@ -77590,7 +77878,7 @@ paths:
                     items:
                       $ref: '#/components/schemas/LibraryReadingProgress'
         '401': {description: Non authentifié}
-  /v1/library/progress/{slug}:
+  /library/progress/{slug}:
     get:
       operationId: api_get_library_progress_by_slug
       tags:
@@ -77666,7 +77954,7 @@ paths:
         '401': {description: Non authentifié}
         '404': {description: Ressource inconnue ou non visible par le tenant}
         '422': {description: Payload invalide}
-  /v1/library/purchases:
+  /library/purchases:
     get:
       operationId: api_get_library_purchases
       tags:
@@ -77692,7 +77980,7 @@ paths:
                       $ref: '#/components/schemas/LibraryPurchase'
         '401': {description: Non authentifié}
         '403': {description: Non autorisé (policy)}
-  /v1/library/purchases/{purchase}/confirm:
+  /library/purchases/{purchase}/confirm:
     post:
       operationId: api_post_library_purchases_by_id_confirm
       tags:
@@ -77724,7 +78012,7 @@ paths:
         '403': {description: Achat d'un autre employé/tenant (policy)}
         '404': {description: Achat inconnu}
         '409': {description: Paiement non constaté (aucun droit accordé)}
-  /v1/library/resources:
+  /library/resources:
     get:
       operationId: api_get_library_resources
       tags:
@@ -77838,7 +78126,7 @@ paths:
           description: Non autorisé (policy)
         '422':
           description: Données invalides
-  /v1/library/resources/{resource}:
+  /library/resources/{resource}:
     get:
       operationId: api_get_library_resources_by_id
       tags:
@@ -77887,7 +78175,7 @@ paths:
         '200': {description: Ressource supprimée}
         '403': {description: Non autorisé (policy)}
         '404': {description: Ressource inconnue}
-  /v1/library/resources/{resource}/access:
+  /library/resources/{resource}/access:
     get:
       operationId: api_get_library_resources_by_id_access
       tags:
@@ -77926,7 +78214,7 @@ paths:
                       currency: {type: string}
         '401': {description: Non authentifié}
         '404': {description: Ressource inconnue ou non visible par le tenant}
-  /v1/library/resources/{resource}/archive:
+  /library/resources/{resource}/archive:
     post:
       operationId: api_post_library_resources_by_id_archive
       tags:
@@ -77941,7 +78229,7 @@ paths:
         '200': {description: Ressource archivée}
         '403': {description: Non autorisé (policy)}
         '404': {description: Ressource inconnue}
-  /v1/library/resources/{resource}/download:
+  /library/resources/{resource}/download:
     get:
       operationId: api_get_library_resources_by_id_download
       tags:
@@ -77977,7 +78265,7 @@ paths:
         '403': {description: Téléchargement non autorisé}
         '404': {description: Ressource inconnue ou non visible par le tenant}
         '501': {description: Stockage non configuré}
-  /v1/library/resources/{resource}/file:
+  /library/resources/{resource}/file:
     post:
       operationId: api_post_library_resources_by_id_file
       tags:
@@ -78012,7 +78300,7 @@ paths:
         '413': {description: Fichier trop volumineux}
         '422': {description: Type de fichier non autorisé}
         '501': {description: Stockage non configuré}
-  /v1/library/resources/{resource}/publish:
+  /library/resources/{resource}/publish:
     post:
       operationId: api_post_library_resources_by_id_publish
       tags:
@@ -78027,7 +78315,7 @@ paths:
         '200': {description: Ressource publiée}
         '403': {description: Non autorisé (policy)}
         '404': {description: Ressource inconnue}
-  /v1/library/resources/{resource}/purchases:
+  /library/resources/{resource}/purchases:
     post:
       operationId: api_post_library_resources_by_id_purchases
       tags:
@@ -78075,7 +78363,7 @@ paths:
         '401': {description: Non authentifié}
         '404': {description: Ressource inconnue ou non visible par le tenant}
         '422': {description: Ressource non vendable ou quantité hors bornes}
-  /v1/library/resources/{resource}/unpublish:
+  /library/resources/{resource}/unpublish:
     post:
       operationId: api_post_library_resources_by_id_unpublish
       tags:
@@ -78090,7 +78378,7 @@ paths:
         '200': {description: Ressource dépubliée}
         '403': {description: Non autorisé (policy)}
         '404': {description: Ressource inconnue}
-  /v1/p/{slug}:
+  /p/{slug}:
     get:
       operationId: api_get_pages_public_by_slug
       tags:
@@ -78122,7 +78410,7 @@ paths:
           description: Slug inconnu, Page non publiee ou suspendue (fail-closed)
         '429':
           description: Limite de debit `shop-public` depassee
-  /v1/pages/by-host:
+  /pages/by-host:
     get:
       operationId: api_get_pages_public_by_host
       tags:
@@ -78152,7 +78440,7 @@ paths:
           description: Domaine inconnu, non verifie, ou Page non publiee (fail-closed)
         '429':
           description: Limite de debit `shop-public` depassee
-  /v1/paiements/cash-out:
+  /paiements/cash-out:
     post:
       operationId: api_post_v1_paiements_cash_out
       tags: [Paiements]
@@ -78187,7 +78475,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Error422'
-  /v1/paiements/fees:
+  /paiements/fees:
     get:
       operationId: api_get_v1_paiements_fees
       tags: [Paiements]
@@ -78199,7 +78487,7 @@ paths:
           description: Commissions prelevees
         '401':
           $ref: '#/components/responses/Error401'
-  /v1/paiements/internal/credit:
+  /paiements/internal/credit:
     post:
       operationId: api_post_v1_paiements_internal_credit
       tags: [Paiements]
@@ -78229,7 +78517,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Error422'
-  /v1/paiements/internal/debit:
+  /paiements/internal/debit:
     post:
       operationId: api_post_v1_paiements_internal_debit
       tags: [Paiements]
@@ -78256,7 +78544,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Error422'
-  /v1/paiements/internal/refund:
+  /paiements/internal/refund:
     post:
       operationId: api_post_v1_paiements_internal_refund
       tags: [Paiements]
@@ -78283,7 +78571,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Error422'
-  /v1/paiements/internal/transfer:
+  /paiements/internal/transfer:
     post:
       operationId: api_post_v1_paiements_internal_transfer
       tags: [Paiements]
@@ -78310,7 +78598,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '422':
           $ref: '#/components/responses/Error422'
-  /v1/paiements/market:
+  /paiements/market:
     get:
       operationId: api_get_v1_paiements_market
       tags: [Paiements]
@@ -78325,7 +78613,7 @@ paths:
           description: Marche du tenant
         '401':
           $ref: '#/components/responses/Error401'
-  /v1/paiements/wallet:
+  /paiements/wallet:
     get:
       operationId: api_get_v1_paiements_wallet
       tags: [Paiements]
@@ -78348,7 +78636,7 @@ paths:
           description: Solde du wallet
         '401':
           $ref: '#/components/responses/Error401'
-  /v1/paiements/wallet/history:
+  /paiements/wallet/history:
     get:
       operationId: api_get_v1_paiements_wallet_history
       tags: [Paiements]
@@ -78360,7 +78648,7 @@ paths:
           description: Historique du wallet
         '401':
           $ref: '#/components/responses/Error401'
-  /v1/paiements/webhooks/{token}:
+  /paiements/webhooks/{token}:
     post:
       operationId: api_post_v1_paiements_webhooks_by_token
       tags: [Paiements]
@@ -78396,7 +78684,7 @@ paths:
           description: Signature invalide ou secret absent
         '404':
           description: Endpoint inconnu
-  /v1/pharmacy/public-profile:
+  /pharmacy/public-profile:
     get:
       operationId: api_get_pharmacy_public_profile
       tags:
@@ -78497,7 +78785,7 @@ paths:
             deja utilise par une autre officine
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/platform/payments/provider-instances:
+  /platform/payments/provider-instances:
     get:
       operationId: api_get_v1_platform_payments_provider_instances
       tags: [Paiements]
@@ -78552,7 +78840,7 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           $ref: '#/components/responses/Error422'
-  /v1/platform/payments/provider-instances/{instance}:
+  /platform/payments/provider-instances/{instance}:
     patch:
       operationId: api_patch_v1_platform_payments_provider_instances_by_instance
       tags: [Paiements]
@@ -78580,7 +78868,7 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
-  /v1/platform/payments/provider-instances/{instance}/status:
+  /platform/payments/provider-instances/{instance}/status:
     patch:
       operationId: api_patch_v1_platform_payments_provider_instances_by_instance_status
       tags: [Paiements]
@@ -78617,7 +78905,7 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
-  /v1/platform/payments/provider-types:
+  /platform/payments/provider-types:
     get:
       operationId: api_get_v1_platform_payments_provider_types
       tags: [Paiements]
@@ -78635,7 +78923,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
-  /v1/platform/payments/reconciliations:
+  /platform/payments/reconciliations:
     get:
       operationId: api_get_v1_platform_payments_reconciliations
       tags: [Paiements]
@@ -78699,7 +78987,7 @@ paths:
   # Publication d'une offre pour le compte d'un tenant et configuration des
   # connecteurs d'agregateurs. Toutes ces routes sont sous le guard
   # `auth:super_admin_api` : un token employe recoit 401, pas 403.
-  /v1/platform/payments/transactions:
+  /platform/payments/transactions:
     get:
       operationId: api_get_v1_platform_payments_transactions
       tags: [Paiements]
@@ -78737,7 +79025,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
-  /v1/platform/payments/webhook-endpoints:
+  /platform/payments/webhook-endpoints:
     post:
       operationId: api_post_v1_platform_payments_webhook_endpoints
       tags: [Paiements]
@@ -78773,7 +79061,7 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
-  /v1/platform/recruitment/jobs:
+  /platform/recruitment/jobs:
     get:
       operationId: api_get_v1_platform_recruitment_jobs
       tags: [Recruitment]
@@ -78856,7 +79144,7 @@ paths:
           $ref: '#/components/responses/Error403'
         '422':
           description: Donnees invalides
-  /v1/platform/recruitment/jobs/{companyId}/{jobPosting}/close:
+  /platform/recruitment/jobs/{companyId}/{jobPosting}/close:
     post:
       operationId: api_post_v1_platform_recruitment_jobs_close
       tags: [Recruitment]
@@ -78888,7 +79176,7 @@ paths:
           $ref: '#/components/responses/Error404'
         '409':
           description: Transition invalide depuis le statut courant
-  /v1/platform/recruitment/jobs/{companyId}/{jobPosting}/publish:
+  /platform/recruitment/jobs/{companyId}/{jobPosting}/publish:
     post:
       operationId: api_post_v1_platform_recruitment_jobs_publish
       tags: [Recruitment]
@@ -78920,7 +79208,7 @@ paths:
           $ref: '#/components/responses/Error404'
         '409':
           description: Transition invalide depuis le statut courant
-  /v1/platform/recruitment/offers:
+  /platform/recruitment/offers:
     get:
       operationId: api_get_v1_platform_recruitment_offers
       tags: [Recruitment]
@@ -78947,7 +79235,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
-  /v1/platform/recruitment/sources:
+  /platform/recruitment/sources:
     get:
       operationId: api_get_v1_platform_recruitment_sources
       tags: [Recruitment]
@@ -78966,7 +79254,7 @@ paths:
           $ref: '#/components/responses/Error401'
         '403':
           $ref: '#/components/responses/Error403'
-  /v1/platform/recruitment/sources/{provider}:
+  /platform/recruitment/sources/{provider}:
     parameters:
       - name: provider
         in: path
@@ -79033,7 +79321,7 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
-  /v1/platform/recruitment/sources/{provider}/queue-sync:
+  /platform/recruitment/sources/{provider}/queue-sync:
     post:
       operationId: api_post_v1_platform_recruitment_sources_queue_sync
       tags: [Recruitment]
@@ -79061,7 +79349,7 @@ paths:
         '404':
           $ref: '#/components/responses/Error404'
 
-  /v1/platform/recruitment/sources/{provider}/sync:
+  /platform/recruitment/sources/{provider}/sync:
     post:
       operationId: api_post_v1_platform_recruitment_sources_sync
       tags: [Recruitment]
@@ -79089,7 +79377,7 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
-  /v1/platform/recruitment/sources/{provider}/test:
+  /platform/recruitment/sources/{provider}/test:
     post:
       operationId: api_post_v1_platform_recruitment_sources_test
       tags: [Recruitment]
@@ -79117,643 +79405,7 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           $ref: '#/components/responses/Error404'
-  /v1/platform/search-intel/aeo/questions:
-    get:
-      operationId: api_get_v1_platform_search_intel_aeo_questions
-      tags: [Search Intelligence]
-      summary: Bibliotheque Q/R AEO (GSI-4, #8515)
-      description: |
-        Questions/réponses destinees aux moteurs de reponse. Une reponse n'est
-        publiable qu'apres **revision humaine** : le workflow est
-        `draft -> submitted -> approved -> published`, et `to-update` renvoie
-        une reponse publiee en revision quand la source a change.
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [draft, submitted, approved, published, to_update]
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 500
-            default: 100
-      responses:
-        '200':
-          description: Questions filtrees
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
-    post:
-      operationId: api_post_v1_platform_search_intel_aeo_questions
-      tags: [Search Intelligence]
-      summary: Creer une question AEO (GSI-4, #8515)
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [question]
-              properties:
-                question:
-                  type: string
-                  maxLength: 500
-                answer:
-                  type: string
-                  maxLength: 5000
-                intent:
-                  type: string
-                  maxLength: 100
-      responses:
-        '201':
-          description: Question creee
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/aeo/questions/{question}:
-    patch:
-      operationId: api_patch_v1_platform_search_intel_aeo_questions
-      tags: [Search Intelligence]
-      summary: Modifier une question AEO (GSI-4, #8515)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: question
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                question:
-                  type: string
-                  maxLength: 500
-                answer:
-                  type: string
-                  maxLength: 5000
-                intent:
-                  type: string
-                  maxLength: 100
-      responses:
-        '200':
-          description: Question mise a jour
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/aeo/questions/{question}/approve:
-    post:
-      operationId: api_post_v1_platform_search_intel_aeo_questions_approve
-      tags: [Search Intelligence]
-      summary: Valider une question AEO — fige la reponse (GSI-4, #8515)
-      description: |
-        La validation **fige** la reponse : c'est le point de revision humaine
-        obligatoire avant toute publication.
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: question
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Question validee
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '409':
-          description: Transition non autorisee depuis l'etat courant
-  /v1/platform/search-intel/aeo/questions/{question}/publish:
-    post:
-      operationId: api_post_v1_platform_search_intel_aeo_questions_publish
-      tags: [Search Intelligence]
-      summary: Publier une question AEO validee (GSI-4, #8515)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: question
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Question publiee
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '409':
-          description: Transition non autorisee depuis l'etat courant
-  /v1/platform/search-intel/aeo/questions/{question}/submit:
-    post:
-      operationId: api_post_v1_platform_search_intel_aeo_questions_submit
-      tags: [Search Intelligence]
-      summary: Soumettre une question AEO a revision (GSI-4, #8515)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: question
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Question soumise
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '409':
-          description: Transition non autorisee depuis l'etat courant
-  /v1/platform/search-intel/aeo/questions/{question}/to-update:
-    post:
-      operationId: api_post_v1_platform_search_intel_aeo_questions_to_update
-      tags: [Search Intelligence]
-      summary: Renvoyer une reponse publiee en revision (GSI-4, #8515)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: question
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Question renvoyee en revision
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '409':
-          description: Transition non autorisee depuis l'etat courant
-  /v1/platform/search-intel/competitors:
-    get:
-      operationId: api_get_v1_platform_search_intel_competitors
-      tags: [Search Intelligence]
-      summary: Veille concurrentielle (GSI-7, #8518)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 500
-            default: 100
-      responses:
-        '200':
-          description: Concurrents suivis
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
-    post:
-      operationId: api_post_v1_platform_search_intel_competitors
-      tags: [Search Intelligence]
-      summary: Ajouter un concurrent (GSI-7, #8518)
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [name]
-              properties:
-                name:
-                  type: string
-                  maxLength: 255
-                website:
-                  type: string
-                  maxLength: 2000
-      responses:
-        '201':
-          description: Concurrent cree
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/competitors/{competitor}:
-    patch:
-      operationId: api_patch_v1_platform_search_intel_competitors
-      tags: [Search Intelligence]
-      summary: Modifier un concurrent (GSI-7, #8518)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: competitor
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  maxLength: 255
-                website:
-                  type: string
-                  maxLength: 2000
-      responses:
-        '200':
-          description: Concurrent mis a jour
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/competitors/{competitor}/review:
-    post:
-      operationId: api_post_v1_platform_search_intel_competitors_review
-      tags: [Search Intelligence]
-      summary: Enregistrer une observation concurrentielle datee (GSI-7, #8518)
-      description: |
-        Une observation **sans source datee** est refusee (422) : la veille
-        concurrentielle ne doit pas produire d'affirmation non verifiable.
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: competitor
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [observed_at, source_url]
-              properties:
-                observed_at:
-                  type: string
-                  format: date-time
-                source_url:
-                  type: string
-                  maxLength: 2000
-                note:
-                  type: string
-                  maxLength: 5000
-      responses:
-        '201':
-          description: Observation enregistree
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/content:
-    get:
-      operationId: api_get_v1_platform_search_intel_content
-      tags: [Search Intelligence]
-      summary: Contenus marketing (GSI-6, #8517)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [idea, drafting, review, scheduled, published, archived]
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 500
-            default: 100
-      responses:
-        '200':
-          description: Contenus filtres
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
-    post:
-      operationId: api_post_v1_platform_search_intel_content
-      tags: [Search Intelligence]
-      summary: Creer un contenu marketing (GSI-6, #8517)
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [title]
-              properties:
-                title:
-                  type: string
-                  maxLength: 500
-                channel:
-                  type: string
-                  maxLength: 100
-                body:
-                  type: string
-                  maxLength: 50000
-      responses:
-        '201':
-          description: Contenu cree
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/content/export:
-    get:
-      operationId: api_get_v1_platform_search_intel_content_export
-      tags: [Search Intelligence]
-      summary: Export CSV du plan editorial (GSI-6, #8517)
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Export CSV
-          content:
-            text/csv:
-              schema:
-                type: string
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-  /v1/platform/search-intel/content/{content}:
-    patch:
-      operationId: api_patch_v1_platform_search_intel_content
-      tags: [Search Intelligence]
-      summary: Modifier un contenu marketing (GSI-6, #8517)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: content
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                  maxLength: 500
-                channel:
-                  type: string
-                  maxLength: 100
-                body:
-                  type: string
-                  maxLength: 50000
-      responses:
-        '200':
-          description: Contenu mis a jour
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/content/{content}/transition:
-    post:
-      operationId: api_post_v1_platform_search_intel_content_transition
-      tags: [Search Intelligence]
-      summary: Transition de statut d'un contenu (GSI-6, #8517)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: content
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [status]
-              properties:
-                status:
-                  type: string
-                  enum: [idea, drafting, review, scheduled, published, archived]
-      responses:
-        '200':
-          description: Contenu mis a jour
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '409':
-          description: Transition non autorisee depuis l'etat courant
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/geo/queries:
-    get:
-      operationId: api_get_v1_platform_search_intel_geo_queries
-      tags: [Search Intelligence]
-      summary: Requetes strategiques GEO (GSI-5, #8516)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 500
-            default: 100
-      responses:
-        '200':
-          description: Requetes strategiques
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
-    post:
-      operationId: api_post_v1_platform_search_intel_geo_queries
-      tags: [Search Intelligence]
-      summary: Declarer une requete strategique GEO (GSI-5, #8516)
-      security:
-        - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [query]
-              properties:
-                query:
-                  type: string
-                  maxLength: 500
-                locale:
-                  type: string
-                  maxLength: 10
-      responses:
-        '201':
-          description: Requete creee
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/geo/queries/{geoQuery}/checks:
-    get:
-      operationId: api_get_v1_platform_search_intel_geo_queries_checks
-      tags: [Search Intelligence]
-      summary: Historique des checks de presence GEO (GSI-5, #8516)
-      description: |
-        Historique **immuable** : aucun PATCH ni DELETE n'est expose sur un
-        check — une mesure de presence ne se reecrit pas.
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: geoQuery
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: Checks de la requete
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-    post:
-      operationId: api_post_v1_platform_search_intel_geo_queries_checks
-      tags: [Search Intelligence]
-      summary: Enregistrer un check de presence GEO (GSI-5, #8516)
-      description: |
-        La **methode de preuve** est obligatoire : une presence annoncee sans
-        methode ni source datee est refusee (422).
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: geoQuery
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [method, checked_at]
-              properties:
-                method:
-                  type: string
-                  maxLength: 100
-                checked_at:
-                  type: string
-                  format: date-time
-                present:
-                  type: boolean
-                evidence_url:
-                  type: string
-                  maxLength: 2000
-      responses:
-        '201':
-          description: Check enregistre
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/integrations:
-    get:
-      operationId: api_get_v1_platform_search_intel_integrations
-      tags: [Search Intelligence]
-      summary: Etat des connecteurs GSC / GA4 / Google Ads / MS Ads (GSI-8, #8519)
-      description: |
-        Etat de chaque connecteur (`connected`, `not_connected`, `error`).
-        Les secrets ne sont **jamais** exposes : seul un booleen
-        `has_credentials` indique qu'une configuration existe.
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Etat des connecteurs
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-  /v1/platform/search-intel/integrations/{provider}:
+  /platform/search-intel/integrations/{provider}:
     parameters:
       - name: provider
         in: path
@@ -79825,7 +79477,7 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           description: Fournisseur non supporte
-  /v1/platform/search-intel/integrations/{provider}/test:
+  /platform/search-intel/integrations/{provider}/test:
     parameters:
       - name: provider
         in: path
@@ -79870,144 +79522,7 @@ paths:
           $ref: '#/components/responses/Error403'
         '404':
           description: Fournisseur non supporte
-  /v1/platform/search-intel/overview:
-    get:
-      operationId: api_get_v1_platform_search_intel_overview
-      tags: [Search Intelligence]
-      summary: Vue d'ensemble Growth & Search Intelligence (GSI-9, #8520)
-      description: |
-        Compteurs reels par domaine (SEO, SEA, AEO, GEO, contenu, concurrence)
-        et etat des connecteurs. Les domaines non connectes sont annonces
-        `not_connected` — jamais un chiffre invente.
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Compteurs et etats
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-  /v1/platform/search-intel/seo/issues:
-    get:
-      operationId: api_get_v1_platform_search_intel_seo_issues
-      tags: [Search Intelligence]
-      summary: File des anomalies SEO, triee par gravite (GSI-2, #8513)
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: status
-          in: query
-          schema:
-            type: string
-            enum: [open, acknowledged, in_progress, resolved, ignored]
-        - name: severity
-          in: query
-          schema:
-            type: string
-            enum: [critical, high, medium, low]
-        - name: actionable
-          in: query
-          description: Ne retourner que les anomalies encore actionnables.
-          schema:
-            type: boolean
-        - name: limit
-          in: query
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 500
-            default: 100
-      responses:
-        '200':
-          description: Anomalies triees par gravite puis date de detection
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/seo/issues/{issue}/transition:
-    patch:
-      operationId: api_patch_v1_platform_search_intel_seo_issues_transition
-      tags: [Search Intelligence]
-      summary: Transition de workflow d'une anomalie SEO (GSI-2, #8513)
-      description: |
-        Transition auditee. Une transition non autorisee par l'etat courant est
-        refusee (409) — le workflow est la source de verite, pas le client.
-      security:
-        - BearerAuth: []
-      parameters:
-        - name: issue
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [status]
-              properties:
-                status:
-                  type: string
-                  enum: [open, acknowledged, in_progress, resolved, ignored]
-                note:
-                  type: string
-                  maxLength: 2000
-      responses:
-        '200':
-          description: Anomalie mise a jour
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '404':
-          $ref: '#/components/responses/Error404'
-        '409':
-          description: Transition non autorisee depuis l'etat courant
-        '422':
-          $ref: '#/components/responses/Error422'
-  /v1/platform/search-intel/seo/meta:
-    get:
-      operationId: api_get_v1_platform_search_intel_seo_meta
-      tags: [Search Intelligence]
-      summary: Metadonnees du workflow SEO (GSI-2, #8513)
-      description: |
-        Libelles et gravites des types d'anomalie et des statuts, pour que le
-        front n'ait pas a dupliquer les enums du backend.
-      security:
-        - BearerAuth: []
-      responses:
-        '200':
-          description: Metadonnees du workflow
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-  /v1/platform/search-intel/seo/scan:
-    post:
-      operationId: api_post_v1_platform_search_intel_seo_scan
-      tags: [Search Intelligence]
-      summary: Declencher un scan SEO du parc (GSI-2, #8513)
-      description: |
-        Lecture seule cote site, ecriture cote base. Refuse de tourner tant
-        qu'aucune cible n'est declaree (`SEARCH_INTEL_SCAN_BASE_URL`) : jamais
-        d'URL devinee.
-      security:
-        - BearerAuth: []
-      responses:
-        '202':
-          description: Scan accepte et planifie
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          $ref: '#/components/responses/Error403'
-        '409':
-          description: Aucune cible de scan configuree
-  /v1/public/brands/by-host:
+  /public/brands/by-host:
     get:
       operationId: api_get_public_brands_by_host
       tags:
@@ -80030,7 +79545,7 @@ paths:
           description: Domaine inconnu, non publié ou suspendu (fail-closed)
         '429':
           description: Limite de débit `shop-public` dépassée
-  /v1/public/brands/{slug}:
+  /public/brands/{slug}:
     get:
       operationId: api_get_public_brands_by_slug
       tags:
@@ -80059,7 +79574,7 @@ paths:
           description: Marque inconnue, non publiée ou suspendue (fail-closed)
         '429':
           description: Limite de débit `shop-public` dépassée
-  /v1/public/library:
+  /public/library:
     get:
       operationId: api_get_public_library
       tags:
@@ -80094,7 +79609,7 @@ paths:
           description: Catégories + ressources publiées du catalogue public
         '429':
           description: Limite de débit `shop-public` dépassée
-  /v1/public/library/{slug}:
+  /public/library/{slug}:
     get:
       operationId: api_get_public_library_by_slug
       tags:
@@ -80116,7 +79631,7 @@ paths:
           description: Ressource inconnue, non publiée ou privée d'un tenant (fail-closed)
         '429':
           description: Limite de débit `shop-public` dépassée
-  /v1/public/library/{slug}/download:
+  /public/library/{slug}/download:
     get:
       operationId: api_get_public_library_by_slug_download
       tags:
@@ -80142,7 +79657,7 @@ paths:
           description: Ressource inconnue ou non publiée
         '501':
           description: Stockage objet non configuré
-  /v1/public/library/{slug}/file:
+  /public/library/{slug}/file:
     get:
       operationId: api_get_public_library_by_slug_file
       tags:
@@ -80177,7 +79692,7 @@ paths:
           description: Ressource inconnue ou non publiée
         '501':
           description: Stockage non configuré
-  /v1/public/library/{slug}/reports:
+  /public/library/{slug}/reports:
     post:
       operationId: api_post_public_library_by_slug_reports
       tags:
@@ -80210,7 +79725,7 @@ paths:
           description: Ressource inconnue ou non publiée
         '422':
           description: Données invalides
-  /v1/trade/counterparties:
+  /trade/counterparties:
     get:
       operationId: api_get_trade_counterparties
       tags:
@@ -80339,7 +79854,7 @@ paths:
           $ref: '#/components/responses/Error422'
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/counterparties/{counterparty}:
+  /trade/counterparties/{counterparty}:
     get:
       operationId: api_get_trade_counterparty
       tags:
@@ -80458,7 +79973,7 @@ paths:
           description: Contrepartie inexistante OU appartenant a une autre entreprise (jamais 403)
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/counterparties/{counterparty}/verify:
+  /trade/counterparties/{counterparty}/verify:
     post:
       operationId: api_post_trade_counterparty_verify
       tags:
@@ -80509,7 +80024,7 @@ paths:
           $ref: '#/components/responses/Error422'
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/documents:
+  /trade/documents:
     get:
       operationId: api_get_trade_documents
       tags:
@@ -80621,7 +80136,7 @@ paths:
           $ref: '#/components/responses/Error422'
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/documents/{document}:
+  /trade/documents/{document}:
     get:
       operationId: api_get_trade_document
       tags:
@@ -80666,7 +80181,7 @@ paths:
           description: Inexistant OU appartenant a une autre entreprise (jamais 403)
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/documents/{document}/download:
+  /trade/documents/{document}/download:
     get:
       operationId: api_get_trade_document_download
       tags:
@@ -80698,7 +80213,7 @@ paths:
         '429':
           $ref: '#/components/responses/Error429'
 
-  /v1/trade/orders:
+  /trade/orders:
     get:
       operationId: api_get_trade_orders
       tags:
@@ -80744,7 +80259,7 @@ paths:
           description: Feature `trade` inactive, ou acteur sans role metier
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/orders/{order}:
+  /trade/orders/{order}:
     get:
       operationId: api_get_trade_order
       tags:
@@ -80765,7 +80280,7 @@ paths:
           description: Inexistante OU appartenant a une autre entreprise (jamais 403)
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/orders/{order}/transition:
+  /trade/orders/{order}/transition:
     post:
       operationId: api_post_trade_order_transition
       tags:
@@ -80820,7 +80335,7 @@ paths:
           $ref: '#/components/responses/Error422'
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/products:
+  /trade/products:
     get:
       operationId: api_get_trade_products
       tags:
@@ -80932,7 +80447,7 @@ paths:
           description: Payload invalide (dont `hs_code` hors format 6-10 chiffres)
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/products/{product}:
+  /trade/products/{product}:
     get:
       operationId: api_get_trade_product
       tags:
@@ -81023,7 +80538,7 @@ paths:
           description: Payload invalide
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/products/{product}/archive:
+  /trade/products/{product}/archive:
     post:
       operationId: api_post_trade_product_archive
       tags:
@@ -81050,7 +80565,7 @@ paths:
           description: Produit inexistant OU appartenant a une autre entreprise (jamais 403)
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/profile:
+  /trade/profile:
     get:
       operationId: api_get_trade_company_profile
       tags:
@@ -81145,7 +80660,7 @@ paths:
           description: Aucune direction declaree, Incoterm inconnu, code pays ou devise malforme
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/profile/publication:
+  /trade/profile/publication:
     put:
       operationId: api_put_trade_company_profile_publication
       tags:
@@ -81206,7 +80721,7 @@ paths:
             slug deja utilise par une autre entreprise
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/promotion-kit:
+  /trade/promotion-kit:
     get:
       operationId: api_get_trade_promotion_kit
       tags:
@@ -81233,7 +80748,7 @@ paths:
           description: Feature `trade` inactive, ou acteur sans le role admin de la verticale
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/quotes/{quote}/transition:
+  /trade/quotes/{quote}/transition:
     post:
       operationId: api_post_trade_quote_transition
       tags:
@@ -81290,7 +80805,7 @@ paths:
           $ref: '#/components/responses/Error422'
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/rfqs/{rfq}/transition:
+  /trade/rfqs/{rfq}/transition:
     post:
       operationId: api_post_trade_rfq_transition
       tags:
@@ -81354,7 +80869,7 @@ paths:
           $ref: '#/components/responses/Error422'
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/trade/search:
+  /trade/search:
     get:
       operationId: api_get_trade_search
       tags:
@@ -81399,294 +80914,6 @@ paths:
           $ref: '#/components/responses/Error422'
         '429':
           $ref: '#/components/responses/Error429'
-  /v1/travel/adverts:
-    get:
-      operationId: api_get_travel_adverts
-      tags:
-      - TravelAgency
-      summary: Liste des annonces voyage (publique ou gestion)
-      description: >-
-        BC-24 TRAVEL (#6416) — mode public par défaut : seules les annonces
-        VISIBLES (payées + validées + non expirées) sont renvoyées. Les rôles
-        gestion (`principal`, `rh`) basculent en mode gestion et voient toutes
-        les annonces du tenant, filtrables par `?status=`.
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: status
-        in: query
-        required: false
-        description: Filtre de statut (mode gestion uniquement)
-        schema:
-          type: string
-          enum: [draft, submitted, paid, validated, rejected, expired, archived]
-      responses:
-        '200':
-          description: Liste des annonces
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TravelAdvert'
-        '401':
-          description: Non authentifié
-    post:
-      operationId: api_post_travel_adverts
-      tags:
-      - TravelAgency
-      summary: Soumettre une annonce voyage
-      description: >-
-        BC-24 TRAVEL — crée une annonce en statut `submitted` et calcule son
-        prix à partir du type et de l'emplacement d'annonce. Requiert la
-        capacité `create` sur TravelAdvert.
-      security:
-      - BearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [advert_type_id, advert_position_id, title, content]
-              properties:
-                advert_type_id:
-                  type: integer
-                advert_position_id:
-                  type: integer
-                title:
-                  type: string
-                  maxLength: 255
-                content:
-                  type: string
-                image_asset_id:
-                  type: integer
-                  nullable: true
-                validity_days:
-                  type: integer
-                  minimum: 1
-                  default: 30
-      responses:
-        '201':
-          description: Annonce créée
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: integer
-                      status:
-                        type: string
-                      price_minor:
-                        type: integer
-                      currency:
-                        type: string
-        '403':
-          description: Capacité `create` refusée
-        '422':
-          description: Validation échouée
-  /v1/travel/adverts/manage:
-    get:
-      operationId: api_get_travel_adverts_manage
-      tags:
-      - TravelAgency
-      summary: Liste admin des annonces (modération)
-      description: >-
-        TRAVEL-914 (#6422) — toutes les annonces du tenant quel que soit leur
-        statut, pour l'écran de modération. Réservé aux rôles gestion
-        (`principal`, `rh`) ; 403 sinon.
-      security:
-      - BearerAuth: []
-      parameters:
-      - name: status
-        in: query
-        required: false
-        schema:
-          type: string
-          enum: [draft, submitted, paid, validated, rejected, expired, archived]
-      responses:
-        '200':
-          description: Liste admin des annonces
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TravelAdvert'
-        '403':
-          description: Rôle gestion requis
-  /v1/travel/adverts/{travelAdvert}:
-    get:
-      operationId: api_get_travel_adverts_by_id
-      tags:
-      - TravelAgency
-      summary: Détail d'une annonce voyage
-      description: >-
-        BC-24 TRAVEL — renvoie l'annonce si elle appartient au tenant de
-        l'appelant ; 404 uniforme sinon (pas de fuite inter-tenant).
-      security:
-      - BearerAuth: []
-      parameters:
-      - $ref: '#/components/parameters/TravelAdvertId'
-      responses:
-        '200':
-          description: Annonce
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/TravelAdvert'
-        '404':
-          description: Annonce introuvable pour ce tenant
-    delete:
-      operationId: api_delete_travel_adverts_by_id
-      tags:
-      - TravelAgency
-      summary: Supprimer une annonce voyage
-      security:
-      - BearerAuth: []
-      parameters:
-      - $ref: '#/components/parameters/TravelAdvertId'
-      responses:
-        '204':
-          description: Annonce supprimée
-        '403':
-          description: Suppression refusée
-        '404':
-          description: Annonce introuvable pour ce tenant
-  /v1/travel/adverts/{travelAdvert}/pay:
-    post:
-      operationId: api_post_travel_adverts_pay
-      tags:
-      - TravelAgency
-      summary: Payer une annonce voyage
-      description: >-
-        BC-24 TRAVEL — enregistre le paiement de l'annonce et la fait passer en
-        statut `paid`, en attente de validation.
-      security:
-      - BearerAuth: []
-      parameters:
-      - $ref: '#/components/parameters/TravelAdvertId'
-      responses:
-        '200':
-          description: Paiement enregistré
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/TravelAdvert'
-        '404':
-          description: Annonce introuvable pour ce tenant
-        '409':
-          description: Statut incompatible avec le paiement
-  /v1/travel/adverts/{travelAdvert}/reject:
-    post:
-      operationId: api_post_travel_adverts_reject
-      tags:
-      - TravelAgency
-      summary: Rejeter une annonce voyage
-      description: >-
-        BC-24 TRAVEL — modération : passe l'annonce en `rejected` avec un motif
-        obligatoire. Réservé aux rôles gestion.
-      security:
-      - BearerAuth: []
-      parameters:
-      - $ref: '#/components/parameters/TravelAdvertId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [reason]
-              properties:
-                reason:
-                  type: string
-                  maxLength: 500
-      responses:
-        '200':
-          description: Annonce rejetée
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/TravelAdvert'
-        '403':
-          description: Rôle gestion requis
-        '404':
-          description: Annonce introuvable pour ce tenant
-        '422':
-          description: Motif manquant
-  /v1/travel/adverts/{travelAdvert}/renew:
-    post:
-      operationId: api_post_travel_adverts_renew
-      tags:
-      - TravelAgency
-      summary: Renouveler une annonce voyage
-      description: >-
-        BC-24 TRAVEL — prolonge une annonce expirée d'une nouvelle période de
-        validité (nouveau paiement requis).
-      security:
-      - BearerAuth: []
-      parameters:
-      - $ref: '#/components/parameters/TravelAdvertId'
-      responses:
-        '200':
-          description: Annonce renouvelée
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/TravelAdvert'
-        '404':
-          description: Annonce introuvable pour ce tenant
-        '409':
-          description: Annonce non expirée
-  /v1/travel/adverts/{travelAdvert}/validate:
-    post:
-      operationId: api_post_travel_adverts_validate
-      tags:
-      - TravelAgency
-      summary: Valider une annonce voyage
-      description: >-
-        BC-24 TRAVEL — modération : passe l'annonce payée en `validated` et
-        calcule sa date d'expiration. Réservé aux rôles gestion.
-      security:
-      - BearerAuth: []
-      parameters:
-      - $ref: '#/components/parameters/TravelAdvertId'
-      responses:
-        '200':
-          description: Annonce validée
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/TravelAdvert'
-        '403':
-          description: Rôle gestion requis
-        '404':
-          description: Annonce introuvable pour ce tenant
   /vehicle-alerts:
     get:
       operationId: api_get_vehicle_alerts
@@ -84208,790 +83435,6 @@ paths:
           description: Aucune pointeuse enregistree avec ce numero de serie
         '422':
           $ref: '#/components/responses/Validation422'
-  /v1/connectors/catalog:
-    get:
-      operationId: api_get_connectors_catalog
-      tags:
-      - Connectors
-      summary: Types de connecteur proposables à un tenant (#9848)
-      description: 'Catalogue des surfaces externes qu''un client peut brancher sur son espace. Filtré par `audience = tenant` : les entrées `audience = platform` (les banques de l''éditeur) n''apparaissent jamais ici, même si un contrôleur l''oubliait.
-
-        Chaque entrée porte son `field_schema` : le front génère le formulaire à partir de lui, donc ajouter un type de connecteur est une écriture de données, pas un déploiement.'
-      responses:
-        '200':
-          description: Entrées de catalogue visibles par le tenant
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      items:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/ConnectorCatalogEntry'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Feature `connectors` inactive pour ce tenant
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/connectors/connections:
-    get:
-      operationId: api_get_connectors_connections
-      tags:
-      - Connectors
-      summary: Connexions externes du tenant courant (#9848)
-      description: 'Isolation tenant appliquée par `BelongsToCompany` : une connexion d''une autre entreprise est introuvable (404), jamais 403.
-
-        Les secrets ne redescendent JAMAIS en clair : `secrets` ne contient que `{configured, mask}` par champ secret du catalogue.'
-      responses:
-        '200':
-          description: Connexions du tenant
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      items:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/ConnectorConnection'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Feature `connectors` inactive pour ce tenant
-        '429':
-          $ref: '#/components/responses/Error429'
-    post:
-      operationId: api_post_connectors_connections
-      tags:
-      - Connectors
-      summary: Connecte une surface externe (#9848)
-      description: 'Réservé au `principal` du tenant : connecter un compte externe engage l''entreprise, comme les profils d''encaissement (#7727).
-
-        La connexion est créée en `draft` : elle ne devient `active` que par `PATCH .../status`. `company_id` n''est jamais accepté — il est posé par `BelongsToCompany` depuis le contexte tenant (anti-spoof #7646).
-
-        La validation de SCHÉMA (champs requis du connecteur, types, options de `select`) dépend du `catalog_key` et rend un 422 détaillé par champ dans `violations`.'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConnectorConnectionInput'
-      responses:
-        '201':
-          description: Connexion créée (statut `draft`)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ConnectorConnection'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Acteur autre que `principal`
-        '422':
-          description: Enveloppe invalide, `catalog_key` inconnu (`CONNECTOR_CATALOG_KEY_UNKNOWN`) ou schéma du connecteur violé (`CONNECTOR_SCHEMA_VIOLATION`, détail dans `violations`)
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/connectors/connections/{id}:
-    patch:
-      operationId: api_patch_connectors_connection
-      tags:
-      - Connectors
-      summary: Met à jour une connexion du tenant (#9848)
-      description: 'PATCH partiel : la configuration et les secrets sont FUSIONNÉS avec l''existant avant validation, pour qu''un champ requis déjà en base ne fasse pas échouer la requête.
-
-        Un secret absent ou vide conserve la valeur en place ; un secret fourni REMPLACE l''ancien.'
-      parameters:
-      - $ref: '#/components/parameters/ConnectorConnectionId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConnectorConnectionUpdateInput'
-      responses:
-        '200':
-          description: Connexion mise à jour
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ConnectorConnection'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Acteur autre que `principal`
-        '404':
-          description: Connexion inconnue ou hors tenant (fail-closed)
-        '409':
-          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
-        '422':
-          description: Schéma du connecteur violé (`violations` détaille le champ fautif)
-        '429':
-          $ref: '#/components/responses/Error429'
-    delete:
-      operationId: api_delete_connectors_connection
-      tags:
-      - Connectors
-      summary: Supprime une connexion du tenant (#9848)
-      description: 'Suppression franche de la ligne : la configuration et les secrets disparaissent avec elle. Pour suspendre sans perdre la saisie, utiliser `PATCH .../status` avec `revoked`.'
-      parameters:
-      - $ref: '#/components/parameters/ConnectorConnectionId'
-      responses:
-        '204':
-          description: Connexion supprimée
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Acteur autre que `principal`
-        '404':
-          description: Connexion inconnue ou hors tenant (fail-closed)
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/connectors/connections/{id}/status:
-    patch:
-      operationId: api_patch_connectors_connection_status
-      tags:
-      - Connectors
-      summary: Active ou révoque une connexion du tenant (#9848)
-      description: 'Le statut est un champ FERMÉ (`draft`, `active`, `error`, `revoked`). Révoquer conserve la configuration : c''est une suspension, pas une suppression.'
-      parameters:
-      - $ref: '#/components/parameters/ConnectorConnectionId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConnectorStatusInput'
-      responses:
-        '200':
-          description: Statut appliqué
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ConnectorConnection'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Acteur autre que `principal`
-        '404':
-          description: Connexion inconnue ou hors tenant (fail-closed)
-        '422':
-          $ref: '#/components/responses/Error422'
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/connectors/connections/{id}/test:
-    post:
-      operationId: api_post_connectors_connection_test
-      tags:
-      - Connectors
-      summary: Vérifie réellement une connexion du tenant (#9848)
-      description: 'Le verdict est celui du contrôle réellement exécuté (`ConnectorConnectionTester`) : jamais un succès inventé. Un connecteur qui exigerait un appel authentifié au fournisseur rend `unsupported` plutôt que de prétendre l''avoir vérifié.
-
-        Le résultat est persisté (`last_check_status`, `last_checked_at`) pour que l''écran affiche le dernier état connu sans relancer un test à chaque ouverture. Un test en échec fait passer une connexion `active` en `error` : l''écran reflète la réalité, pas l''intention.'
-      parameters:
-      - $ref: '#/components/parameters/ConnectorConnectionId'
-      responses:
-        '200':
-          description: Verdict du contrôle et connexion mise à jour
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      connection:
-                        $ref: '#/components/schemas/ConnectorConnection'
-                      check:
-                        $ref: '#/components/schemas/ConnectorCheckResult'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Acteur autre que `principal`
-        '404':
-          description: Connexion inconnue ou hors tenant (fail-closed)
-        '409':
-          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/connectors/overview:
-    get:
-      operationId: api_get_connectors_overview
-      tags:
-      - Connectors
-      summary: Index des intégrations déjà existantes du tenant (#9848)
-      description: 'LECTURE seule : chaque intégration existante garde son écran natif comme source de vérité. L''onglet les regroupe, il ne les duplique pas — deux vérités divergentes seraient pires qu''aucun index.
-
-        Une source indisponible (table absente, module non activé pour ce tenant) disparaît de l''index au lieu de faire échouer tout l''écran.'
-      responses:
-        '200':
-          description: Index des intégrations et compteurs de connexions
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ConnectorOverview'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Feature `connectors` inactive pour ce tenant
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/platform/connectors/catalog:
-    get:
-      operationId: api_get_platform_connectors_catalog
-      tags:
-      - Connectors
-      summary: Types de connecteur proposables à la plateforme (#9847)
-      description: 'Catalogue filtré par `audience = platform` : les comptes externes de l''éditeur, d''abord ses banques (celles qui reçoivent les paiements des tenants), qui étaient jusqu''ici saisies en dur dans la configuration d''environnement.
-
-        Permission requise : `connectors.view`.'
-      responses:
-        '200':
-          description: Entrées de catalogue visibles par la plateforme
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      items:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/ConnectorCatalogEntry'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Permission `connectors.view` absente
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/platform/connectors/connections:
-    get:
-      operationId: api_get_platform_connectors_connections
-      tags:
-      - Connectors
-      summary: Connexions externes de la plateforme (#9847)
-      description: 'Triées par `is_default` puis `catalog_key`. Les secrets ne redescendent jamais en clair : `secrets` ne contient que `{configured, mask}`.
-
-        Permission requise : `connectors.view`.'
-      responses:
-        '200':
-          description: Connexions de la plateforme
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      items:
-                        type: array
-                        items:
-                          $ref: '#/components/schemas/ConnectorConnection'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Permission `connectors.view` absente
-        '429':
-          $ref: '#/components/responses/Error429'
-    post:
-      operationId: api_post_platform_connectors_connections
-      tags:
-      - Connectors
-      summary: Connecte un compte externe de la plateforme (#9847)
-      description: 'Permission requise : `connectors.manage`.
-
-        La connexion est créée en `draft`. Chaque écriture est auditée SANS valeur de secret : le journal ne retient que QUELLES clés secrètes ont été fournies, jamais leur contenu.'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConnectorConnectionInput'
-      responses:
-        '201':
-          description: Connexion créée (statut `draft`)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ConnectorConnection'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Permission `connectors.manage` absente
-        '422':
-          description: Enveloppe invalide, `catalog_key` inconnu (`CONNECTOR_CATALOG_KEY_UNKNOWN`) ou schéma du connecteur violé (`CONNECTOR_SCHEMA_VIOLATION`, détail dans `violations`)
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/platform/connectors/connections/{id}:
-    patch:
-      operationId: api_patch_platform_connectors_connection
-      tags:
-      - Connectors
-      summary: Met à jour une connexion de la plateforme (#9847)
-      description: 'Permission requise : `connectors.manage`.
-
-        PATCH partiel : configuration et secrets sont FUSIONNÉS avec l''existant avant validation. Un secret absent ou vide conserve la valeur en base — on peut corriger un libellé sans retaper un IBAN ; un secret fourni REMPLACE l''ancien.'
-      parameters:
-      - $ref: '#/components/parameters/ConnectorConnectionId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConnectorConnectionUpdateInput'
-      responses:
-        '200':
-          description: Connexion mise à jour
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ConnectorConnection'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Permission `connectors.manage` absente
-        '404':
-          description: Connexion inconnue
-        '409':
-          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
-        '422':
-          description: Schéma du connecteur violé (`violations` détaille le champ fautif)
-        '429':
-          $ref: '#/components/responses/Error429'
-    delete:
-      operationId: api_delete_platform_connectors_connection
-      tags:
-      - Connectors
-      summary: Supprime une connexion de la plateforme (#9847)
-      description: 'Permission requise : `connectors.manage`. La suppression est auditée (`connector.deleted`) avec la clé de catalogue et le libellé, jamais un secret.'
-      parameters:
-      - $ref: '#/components/parameters/ConnectorConnectionId'
-      responses:
-        '204':
-          description: Connexion supprimée
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Permission `connectors.manage` absente
-        '404':
-          description: Connexion inconnue
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/platform/connectors/connections/{id}/status:
-    patch:
-      operationId: api_patch_platform_connectors_connection_status
-      tags:
-      - Connectors
-      summary: Active ou révoque une connexion de la plateforme (#9847)
-      description: 'Permission requise : `connectors.manage`. Le statut est un champ FERMÉ (`draft`, `active`, `error`, `revoked`) ; le changement est audité (`connector.status_changed`).'
-      parameters:
-      - $ref: '#/components/parameters/ConnectorConnectionId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ConnectorStatusInput'
-      responses:
-        '200':
-          description: Statut appliqué
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ConnectorConnection'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Permission `connectors.manage` absente
-        '404':
-          description: Connexion inconnue
-        '422':
-          $ref: '#/components/responses/Error422'
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/platform/connectors/connections/{id}/test:
-    post:
-      operationId: api_post_platform_connectors_connection_test
-      tags:
-      - Connectors
-      summary: Vérifie réellement une connexion de la plateforme (#9847)
-      description: 'Permission requise : `connectors.manage`.
-
-        Le verdict est celui du contrôle réellement exécuté : pour un compte bancaire, IBAN (clé mod-97), BIC (ISO 9362) et titulaire sont contrôlés localement. Aucun succès n''est inventé ; un connecteur non vérifiable rend `unsupported`.
-
-        Le résultat est persisté, et un échec fait passer une connexion `active` en `error`.'
-      parameters:
-      - $ref: '#/components/parameters/ConnectorConnectionId'
-      responses:
-        '200':
-          description: Verdict du contrôle et connexion mise à jour
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      connection:
-                        $ref: '#/components/schemas/ConnectorConnection'
-                      check:
-                        $ref: '#/components/schemas/ConnectorCheckResult'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Permission `connectors.manage` absente
-        '404':
-          description: Connexion inconnue
-        '409':
-          description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/platform/connectors/overview:
-    get:
-      operationId: api_get_platform_connectors_overview
-      tags:
-      - Connectors
-      summary: Index des intégrations existantes de la plateforme (#9847)
-      description: 'Permission requise : `connectors.view`. LECTURE seule : chaque intégration garde son écran natif comme source de vérité.'
-      responses:
-        '200':
-          description: Index des intégrations et compteurs de connexions
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ConnectorOverview'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Permission `connectors.view` absente
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/employees/{employee}/vertical-permissions:
-    get:
-      operationId: api_get_employee_vertical_permissions
-      tags:
-      - Employees
-      summary: Permissions verticales déléguées à un collaborateur (#EVAL)
-      description: 'Ce que le collaborateur détient aujourd''hui, plus le catalogue des permissions qu''on peut lui déléguer. Le front compose ses cases à cocher avec `available` : il ne peut donc jamais proposer une permission d''une verticale inactive (fail-closed côté UI ET côté API).
-
-        Surface distincte de `module-grants` : `ModuleKey` est un registre FERMÉ de modules HORIZONTAUX, l''ouvrir aux permissions de manifest casserait l''invariant « manifest inactif ⇒ aucune permission effective ». Ici le registre est DYNAMIQUE et borné au tenant.
-
-        Autorisation : `principal` du tenant uniquement, jamais sur un employé d''une autre société (policy `EmployeePolicy::manageModuleGrants`).'
-      parameters:
-      - $ref: '#/components/parameters/EmployeeId'
-      responses:
-        '200':
-          description: Permissions détenues et catalogue délégable
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/EmployeeVerticalPermissions'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Acteur sans droit de gestion des grants, ou hors tenant
-        '404':
-          description: Employé inconnu ou hors tenant (fail-closed)
-        '429':
-          $ref: '#/components/responses/Error429'
-    put:
-      operationId: api_put_employee_vertical_permissions
-      tags:
-      - Employees
-      summary: Remplace le jeu complet de permissions verticales (#EVAL)
-      description: 'PUT = remplacement du jeu COMPLET, seule forme qui rende la révocation possible en un geste : une permission absente du corps est retirée.
-
-        Fail-closed : une clé inconnue, une permission d''une verticale inactive ou une permission horizontale (`marketing`, …) est refusée en 422, jamais ignorée silencieusement. Les doublons sont dédoublonnés.'
-      parameters:
-      - $ref: '#/components/parameters/EmployeeId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - permission_keys
-              properties:
-                permission_keys:
-                  type: array
-                  description: Jeu complet attendu. Tableau vide = révocation de toutes les permissions verticales.
-                  items:
-                    type: string
-                    example: travel.agent
-      responses:
-        '200':
-          description: Jeu appliqué
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: object
-                    properties:
-                      permission_keys:
-                        type: array
-                        items:
-                          type: string
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Acteur sans droit de gestion des grants, ou hors tenant
-        '404':
-          description: Employé inconnu ou hors tenant (fail-closed)
-        '422':
-          description: '`permission_keys` absent (`MODULE_KEYS_REQUIRED`) ou clé hors du registre délégable (`VERTICAL_PERMISSION_UNKNOWN`)'
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/inventory:
-    get:
-      operationId: api_get_travel_hotel_room_inventory
-      tags:
-      - Travel
-      summary: Grille d'inventaire d'une chambre sur une période (M4)
-      description: 'Grille CONTINUE sur `[from, to]` inclus : une nuit sans ligne est rendue avec la capacité par défaut (1), donc la grille n''a jamais de trou et l''appelant n''a pas à interpréter une absence comme « fermé ».
-
-        Isolation : l''hôtel et la chambre doivent appartenir à la société de l''acteur, et la chambre à l''hôtel — sinon 404 (jamais 403, qui révélerait l''existence de la ressource d''un autre tenant).'
-      parameters:
-      - $ref: '#/components/parameters/TravelHotelId'
-      - $ref: '#/components/parameters/TravelHotelRoomId'
-      - name: from
-        in: query
-        required: false
-        description: 'Premier jour de la grille. Défaut : aujourd''hui.'
-        schema:
-          type: string
-          format: date
-      - name: to
-        in: query
-        required: false
-        description: 'Dernier jour de la grille (inclus). Défaut : aujourd''hui + 30 jours.'
-        schema:
-          type: string
-          format: date
-      responses:
-        '200':
-          description: Grille d'inventaire, une entrée par nuit
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TravelHotelRoomInventoryDay'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '404':
-          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
-        '429':
-          $ref: '#/components/responses/Error429'
-    put:
-      operationId: api_put_travel_hotel_room_inventory
-      tags:
-      - Travel
-      summary: Ouvre ou ferme un intervalle d'inventaire (M4)
-      description: '`rooms_total = 0` ferme la chambre sur la période (maintenance). L''intervalle est borné à 90 nuits : au-delà, c''est du remplissage de masse, pas de la gestion d''inventaire.
-
-        Une baisse de capacité sous le nombre déjà vendu est refusée (422) : elle rendrait l''inventaire incohérent (`rooms_booked > rooms_total`).
-
-        La réponse rend l''intervalle DEMANDÉ, pas la fenêtre par défaut de `GET` (qui lit `from`/`to` en query string, absents d''un PUT en JSON).'
-      parameters:
-      - $ref: '#/components/parameters/TravelHotelId'
-      - $ref: '#/components/parameters/TravelHotelRoomId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - from
-              - to
-              - rooms_total
-              properties:
-                from:
-                  type: string
-                  format: date
-                to:
-                  type: string
-                  format: date
-                  description: 'Doit être ≥ `from`. Intervalle maximal : 90 nuits.'
-                rooms_total:
-                  type: integer
-                  minimum: 0
-                  maximum: 1000
-                  description: Capacité par nuit. `0` ferme la chambre sur la période.
-                status:
-                  type: string
-                  enum:
-                  - active
-                  - disabled
-                  default: active
-      responses:
-        '200':
-          description: Grille d'inventaire de l'intervalle demandé
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TravelHotelRoomInventoryDay'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Acteur sans droit de modification sur l'hôtel
-        '404':
-          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
-        '422':
-          description: Intervalle invalide, supérieur à 90 nuits, ou capacité inférieure au nombre de chambres déjà vendues sur une nuit
-        '429':
-          $ref: '#/components/responses/Error429'
-  /v1/travel/hotels/{travelHotel}/rooms/{travelHotelRoom}/bookings:
-    get:
-      operationId: api_get_travel_hotel_room_bookings
-      tags:
-      - Travel
-      summary: Réservations d'une chambre (M4)
-      description: Réservations de la chambre, les plus récentes d'abord, paginées au format Laravel (`data`, `links`, `meta`).
-      parameters:
-      - $ref: '#/components/parameters/TravelHotelId'
-      - $ref: '#/components/parameters/TravelHotelRoomId'
-      - name: per_page
-        in: query
-        required: false
-        description: 'Taille de page, bornée à 200. Défaut : 50.'
-        schema:
-          type: integer
-          minimum: 1
-          maximum: 200
-          default: 50
-      responses:
-        '200':
-          description: Liste paginée des réservations de la chambre
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/TravelHotelBooking'
-                  links:
-                    type: object
-                  meta:
-                    type: object
-        '401':
-          $ref: '#/components/responses/Error401'
-        '404':
-          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
-        '429':
-          $ref: '#/components/responses/Error429'
-    post:
-      operationId: api_post_travel_hotel_room_bookings
-      tags:
-      - Travel
-      summary: Réserve une chambre sur un intervalle de dates (M4)
-      description: 'Le montant n''est JAMAIS accepté du client : il est calculé par l''action (prix par nuit × nuits × chambres). `idempotency_key` est obligatoire — rejouer la même clé ne crée pas une seconde réservation.
-
-        Le contrôle de surréservation est porté par `BookHotelRoomAction` (verrou `FOR UPDATE` sur les nuits) : si une nuit manque, la requête est refusée en 409 et rien n''est écrit.'
-      parameters:
-      - $ref: '#/components/parameters/TravelHotelId'
-      - $ref: '#/components/parameters/TravelHotelRoomId'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-              - check_in
-              - check_out
-              - idempotency_key
-              properties:
-                check_in:
-                  type: string
-                  format: date
-                  description: Doit être aujourd'hui ou plus tard.
-                check_out:
-                  type: string
-                  format: date
-                  description: Strictement après `check_in`.
-                rooms:
-                  type: integer
-                  minimum: 1
-                  maximum: 50
-                  default: 1
-                idempotency_key:
-                  type: string
-                  maxLength: 255
-      responses:
-        '201':
-          description: Réservation créée
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/TravelHotelBooking'
-        '401':
-          $ref: '#/components/responses/Error401'
-        '403':
-          description: Acteur sans droit de modification sur l'hôtel
-        '404':
-          description: Hôtel ou chambre inconnu, hors tenant, ou chambre d'un autre hôtel
-        '409':
-          description: Une des nuits demandées n'est plus disponible (surréservation)
-        '422':
-          $ref: '#/components/responses/Error422'
-        '429':
-          $ref: '#/components/responses/Error429'
 components:
   securitySchemes:
     BearerAuth:
@@ -95296,37 +93739,6 @@ components:
           type: integer
         mime_type:
           type: string
-        created_at:
-          type: string
-          format: date-time
-    AuditLog:
-      type: object
-      properties:
-        id:
-          type: integer
-        company_id:
-          type: integer
-        user_id:
-          type: integer
-          nullable: true
-        action:
-          type: string
-        entity_type:
-          type: string
-        entity_id:
-          type: integer
-        old_values:
-          type: object
-          nullable: true
-        new_values:
-          type: object
-          nullable: true
-        ip_address:
-          type: string
-          nullable: true
-        user_agent:
-          type: string
-          nullable: true
         created_at:
           type: string
           format: date-time
