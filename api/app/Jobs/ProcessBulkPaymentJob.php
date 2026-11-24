@@ -13,6 +13,7 @@ use App\Modules\Payroll\Domain\Models\PaymentDocument;
 use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\SalaryAdvance;
+use App\Modules\Payroll\Infrastructure\Services\BulkPaymentCoordinator;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\Collection;
@@ -375,21 +376,10 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
      */
     private function updateProgress(int $done, string $status, int $total = 0, array $failures = []): void
     {
-        try {
-            $key = "bulk_pay:run:{$this->payrollRunId}";
-            $data = json_encode([
-                'status' => $status,
-                'done' => $done,
-                'total' => $total,
-                'failed' => count($failures),
-                'failures' => $failures,
-                'updated_at' => now()->toIso8601String(),
-            ]);
-            Redis::connection('default')->setex($key, 3600, $data);
-        } catch (Throwable $e) {
-            // Non-critical: progress tracking failure should not stop the job
-            Log::warning("ProcessBulkPaymentJob: Redis progress update failed: {$e->getMessage()}");
-        }
+        // #9874 : l'avancement vit en base (`bulk_payment_claims`), plus dans
+        // Redis — il survit à un redémarrage du cache et reste lisible même
+        // si Redis est tombé.
+        app(BulkPaymentCoordinator::class)->advance($this->payrollRunId, $status, $done, $total, $failures);
     }
 
     /**
@@ -405,9 +395,12 @@ class ProcessBulkPaymentJob implements ShouldQueue, TenantScopedJob
             'exception' => $e->getMessage(),
         ]);
 
+        // #9874 : libérer le claim en base (l'avancement n'est plus dans
+        // Redis). Un run libéré peut être redispatché proprement.
+        app(BulkPaymentCoordinator::class)->release($this->payrollRunId);
+
         try {
             $redis = Redis::connection('default');
-            $redis->del("bulk_pay:run:{$this->payrollRunId}");
 
             // #6548 : libérer aussi les claims de slips posés par l'essai
             // avorté pour les slips encore éligibles (calculated/validated) —

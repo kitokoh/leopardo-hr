@@ -34,8 +34,6 @@ class TravelHotelInventoryTest extends TestCase
 
     private Company $company;
 
-    private Employee $principal;
-
     private TravelHotel $hotel;
 
     private TravelHotelRoom $room;
@@ -56,7 +54,6 @@ class TravelHotelInventoryTest extends TestCase
             'role' => 'manager',
             'manager_role' => 'principal',
         ]);
-        $this->principal = $principal;
 
         Sanctum::actingAs($principal);
 
