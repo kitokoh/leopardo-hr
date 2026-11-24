@@ -185,7 +185,7 @@ class BulkPaymentCoordinator
     /**
      * Lit l'avancement d'un run — sans Redis.
      *
-     * @return array<string, mixed>|null  null si aucun claim n'existe
+     * @return array<string, mixed>|null null si aucun claim n'existe
      */
     public function status(int $payrollRunId): ?array
     {

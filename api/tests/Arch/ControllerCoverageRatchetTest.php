@@ -116,7 +116,7 @@ it('ne laisse aucun NOUVEAU contrôleur sans référence de test', function (): 
         [],
         "Nouveaux contrôleurs sans aucun test :\n  - ".implode("\n  - ", $newlyUncovered)
         ."\n\nAjoutez un test qui référence la classe, ou (si c'est assumé) "
-        ."régénérez la baseline : php dev-tools/generate-uncovered-controllers-baseline.php"
+        .'régénérez la baseline : php dev-tools/generate-uncovered-controllers-baseline.php'
     );
 });
 
@@ -138,7 +138,7 @@ it('ne laisse pas la baseline de couverture grossir', function (): void {
 
     expect($stale)->toBe(
         [],
-        "Ces contrôleurs sont désormais testés mais figurent encore dans la "
+        'Ces contrôleurs sont désormais testés mais figurent encore dans la '
         ."baseline — retirez-les pour que le ratchet rétrécisse :\n  - "
         .implode("\n  - ", $stale)
     );
