@@ -39,7 +39,7 @@ class TravelConnectionController extends Controller
             originCityId: (int) $data['origin_city_id'],
             destinationCityId: (int) $data['destination_city_id'],
             date: $data['date'],
-            minConnectionMinutes: (int) ($data['min_connection_minutes'] ?? 45),
+            minConnectionMinutes: isset($data['min_connection_minutes']) ? (int) $data['min_connection_minutes'] : null,
         );
 
         return response()->json([

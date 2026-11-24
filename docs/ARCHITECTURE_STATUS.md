@@ -101,7 +101,7 @@
 | Indicateur | Valeur |
 |---|---|
 | Modules DDD actifs | **42** |
-| Fichiers de test sur disque | 1524 |
+| Fichiers de test sur disque | 1530 |
 | Modules sans dossier de tests dedie | 5 (`Absence`, `FarmOs`, `HospitalityManager`, `RestaurantManager`, `TravelAgency`) |
 | Modules sans couche `Application` | 4 (`Absence`, `Connectors`, `Geo`, `Restaurant`) |
 

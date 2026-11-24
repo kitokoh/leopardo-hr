@@ -103,7 +103,10 @@ final class TransitionOpportunityStageAction
                     $actor->id,
                 );
 
-                if (! empty($data['lost_reason'])) {
+                // La raison n'est journalisee que sur une perte : la validation
+                // la refuse ailleurs, et cette garde couvre un appel direct a
+                // l'action (hors requete HTTP).
+                if ($target === CrmOpportunityStage::Lost && ! empty($data['lost_reason'])) {
                     // La raison de la perte voyage AVEC le deplacement : c'est
                     // la seule information qui explique la ligne six mois plus
                     // tard, et `crm_opportunities` n'a pas de colonne dediee.

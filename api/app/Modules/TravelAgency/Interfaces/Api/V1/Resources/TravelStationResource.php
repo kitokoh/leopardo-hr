@@ -30,6 +30,8 @@ class TravelStationResource extends JsonResource
             'address' => $this->address,
             'contact_phone' => $this->contact_phone,
             'timezone' => $this->timezone,
+            // M5 — null = la gare hérite du défaut du tenant.
+            'min_connection_minutes' => $this->min_connection_minutes,
             'is_terminal' => $this->is_terminal,
             'status' => $this->status,
             'created_at' => $this->created_at,

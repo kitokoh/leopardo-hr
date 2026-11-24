@@ -78,21 +78,6 @@ class TravelVerticalPermissionDelegationTest extends TestCase
     }
 
     /**
-     * Recharge l'employé depuis la base pour que Sanctum reçoive une instance
-     * fraîche (les grants posés par la requête précédente sont visibles).
-     *
-     * `fresh()` est typé `Employee|null` : on échoue explicitement plutôt que
-     * de laisser PHPStan refuser l'argument de `Sanctum::actingAs()`.
-     */
-    private function reload(Employee $employee): Employee
-    {
-        $fresh = $employee->fresh();
-        self::assertNotNull($fresh, 'Employé introuvable après rechargement.');
-
-        return $fresh;
-    }
-
-    /**
      * @return array{trip: TravelTrip, class: TravelClass}
      */
     private function publishedTripWithPrice(Company $company): array
@@ -244,7 +229,11 @@ class TravelVerticalPermissionDelegationTest extends TestCase
         ]);
 
         // 3. Le vendeur vend désormais au guichet.
-        Sanctum::actingAs($this->reload($seller));
+        // `fresh()` est type `Employee|null` : on affirme la non-nullite plutot
+        // que de laisser PHPStan strict refuser l'argument (argument.type).
+        $sellerAfterGrant = $seller->fresh();
+        $this->assertNotNull($sellerAfterGrant);
+        Sanctum::actingAs($sellerAfterGrant);
         $this->postJson('/api/v1/travel/bookings', [
             'trip_id' => $trip->id,
             'booking_source' => 'office',
@@ -284,7 +273,9 @@ class TravelVerticalPermissionDelegationTest extends TestCase
             'permission_keys' => [],
         ])->assertOk()->assertJsonPath('data.permission_keys', []);
 
-        Sanctum::actingAs($this->reload($seller));
+        $sellerAfterRevoke = $seller->fresh();
+        $this->assertNotNull($sellerAfterRevoke);
+        Sanctum::actingAs($sellerAfterRevoke);
         $this->postJson('/api/v1/travel/bookings', [
             'trip_id' => $trip->id,
             'booking_source' => 'office',
@@ -382,7 +373,9 @@ class TravelVerticalPermissionDelegationTest extends TestCase
             app(ActivateTravelAgencyAction::class)->execute($company);
         });
 
-        Sanctum::actingAs($this->reload($principal));
+        $principalFresh = $principal->fresh();
+        $this->assertNotNull($principalFresh);
+        Sanctum::actingAs($principalFresh);
 
         $this->getJson("/api/v1/employees/{$principal->id}/vertical-permissions")
             ->assertOk()

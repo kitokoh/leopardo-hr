@@ -5721,7 +5721,10 @@
       "availableUntil": "Şu tarihe kadar",
       "ownerCarrier": "Sahip şirket",
       "title": "Başlık",
-      "vehicle": "Araç"
+      "vehicle": "Araç",
+      "minConnectionMinutes": "Min. aktarma",
+      "minConnectionInherited": "Acente varsayılanı",
+      "minConnectionHint": "15 ile 240 dakika. Boş = acente varsayılanı."
     },
     "action": {
       "create": "Oluştur",

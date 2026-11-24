@@ -485,6 +485,7 @@
             <file>tests/Feature/BusinessOs/TrialSignupIdempotencyTest.php</file>
         </testsuite>
         <testsuite name="CRM">
+            <file>tests/Feature/CRM/CrmActivitiesEndpointTest.php</file>
             <file>tests/Feature/CRM/CrmActivitiesTasksTest.php</file>
             <file>tests/Feature/CRM/CrmAutomationTest.php</file>
             <file>tests/Feature/CRM/CrmCampaignSendProcessingTest.php</file>
@@ -505,6 +506,7 @@
             <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
             <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
             <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
+            <file>tests/Feature/CRM/CrmOpportunityLostReasonRuleTest.php</file>
             <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxRuntimeTest.php</file>
@@ -809,6 +811,7 @@
             <file>tests/Feature/HR/EmployeeRequestSearchPathTest.php</file>
             <file>tests/Feature/HR/EmployeeSensitiveFillableTest.php</file>
             <file>tests/Feature/HR/EmployeeServiceCreateFillableTest.php</file>
+            <file>tests/Feature/HR/EmployeeStatsTest.php</file>
             <file>tests/Feature/HR/EmployeeTenantIsolationTest.php</file>
             <file>tests/Feature/HR/ExportHistoryTest.php</file>
             <file>tests/Feature/HR/HrControllerTest.php</file>
@@ -1396,6 +1399,7 @@
             <file>tests/Feature/Training/TrainingModuleRegistryTest.php</file>
         </testsuite>
         <testsuite name="Travel">
+            <file>tests/Feature/Travel/ConnectionDelayResolverLoadTest.php</file>
             <file>tests/Feature/Travel/TravelAbsentSeatsTest.php</file>
             <file>tests/Feature/Travel/TravelActivateCommandTest.php</file>
             <file>tests/Feature/Travel/TravelAdvertApiTest.php</file>
@@ -1419,6 +1423,7 @@
             <file>tests/Feature/Travel/TravelClassCrudTest.php</file>
             <file>tests/Feature/Travel/TravelCommentApiTest.php</file>
             <file>tests/Feature/Travel/TravelConnectionApiTest.php</file>
+            <file>tests/Feature/Travel/TravelConnectionDelayTest.php</file>
             <file>tests/Feature/Travel/TravelConnectionsTest.php</file>
             <file>tests/Feature/Travel/TravelContactAdminApiTest.php</file>
             <file>tests/Feature/Travel/TravelContactApiTest.php</file>
@@ -1445,6 +1450,7 @@
             <file>tests/Feature/Travel/TravelGoldenJourneyGjTravel01Test.php</file>
             <file>tests/Feature/Travel/TravelGoldenJourneyTest.php</file>
             <file>tests/Feature/Travel/TravelHotelApiTest.php</file>
+            <file>tests/Feature/Travel/TravelHotelInventoryConcurrencyTest.php</file>
             <file>tests/Feature/Travel/TravelHotelInventoryTest.php</file>
             <file>tests/Feature/Travel/TravelHotelTest.php</file>
             <file>tests/Feature/Travel/TravelIsolationTest.php</file>
@@ -1563,7 +1569,7 @@
           et detruit le marqueur `__mvp_fixture_ready`.
 
           FeatureMvpFixture : 242 fichiers.
-          FeatureRest       : 1113 fichiers.
+          FeatureRest       : 1119 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
             <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
@@ -1982,6 +1988,7 @@
             <file>tests/Feature/BusinessOs/SiteApiContractTest.php</file>
             <file>tests/Feature/BusinessOs/SitesFirstClassTest.php</file>
             <file>tests/Feature/BusinessOs/TrialSignupIdempotencyTest.php</file>
+            <file>tests/Feature/CRM/CrmActivitiesEndpointTest.php</file>
             <file>tests/Feature/CRM/CrmActivitiesTasksTest.php</file>
             <file>tests/Feature/CRM/CrmAutomationTest.php</file>
             <file>tests/Feature/CRM/CrmCampaignSendProcessingTest.php</file>
@@ -2002,6 +2009,7 @@
             <file>tests/Feature/CRM/CrmLeadConversionTest.php</file>
             <file>tests/Feature/CRM/CrmMigrationsInvariantsTest.php</file>
             <file>tests/Feature/CRM/CrmModelsTenantScopingTest.php</file>
+            <file>tests/Feature/CRM/CrmOpportunityLostReasonRuleTest.php</file>
             <file>tests/Feature/CRM/CrmOpportunityStageTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxLeaseTest.php</file>
             <file>tests/Feature/CRM/CrmOutboxRuntimeTest.php</file>
@@ -2251,6 +2259,7 @@
             <file>tests/Feature/HR/EmployeeRequestSearchPathTest.php</file>
             <file>tests/Feature/HR/EmployeeSensitiveFillableTest.php</file>
             <file>tests/Feature/HR/EmployeeServiceCreateFillableTest.php</file>
+            <file>tests/Feature/HR/EmployeeStatsTest.php</file>
             <file>tests/Feature/HR/EmployeeTenantIsolationTest.php</file>
             <file>tests/Feature/HR/ExportHistoryTest.php</file>
             <file>tests/Feature/HR/HrControllerTest.php</file>
@@ -2767,6 +2776,7 @@
             <file>tests/Feature/Trade/TradeSchemaTest.php</file>
             <file>tests/Feature/Trade/TradeSearchApiTest.php</file>
             <file>tests/Feature/TranslationCatalogApiTest.php</file>
+            <file>tests/Feature/Travel/ConnectionDelayResolverLoadTest.php</file>
             <file>tests/Feature/Travel/TravelAbsentSeatsTest.php</file>
             <file>tests/Feature/Travel/TravelActivateCommandTest.php</file>
             <file>tests/Feature/Travel/TravelAdvertApiTest.php</file>
@@ -2789,6 +2799,7 @@
             <file>tests/Feature/Travel/TravelClassCrudTest.php</file>
             <file>tests/Feature/Travel/TravelCommentApiTest.php</file>
             <file>tests/Feature/Travel/TravelConnectionApiTest.php</file>
+            <file>tests/Feature/Travel/TravelConnectionDelayTest.php</file>
             <file>tests/Feature/Travel/TravelConnectionsTest.php</file>
             <file>tests/Feature/Travel/TravelContactAdminApiTest.php</file>
             <file>tests/Feature/Travel/TravelContactApiTest.php</file>
@@ -2815,6 +2826,7 @@
             <file>tests/Feature/Travel/TravelGoldenJourneyGjTravel01Test.php</file>
             <file>tests/Feature/Travel/TravelGoldenJourneyTest.php</file>
             <file>tests/Feature/Travel/TravelHotelApiTest.php</file>
+            <file>tests/Feature/Travel/TravelHotelInventoryConcurrencyTest.php</file>
             <file>tests/Feature/Travel/TravelHotelInventoryTest.php</file>
             <file>tests/Feature/Travel/TravelHotelTest.php</file>
             <file>tests/Feature/Travel/TravelIsolationTest.php</file>

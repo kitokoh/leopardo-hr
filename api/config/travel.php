@@ -40,6 +40,21 @@ return [
         'quote_validity_days' => (int) env('TRAVEL_CORPORATE_QUOTE_VALIDITY_DAYS', 14),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Correspondances (M5) — délai minimal par défaut
+    |--------------------------------------------------------------------------
+    |
+    | Délai appliqué quand ni l'appelant ni la gare de correspondance ne
+    | l'imposent. Avant M5 cette valeur était une constante PHP (45) : elle
+    | est désormais réglable par tenant sans redéploiement, et chaque gare
+    | peut la surcharger via `travel_stations.min_connection_minutes`.
+    |
+    */
+    'connections' => [
+        'default_min_minutes' => (int) env('TRAVEL_MIN_CONNECTION_MINUTES', 45),
+    ],
+
     // TRAVEL-802 (#6093) — tarif combiné aller-retour (remise serveur, %).
     'pricing' => [
         'round_trip_discount_percent' => (int) env('TRAVEL_ROUND_TRIP_DISCOUNT_PERCENT', 0),

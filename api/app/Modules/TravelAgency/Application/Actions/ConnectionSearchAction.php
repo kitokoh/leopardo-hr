@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\TravelAgency\Application\Actions;
 
+use App\Modules\TravelAgency\Application\Services\ConnectionDelayResolver;
 use App\Modules\TravelAgency\Domain\Models\TravelRoute;
 use App\Modules\TravelAgency\Domain\Models\TravelTrip;
 use App\Modules\TravelAgency\Domain\Models\TravelTripPrice;
@@ -16,19 +17,30 @@ use Illuminate\Database\Eloquent\Collection;
  *
  * Combine un trajet A (origine → ville intermédiaire) et un trajet B
  * (ville intermédiaire → destination) dont les horaires sont compatibles :
- * départ(B) ≥ arrivée(A) + MIN_CONNECTION_MINUTES. Une correspondance n'est
- * valide QUE si cette contrainte est respectée (acceptance TRAVEL-809).
+ * départ(B) ≥ arrivée(A) + délai minimal de correspondance. Une correspondance
+ * n'est valide QUE si cette contrainte est respectée (acceptance TRAVEL-809).
  * Prix total = somme des tarifs adultes minimum des deux trajets.
+ *
+ * M5 — le délai n'est plus la constante 45 : il est résolu par
+ * `ConnectionDelayResolver` (surcharge de l'appelant → réglage de la gare de
+ * correspondance → défaut du tenant).
  */
 final class ConnectionSearchAction
 {
-    /** Correspondance minimale entre deux trajets (minutes). */
+    /**
+     * Délai historique, conservé comme valeur de repli documentaire.
+     *
+     * @deprecated M5 — utiliser `ConnectionDelayResolver` ; la valeur effective
+     *             vient de `config('travel.connections.default_min_minutes')`.
+     */
     public const MIN_CONNECTION_MINUTES = 45;
+
+    public function __construct(private readonly ConnectionDelayResolver $delays) {}
 
     /**
      * @return list<array{first: TravelTrip, second: TravelTrip, total_price_minor: int, connection_minutes: int}>
      */
-    public function execute(int $originCityId, int $destinationCityId, string $date): array
+    public function execute(int $originCityId, int $destinationCityId, string $date, ?int $minConnectionMinutes = null): array
     {
         $firstLegs = $this->legs($originCityId, $date, isOrigin: true);
         $secondLegs = $this->legs($destinationCityId, $date, isOrigin: false);
@@ -57,7 +69,11 @@ final class ConnectionSearchAction
 
                 $connectionMinutes = (int) $arrivalA->diffInMinutes($departureB, false);
 
-                if ($connectionMinutes < self::MIN_CONNECTION_MINUTES) {
+                // M5 — le délai dépend de la gare de correspondance (ville
+                // intermédiaire), pas d'une constante globale.
+                $required = $this->delays->resolve($routeA->destination_city_id, $minConnectionMinutes);
+
+                if ($connectionMinutes < $required) {
                     continue;
                 }
 

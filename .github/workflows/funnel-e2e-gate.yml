@@ -81,6 +81,11 @@ jobs:
           E2E_API_URL: ${{ vars.DEV_API_BASE_URL }}
           # #4600/#3452 : le build production échoue sans URL de marque réelle.
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          # #OOM — le serveur Playwright lance `npm run build` : sans marge, la
+          # phase TypeScript est tuée (exit 137) et le gate échoue sur une panne
+          # d'infrastructure, pas sur une régression. Même valeur que
+          # `lighthouse.yml` / `web-marketing-ci.yml`.
+          NODE_OPTIONS: --max-old-space-size=6144
           PLAYWRIGHT_WEB_SERVER_COMMAND: npm run build && npm run start
         # conversion-funnel.spec.ts est volontairement HORS gate : 2 de ses
         # cas dépendent du backend réel (soumission non mockée) et échouent

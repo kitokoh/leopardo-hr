@@ -8,7 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Modules\TravelAgency\Domain\Models\TravelHotelBooking;
 use App\Modules\TravelAgency\Domain\Models\TravelHotelRoom;
 use App\Modules\TravelAgency\Domain\Models\TravelHotelRoomInventory;
-use Illuminate\Database\ConnectionInterface;
+use Illuminate\Database\DatabaseManager;
 use Illuminate\Support\Carbon;
 
 /**
@@ -29,12 +29,10 @@ use Illuminate\Support\Carbon;
  */
 final class BookHotelRoomAction
 {
-    /**
-     * La connexion est injectée plutôt que lue via la facade `DB` : la couche
-     * Application ne touche pas les facades Laravel (garde #6568).
-     */
+    // #6568 — la facade `DB` est reservee a Interfaces/Infrastructure : la
+    // couche Application depend du gestionnaire de base injecte.
     public function __construct(
-        private readonly ConnectionInterface $db,
+        private readonly DatabaseManager $db,
     ) {}
 
     /**
