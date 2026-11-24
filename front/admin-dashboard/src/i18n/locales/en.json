@@ -5721,7 +5721,10 @@
       "availableUntil": "Available until",
       "ownerCarrier": "Owner carrier",
       "title": "Title",
-      "vehicle": "Vehicle"
+      "vehicle": "Vehicle",
+      "minConnectionMinutes": "Min. connection",
+      "minConnectionInherited": "Agency default",
+      "minConnectionHint": "15 to 240 minutes. Empty = agency default."
     },
     "action": {
       "create": "Create",

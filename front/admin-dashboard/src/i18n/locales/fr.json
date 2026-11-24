@@ -5721,7 +5721,10 @@
       "availableUntil": "Disponible au",
       "ownerCarrier": "Compagnie propriétaire",
       "title": "Intitulé",
-      "vehicle": "Véhicule"
+      "vehicle": "Véhicule",
+      "minConnectionMinutes": "Correspondance min.",
+      "minConnectionInherited": "Défaut agence",
+      "minConnectionHint": "15 à 240 minutes. Vide = défaut de l’agence."
     },
     "action": {
       "create": "Créer",

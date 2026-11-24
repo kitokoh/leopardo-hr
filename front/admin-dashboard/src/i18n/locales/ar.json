@@ -5721,7 +5721,10 @@
       "availableUntil": "متاح حتى",
       "ownerCarrier": "الشركة المالكة",
       "title": "العنوان",
-      "vehicle": "المركبة"
+      "vehicle": "المركبة",
+      "minConnectionMinutes": "الحد الأدنى للتحويل",
+      "minConnectionInherited": "الافتراضي للوكالة",
+      "minConnectionHint": "من 15 إلى 240 دقيقة. فارغ = الافتراضي للوكالة."
     },
     "action": {
       "create": "إنشاء",
