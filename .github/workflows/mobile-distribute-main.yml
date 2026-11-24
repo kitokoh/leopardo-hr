@@ -24,7 +24,7 @@ on:
   workflow_dispatch:
     inputs:
       app:
-        description: 'App to distribute (employee|manager|platform_admin|hr|all)'
+        description: 'App to distribute (employee|manager|platform_admin|hr|accounting|marketing|travel_agent|cameras|public|pos_retail|pos_restaurant|all)'
         required: false
         default: 'all'
         type: string
@@ -99,6 +99,48 @@ jobs:
             version_prefix: accounting
             firebase_secret: FIREBASE_ACCOUNTING_ANDROID_APP_ID
             android_package: com.leopardo.accounting
+          # #9883 — six apps existaient sur disque, etaient analysees et testees
+          # par `mobile-apps-ci.yml`, mais n'etaient dans AUCUNE matrice de
+          # distribution : aucun APK n'etait donc jamais construit pour elles.
+          # Le defaut etait invisible parce que chaque app est analysee
+          # ISOLEMENT : rien ne comparait la liste des apps du disque a celle
+          # des matrices. `check-mobile-app-identities.sh` le compare desormais.
+          - name: marketing
+            project_path: front/mobile_apps/leopardo_marketing
+            artifact_name: leopardo-marketing-staging
+            version_prefix: marketing
+            firebase_secret: FIREBASE_MARKETING_ANDROID_APP_ID
+            android_package: com.leopardo.marketing
+          - name: travel_agent
+            project_path: front/mobile_apps/leopardo_travel_agent
+            artifact_name: leopardo-travel-agent-staging
+            version_prefix: travel-agent
+            firebase_secret: FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID
+            android_package: com.leopardo.travel_agent
+          - name: cameras
+            project_path: front/mobile_apps/leopardo_cameras
+            artifact_name: leopardo-cameras-staging
+            version_prefix: cameras
+            firebase_secret: FIREBASE_CAMERAS_ANDROID_APP_ID
+            android_package: com.leopardo.cameras
+          - name: public
+            project_path: front/mobile_apps/leopardo_public
+            artifact_name: leopardo-public-staging
+            version_prefix: public
+            firebase_secret: FIREBASE_PUBLIC_ANDROID_APP_ID
+            android_package: com.leopardo.publicapp
+          - name: pos_retail
+            project_path: front/mobile_apps/leopardo_pos_retail
+            artifact_name: leopardo-pos-retail-staging
+            version_prefix: pos-retail
+            firebase_secret: FIREBASE_POS_RETAIL_ANDROID_APP_ID
+            android_package: com.leopardo.posretail
+          - name: pos_restaurant
+            project_path: front/mobile_apps/leopardo_pos_restaurant
+            artifact_name: leopardo-pos-restaurant-staging
+            version_prefix: pos-restaurant
+            firebase_secret: FIREBASE_POS_RESTAURANT_ANDROID_APP_ID
+            android_package: com.leopardo.posrestaurant
             # #9492 — l'app Android `com.leopardo.accounting` n'est PAS encore
             # enregistrée dans le projet Firebase qui sert les quatre autres
             # apps : le `google-services.json` restauré depuis le secret
@@ -141,7 +183,14 @@ jobs:
         # actions/excessive-secrets-exposure: static ternary — only one literal
         # `secrets.NAME` reference is evaluated per matrix entry. No dynamic indexing.
         env:
-          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID }}
+          # #9883 — plus de repli generique : chaque app a sa branche, et une chaine
+          # vide fait SAUTER la distribution (avertissement) au lieu d'emprunter
+          # l'identifiant Firebase d'une AUTRE app. Seule exception, mesuree le
+          # 2026-11-24 : `hr` n'a PAS de secret dedie (`FIREBASE_APP_ID_HR` est
+          # absent de `gh secret list`) et son identite Firebase EST le secret
+          # historique `FIREBASE_APP_ID` (com.leopardo.rh) — son repli est donc
+          # explicite et borne, sinon le supprimer arreterait un canal vivant.
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && (secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID) || matrix.app.name == 'accounting' && secrets.FIREBASE_ACCOUNTING_ANDROID_APP_ID || matrix.app.name == 'marketing' && secrets.FIREBASE_MARKETING_ANDROID_APP_ID || matrix.app.name == 'travel_agent' && secrets.FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID || matrix.app.name == 'cameras' && secrets.FIREBASE_CAMERAS_ANDROID_APP_ID || matrix.app.name == 'public' && secrets.FIREBASE_PUBLIC_ANDROID_APP_ID || matrix.app.name == 'pos_retail' && secrets.FIREBASE_POS_RETAIL_ANDROID_APP_ID || matrix.app.name == 'pos_restaurant' && secrets.FIREBASE_POS_RESTAURANT_ANDROID_APP_ID || '' }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
           PROJECT_PATH: ${{ matrix.app.project_path }}
@@ -246,7 +295,9 @@ jobs:
         if: env.MOBILE_DISTRIBUTE_READY == 'true' && env.SHOULD_BUILD == 'true'
         uses: wzieba/Firebase-Distribution-Github-Action@bd494989dd4bec0343f78adee87fe66e48279ad6 # v1.7.1
         with:
-          appId: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID }}
+          # #9883 — meme ternaire que l'etape de validation : l'app id VERIFIE
+          # et l'app id utilise pour l'upload ne peuvent pas diverger.
+          appId: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && (secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID) || matrix.app.name == 'accounting' && secrets.FIREBASE_ACCOUNTING_ANDROID_APP_ID || matrix.app.name == 'marketing' && secrets.FIREBASE_MARKETING_ANDROID_APP_ID || matrix.app.name == 'travel_agent' && secrets.FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID || matrix.app.name == 'cameras' && secrets.FIREBASE_CAMERAS_ANDROID_APP_ID || matrix.app.name == 'public' && secrets.FIREBASE_PUBLIC_ANDROID_APP_ID || matrix.app.name == 'pos_retail' && secrets.FIREBASE_POS_RETAIL_ANDROID_APP_ID || matrix.app.name == 'pos_restaurant' && secrets.FIREBASE_POS_RESTAURANT_ANDROID_APP_ID || '' }}
           token: ${{ secrets.FIREBASE_TOKEN }}
           groups: testeurs-internes
           file: ${{ matrix.app.project_path }}/build/app/outputs/flutter-apk/app-release.apk
@@ -261,7 +312,7 @@ jobs:
         if: env.MOBILE_DISTRIBUTE_READY == 'true' && env.SHOULD_BUILD == 'true'
         shell: bash
         env:
-          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID }}
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && (secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID) || matrix.app.name == 'accounting' && secrets.FIREBASE_ACCOUNTING_ANDROID_APP_ID || matrix.app.name == 'marketing' && secrets.FIREBASE_MARKETING_ANDROID_APP_ID || matrix.app.name == 'travel_agent' && secrets.FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID || matrix.app.name == 'cameras' && secrets.FIREBASE_CAMERAS_ANDROID_APP_ID || matrix.app.name == 'public' && secrets.FIREBASE_PUBLIC_ANDROID_APP_ID || matrix.app.name == 'pos_retail' && secrets.FIREBASE_POS_RETAIL_ANDROID_APP_ID || matrix.app.name == 'pos_restaurant' && secrets.FIREBASE_POS_RESTAURANT_ANDROID_APP_ID || '' }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           FIREBASE_READBACK_REQUIRED: ${{ secrets.FIREBASE_READBACK_REQUIRED }}

@@ -38,6 +38,11 @@ on:
       - 'front/mobile_apps/**'
       - 'dev-hub/tools/check-mobile-layer-guard.sh'
       - 'dev-hub/tools/mobile-layer-registry.txt'
+      - 'dev-hub/tools/check-mobile-app-identities.sh'
+      - 'dev-hub/tools/mobile-platform-registry.txt'
+      - '.github/workflows/mobile-apps-ci.yml'
+      - '.github/workflows/mobile-distribute.yml'
+      - '.github/workflows/mobile-distribute-main.yml'
       - '.github/workflows/mobile-layer-guard.yml'
   push:
     branches: [main]
@@ -45,6 +50,11 @@ on:
       - 'front/mobile_apps/**'
       - 'dev-hub/tools/check-mobile-layer-guard.sh'
       - 'dev-hub/tools/mobile-layer-registry.txt'
+      - 'dev-hub/tools/check-mobile-app-identities.sh'
+      - 'dev-hub/tools/mobile-platform-registry.txt'
+      - '.github/workflows/mobile-apps-ci.yml'
+      - '.github/workflows/mobile-distribute.yml'
+      - '.github/workflows/mobile-distribute-main.yml'
       - '.github/workflows/mobile-layer-guard.yml'
   workflow_dispatch:
 
@@ -72,3 +82,16 @@ jobs:
       - name: Run mobile layer guard
         shell: bash
         run: bash dev-hub/tools/check-mobile-layer-guard.sh --verbose
+
+      # #9883 — garde des IDENTITES. La garde de couche ne regarde que
+      # `lib/features/**/domain/` ; `mobile-apps-ci.yml` analyse chaque app
+      # ISOLEMENT, donc aucune des deux ne peut voir qu'une app porte
+      # l'`applicationId` d'une AUTRE (`leopardo_marketing` declarait
+      # `com.leopardo.accounting`). Ce script compare les apps entre elles.
+      - name: Self-test the identity guard
+        shell: bash
+        run: bash dev-hub/tools/check-mobile-app-identities.sh --self-test
+
+      - name: Run mobile app identity guard
+        shell: bash
+        run: bash dev-hub/tools/check-mobile-app-identities.sh

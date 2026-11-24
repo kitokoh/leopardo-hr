@@ -63,7 +63,7 @@
 | `CLOUDFLARE_ACCOUNT_ID` | `deploy-admin-dashboard.yml` | Compte Cloudflare cible | Required for Cloudflare deploys |
 | `GOOGLE_SERVICES_JSON` | `mobile-distribute*.yml` | `google-services.json` injecté dans les builds Android (employee/manager/hr/platform_admin) | Required for mobile distribution |
 | `VITE_WEBSOCKET_URL` | `deploy-admin-dashboard.yml` | URL WebSocket de l'admin (sans elle, le socket retombe sur `ws://localhost:6001` — #3392) | Optional (fallback) |
-| `FIREBASE_APP_ID` | `mobile-distribute*.yml` | Fallback générique App ID (légacy) — l'app `hr` préfère `FIREBASE_APP_ID_HR` (#4343) | Deprecated, gardé pour compat |
+| `FIREBASE_APP_ID` | `mobile-distribute*.yml` | App id Firebase de `leopardo_hr` (`com.leopardo.rh`) — identité historique, lue en repli **documenté et borné** de `FIREBASE_APP_ID_HR` (#4343, #9883) | **Requis** tant que `FIREBASE_APP_ID_HR` n'existe pas (vérifié le 2026-11-24 : absent des secrets du dépôt). Aucune autre app ne le lit ; le supprimer arrête le canal `hr` |
 | `K6_EMPLOYEE_TOKENS` / `K6_MANAGER_TOKENS` / `K6_PAYROLL_RUN_IDS` | `k6-load-smoke.yml` | Tokens/scénarios k6 des parcours authentifiés | Optional (health-only sans) |
 | `BRANCH_PROTECTION_TOKEN` | `branch-protection-guard.yml` | Lecture de la protection de branche (check cron) | Required for the guard |
 
@@ -91,6 +91,13 @@
 | `FIREBASE_MANAGER_ANDROID_APP_ID` | `deploy-main.yml`, `mobile-distribute.yml` | Firebase Android app id — `leopardo_manager` | Same as above |
 | `FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID` | `deploy-main.yml`, `mobile-distribute.yml` | Firebase Android app id — `leopardo_platform_admin` | Same as above |
 | `FIREBASE_APP_ID_HR` | `mobile-distribute.yml` | Firebase Android app id — `leopardo_hr` | Same as above |
+| `FIREBASE_ACCOUNTING_ANDROID_APP_ID` | `mobile-distribute*.yml` | Firebase Android app id — `leopardo_accounting` (`com.leopardo.accounting`) | À créer (console Firebase) ; sans lui la distribution de `leopardo_accounting` est sautée avec un avertissement (#9883) |
+| `FIREBASE_MARKETING_ANDROID_APP_ID` | `mobile-distribute*.yml` | Firebase Android app id — `leopardo_marketing` (`com.leopardo.marketing`) | À créer (console Firebase) ; sans lui la distribution de `leopardo_marketing` est sautée avec un avertissement (#9883) |
+| `FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID` | `mobile-distribute*.yml` | Firebase Android app id — `leopardo_travel_agent` (`com.leopardo.travel_agent`) | À créer (console Firebase) ; sans lui la distribution de `leopardo_travel_agent` est sautée avec un avertissement (#9883) |
+| `FIREBASE_CAMERAS_ANDROID_APP_ID` | `mobile-distribute*.yml` | Firebase Android app id — `leopardo_cameras` (`com.leopardo.cameras`) | À créer (console Firebase) ; sans lui la distribution de `leopardo_cameras` est sautée avec un avertissement (#9883) |
+| `FIREBASE_PUBLIC_ANDROID_APP_ID` | `mobile-distribute*.yml` | Firebase Android app id — `leopardo_public` (`com.leopardo.publicapp`) | À créer (console Firebase) ; sans lui la distribution de `leopardo_public` est sautée avec un avertissement (#9883) |
+| `FIREBASE_POS_RETAIL_ANDROID_APP_ID` | `mobile-distribute*.yml` | Firebase Android app id — `leopardo_pos_retail` (`com.leopardo.posretail`) | À créer (console Firebase) ; sans lui la distribution de `leopardo_pos_retail` est sautée avec un avertissement (#9883) |
+| `FIREBASE_POS_RESTAURANT_ANDROID_APP_ID` | `mobile-distribute*.yml` | Firebase Android app id — `leopardo_pos_restaurant` (`com.leopardo.posrestaurant`) | À créer (console Firebase) ; sans lui la distribution de `leopardo_pos_restaurant` est sautée avec un avertissement (#9883) |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | `deploy-main.yml`, `mobile-distribute.yml` | Service-account JSON for the post-upload Firebase readback verification step | Optional (falls back to `FIREBASE_TOKEN` readback, or skips with a warning) |
 | `FIREBASE_READBACK_REQUIRED` | `deploy-main.yml`, `mobile-distribute.yml` | `"true"` makes the Firebase readback verification step hard-fail instead of warn | Optional, defaults to non-strict |
 | `AWS_ACCESS_KEY_ID` | `database-backup.yml` | S3 backup upload credentials | Required for backups |
