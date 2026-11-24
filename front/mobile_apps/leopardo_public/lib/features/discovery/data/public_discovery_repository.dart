@@ -154,27 +154,56 @@ class PublicDiscoveryRepository {
     }
   }
 
-  PublicApiFailure _classify(int? status, Object cause) {
-    if (status == null) {
-      // Pas de status : la requête n'a jamais abouti (réseau, DNS, TLS).
-      return PublicApiFailure(
-        PublicFailureKind.network,
-        message: cause.toString(),
-      );
-    }
-    if (status == 404) {
-      return PublicApiFailure(PublicFailureKind.notFound, statusCode: status);
-    }
-    if (status == 408 || status == 504) {
-      return PublicApiFailure(PublicFailureKind.timeout, statusCode: status);
-    }
-    if (status >= 500) {
-      return PublicApiFailure(PublicFailureKind.server, statusCode: status);
-    }
+  PublicApiFailure _classify(int? status, Object cause) =>
+      classifyPublicFailure(status, cause);
+}
+
+/// Classe une erreur d'un appel public en [PublicApiFailure].
+///
+/// ## Une seule classification pour toute la surface publique
+///
+/// Découverte, fiche et parcours transactionnels doivent distinguer les mêmes
+/// cas : « hors ligne, voici le cache » n'est pas « le service est en panne »,
+/// et un 404 n'est **pas** une panne. Trois copies de cette table finiraient
+/// par diverger — et la première divergence afficherait « erreur » sur un
+/// commerce qui a simplement fermé.
+///
+/// Le message d'un 4xx métier est repris du corps quand le serveur en fournit
+/// un (`{message: …}`) : c'est ce qui rend « la quantité dépasse le stock »
+/// lisible au lieu d'un « erreur réseau » trompeur.
+PublicApiFailure classifyPublicFailure(int? status, Object cause) {
+  if (status == null) {
+    // Pas de status : la requête n'a jamais abouti (réseau, DNS, TLS).
     return PublicApiFailure(
-      PublicFailureKind.invalidRequest,
-      statusCode: status,
+      PublicFailureKind.network,
       message: cause.toString(),
     );
   }
+  if (status == 404) {
+    return PublicApiFailure(PublicFailureKind.notFound, statusCode: status);
+  }
+  if (status == 408 || status == 504) {
+    return PublicApiFailure(PublicFailureKind.timeout, statusCode: status);
+  }
+  if (status >= 500) {
+    return PublicApiFailure(PublicFailureKind.server, statusCode: status);
+  }
+  return PublicApiFailure(
+    PublicFailureKind.invalidRequest,
+    statusCode: status,
+    message: _publicErrorMessage(cause),
+  );
+}
+
+String _publicErrorMessage(Object cause) {
+  if (cause is DioException) {
+    final data = cause.response?.data;
+    if (data is Map) {
+      final message = data['message'];
+      if (message is String && message.trim().isNotEmpty) {
+        return message.trim();
+      }
+    }
+  }
+  return cause.toString();
 }
