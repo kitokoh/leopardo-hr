@@ -179,6 +179,24 @@ class AppStrings {
       'favoritesUnavailable': 'Ce commerce n’est plus disponible',
       'searchHistoryTitle': 'Recherches récentes',
       'searchHistoryClear': 'Effacer l’historique',
+
+      // Parcours transactionnels par verticale (#9907) — le motif affiché
+      // quand l'app ne peut pas mener la transaction elle-même.
+      'journeyReasonRestaurantOrder':
+          'La commande en ligne n’est pas encore ouverte au grand public. Envoyez votre demande : le restaurant vous répond.',
+      'journeyReasonTradeQuote':
+          'Le devis détaillé se prépare avec l’entreprise. Envoyez votre demande, elle revient avec une proposition.',
+      'journeyReasonVtcRide':
+          'Réserver une course demande de choisir une adresse de départ et d’arrivée. Envoyez votre demande, l’opérateur vous rappelle.',
+      'journeyReasonTravelPortal':
+          'Les billets ne sont pas encore accessibles depuis cette application.',
+      'journeyReasonPharmacyCatalog':
+          'Le catalogue des pharmacies n’est pas encore publié.',
+      'journeyReasonCareersPortal':
+          'Les offres d’emploi ne sont pas encore accessibles depuis cette application.',
+      'journeyRequestCta': 'Envoyer une demande',
+      'journeyNativeCta': 'Commander',
+      'journeyBlockedTitle': 'Pas encore disponible',
     },
 
     // ───────────────────────────── EN ─────────────────────────────
@@ -281,6 +299,23 @@ class AppStrings {
       'favoritesUnavailable': 'This business is no longer available',
       'searchHistoryTitle': 'Recent searches',
       'searchHistoryClear': 'Clear history',
+
+      // Per-vertical transactional journeys (#9907).
+      'journeyReasonRestaurantOrder':
+          'Online ordering is not open to the public yet. Send a request and the restaurant will reply.',
+      'journeyReasonTradeQuote':
+          'A detailed quote is prepared with the company. Send a request and they will come back with an offer.',
+      'journeyReasonVtcRide':
+          'Booking a ride needs a pickup and a drop-off address. Send a request and the operator will call you back.',
+      'journeyReasonTravelPortal':
+          'Tickets are not reachable from this app yet.',
+      'journeyReasonPharmacyCatalog':
+          'The pharmacy catalogue is not published yet.',
+      'journeyReasonCareersPortal':
+          'Job offers are not reachable from this app yet.',
+      'journeyRequestCta': 'Send a request',
+      'journeyNativeCta': 'Order',
+      'journeyBlockedTitle': 'Not available yet',
     },
 
     // ───────────────────────────── AR (RTL) ─────────────────────────────
@@ -382,6 +417,23 @@ class AppStrings {
       'favoritesUnavailable': 'هذا المتجر لم يعد متاحًا',
       'searchHistoryTitle': 'عمليات البحث الأخيرة',
       'searchHistoryClear': 'مسح السجل',
+
+      // مسارات المعاملات لكل قطاع (#9907).
+      'journeyReasonRestaurantOrder':
+          'الطلب عبر الإنترنت غير متاح للعموم بعد. أرسل طلبك وسيرد عليك المطعم.',
+      'journeyReasonTradeQuote':
+          'يُعدّ عرض السعر المفصل مع الشركة. أرسل طلبك وستعود إليك بعرض.',
+      'journeyReasonVtcRide':
+          'حجز رحلة يتطلب عنوان الانطلاق والوصول. أرسل طلبك وسيتصل بك المشغّل.',
+      'journeyReasonTravelPortal':
+          'التذاكر غير متاحة من هذا التطبيق بعد.',
+      'journeyReasonPharmacyCatalog':
+          'دليل الصيدليات لم يُنشر بعد.',
+      'journeyReasonCareersPortal':
+          'عروض العمل غير متاحة من هذا التطبيق بعد.',
+      'journeyRequestCta': 'أرسل طلبًا',
+      'journeyNativeCta': 'اطلب',
+      'journeyBlockedTitle': 'غير متاح بعد',
     },
 
     // ───────────────────────────── TR ─────────────────────────────
@@ -484,6 +536,23 @@ class AppStrings {
       'favoritesUnavailable': 'Bu işletme artık mevcut değil',
       'searchHistoryTitle': 'Son aramalar',
       'searchHistoryClear': 'Geçmişi temizle',
+
+      // Dikey başına işlem akışları (#9907).
+      'journeyReasonRestaurantOrder':
+          'Çevrimiçi sipariş henüz herkese açık değil. Talebinizi gönderin, restoran size dönsün.',
+      'journeyReasonTradeQuote':
+          'Ayrıntılı teklif şirketle birlikte hazırlanır. Talebinizi gönderin, size bir öneriyle dönsünler.',
+      'journeyReasonVtcRide':
+          'Yolculuk rezervasyonu kalkış ve varış adresi gerektirir. Talebinizi gönderin, operatör sizi arasın.',
+      'journeyReasonTravelPortal':
+          'Biletlere bu uygulamadan henüz ulaşılamıyor.',
+      'journeyReasonPharmacyCatalog':
+          'Eczane kataloğu henüz yayımlanmadı.',
+      'journeyReasonCareersPortal':
+          'İş ilanlarına bu uygulamadan henüz ulaşılamıyor.',
+      'journeyRequestCta': 'Talep gönder',
+      'journeyNativeCta': 'Sipariş ver',
+      'journeyBlockedTitle': 'Henüz kullanılamıyor',
     },
   };
 }
