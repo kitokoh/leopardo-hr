@@ -328,7 +328,7 @@ class AppServiceProvider extends ServiceProvider
                 }
 
                 try {
-                    return app(AccountStatusGuard::class)->tokenIsUsable($token);
+                    return app(AccountStatusGuard::class)->tokenIsUsableForRequest($token);
                 } catch (\Throwable $e) {
                     Log::channel('structured')->error('auth.token_check_failed', [
                         'token_id' => $token->id,
