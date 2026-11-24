@@ -28,8 +28,10 @@ desormais les seules applications mobiles actives.
 
 ## CI et distribution
 
-- `Mobile Apps CI - Flutter` (`mobile-apps-ci.yml`) valide les 10 packages : `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_platform_admin`, `leopardo_travel_agent`, `leopardo_cameras` et `leopardo_public`.
-- `Mobile - Build and Firebase Distribution` (`mobile-distribute.yml`) compile et distribue les APK Android de lancement vers Firebase App Distribution.
+- `Mobile Apps CI - Flutter` (`mobile-apps-ci.yml`) analyse et teste les **12** packages : `leopardo_core`, `leopardo_employee`, `leopardo_manager`, `leopardo_hr`, `leopardo_marketing`, `leopardo_accounting`, `leopardo_platform_admin`, `leopardo_travel_agent`, `leopardo_cameras`, `leopardo_public`, `leopardo_pos_retail` et `leopardo_pos_restaurant`.
+- `Mobile - Build and Firebase Distribution` (`mobile-distribute.yml`) et `Mobile Distribute - Main` (`mobile-distribute-main.yml`) compilent et distribuent les APK Android vers Firebase App Distribution — **les 11 apps** sont dans les deux matrices (#9883 : six d'entre elles n'y figuraient pas, donc aucun APK n'était jamais produit).
+
+La carte persona → app → état mesuré est dans `docs/mobile/CARTOGRAPHIE_APPS_MOBILES.md`.
 
 ## Garde-fous Plan 26
 
@@ -56,7 +58,10 @@ Il verifie notamment :
 - routes manager preparees dans `leopardo_manager` ;
 - identites App Store / Play Store distinctes pour `leopardo_employee`, `leopardo_manager` et `leopardo_hr` ;
 - endpoints et routes critiques presents pour les workflows mobiles principaux ;
-- absence de handlers UI vides sur les apps mobiles.
+- absence de handlers UI vides sur les apps mobiles ;
+- identifiants d'app uniques, identiques Android/iOS, et présence de chaque app dans
+  les registres (couche, plateformes) et dans les matrices CI (analyse + distribution) —
+  `dev-hub/tools/check-mobile-app-identities.sh`.
 
 Si une evolution partagee est necessaire, la placer dans `leopardo_core`, puis consommer cette API depuis les apps concernees. Si une evolution ne concerne qu'un persona, la placer uniquement dans l'app correspondante (`leopardo_employee`, `leopardo_manager` ou `leopardo_hr`).
 
@@ -69,12 +74,24 @@ Si une evolution partagee est necessaire, la placer dans `leopardo_core`, puis c
 
 ## Identites store
 
-| App | Android applicationId | iOS bundle id | Nom visible |
-|---|---|---|---|
-| `leopardo_employee` | `com.leopardo.employee` | `com.leopardo.employee` | Leopardo Employee |
-| `leopardo_manager` | `com.leopardo.manager` | `com.leopardo.manager` | Leopardo Manager |
-| `leopardo_hr` | `com.leopardo.rh` | `com.leopardo.rh` | Leopardo RH |
-| `leopardo_platform_admin` | `com.leopardo.platformadmin` | `com.leopardo.platformadmin` | Leopardo Platform Admin |
+| App | Android applicationId | iOS bundle id | Plateformes | Nom visible |
+|---|---|---|---|---|
+| `leopardo_public` | `com.leopardo.publicapp` | `com.leopardo.publicapp` | Android + iOS | Leopardo |
+| `leopardo_employee` | `com.leopardo.employee` | `com.leopardo.employee` | Android + iOS | Leopardo Employee |
+| `leopardo_manager` | `com.leopardo.manager` | `com.leopardo.manager` | Android + iOS | Leopardo Manager |
+| `leopardo_hr` | `com.leopardo.rh` | `com.leopardo.rh` | Android + iOS | Leopardo RH |
+| `leopardo_accounting` | `com.leopardo.accounting` | `com.leopardo.accounting` | Android + iOS | Leopardo Comptabilité |
+| `leopardo_marketing` | `com.leopardo.marketing` | `com.leopardo.marketing` | Android + iOS | Leopardo Marketing |
+| `leopardo_platform_admin` | `com.leopardo.platformadmin` | `com.leopardo.platformadmin` | Android + iOS | Leopardo Platform Admin |
+| `leopardo_travel_agent` | `com.leopardo.travel_agent` | — | Android | Leopardo Travel Agent |
+| `leopardo_cameras` | `com.leopardo.cameras` | — | Android | Leopardo Caméras |
+| `leopardo_pos_retail` | `com.leopardo.posretail` | `com.leopardo.posretail` | Android + iOS | Leopardo POS Retail |
+| `leopardo_pos_restaurant` | `com.leopardo.posrestaurant` | `com.leopardo.posrestaurant` | Android + iOS | Leopardo POS Restaurant |
+
+Les identifiants sont **uniques et opposables** : `android` et `ios` d'une même app
+sont identiques, et aucun identifiant n'est partagé entre deux apps. Le registre des
+plateformes est `dev-hub/tools/mobile-platform-registry.txt` ; la vérification est
+`dev-hub/tools/check-mobile-app-identities.sh` (#9883).
 
 ## Branding natif
 

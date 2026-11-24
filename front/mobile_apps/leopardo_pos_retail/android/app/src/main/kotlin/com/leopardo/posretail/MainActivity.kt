@@ -1,4 +1,4 @@
-package com.leopardo.leopardo_pos_retail
+package com.leopardo.posretail
 
 import io.flutter.embedding.android.FlutterActivity
 

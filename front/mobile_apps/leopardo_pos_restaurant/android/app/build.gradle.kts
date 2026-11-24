@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.leopardo.leopardo_pos_restaurant"
+    namespace = "com.leopardo.posrestaurant"
     // compileSdk = 37 (et non flutter.compileSdkVersion, encore à 36) : les AAR
     // de flutter_local_notifications 23 et androidx.core 1.19 déclarent
     // `minCompileSdk 37`, et :app:checkDebugAarMetadata refuse de compiler sinon.
@@ -24,7 +24,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.leopardo.leopardo_pos_restaurant"
+        applicationId = "com.leopardo.posrestaurant"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         // #9471 — sentry_flutter exige minSdk 26 : le defaut Flutter (24) fait
