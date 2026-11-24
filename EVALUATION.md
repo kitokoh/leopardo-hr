@@ -489,6 +489,101 @@ comportement métier.
 
 ---
 
+## Recette v7 — 24/11/2026
+
+Deux chantiers : documenter les **78 dernières routes** non couvertes et corriger
+les **2 échecs préexistants** de `CrmOpportunityStageTest`. `git pull` fait avant
+de commencer ; branche `eval/leopardo-hr-recette-2026-11-23` à jour.
+
+### 1 · OpenAPI — 2 607 / 2 607 routes (100 %)
+
+Les 78 routes restantes couvraient **sept familles** aux mécanismes
+d'authentification **différents** — c'est ce qui les avait laissées de côté. Un
+générateur naïf les aurait toutes marquées `BearerAuth`, ce qui aurait été faux
+pour la moitié.
+
+| Famille | Routes | Authentification réelle |
+|---|---|---|
+| Boutiques publiques (`/public/travel/shop/*`, `/public/restaurant/shop/*`, `/public/restaurant/kiosk/*`, `/public/vitrine/*`, `/solutions/*`) | ~20 | `security: []` — tenant résolu par **jeton de boutique signé** ou slug |
+| Webhooks entrants (callbacks paiement travel/restaurant, `carrier-sync`, `delivery-apps`) | 4 | `security: []` + **signature HMAC** vérifiée dans le contrôleur, fail-closed. Le 4xx documenté est le **401 de signature** |
+| Console plateforme (`/platform/*`, `/admin/*`) | ~30 | `SuperAdminBearerAuth` + `platform.mfa` + `platform.permission:*` |
+| Connecteurs tenant (`/connectors/*`) | 8 | `BearerAuth` — secrets **write-only** |
+| RH (permissions verticales, enrôlement kiosque) | 7 | `BearerAuth` |
+| Vitrine, solutions, marketing IA, demandes d'intégration | 9 | `BearerAuth` |
+
+Générateur : `scripts/doc_remaining_openapi.py`, qui **réutilise le parseur de la
+garde CI** comme source unique de vérité.
+
+**Trois pièges rencontrés, tous corrigés dans le générateur :**
+
+| Piège | Symptôme | Correctif |
+|---|---|---|
+| `description` dans le **Media Type Object** | 31 erreurs Redocly « Property `description` is not expected here » | En OpenAPI 3.0 un Media Type n'accepte que `schema`/`example`/`examples`/`encoding` — la description va dans le **Schema Object** |
+| Chemins déjà documentés sous une **autre forme de paramètre** (`{type}/{id}` vs `{param}/{param}`) | « path already exists which differs only by path parameter name(s) » | Comparaison sur le chemin **normalisé**, comme la garde CI |
+| Spec portant encore **107 chemins en forme legacy `/v1/…`** | `operationId` dupliqué sur `/v1/audit-logs/export` vs `/audit-logs/export` | Préfixe `/v1` retiré à la normalisation |
+
+| Indicateur | Avant | Après |
+|---|---|---|
+| Opérations documentées | 2 563 | **2 641** |
+| Routes couvertes | 2 529 / 2 607 (97 %) | **2 607 / 2 607 (100 %)** |
+| `api.php` non couvertes | 53 | **0** |
+| `connectors` non couvertes | 8 | **0** |
+| Garde `--strict-staleness` | exit 1 | **exit 0** |
+| Allowlist : couverture / orphelines | 60 / 113 | **0 / 0** (173 purgées) |
+| Redocly | 4 erreurs / 75 warnings | **4 / 75 — inchangé** |
+
+Redocly vérifié par **diff des listes de problèmes avant/après** : aucun nouveau.
+Le seul écart est l'**index** d'un tag dupliqué préexistant (`Pages` déclaré deux
+fois), qui se décale quand des tags sont ajoutés ; le compte reste identique.
+
+`test_openapi_route_coverage_orphans.py` exigeait un gel **non vide** — solder la
+dette d'orphelines transformait donc le succès en échec. Le test tolère désormais
+un gel vide et vérifie la règle générale à la place.
+
+### 2 · CRM — les 2 échecs préexistants
+
+Deux défauts **distincts**, chacun couvert par un test qui existait déjà.
+
+| Test | Attendu | Observé | Cause racine |
+|---|---|---|---|
+| `test_reason_on_a_won_deal_is_refused` | 422 | **200** | `TransitionOpportunityStageRequest` n'avait que `required_if:stage,lost` — **aucune règle n'interdisait** une `lost_reason` sur une affaire gagnée. Le champ était accepté puis écrit dans `notes` |
+| `test_the_previous_stage_is_journaled_in_notes_and_timeline` | « prospecting → proposal » | « prospecting -> proposal » | `TransitionOpportunityStageAction` écrivait la flèche en **ASCII** (`->`) alors que la timeline et les exports lisent **U+2192** (`→`) |
+
+**Correctifs :**
+
+- `prohibited_unless:stage,lost` ajouté à `lost_reason`, avec message dédié FR/EN.
+  Une raison de perte sur une affaire gagnée laisse croire qu'elle a échoué.
+- La flèche `→` est utilisée dans `notes` **et** dans la `CrmActivity` : les deux
+  représentaient le même événement avec deux glyphes différents.
+
+### 3 · Non-régression
+
+| Suite | Résultat | Assertions |
+|---|---|---|
+| `CrmOpportunityStageTest` | **14 / 14** | 39 |
+| `tests/Feature/CRM` + `tests/Feature/Connectors` | **316 / 316** | 1 133 |
+| `tests/Feature/Restaurant` + `tests/Feature/HR` | **582 / 582** | 2 415 |
+| **Total périmètre touché** | **912 / 912** | **3 587** |
+
+**Pint :** PASS sur les 4 fichiers PHP modifiés. **Garde OpenAPI :**
+`--strict-staleness` exit 0.
+
+### Bilan v7
+
+Le contrat OpenAPI est **complet** : 2 607 routes sur 2 607, avec pour chaque
+famille le mécanisme d'authentification **réellement** appliqué — y compris les
+surfaces publiques et les webhooks signés, qui n'ont aucun token. Les deux
+allowlists sont vides : plus aucune dette gelée.
+
+Les 2 échecs de `CrmOpportunityStageTest` sont corrigés **à la source** : une
+validation manquante et un glyphe incohérent.
+
+**Note de la couverture OpenAPI : 4,8 → 5,0 / 5.** **Note du module CRM :
+4,5 → 4,8 / 5.** **Note de la verticale restaurant : 4,8 / 5 (inchangée)** — ce
+tour ne touche pas au comportement métier restaurant. **Note globale : 4,9 / 5.**
+
+---
+
 *Tests réalisés sur une instance locale réelle (PHP 8.4 · PostgreSQL 15 +
 PostGIS · Redis 7). Les notes reflètent les résultats observés sur cette
 instance ; elles ne couvrent pas les applications mobiles Flutter ni les fronts
