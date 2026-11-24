@@ -392,6 +392,312 @@ profils humains par conception (jeton d'appareil).
 
 ---
 
+## Recette v6 — bootstrap de test et fin de la couverture OpenAPI
+
+Trois chantiers : réparer le bootstrap de test (table `connector_catalog`
+absente), puis documenter les 62 routes `crm` et les 155 routes
+`restaurantmanager` restantes. Un `git pull` a été fait avant de commencer.
+
+### 1 · Bootstrap de test — la garde était périmée par construction
+
+**Reproduction :** `tests/Feature/Connectors` → **26 échecs / 10 succès**, tous
+en `SQLSTATE[42P01] relation "connector_catalog" does not exist`.
+
+**Cause racine :** `RefreshTenantDatabase::canonicalSchemaReady()` décidait s'il
+fallait re-migrer en vérifiant une **liste de tables sentinelles codée en dur**.
+Cette liste a dû être étendue trois fois (#5201 `employees`, #6754
+`training_enrollments`, #9115 `biometric_enrollments`) — et elle a encore manqué
+`connector_catalog` et `connector_connections`, ajoutées après. Une base migrée
+*avant* ces migrations passait la garde, la re-migration était sautée, et le
+premier test qui touchait la table mourait en 42P01, cassant la transaction et
+faisant cascader les suivants en 25P02.
+
+**Correctif :** la garde n'énumère plus de tables, elle **interroge le
+migrateur** — `getMigrationFiles()` contre `getRan()` — sur les deux dépôts
+(`public` et `tenant`), avec le bon `search_path` pour chacun. C'est la seule
+définition qui ne se périme jamais : toute migration future est couverte sans
+retoucher ce fichier. En cas d'erreur, la méthode répond « pas prêt » — on
+re-migre, on ne saute pas.
+
+| Indicateur | Avant | Après |
+|---|---|---|
+| `tests/Feature/Connectors` | 10 / 36 | **36 / 36** (144 assertions) |
+| Durée du 2ᵉ run (même base) | — | **4,5 s** — aucune re-migration inutile |
+
+Le second point compte autant que le premier : une garde qui répondrait toujours
+« pas prêt » ferait re-migrer à chaque classe (~87 fichiers), ce qui était
+précisément le problème que #6948 avait corrigé.
+
+### 2 · OpenAPI — `crm` (62) et `restaurantmanager` (155)
+
+Générateur dédié : `scripts/doc_crm_and_restaurant_openapi.py`, qui réutilise le
+parseur de la garde CI. Trois spécificités ont dû être traitées :
+
+| Cas | Traitement |
+|---|---|
+| **Surfaces publiques** — `/public/restaurants/*`, `/restaurant/public/*`, `/restaurant/marketplace/*`, `/crm/webhooks/*` | `security: []` — aucun token Sanctum. Déclarer un BearerAuth aurait été un mensonge |
+| **Bridge d'impression** — `/restaurant/printing/bridge/*` | Nouveau scheme `RestaurantPrintBridge` (`apiKey` en en-tête `X-Restaurant-Print-Bridge-Token`) |
+| **Paramètre de requête** — `GET /restaurant/printing/bridge/jobs` | `branch_id` déclaré en **query obligatoire** (le contrôleur répond 422 sans lui) — le drift identifié en recette v3 |
+
+| Indicateur | Avant | Après |
+|---|---|---|
+| Opérations documentées | 2 346 | **2 563** |
+| Routes couvertes | 2 312 / 2 607 | **2 529 / 2 607** |
+| `crm` non couvertes | 62 | **0** |
+| `restaurantmanager` non couvertes | 155 | **0** |
+| `new_uncovered` (drift) | 18 | 18 — inchangé, préexistantes |
+| `new_param_drift` / `new_reverse_drift` | 0 / 0 | **0 / 0** |
+| Allowlist : orphelines / obsolètes | 113 / 217 | **0 / 0** (437 purgées) |
+
+**Redocly :** 4 erreurs et 31 warnings — **strictement identiques à l'état
+d'avant**. Une première génération avait ajouté 2 warnings
+`operation-4xx-response` sur deux routes publiques GET ; corrigé en déclarant le
+**404 fail-closed** réel de ces surfaces plutôt qu'un 401 qui n'arrive jamais.
+Vérifié par diff des listes de warnings avant/après : aucun nouveau.
+
+### 3 · Non-régression
+
+Périmètre touché (Connectors + Restaurant + CRM + HR) : **896 passés / 2
+échoués** (3 544 assertions) en 122 s.
+
+Les 2 échecs sont dans `CrmOpportunityStageTest` (« reason on a won deal is
+refused », « the previous stage is journaled in notes and timeline »). Ils ont
+été **reproduits à l'identique avec les changements retirés** (`git stash`) :
+ce sont des échecs **préexistants**, sans rapport avec ce chantier. Ils portent
+sur le libellé du journal de changement d'étape (`prospecting → proposal`
+attendu, horodatage reçu) — un défaut de formatage, pas de logique.
+
+**Pint :** PASS sur le fichier modifié.
+
+### Bilan v6
+
+Le bootstrap de test est réparé **à la racine** : la garde ne dépend plus d'une
+liste de tables qui se périme à chaque migration ajoutée. Les 26 échecs
+Connectors sont à zéro, et le mécanisme profite à toute migration future sans
+intervention.
+
+Le contrat OpenAPI couvre désormais **2 529 des 2 607 routes** (97 %). Les deux
+derniers gros modules — `crm` et `restaurantmanager` — sont à 100 %, y compris
+leurs surfaces publiques et le bridge d'impression, avec le bon mécanisme
+d'authentification pour chacune.
+
+**Note de la couverture OpenAPI : 4,5 → 4,8 / 5.** Restent 78 routes non
+couvertes, dont 53 dans `api.php` et 8 dans `connectors` — les 18 « nouvelles »
+sont préexistantes et hors périmètre de ces trois chantiers. **Note de la
+verticale restaurant : 4,8 / 5 (inchangée)** — ce tour ne touche pas au
+comportement métier.
+
+---
+
+## Recette v7 — 24/11/2026
+
+Deux chantiers : documenter les **78 dernières routes** non couvertes et corriger
+les **2 échecs préexistants** de `CrmOpportunityStageTest`. `git pull` fait avant
+de commencer ; branche `eval/leopardo-hr-recette-2026-11-23` à jour.
+
+### 1 · OpenAPI — 2 607 / 2 607 routes (100 %)
+
+Les 78 routes restantes couvraient **sept familles** aux mécanismes
+d'authentification **différents** — c'est ce qui les avait laissées de côté. Un
+générateur naïf les aurait toutes marquées `BearerAuth`, ce qui aurait été faux
+pour la moitié.
+
+| Famille | Routes | Authentification réelle |
+|---|---|---|
+| Boutiques publiques (`/public/travel/shop/*`, `/public/restaurant/shop/*`, `/public/restaurant/kiosk/*`, `/public/vitrine/*`, `/solutions/*`) | ~20 | `security: []` — tenant résolu par **jeton de boutique signé** ou slug |
+| Webhooks entrants (callbacks paiement travel/restaurant, `carrier-sync`, `delivery-apps`) | 4 | `security: []` + **signature HMAC** vérifiée dans le contrôleur, fail-closed. Le 4xx documenté est le **401 de signature** |
+| Console plateforme (`/platform/*`, `/admin/*`) | ~30 | `SuperAdminBearerAuth` + `platform.mfa` + `platform.permission:*` |
+| Connecteurs tenant (`/connectors/*`) | 8 | `BearerAuth` — secrets **write-only** |
+| RH (permissions verticales, enrôlement kiosque) | 7 | `BearerAuth` |
+| Vitrine, solutions, marketing IA, demandes d'intégration | 9 | `BearerAuth` |
+
+Générateur : `scripts/doc_remaining_openapi.py`, qui **réutilise le parseur de la
+garde CI** comme source unique de vérité.
+
+**Trois pièges rencontrés, tous corrigés dans le générateur :**
+
+| Piège | Symptôme | Correctif |
+|---|---|---|
+| `description` dans le **Media Type Object** | 31 erreurs Redocly « Property `description` is not expected here » | En OpenAPI 3.0 un Media Type n'accepte que `schema`/`example`/`examples`/`encoding` — la description va dans le **Schema Object** |
+| Chemins déjà documentés sous une **autre forme de paramètre** (`{type}/{id}` vs `{param}/{param}`) | « path already exists which differs only by path parameter name(s) » | Comparaison sur le chemin **normalisé**, comme la garde CI |
+| Spec portant encore **107 chemins en forme legacy `/v1/…`** | `operationId` dupliqué sur `/v1/audit-logs/export` vs `/audit-logs/export` | Préfixe `/v1` retiré à la normalisation |
+
+| Indicateur | Avant | Après |
+|---|---|---|
+| Opérations documentées | 2 563 | **2 641** |
+| Routes couvertes | 2 529 / 2 607 (97 %) | **2 607 / 2 607 (100 %)** |
+| `api.php` non couvertes | 53 | **0** |
+| `connectors` non couvertes | 8 | **0** |
+| Garde `--strict-staleness` | exit 1 | **exit 0** |
+| Allowlist : couverture / orphelines | 60 / 113 | **0 / 0** (173 purgées) |
+| Redocly | 4 erreurs / 75 warnings | **4 / 75 — inchangé** |
+
+Redocly vérifié par **diff des listes de problèmes avant/après** : aucun nouveau.
+Le seul écart est l'**index** d'un tag dupliqué préexistant (`Pages` déclaré deux
+fois), qui se décale quand des tags sont ajoutés ; le compte reste identique.
+
+`test_openapi_route_coverage_orphans.py` exigeait un gel **non vide** — solder la
+dette d'orphelines transformait donc le succès en échec. Le test tolère désormais
+un gel vide et vérifie la règle générale à la place.
+
+### 2 · CRM — les 2 échecs préexistants
+
+Deux défauts **distincts**, chacun couvert par un test qui existait déjà.
+
+| Test | Attendu | Observé | Cause racine |
+|---|---|---|---|
+| `test_reason_on_a_won_deal_is_refused` | 422 | **200** | `TransitionOpportunityStageRequest` n'avait que `required_if:stage,lost` — **aucune règle n'interdisait** une `lost_reason` sur une affaire gagnée. Le champ était accepté puis écrit dans `notes` |
+| `test_the_previous_stage_is_journaled_in_notes_and_timeline` | « prospecting → proposal » | « prospecting -> proposal » | `TransitionOpportunityStageAction` écrivait la flèche en **ASCII** (`->`) alors que la timeline et les exports lisent **U+2192** (`→`) |
+
+**Correctifs :**
+
+- `prohibited_unless:stage,lost` ajouté à `lost_reason`, avec message dédié FR/EN.
+  Une raison de perte sur une affaire gagnée laisse croire qu'elle a échoué.
+  **⚠️ Remplacé en v8** : cette règle interdisait aussi le champ sur les étapes
+  ouvertes — voir §14.
+- La flèche `→` est utilisée dans `notes` **et** dans la `CrmActivity` : les deux
+  représentaient le même événement avec deux glyphes différents.
+
+### 3 · Non-régression
+
+| Suite | Résultat | Assertions |
+|---|---|---|
+| `CrmOpportunityStageTest` | **14 / 14** | 39 |
+| `tests/Feature/CRM` + `tests/Feature/Connectors` | **316 / 316** | 1 133 |
+| `tests/Feature/Restaurant` + `tests/Feature/HR` | **582 / 582** | 2 415 |
+| **Total périmètre touché** | **912 / 912** | **3 587** |
+
+**Pint :** PASS sur les 4 fichiers PHP modifiés. **Garde OpenAPI :**
+`--strict-staleness` exit 0.
+
+### Bilan v7
+
+Le contrat OpenAPI est **complet** : 2 607 routes sur 2 607, avec pour chaque
+famille le mécanisme d'authentification **réellement** appliqué — y compris les
+surfaces publiques et les webhooks signés, qui n'ont aucun token. Les deux
+allowlists sont vides : plus aucune dette gelée.
+
+Les 2 échecs de `CrmOpportunityStageTest` sont corrigés **à la source** : une
+validation manquante et un glyphe incohérent.
+
+**Note de la couverture OpenAPI : 4,8 → 5,0 / 5.** **Note du module CRM :
+4,5 → 4,8 / 5.** **Note de la verticale restaurant : 4,8 / 5 (inchangée)** — ce
+tour ne touche pas au comportement métier restaurant. **Note globale : 4,9 / 5.**
+
+---
+
+## 14 · Chantiers v8 — vérification en conditions réelles
+
+Trois points restaient ouverts au rapport v7. Le premier s'est révélé plus
+profond que « 4 erreurs à corriger » : c'était un **défaut de forme des chemins**
+qui en masquait d'autres.
+
+### 1 · Les 4 erreurs Redocly — cause racine
+
+Le bloc `servers` de la spec porte déjà `/api/v1`. Un chemin documenté
+`/v1/travel/adverts` désigne donc en réalité `/api/v1/v1/travel/adverts` — une
+URL qui n'existe pas. La garde CI neutralise ce préfixe pour comparer spec et
+routes, ce qui **masquait le problème** ; Redocly, lui, le voyait.
+
+| Défaut | Effet réel | Correctif |
+|---|---|---|
+| **122 chemins** préfixés `/v1` alors que `servers` le porte | URLs doubles dans tout client généré ; `operationId` dupliqués sur 8 opérations | Préfixe retiré, **47 blocs fusionnés** verbe par verbe (variante la plus riche conservée) |
+| `/travel/community/tourist-sites/{site}` | Le contrôleur injecte `TravelTouristSite $travelTouristSite` : la liaison implicite se fait par **nom**. Un `{site}` laissait le modèle vide → **404 sur tout identifiant valide** | Paramètre renommé `{travelTouristSite}`, y compris dans les `parameters:` de niveau chemin |
+| Tag `Pages` déclaré **deux fois** | Documentation scindée en deux entrées | Entrée la plus pauvre retirée |
+| Schéma `AuditLog` devenu inutilisé | Deux schémas concurrents pour la même ressource | `AuditLog` retiré — `AuditLogEntry` est le fidèle |
+
+| Indicateur | Avant | Après |
+|---|---|---|
+| Erreurs Redocly | 12 | **0** |
+| Warnings Redocly | 52 | 51 |
+| Chemins documentés | 2 030 | 1 983 |
+| Opérations documentées | 2 605 | 2 603 |
+| Garde de couverture | 2 607 / 2 607 | **2 607 / 2 607** |
+| `$ref` cassées | 0 | **0** |
+| `operationId` dupliqués | 8 | **0** |
+
+**Vérifié par diff des listes de problèmes avant/après :** aucun nouveau warning.
+Les 2 opérations « perdues » sont le renommage `{site}` → `{travelTouristSite}` —
+mêmes opérations, autre nom de paramètre.
+
+### 2 · Le tag `Pages`
+
+Deux entrées coexistaient : `BC PAGES (#8728/#8729/#8730) — pages d'établissement :
+CRUD et blocs (tenant), modération plateforme, rendu public SSR…` et
+`BC PAGES — Pages par établissement (surface tenant, #8728)`. La seconde est un
+sous-ensemble strict de la première : elle est retirée.
+
+### 3 · La règle `lost_reason` — le test a trouvé un défaut
+
+Le test demandé devait **verrouiller** la règle livrée en v7. Il a surtout montré
+qu'elle était **fausse**.
+
+| Règle v7 | Comportement observé | Règle v8 |
+|---|---|---|
+| `prohibited_unless:stage,lost` | Interdit `lost_reason` dès que `stage ≠ lost` — donc sur **toutes les étapes ouvertes**. Un client renvoyant le formulaire complet avec une raison héritée d'un brouillon recevait un **422 sur `prospecting`** | `prohibited_if:stage,won` — seule étape réellement trompeuse |
+
+La clé de message a suivi (`lost_reason.prohibited_if`) : sans cela, l'utilisateur
+aurait vu la clé brute au lieu du texte traduit.
+
+**Le test** — `CrmOpportunityLostReasonRuleTest`, **7 tests / 19 assertions** —
+vérifie la règle **elle-même**, pas seulement son effet HTTP :
+
+- la règle est bien **déclarée** dans `rules()` (si elle disparaît, le test tombe
+  même si `withValidator()` masquait la régression) ;
+- refus sur `won`, avec le **message traduit** ;
+- le refus est un **422** et **n'écrit rien** en base ;
+- **acceptation** sur `lost` — sinon `required_if` et `prohibited_unless` se
+  contrediraient et il deviendrait impossible de perdre une affaire ;
+- **acceptation** sur les 4 étapes ouvertes ;
+- sans raison sur `lost`, c'est bien `required_if` qui parle, avec **son** message.
+
+### 4 · Non-régression
+
+| Suite | Résultat | Assertions |
+|---|---|---|
+| `CrmOpportunityLostReasonRuleTest` (nouveau) | **7 / 7** | 19 |
+| `tests/Feature/CRM` + `tests/Feature/Connectors` | **323 / 323** | 1 152 |
+| `tests/Feature/Restaurant` + `tests/Feature/HR` | **582 / 582** | 2 415 |
+| **Total périmètre touché** | **912 / 912** | **3 586** |
+
+**Pint :** PASS sur les 2 fichiers PHP. **Garde d'orphelines :** 13 / 13
+vérifications. **Garde de couverture :** 0 nouvelle non couverte, 0 nouveau drift.
+
+### 5 · Pull préalable et conflits
+
+La branche d'évaluation était **16 commits derrière `main`**. Fusion faite avant
+tout travail, avec **2 conflits** :
+
+- `ConnectorSchemaViolationException` — les deux côtés portaient **le même
+  correctif** (résolution de `__()` à l'instanciation), seuls les commentaires
+  différaient : unifiés.
+- `openapi.yaml` — **9 blocs** de conflit, tous des insertions additives au même
+  point d'ancrage. Résolus par **union structurelle** : le travail de la branche
+  conservé, plus les **15 chemins**, **11 schémas** et **3 paramètres** propres à
+  `main` (connecteurs, permissions verticales, inventaire et réservations
+  d'hôtel). Vérifié : aucune perte, 0 `$ref` cassée.
+
+### Bilan v8
+
+Le contrat OpenAPI est désormais **valide**, pas seulement complet : **0 erreur
+Redocly** contre 12, sans un seul nouveau warning. Les chemins désignent enfin les
+URLs réellement servies — un client généré depuis la spec atteint les bons
+endpoints.
+
+Le point le plus utile de ce tour n'est pas la correction des 4 erreurs : c'est
+que **le test demandé a invalidé la règle qu'il devait protéger**. La règle v7
+refusait `lost_reason` sur toutes les étapes ouvertes, pas seulement sur `won` —
+un client renvoyant un formulaire complet était bloqué en `prospecting`. Sans ce
+test, le défaut serait resté invisible : le test HTTP existant passait, puisqu'il
+ne testait que le cas `won`.
+
+**Note de la couverture OpenAPI : 5,0 / 5 (maintenue)** — la note était déjà au
+maximum, mais elle récompensait une complétude qui n'était pas valide ; elle l'est
+maintenant. **Note du module CRM : 4,8 → 4,9 / 5.** **Note de la verticale
+restaurant : 4,8 / 5 (inchangée).** **Note globale : 4,9 / 5.**
+
+---
+
 *Tests réalisés sur une instance locale réelle (PHP 8.4 · PostgreSQL 15 +
 PostGIS · Redis 7). Les notes reflètent les résultats observés sur cette
 instance ; elles ne couvrent pas les applications mobiles Flutter ni les fronts

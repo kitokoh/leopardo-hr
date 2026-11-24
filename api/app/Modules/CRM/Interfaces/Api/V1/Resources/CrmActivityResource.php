@@ -12,6 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
  */
 /**
  * @property int $id
+ * @property int|null $account_id
  * @property string $type
  * @property string $subject
  * @property string|null $description
@@ -29,6 +30,11 @@ class CrmActivityResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            // #eval-2026-11-23 — `account_id` manquait alors que le filtre
+            // `?account_id=` existe et que la timeline par account est le
+            // cas d'usage principal : un client ne pouvait pas rattacher une
+            // activite a son compte sans requete supplementaire.
+            'account_id' => $this->account_id,
             'type' => $this->type,
             'subject' => $this->subject,
             'description' => $this->description,

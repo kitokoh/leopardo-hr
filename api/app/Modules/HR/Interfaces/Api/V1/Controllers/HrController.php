@@ -113,7 +113,13 @@ class HrController extends Controller
             'contract_type' => ['required', Rule::in(['cdi', 'cdd', 'freelance', 'intern', 'part_time'])],
             'contract_start' => 'required|date',
             'contract_end' => 'nullable|date|after:contract_start',
-            'salary_type' => ['required', Rule::in(['monthly', 'daily', 'hourly'])],
+            // #eval-2026-11-23 — l'enum PostgreSQL `employees.salary_type`
+            // n'accepte que fixed|hourly|daily (migration 2026_04_01_000101,
+            // CHECK `employees_salary_type_check`). Valider `monthly` ici
+            // produisait un 500 (SQLSTATE 23514) au lieu d'un 422, et
+            // contredisait la doc (GUIDE_UTILISATEUR §23) comme le front
+            // (`PaySlipDetailModal` teste fixed/daily/hourly).
+            'salary_type' => ['required', Rule::in(['fixed', 'daily', 'hourly'])],
             'salary_base' => 'nullable|numeric|min:0',
             'hourly_rate' => 'nullable|numeric|min:0',
             'department_id' => 'nullable|integer|exists:departments,id',

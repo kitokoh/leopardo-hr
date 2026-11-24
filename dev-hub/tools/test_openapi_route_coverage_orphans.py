@@ -104,7 +104,10 @@ check(
 
 print("\nTest 4 — le gel contient exactement les orphelines constatées")
 frozen = cov.load_orphan_allowlist()
-check("fichier de gel non vide", len(frozen) > 0, f"{len(frozen)} entrées")
+# Le gel peut être VIDE : c'est l'état sain visé (dette d'orphelines soldée,
+# recette 2026-11-24). Exiger `len(frozen) > 0` transformerait le succès en
+# échec — le test doit passer aussi bien sur un gel vide que sur un gel plein.
+check("fichier de gel lisible", isinstance(frozen, set), f"{len(frozen)} entrées")
 actual = [e for e in sorted(cov.load_allowlist()) if is_orphan(e, route_ops)]
 check(
     "aucune orpheline hors gel",
@@ -120,13 +123,24 @@ check(
 print("\nTest 5 — une entrée gelée qui redevient valide est signalée stale")
 # On simule : on prend une entrée gelée et on la retire de l'ensemble des
 # orphelines réelles → elle devient « stale » et doit être signalée.
-sample = sorted(frozen)[0]
-remaining = [e for e in actual if e != sample]
-stale = [e for e in sorted(frozen) if e not in remaining]
-check(
-    f"{sample} signalée stale quand elle redevient valide",
-    sample in stale,
-)
+# Sur un gel VIDE il n'y a rien à simuler : on vérifie alors la propriété
+# générale (une entrée absente des orphelines réelles est stale), qui est
+# exactement la règle appliquée par le garde.
+if frozen:
+    sample = sorted(frozen)[0]
+    remaining = [e for e in actual if e != sample]
+    stale = [e for e in sorted(frozen) if e not in remaining]
+    check(
+        f"{sample} signalée stale quand elle redevient valide",
+        sample in stale,
+    )
+else:
+    probe = "GET /v1/__probe__/orphan"
+    stale = [e for e in [probe] if e not in actual]
+    check(
+        "gel vide : une entrée absente des orphelines réelles est stale",
+        probe in stale,
+    )
 
 print("\nTest 6 — le rapport JSON expose les compteurs d'orphelines")
 src = SCRIPT.read_text(encoding="utf-8")
