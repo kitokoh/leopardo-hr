@@ -54,6 +54,8 @@ use Illuminate\Support\Carbon;
 class Site extends Model
 {
     use BelongsToCompany;
+
+    /** @use HasFactory<\Database\Factories\SiteFactory> */
     use HasFactory;
 
     public const STATUS_ACTIVE = 'active';

@@ -73,6 +73,13 @@ class AuditLog extends Model
         'created_at' => 'datetime',
     ];
 
+    /**
+     * #9898 — `MorphTo` est generique (`TRelatedModel`, `TDeclaringModel`) :
+     * le type de retour nu ne dit pas quelle relation est chargee. `Model`
+     * est le seul type honnete ici, la cible etant polymorphe par nature.
+     *
+     * @return MorphTo<Model, $this>
+     */
     public function auditable(): MorphTo
     {
         return $this->morphTo();

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Core\Tenant\Infrastructure\Services;
 
+use Closure;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -24,7 +25,22 @@ class TenantCacheService
 
     private const SCHEDULES_TTL = 300;
 
-    public function remember(int|string $companyId, string $key, callable $callback, int $ttl = self::DEFAULT_TTL): mixed
+    /**
+     * #9898 — `Cache::remember()` attend un `Closure`, pas un `callable`.
+     *
+     * La signature acceptait `callable` (tableau `[$obj, 'method']`, nom de
+     * fonction, `Closure`…) et le passait tel quel : PHPStan signalait
+     * l'argument incompatible ET l'impossibilite de resoudre le template
+     * `TCacheValue`. On resserre sur `Closure` — c'est ce que tous les
+     * appelants passent deja (fleches `fn () => …`), et cela rend le type de
+     * retour reellement inferable.
+     *
+     * @template TCacheValue
+     *
+     * @param  Closure(): TCacheValue  $callback
+     * @return TCacheValue
+     */
+    public function remember(int|string $companyId, string $key, Closure $callback, int $ttl = self::DEFAULT_TTL): mixed
     {
         return Cache::remember($this->tenantKey($companyId, $key), $ttl, $callback);
     }
@@ -72,22 +88,46 @@ class TenantCacheService
         return Cache::put($this->tenantKey($companyId, $key), $value, $ttl);
     }
 
-    public function rememberEmployees(int|string $companyId, callable $callback): mixed
+    /**
+     * @template TCacheValue
+     *
+     * @param  Closure(): TCacheValue  $callback
+     * @return TCacheValue
+     */
+    public function rememberEmployees(int|string $companyId, Closure $callback): mixed
     {
         return $this->remember($companyId, 'employees:list', $callback, self::EMPLOYEE_LIST_TTL);
     }
 
-    public function rememberManagerDigest(int|string $companyId, int|string $managerId, string $date, callable $callback): mixed
+    /**
+     * @template TCacheValue
+     *
+     * @param  Closure(): TCacheValue  $callback
+     * @return TCacheValue
+     */
+    public function rememberManagerDigest(int|string $companyId, int|string $managerId, string $date, Closure $callback): mixed
     {
         return $this->remember($companyId, "dashboard:manager-digest:{$managerId}:{$date}", $callback, self::MANAGER_DIGEST_TTL);
     }
 
-    public function rememberSchedules(int|string $companyId, callable $callback): mixed
+    /**
+     * @template TCacheValue
+     *
+     * @param  Closure(): TCacheValue  $callback
+     * @return TCacheValue
+     */
+    public function rememberSchedules(int|string $companyId, Closure $callback): mixed
     {
         return $this->remember($companyId, 'schedules:list', $callback, self::SCHEDULES_TTL);
     }
 
-    public function rememberAttendanceReport(int|string $companyId, string $period, callable $callback): mixed
+    /**
+     * @template TCacheValue
+     *
+     * @param  Closure(): TCacheValue  $callback
+     * @return TCacheValue
+     */
+    public function rememberAttendanceReport(int|string $companyId, string $period, Closure $callback): mixed
     {
         return $this->remember($companyId, "attendance:report:{$period}", $callback, self::ATTENDANCE_REPORT_TTL);
     }

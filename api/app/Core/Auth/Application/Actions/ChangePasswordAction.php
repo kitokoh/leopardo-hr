@@ -8,6 +8,7 @@ use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Auth\Infrastructure\Services\TokenExpiryService;
 use App\Exceptions\DomainException;
 use Illuminate\Support\Facades\Hash;
+use Laravel\Sanctum\PersonalAccessToken;
 
 /**
  * Use Case : Changement de mot de passe.
@@ -46,8 +47,13 @@ final class ChangePasswordAction
         // password change. See
         // docs/security/AUDIT_API_2026-07-19.md, section 3.
         $currentToken = $employee->currentAccessToken();
-        $tokenName = ($currentToken?->name) ?? 'api';
-        $abilities = ($currentToken?->abilities) ?? ['*'];
+        // #9898 — `currentAccessToken()` est declare `PersonalAccessToken`
+        // (non nullable) par Sanctum, mais renvoie `null` hors middleware
+        // `auth:sanctum`. On annote la variable pour que le `??` reste
+        // justifie aux yeux de PHPStan.
+        /** @var PersonalAccessToken|null $currentToken */
+        $tokenName = $currentToken->name ?? 'api';
+        $abilities = $currentToken->abilities ?? ['*'];
         // #9344 (audit sécurité 2026-11-10, F2) — on ne réhérite PAS de
         // l'échéance du jeton courant : un jeton émis avant le durcissement
         // (30 j) aurait prolongé la fenêtre d'exposition. On réémet avec la

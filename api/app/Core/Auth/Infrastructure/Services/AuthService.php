@@ -133,7 +133,16 @@ readonly class AuthService
             // jamais atteindre Hash::check (TypeError → 500 brut). Un compte
             // sans mot de passe exploitable est traité comme identifiants
             // invalides — même traitement que le mot de passe faux.
-            if (! is_string($employee->password_hash) || $employee->password_hash === '') {
+            //
+            // #9898 — la colonne est NOT NULL, donc le docblock du modèle dit
+            // `string` et `is_string($employee->password_hash)` serait
+            // « toujours vrai » pour PHPStan. On lit l'attribut brut (`mixed`)
+            // pour conserver la garde : elle protège le cas réel d'un modèle
+            // non hydraté ou d'une ligne issue d'un SELECT partiel, où
+            // l'attribut est absent et vaut `null` à l'exécution.
+            $rawHash = $employee->getAttribute('password_hash');
+
+            if (! is_string($rawHash) || $rawHash === '') {
                 throw new InvalidCredentialsException;
             }
 
@@ -141,7 +150,7 @@ readonly class AuthService
             // Hash::check (RuntimeException → 500). Tout échec de vérification
             // est traité comme identifiants invalides (401), jamais un 500.
             try {
-                $passwordMatches = Hash::check($password, $employee->password_hash);
+                $passwordMatches = Hash::check($password, $rawHash);
             } catch (\Throwable) {
                 $passwordMatches = false;
             }

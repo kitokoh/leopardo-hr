@@ -16,14 +16,20 @@ final class LogoutAction
 {
     public function execute(HasApiTokens $user): void
     {
-        /** @var PersonalAccessToken $token */
+        /** @var PersonalAccessToken|null $token */
         $token = $user->currentAccessToken();
-        if ($token) {
+
+        // #9898 — `currentAccessToken()` est declare `TToken` (donc
+        // `PersonalAccessToken`, non nullable) mais renvoie `null` quand
+        // aucun jeton n'est attache (appel hors middleware auth:sanctum).
+        // Le `@var ...|null` ci-dessus dit la verite ; le test `!== null`
+        // n'est donc plus tautologique.
+        if ($token !== null) {
             $token->delete();
         }
 
         // #5439 — journal d'audit global : révocation de jeton (auth).
-        if ($user instanceof Employee) {
+        if ($user instanceof Employee && $token !== null) {
             AuditLog::record(
                 'auth',
                 'auth.token.revoked',

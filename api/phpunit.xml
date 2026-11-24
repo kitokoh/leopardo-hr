@@ -1322,6 +1322,7 @@
             <file>tests/Feature/Security/SiteResourceScopedPolicyTest.php</file>
             <file>tests/Feature/Security/SupervisorScopedRbacTest.php</file>
             <file>tests/Feature/Security/TenantModelIsolationTest.php</file>
+            <file>tests/Feature/Security/TenantRlsStatusCommandTest.php</file>
             <file>tests/Feature/Security/TenantScopeFailClosedTest.php</file>
             <file>tests/Feature/Security/TokenRevocationTest.php</file>
             <file>tests/Feature/Security/TradeTenantIsolationTest.php</file>
@@ -1562,7 +1563,7 @@
           et detruit le marqueur `__mvp_fixture_ready`.
 
           FeatureMvpFixture : 242 fichiers.
-          FeatureRest       : 1112 fichiers.
+          FeatureRest       : 1113 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
             <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
@@ -2708,6 +2709,7 @@
             <file>tests/Feature/Security/SecurityConfigurationTest.php</file>
             <file>tests/Feature/Security/SecurityHeadersTest.php</file>
             <file>tests/Feature/Security/SensitiveEndpointsTenantIsolationTest.php</file>
+            <file>tests/Feature/Security/TenantRlsStatusCommandTest.php</file>
             <file>tests/Feature/Security/TradeTenantIsolationTest.php</file>
             <file>tests/Feature/Security/WebhookIdempotenceTest.php</file>
             <file>tests/Feature/Seed/PilotSeedCommandTest.php</file>

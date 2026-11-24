@@ -143,7 +143,10 @@ class Employee extends Authenticatable implements HasApiTokensContract
     use \App\Core\Auth\Domain\Models\Concerns\EmployeePermissions;
     use BelongsToCompany;
     use HasApiTokens;
+
+    /** @use HasFactory<\Database\Factories\EmployeeFactory> */
     use HasFactory;
+
     use Notifiable;
 
     protected $table = 'employees';
@@ -249,6 +252,32 @@ class Employee extends Authenticatable implements HasApiTokensContract
 
     protected static function booted(): void
     {
+        /**
+         * #9897 — un employé créé sous un tenant actif lui appartient.
+         *
+         * `employees` porte désormais une politique RLS (étape 4). Une ligne
+         * à `company_id` NULL serait INVISIBLE (`NULL = 'x'` vaut NULL, pas
+         * TRUE) : une panne d'affichage bruyante, jamais une fuite. On
+         * renseigne donc le tenant à la création quand il est connu.
+         *
+         * On ne l'impose QUE si `company_id` est absent : un appelant qui le
+         * fournit explicitement (import, backfill, test multi-tenant) garde
+         * la main. Et on ne l'invente pas : sans tenant courant, on laisse
+         * `null` — les fixtures de test qui renseignent `company_id` dans un
+         * second `save()` continuent de fonctionner.
+         */
+        static::creating(function (self $employee): void {
+            if ($employee->company_id !== null) {
+                return;
+            }
+
+            $company = app()->bound('current_company') ? app('current_company') : null;
+
+            if ($company instanceof Company) {
+                $employee->company_id = $company->id;
+            }
+        });
+
         static::saved(function (self $employee): void {
             $employee->syncUserLookup();
         });

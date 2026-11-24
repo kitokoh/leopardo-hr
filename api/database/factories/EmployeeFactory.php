@@ -49,8 +49,12 @@ class EmployeeFactory extends Factory
     public function definition(): array
     {
         return [
-            // Pas de company_id en mode schema isolé (Enterprise)
-            // En mode shared : company_id sera set via for() dans les tests
+            // #9897 — `company_id` est desormais NOT NULL (RLS sur employees).
+            // On le renseigne depuis le tenant courant quand il existe, sinon
+            // on laisse la valeur a null : la migration de backfill et la
+            // contrainte refuseront l'insertion, ce qui est le comportement
+            // voulu (un employe sans tenant n'a pas de sens).
+            'company_id' => $this->currentCompanyId(),
             'matricule' => 'EMP-'.str_pad($this->faker->unique()->numberBetween(1, 9999), 4, '0', STR_PAD_LEFT),
             'first_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
@@ -67,6 +71,24 @@ class EmployeeFactory extends Factory
             'leave_balance' => $this->faker->randomFloat(1, 0, 30),
             'status' => 'active',
         ];
+    }
+
+    /**
+     * #9897 — tenant courant, ou `null` si aucun n'est lié.
+     *
+     * Les tests qui ne lient pas `current_company` doivent désormais passer
+     * `->for($company)` : c'est le prix de la contrainte NOT NULL, et c'est
+     * correct — un employé appartient toujours à un tenant.
+     */
+    private function currentCompanyId(): ?string
+    {
+        $company = app()->bound('current_company') ? app('current_company') : null;
+
+        if ($company instanceof \App\Core\Tenant\Domain\Models\Company) {
+            return (string) $company->id;
+        }
+
+        return null;
     }
 
     // ── États ──────────────────────────────────────────────────────────────
