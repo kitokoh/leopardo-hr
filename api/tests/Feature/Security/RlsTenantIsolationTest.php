@@ -146,6 +146,67 @@ class RlsTenantIsolationTest extends TestCase
         return $row !== null && $row->t !== null;
     }
 
+    /**
+     * #9889 — les tables de paie sont couvertes par la MEME politique.
+     *
+     * Ce test ne se contente pas de verifier que la migration a tourne : il
+     * verifie que la politique est bien posee sur les deux tables, et que le
+     * cablage `app.current_company_id` de `TenantManager` la rend effective.
+     * Sans ce cablage, `current_setting(..., true)` renvoie NULL et la
+     * comparaison vaut NULL — la table serait illisible, pas protegee.
+     */
+    public function test_payroll_tables_carry_the_tenant_isolation_policy(): void
+    {
+        foreach (['pay_slips', 'payroll_runs'] as $table) {
+            $exists = DB::selectOne('SELECT to_regclass(?) AS t', ['shared_tenants.'.$table]);
+            if ($exists === null || $exists->t === null) {
+                $this->markTestSkipped($table.' absente de cette base.');
+            }
+
+            $row = DB::selectOne(
+                'SELECT relrowsecurity, relforcerowsecurity FROM pg_class WHERE oid = to_regclass(?)',
+                ['shared_tenants.'.$table]
+            );
+
+            expect((bool) $row->relrowsecurity)->toBeTrue($table.' doit avoir RLS active.');
+            expect((bool) $row->relforcerowsecurity)->toBeTrue($table.' doit avoir FORCE RLS (sinon le proprietaire contourne).');
+
+            $policy = DB::selectOne(
+                'SELECT polname FROM pg_policy WHERE polrelid = to_regclass(?) AND polname = ?',
+                ['shared_tenants.'.$table, $table.'_tenant_isolation']
+            );
+
+            expect($policy)->not->toBeNull($table.' doit porter la politique '.$table.'_tenant_isolation.');
+        }
+    }
+
+    /**
+     * #9889 — `TenantManager` publie le tenant dans la session PostgreSQL.
+     *
+     * C'est le maillon qui rend RLS effectif : sans lui, la politique existe
+     * mais ne compare jamais rien. On verifie la variable de session, pas
+     * l'implementation.
+     */
+    public function test_tenant_manager_publishes_the_company_to_the_session(): void
+    {
+        // La company est creee ici plutot que lue : un test qui se `skip`
+        // faute de donnee ne prouve rien, et c'est exactement le maillon dont
+        // depend toute la politique RLS.
+        $company = \App\Core\Tenant\Domain\Models\Company::factory()->create();
+
+        $manager = app(\App\Core\Tenant\TenantManager::class);
+
+        $manager->setTenant($company);
+
+        $current = DB::selectOne("SELECT current_setting('app.current_company_id', true) AS c");
+        expect((string) $current->c)->toBe((string) $company->id, 'setTenant() doit publier le tenant pour RLS.');
+
+        $manager->clearTenant();
+
+        $cleared = DB::selectOne("SELECT current_setting('app.current_company_id', true) AS c");
+        expect((string) $cleared->c)->toBe('', 'clearTenant() doit effacer le tenant (fail-closed).');
+    }
+
     private function createProbeRole(): void
     {
         DB::statement('DROP ROLE IF EXISTS '.self::ROLE);

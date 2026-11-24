@@ -8,47 +8,64 @@ use App\AI\DTOs\AIResponse;
 use App\AI\DTOs\ToolCall;
 use App\AI\DTOs\ToolResult;
 use App\AI\Exceptions\ToolPermissionDeniedException;
-use App\AI\Support\JsonSchemaValidator;
-use App\Core\Auth\Domain\Models\Employee;
-use App\Modules\Attendance\Domain\Models\AttendanceLog;
-use App\Modules\Communication\Domain\Models\CommunicationMessage;
-use App\Modules\Communication\Domain\Models\CommunicationPendingReply;
-use App\Modules\Communication\Infrastructure\Jobs\PrepareCommunicationReplyJob;
-use App\Modules\Communication\Infrastructure\Services\CommunicationReplyService;
-use App\Modules\Communication\Infrastructure\Services\EmailClassificationService;
-use App\Modules\HR\Domain\Models\Department;
-use App\Modules\Notification\Domain\Models\Notification;
-use App\Modules\Payroll\Domain\Models\Payroll;
-use App\Modules\Payroll\Domain\Models\PayrollRun;
-use App\Modules\Payroll\Domain\Models\PaySlip;
-use App\Modules\Planning\Domain\Models\Absence;
-use App\Modules\Planning\Domain\Models\LeaveBalance;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
+use App\AI\Support\ConfirmationSummary;
+use App\AI\Support\ConfirmedWriteExecutor;
+use App\AI\Support\ReadToolRegistry;
+use App\AI\Support\ToolSchemaGuard;
 
+/**
+ * Point d'entree de l'execution des tool calls de l'assistant.
+ *
+ * ## Ce que ce fichier est devenu (#9887)
+ *
+ * Il faisait 1 375 lignes et 37 methodes : execution des tool calls, garde de
+ * schema, ecritures confirmees, resume de confirmation, et les 19 handlers de
+ * lecture RH/Paie/Communication. Cinq responsabilites dans un fichier, sur le
+ * chemin le plus sensible du module IA.
+ *
+ * C'est desormais une **façade** : elle garde exactement la meme API publique
+ * (`executeToolCalls`, `executeConfirmedWrite`, `supportedReadToolNames`,
+ * `supportedReadTools`) et delegue a des collaborateurs a contrat explicite :
+ *
+ * | Collaborateur | Responsabilite |
+ * |---|---|
+ * | `ToolSchemaGuard` | validation entree/sortie + audit (BOS-034) |
+ * | `ReadToolRegistry` | map nom d'outil -> handler, source unique (#5625) |
+ * | `HrReadHandlers` / `PayrollReadHandlers` / `CommunicationReadHandlers` | les handlers |
+ * | `ConfirmedWriteExecutor` | ecritures confirmees + idempotence (BOS-032) |
+ * | `ConfirmationSummary` | texte lu par l'utilisateur avant de confirmer |
+ *
+ * ## Ce qui n'a PAS change, et qui devait ne pas changer
+ *
+ * L'ordre des verrous est identique : permission (fail-closed, avant tout
+ * effet de bord) -> schema d'entree -> confirmation -> dispatch -> schema de
+ * sortie. Une ecriture ne cree jamais de pending action si la permission est
+ * refusee. Le role est resolu UNE fois par boucle de tool calls.
+ *
+ * `dispatchToolAction` reste une methode privee de cette classe : un test
+ * l'invoque par reflexion pour verifier le message « not yet implemented ».
+ * La deplacer casserait ce contrat sans rien apporter.
+ */
 class IntentEngine
 {
     public function __construct(
         private readonly ToolRegistry $toolRegistry,
         private readonly WriteToolPolicy $writeToolPolicy,
         private readonly PendingActionStore $pendingActionStore,
-        private readonly WriteActionRunner $writeActionRunner,
         // BC-23-D05 (issue #6237) : matrice de permissions par outil AI.
         private readonly ToolPermissionPolicy $toolPermissionPolicy,
-        // BOS-032 (#8222) : idempotence métier des write-tools confirmés.
-        private readonly WriteIdempotencyStore $writeIdempotencyStore,
-        // BOS-034 (#8223) : validation runtime des schémas d'outils.
-        private readonly JsonSchemaValidator $jsonSchemaValidator,
+        // BOS-034 (#8223) : validation runtime des schemas d'outils.
+        private readonly ToolSchemaGuard $schemaGuard,
+        private readonly ReadToolRegistry $readTools,
+        private readonly ConfirmedWriteExecutor $confirmedWrites,
+        private readonly ConfirmationSummary $confirmationSummary,
     ) {}
 
     /**
-     * @return array<int, ToolResult>
-     */
-    /**
      * Issue #5625 : liste statique des outils read qui ont un handler PHP.
-     * Utilisée par l'Orchestrator pour filtrer le registre DB avant d'exposer
-     * les outils au LLM — un outil enregistré en DB mais absent ici ne sera
-     * JAMAIS proposé à l'utilisateur.
+     * Utilisee par l'Orchestrator pour filtrer le registre DB avant d'exposer
+     * les outils au LLM — un outil enregistre en DB mais absent ici ne sera
+     * JAMAIS propose a l'utilisateur.
      *
      * @return list<string>
      */
@@ -75,8 +92,8 @@ class IntentEngine
             // B2 (#6855) — outil lecture BC-07 PAYROLL (contrat A3 #6850).
             'payroll_current_status',
             // R3/R5 Communication (#7688/#7690, contrat A3 #6850) — outils
-            // lecture BC-29 : classification IA d'un email synchronisé et
-            // brouillon de réponse assistée (file Pending, jamais d'envoi).
+            // lecture BC-29 : classification IA d'un email synchronise et
+            // brouillon de reponse assistee (file Pending, jamais d'envoi).
             'email_classify',
             'email_reply_draft',
         ];
@@ -87,8 +104,8 @@ class IntentEngine
      */
     public function executeToolCalls(AIResponse $response, string $companyId, int $userId, ?int $conversationId = null): array
     {
-        // BC-23-D05 : le rôle est résolu une seule fois pour toute la boucle
-        // de tool calls (évite N requêtes Employee).
+        // BC-23-D05 : le role est resolu une seule fois pour toute la boucle
+        // de tool calls (evite N requetes Employee).
         $role = $this->toolPermissionPolicy->resolveRole($userId, $companyId);
         $results = [];
 
@@ -101,9 +118,9 @@ class IntentEngine
 
     private function executeSingleTool(ToolCall $toolCall, string $companyId, int $userId, string $role, ?int $conversationId = null): ToolResult
     {
-        // BC-23-D05 : fail-closed — l'appel d'un outil hors matrice (rôle ou
-        // permission insuffisante) est refusé AVANT tout effet de bord
-        // (y compris la création d'une pending action pour les write-tools).
+        // BC-23-D05 : fail-closed — l'appel d'un outil hors matrice (role ou
+        // permission insuffisante) est refuse AVANT tout effet de bord
+        // (y compris la creation d'une pending action pour les write-tools).
         try {
             $this->toolPermissionPolicy->assertCanUse($toolCall->name, $role);
         } catch (ToolPermissionDeniedException $exception) {
@@ -121,15 +138,15 @@ class IntentEngine
         $tool = $this->toolRegistry->findTool($toolCall->name);
 
         // BOS-034 (#8223) — validation des ARGUMENTS produits par le LLM
-        // contre le schéma déclaré, AVANT toute proposition ou exécution
-        // (un argument hostile ou malformé ne doit jamais atteindre un
-        // handler). Mode `warn` : audité et laissé passer (1 semaine) ; mode
+        // contre le schema declare, AVANT toute proposition ou execution
+        // (un argument hostile ou malforme ne doit jamais atteindre un
+        // handler). Mode `warn` : audite et laisse passer (1 semaine) ; mode
         // `strict` : refus fail-closed.
         if ($tool !== null) {
-            $inputViolation = $this->schemaGate(
+            $inputViolation = $this->schemaGuard->gate(
                 'input',
                 $toolCall,
-                $this->inputSchemaOf($tool),
+                $this->schemaGuard->inputSchemaOf($tool),
                 $toolCall->arguments,
                 $companyId,
                 $userId,
@@ -156,12 +173,12 @@ class IntentEngine
             $result = $this->dispatchToolAction($toolCall->name, $toolCall->arguments, $companyId, $userId);
 
             // BOS-034 (#8223) — validation de la SORTIE contre l'outputSchema
-            // déclaré (fail-closed en mode strict + audit) : une sortie non
-            // conforme ne repart pas au LLM comme si de rien n'était.
-            $outputViolation = $this->schemaGate(
+            // declare (fail-closed en mode strict + audit) : une sortie non
+            // conforme ne repart pas au LLM comme si de rien n'etait.
+            $outputViolation = $this->schemaGuard->gate(
                 'output',
                 $toolCall,
-                $this->outputSchemaOf($tool),
+                $this->schemaGuard->outputSchemaOf($tool),
                 $result,
                 $companyId,
                 $userId,
@@ -174,12 +191,12 @@ class IntentEngine
                 toolCallId: $toolCall->id,
                 name: $toolCall->name,
                 // #9077 — `JSON_PRESERVE_ZERO_FRACTION` : le contrat A3 (#6850)
-                // déclare `balance`/`used`/`pending` comme des décimaux, et les
-                // modèles les castent en `float`. Sans ce drapeau, un solde de
-                // 20.0 était sérialisé « 20 » et le type annoncé au modèle
+                // declare `balance`/`used`/`pending` comme des decimaux, et les
+                // modeles les castent en `float`. Sans ce drapeau, un solde de
+                // 20.0 etait serialise « 20 » et le type annonce au modele
                 // devenait un entier — un consommateur qui compare au contrat
                 // voyait un changement de type. Le drapeau ne change que la
-                // représentation textuelle d'un flottant entier, jamais sa
+                // representation textuelle d'un flottant entier, jamais sa
                 // valeur JSON.
                 content: json_encode($result, JSON_PRESERVE_ZERO_FRACTION) ?: '{}',
                 success: true,
@@ -195,211 +212,23 @@ class IntentEngine
     }
 
     /**
-     * BOS-034 (#8223) — garde de validation par schéma (entrée ou sortie).
+     * Execute un write-tool APRES confirmation humaine.
      *
-     * Retourne null quand le flux peut continuer (aucune violation, schéma
-     * absent, ou mode `warn`) ; en mode `strict`, toute violation produit un
-     * ToolResult de refus fail-closed. Toute violation est auditée par log
-     * structuré (chemins et règles attendues — jamais les valeurs métier).
-     *
-     * @param  array<string, mixed>  $schema
-     */
-    private function schemaGate(string $phase, ToolCall $toolCall, array $schema, mixed $data, string $companyId, int $userId): ?ToolResult
-    {
-        $violations = $this->validateAndAudit($phase, $toolCall->name, $schema, $data, $companyId, $userId);
-        if ($violations === [] || $this->schemaValidationMode() !== 'strict') {
-            return null;
-        }
-
-        return new ToolResult(
-            toolCallId: $toolCall->id,
-            name: $toolCall->name,
-            content: json_encode([
-                'error' => $phase === 'input'
-                    ? 'AI_TOOL_INPUT_SCHEMA_VIOLATION'
-                    : 'AI_TOOL_OUTPUT_SCHEMA_VIOLATION',
-                'message' => 'Tool '.$phase.' does not match the declared JSON schema',
-                'violations' => $violations,
-            ]) ?: '{}',
-            success: false,
-        );
-    }
-
-    /**
-     * BOS-034 (#8223) — cœur de la garde : valide `$data` contre `$schema`
-     * et audite TOUTE violation par log structuré `ai.tool_schema_violation`
-     * (chemins et règles attendues — jamais les valeurs métier). Retourne la
-     * liste des violations (vide = conforme ou schéma absent) ; la décision
-     * warn/strict appartient à l'appelant.
-     *
-     * @param  array<string, mixed>  $schema
-     * @return list<string>
-     */
-    private function validateAndAudit(string $phase, string $toolName, array $schema, mixed $data, string $companyId, int $userId): array
-    {
-        if ($schema === []) {
-            return [];
-        }
-
-        $violations = $this->jsonSchemaValidator->validate($data, $schema);
-        if ($violations === []) {
-            return [];
-        }
-
-        Log::warning('ai.tool_schema_violation', [
-            'company_id' => $companyId,
-            'user_id' => $userId,
-            'tool' => $toolName,
-            'phase' => $phase,
-            'mode' => $this->schemaValidationMode(),
-            'violations' => $violations,
-        ]);
-
-        return $violations;
-    }
-
-    /**
-     * Schéma d'entrée de l'outil : celui de l'AIToolDefinition déclarée par
-     * le BC propriétaire en priorité, sinon les `parameters` du registre DB
-     * (le schéma effectivement exposé au LLM).
-     *
-     * @param  array<string, mixed>  $tool
-     * @return array<string, mixed>
-     */
-    private function inputSchemaOf(array $tool): array
-    {
-        $declared = $tool['input_schema'] ?? null;
-        if (is_array($declared) && $declared !== []) {
-            return $declared;
-        }
-
-        $registered = $tool['parameters'] ?? null;
-
-        return is_array($registered) ? $registered : [];
-    }
-
-    /**
-     * Schéma de sortie déclaré (uniquement les outils couverts par une
-     * AIToolDefinition — les outils legacy sans définition restent hors
-     * validation de sortie, documenté dans la PR #8223).
-     *
-     * @param  array<string, mixed>  $tool
-     * @return array<string, mixed>
-     */
-    private function outputSchemaOf(array $tool): array
-    {
-        $declared = $tool['output_schema'] ?? null;
-
-        return is_array($declared) ? $declared : [];
-    }
-
-    /**
-     * Mode de validation des schémas : `warn` (défaut — audit sans blocage,
-     * fenêtre d'observation d'une semaine) ou `strict` (fail-closed).
-     * Bascule par config `ai.tool_schema_validation.mode` /
-     * `AI_TOOL_SCHEMA_VALIDATION_MODE` (critère #3 de l'issue).
-     */
-    private function schemaValidationMode(): string
-    {
-        $configured = config('ai.tool_schema_validation.mode', 'warn');
-
-        return $configured === 'strict' ? 'strict' : 'warn';
-    }
-
-    /**
-     * Exécute un write-tool APRÈS confirmation humaine.
-     *
-     * BOS-032 (#8222) — idempotence métier : avant toute exécution, la clé
-     * d'intention (conversation + empreinte des arguments) est consultée ;
-     * une intention déjà exécutée retourne son résultat initial avec le
+     * BOS-032 (#8222) — idempotence metier : avant toute execution, la cle
+     * d'intention (conversation + empreinte des arguments) est consultee ;
+     * une intention deja executee retourne son resultat initial avec le
      * marqueur `idempotent_replay` au lieu de produire un second effet.
-     * Après une exécution réussie, le résultat est persisté (TTL
+     * Apres une execution reussie, le resultat est persiste (TTL
      * `ai.write_idempotency_ttl_hours`) pour servir les rejeux — y compris le
-     * retry réseau sur le MÊME pending_action_id (via le contrôleur, qui
-     * consulte findByPendingActionId avant même le pull one-shot).
+     * retry reseau sur le MEME pending_action_id (via le controleur, qui
+     * consulte findByPendingActionId avant meme le pull one-shot).
      *
      * @param  array<string, mixed>  $arguments
      * @return array<string, mixed>
      */
     public function executeConfirmedWrite(string $toolName, array $arguments, string $companyId, int $userId, ?string $pendingActionId = null, ?int $conversationId = null): array
     {
-        if (! $this->writeToolPolicy->requiresConfirmation($toolName)) {
-            return ['error' => "Tool '{$toolName}' does not require confirmation."];
-        }
-
-        // BC-23-D05 : défense en profondeur — le rôle est re-vérifié à la
-        // confirmation (le rôle du demandeur peut avoir changé entre le chat
-        // et le clic de confirmation).
-        $role = $this->toolPermissionPolicy->resolveRole($userId, $companyId);
-        if (! $this->toolPermissionPolicy->canUse($toolName, $role)) {
-            return [
-                'error' => 'AI_TOOL_PERMISSION_DENIED',
-                'code' => ToolPermissionDeniedException::ERROR_CODE,
-            ];
-        }
-
-        // BOS-034 (#8223) — défense en profondeur à l'EXÉCUTION confirmée
-        // (le dispatch réel d'un write-tool) : les arguments sont revalidés
-        // contre le schéma déclaré — le rôle/mode a pu changer depuis la
-        // proposition, et un pending stocké hors boucle chat n'est pas passé
-        // par la garde d'executeSingleTool. Mode strict : refus AVANT tout
-        // effet et avant toute entrée d'idempotence.
-        $tool = $this->toolRegistry->findTool($toolName);
-        $inputViolations = $tool !== null
-            ? $this->validateAndAudit('input', $toolName, $this->inputSchemaOf($tool), $arguments, $companyId, $userId)
-            : [];
-        if ($inputViolations !== [] && $this->schemaValidationMode() === 'strict') {
-            return [
-                'error' => 'AI_TOOL_INPUT_SCHEMA_VIOLATION',
-                'message' => 'Tool input does not match the declared JSON schema',
-                'violations' => $inputViolations,
-            ];
-        }
-
-        $argumentsHash = $this->writeIdempotencyStore->argumentsHash($arguments);
-        $idempotencyKey = $this->writeIdempotencyStore->makeKey($companyId, $conversationId, $pendingActionId, $toolName, $argumentsHash);
-
-        $replay = $this->writeIdempotencyStore->find($companyId, $idempotencyKey);
-        if ($replay !== null) {
-            return $replay['result'] + [
-                'idempotent_replay' => true,
-                'idempotency_key' => $idempotencyKey,
-            ];
-        }
-
-        $result = $this->writeActionRunner->run($toolName, $arguments, $companyId, $userId);
-
-        // Seuls les résultats SANS erreur sont persistés : une erreur n'a
-        // produit aucun effet métier, un retry légitime doit pouvoir retenter.
-        if (($result['error'] ?? null) === null) {
-            $this->writeIdempotencyStore->store(
-                $companyId,
-                $idempotencyKey,
-                $toolName,
-                $argumentsHash,
-                $pendingActionId,
-                $conversationId,
-                $result,
-            );
-
-            // BOS-034 (#8223) — sortie validée contre l'outputSchema déclaré.
-            // L'effet métier A EU LIEU : l'entrée d'idempotence (résultat
-            // réel) reste persistée ci-dessus — en mode strict seule la
-            // RÉPONSE est refusée (fail-closed côté client), jamais l'effet
-            // rejoué (critère « violation → refus + audit »).
-            $outputViolations = $tool !== null
-                ? $this->validateAndAudit('output', $toolName, $this->outputSchemaOf($tool), $result, $companyId, $userId)
-                : [];
-            if ($outputViolations !== [] && $this->schemaValidationMode() === 'strict') {
-                return [
-                    'error' => 'AI_TOOL_OUTPUT_SCHEMA_VIOLATION',
-                    'message' => 'Tool output does not match the declared JSON schema',
-                    'violations' => $outputViolations,
-                ];
-            }
-        }
-
-        return $result;
+        return $this->confirmedWrites->execute($toolName, $arguments, $companyId, $userId, $pendingActionId, $conversationId);
     }
 
     private function pendingConfirmationResult(ToolCall $toolCall, string $companyId, int $userId, ?int $conversationId = null): ToolResult
@@ -416,7 +245,7 @@ class IntentEngine
             'status' => 'confirmation_required',
             'pending_action_id' => $pendingId,
             'tool' => $toolCall->name,
-            'summary' => $this->confirmationSummary($toolCall->name, $toolCall->arguments),
+            'summary' => $this->confirmationSummary->forTool($toolCall->name, $toolCall->arguments),
             'arguments' => $toolCall->arguments,
         ];
 
@@ -429,167 +258,13 @@ class IntentEngine
     }
 
     /**
-     * @param  array<string, mixed>  $arguments
-     */
-    private function confirmationSummary(string $toolName, array $arguments): string
-    {
-        $startDate = $this->stringArgument($arguments, 'start_date', '?');
-        $endDate = $this->stringArgument($arguments, 'end_date', $startDate);
-        $absenceId = $this->stringArgument($arguments, 'absence_id', '?');
-
-        return match ($toolName) {
-            'create_absence' => sprintf(
-                'Creer une demande d\'absence du %s au %s',
-                $startDate,
-                $endDate,
-            ),
-            // BOS-004 (#8145) — `approve_absence` (legacy) SUPPRIMÉ : chemin
-            // unique = `absence_decision` (Action canonique Planning).
-            // B3a (#6856) — décision (approbation/refus motivé).
-            'absence_decision' => sprintf(
-                '%s la demande d\'absence #%s%s',
-                $this->stringArgument($arguments, 'decision', '') === 'reject' ? 'Refuser' : 'Approuver',
-                $absenceId,
-                $this->stringArgument($arguments, 'decision', '') === 'reject'
-                    ? ' — motif : '.$this->stringArgument($arguments, 'reason', '(non précisé)')
-                    : '',
-            ),
-            // B3b (#6857) — affectation d'un shift à un employé.
-            'shift_assign' => sprintf(
-                'Affecter le shift #%s à l\'employé #%s',
-                $this->stringArgument($arguments, 'schedule_id', '?'),
-                $this->stringArgument($arguments, 'employee_id', '?'),
-            ),
-            // B3c (#6858) — message à une équipe (parité annonces).
-            'notify_team' => sprintf(
-                'Envoyer « %s » à %s',
-                mb_strimwidth($this->stringArgument($arguments, 'title', '?'), 0, 60, '…'),
-                $this->stringArgument($arguments, 'audience_type', '') === 'company'
-                    ? 'toute l\'entreprise'
-                    : 'l\'équipe du département #'.$this->stringArgument($arguments, 'department_id', '?'),
-            ),
-            // A7 (#7377) — création d'un employé : le résumé annonce
-            // explicitement l'e-mail d'invitation (effet externe visible).
-            'create_employee' => sprintf(
-                'Créer l\'employé « %s %s » (%s) — un e-mail d\'invitation lui sera envoyé',
-                $this->stringArgument($arguments, 'first_name', '?'),
-                $this->stringArgument($arguments, 'last_name', '?'),
-                $this->stringArgument($arguments, 'email', '?'),
-            ),
-            // A8 (#7378) — pointage.
-            'check_in_employee', 'check_out_employee' => sprintf(
-                'Pointer %s pour l\'employé #%s',
-                $toolName === 'check_out_employee' ? 'la SORTIE' : 'l\'ENTRÉE',
-                $this->stringArgument($arguments, 'employee_id', 'moi-même'),
-            ),
-
-            default => "Confirmer l'action {$toolName}",
-        };
-    }
-
-    /**
-     * @param  array<string, mixed>  $arguments
-     */
-    private function stringArgument(array $arguments, string $key, string $default): string
-    {
-        if (! array_key_exists($key, $arguments)) {
-            return $default;
-        }
-
-        $value = $arguments[$key];
-
-        return is_scalar($value) ? (string) $value : $default;
-    }
-
-    /**
-     * @param  array<string, mixed>  $arguments
-     */
-    private function intArgument(array $arguments, string $key, int $default): int
-    {
-        if (! array_key_exists($key, $arguments)) {
-            return $default;
-        }
-
-        $value = $arguments[$key];
-
-        return is_numeric($value) ? (int) $value : $default;
-    }
-
-    /**
-     * Issue #5625 : une SEULE source de vérité pour les read-tools — la map
-     * ci-dessous sert à la fois au dispatch et au test de couverture
-     * (ToolRegistryCoverageTest). Tout outil du registre (ai_tool_registry)
-     * SANS entrée ici échoue en CI : plus de promesse « je peux X » sans
-     * handler.
-     *
-     * @return array<string, callable(array<string, mixed>): array<string, mixed>>
-     */
-    private function readToolHandlers(string $companyId, int $userId): array
-    {
-        return [
-            'get_employees' => function (array $arguments) use ($companyId, $userId): array {
-                /** @var array<string, mixed> $arguments */
-                return $this->getEmployees($companyId, $userId, $arguments);
-            },
-            'get_employee_details' => function (array $arguments) use ($companyId, $userId): array {
-                /** @var array<string, mixed> $arguments */
-                return $this->getEmployeeDetails($companyId, $userId, $arguments);
-            },
-            'get_departments' => fn (array $arguments): array => $this->getDepartments($companyId),
-            'get_headcount' => fn (array $arguments): array => $this->getHeadcount($companyId),
-            'search_employees' => function (array $arguments) use ($companyId, $userId): array {
-                /** @var array<string, mixed> $arguments */
-                return $this->searchEmployees($companyId, $userId, $arguments);
-            },
-            'get_attendance_today' => fn (array $arguments): array => $this->getAttendanceToday($companyId, $userId),
-            'get_attendance_anomalies' => function (array $arguments) use ($companyId): array {
-                /** @var array<string, mixed> $arguments */
-                return $this->getAttendanceAnomalies($companyId, $arguments);
-            },
-            'get_monthly_report' => fn (array $arguments): array => $this->getMonthlyReport($companyId),
-            'get_absences' => function (array $arguments) use ($companyId, $userId): array {
-                /** @var array<string, mixed> $arguments */
-                return $this->getAbsences($companyId, $userId, $arguments);
-            },
-            'get_daily_summary' => fn (array $arguments): array => $this->getDailySummary($companyId, $userId),
-            'get_notifications' => function (array $arguments) use ($companyId, $userId): array {
-                /** @var array<string, mixed> $arguments */
-                return $this->getNotifications($companyId, $userId, $arguments);
-            },
-            'get_leave_balances' => fn (array $arguments): array => $this->getLeaveBalances($companyId, $userId),
-            'get_payroll_summary' => fn (array $arguments): array => $this->getPayrollSummary($companyId, $userId),
-            // B1 (#6854) — outils lecture BC-04 HR (contrat A3 #6850) :
-            // agrégats via les modèles canoniques HR/Planning.
-            'team_overview' => fn (array $arguments): array => $this->getTeamOverview($companyId, $userId),
-            'team_absences_recent' => function (array $arguments) use ($companyId, $userId): array {
-                /** @var array<string, mixed> $arguments */
-                return $this->getTeamAbsencesRecent($companyId, $userId, $arguments);
-            },
-            'employee_leave_balance' => function (array $arguments) use ($companyId, $userId): array {
-                /** @var array<string, mixed> $arguments */
-                return $this->getEmployeeLeaveBalance($companyId, $userId, $arguments);
-            },
-            // B2 (#6855) — agrégat du statut de paie via les modèles canoniques
-            // Payroll (PayrollRun + PaySlip) — aucun montant exposé.
-            'payroll_current_status' => fn (array $arguments): array => $this->getPayrollCurrentStatus($companyId, $userId),
-            // R3/R5 Communication (#7688/#7690) — outils lecture BC-29
-            // COMMUNICATION (contrat A3 #6850) : classification d'un email
-            // synchronisé et brouillon de réponse, via les services canoniques
-            // du module (parité pipeline sync/jobs — jamais d'envoi ici :
-            // #8023 le mode `auto` est rétrogradé en `confirm` sur ce chemin).
-            'email_classify' => fn (array $arguments): array => $this->classifyCommunicationMessage($companyId, $arguments),
-            'email_reply_draft' => fn (array $arguments): array => $this->draftCommunicationReply($companyId, $arguments),
-        ];
-    }
-
-    /**
      * Noms des read-tools effectivement dispatchables (issue #5625).
      *
      * @return list<string>
      */
     public function supportedReadTools(): array
     {
-        return array_keys($this->readToolHandlers('', 0));
+        return $this->readTools->names();
     }
 
     /**
@@ -598,778 +273,11 @@ class IntentEngine
      */
     private function dispatchToolAction(string $toolName, array $arguments, string $companyId, int $userId): array
     {
-        $handler = $this->readToolHandlers($companyId, $userId)[$toolName] ?? null;
+        $handler = $this->readTools->handlers($companyId, $userId)[$toolName] ?? null;
         if ($handler === null) {
             return ['message' => "Tool '{$toolName}' is registered but not yet implemented."];
         }
 
         return $handler($arguments);
-    }
-
-    /**
-     * @param  array<string, mixed>  $args
-     * @return array<string, mixed>
-     */
-    private function getEmployees(string $companyId, int $userId, array $args): array
-    {
-        $query = Employee::where('company_id', $companyId);
-
-        // #6532 — défense en profondeur : un acteur non-manager ne reçoit
-        // que ses propres données (le gate principal est la matrice
-        // ai.tool_permissions, rôle manager pour cet outil).
-        if (! $this->actorIsManager($companyId, $userId)) {
-            $query->where('id', $userId);
-        }
-
-        if (isset($args['status'])) {
-            $query->where('status', $args['status']);
-        }
-
-        if (isset($args['department_id'])) {
-            $query->where('department_id', $args['department_id']);
-        }
-
-        $limit = min($this->intArgument($args, 'limit', 20), 50);
-        // #7356 — `post` n'existe pas sur `employees` (le schéma porte
-        // `position_id`) : la sélection levait SQLSTATE[42703] à chaque appel.
-        $employees = $query->select(['id', 'first_name', 'last_name', 'email', 'position_id', 'department_id', 'status'])
-            ->limit($limit)
-            ->get();
-
-        return ['employees' => $employees->toArray(), 'count' => $employees->count()];
-    }
-
-    /**
-     * @param  array<string, mixed>  $args
-     * @return array<string, mixed>
-     */
-    private function getEmployeeDetails(string $companyId, int $userId, array $args): array
-    {
-        // #6532 — non-manager : uniquement son propre profil (pas de fuite
-        // d'existence sur les autres employés).
-        $requestedId = $this->intArgument($args, 'employee_id', 0);
-        if (! $this->actorIsManager($companyId, $userId) && $requestedId !== $userId) {
-            return ['error' => 'Employee not found'];
-        }
-
-        // #7356 — `post` et `hire_date` n'existent pas sur `employees` : le
-        // schéma porte `position_id` et `contract_start` (même mapping que
-        // EmployeeResource::hire_date, cf. GenerateTurnoverReportAction).
-        $employee = Employee::where('company_id', $companyId)
-            ->where('id', $requestedId)
-            ->select(['id', 'first_name', 'last_name', 'email', 'position_id', 'department_id', 'status', 'phone', 'contract_start'])
-            ->first();
-
-        if (! $employee) {
-            return ['error' => 'Employee not found'];
-        }
-
-        return ['employee' => $employee->toArray()];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function getDepartments(string $companyId): array
-    {
-        $departments = Department::where('company_id', $companyId)
-            ->select(['id', 'name'])
-            ->get();
-
-        return ['departments' => $departments->toArray()];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function getHeadcount(string $companyId): array
-    {
-        $total = Employee::where('company_id', $companyId)->count();
-        $active = Employee::where('company_id', $companyId)->where('status', 'active')->count();
-
-        return ['total' => $total, 'active' => $active, 'inactive' => $total - $active];
-    }
-
-    /**
-     * @param  array<string, mixed>  $args
-     * @return array<string, mixed>
-     */
-    private function searchEmployees(string $companyId, int $userId, array $args): array
-    {
-        $query = Employee::where('company_id', $companyId);
-
-        // #6532 — non-manager : recherche bornée à soi-même.
-        if (! $this->actorIsManager($companyId, $userId)) {
-            $query->where('id', $userId);
-        }
-
-        $search = $this->stringArgument($args, 'query', '');
-
-        if ($search !== '') {
-            $query->where(function ($q) use ($search): void {
-                $q->where('first_name', 'ilike', "%{$search}%")
-                    ->orWhere('last_name', 'ilike', "%{$search}%")
-                    ->orWhere('email', 'ilike', "%{$search}%")
-                    // #7356 — l'intitulé de poste vit dans `extra_data.job_title`
-                    // (JSONB) et dans le catalogue `positions` ; la colonne
-                    // `post` n'existe pas sur `employees`.
-                    ->orWhere('extra_data->job_title', 'ilike', "%{$search}%")
-                    ->orWhereHas('position', fn ($position) => $position->where('name', 'ilike', "%{$search}%"));
-            });
-        }
-
-        $employees = $query->select(['id', 'first_name', 'last_name', 'email', 'position_id', 'status'])
-            ->limit(20)
-            ->get();
-
-        return ['employees' => $employees->toArray(), 'count' => $employees->count()];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function getAttendanceToday(string $companyId, int $userId): array
-    {
-        $today = Carbon::today()->toDateString();
-
-        $logs = AttendanceLog::where('company_id', $companyId)
-            ->where('employee_id', $userId)
-            ->whereDate('date', $today)
-            ->orderByDesc('date')
-            ->limit(10)
-            ->get(['id', 'employee_id', 'date', 'check_in', 'check_out', 'status']);
-
-        $companyCount = AttendanceLog::where('company_id', $companyId)
-            ->whereDate('date', $today)
-            ->count();
-
-        return [
-            'employee_id' => $userId,
-            'date' => $today,
-            'logs' => $logs->toArray(),
-            'company_checkins' => $companyCount,
-        ];
-    }
-
-    /**
-     * @param  array<string, mixed>  $args
-     * @return array<string, mixed>
-     */
-    private function getAttendanceAnomalies(string $companyId, array $args): array
-    {
-        $days = min(max($this->intArgument($args, 'days', 7), 1), 30);
-        $since = Carbon::today()->subDays($days);
-
-        $logs = AttendanceLog::where('company_id', $companyId)
-            ->whereDate('date', '>=', $since->toDateString())
-            ->where(function ($query) {
-                $query->whereNull('check_out')
-                    ->orWhereTime('check_in', '>', '09:00:00');
-            })
-            ->orderByDesc('date')
-            ->limit(50)
-            ->get(['id', 'employee_id', 'date', 'check_in', 'check_out', 'status']);
-
-        return ['anomalies' => $logs->toArray(), 'count' => $logs->count(), 'since' => $since->toDateString()];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function getMonthlyReport(string $companyId): array
-    {
-        $monthStart = Carbon::now()->startOfMonth();
-
-        $totalLogs = AttendanceLog::where('company_id', $companyId)
-            ->whereDate('date', '>=', $monthStart->toDateString())
-            ->count();
-
-        $onTime = AttendanceLog::where('company_id', $companyId)
-            ->whereDate('date', '>=', $monthStart->toDateString())
-            ->whereTime('check_in', '<=', '09:00:00')
-            ->count();
-
-        $activeEmployees = AttendanceLog::where('company_id', $companyId)
-            ->whereDate('date', '>=', $monthStart->toDateString())
-            ->distinct('employee_id')
-            ->count('employee_id');
-
-        return [
-            'month' => $monthStart->format('Y-m'),
-            'attendance_logs' => $totalLogs,
-            'on_time_checkins' => $onTime,
-            'active_employees' => $activeEmployees,
-        ];
-    }
-
-    /**
-     * @param  array<string, mixed>  $args
-     * @return array<string, mixed>
-     */
-    private function getAbsences(string $companyId, int $userId, array $args): array
-    {
-        $query = Absence::where('company_id', $companyId);
-
-        if ($this->stringArgument($args, 'scope', 'self') === 'team') {
-            $teamIds = Employee::where('company_id', $companyId)
-                ->where('manager_id', $userId)
-                ->pluck('id');
-            $query->where(function ($q) use ($teamIds, $userId) {
-                $q->where('employee_id', $userId)
-                    ->orWhereIn('employee_id', $teamIds);
-            });
-        } else {
-            $query->where('employee_id', $userId);
-        }
-
-        $limit = min($this->intArgument($args, 'limit', 10), 50);
-        $absences = $query->with('absenceType')
-            ->orderByDesc('start_date')
-            ->limit($limit)
-            ->get(['id', 'employee_id', 'absence_type_id', 'start_date', 'end_date', 'status', 'reason']);
-
-        $mapped = $absences->map(function (Absence $absence) {
-            return [
-                'id' => $absence->id,
-                'employee_id' => $absence->employee_id,
-                'type' => $absence->absenceType?->name,
-                'start_date' => $absence->start_date->toDateString(),
-                'end_date' => $absence->end_date?->toDateString(),
-                'status' => $absence->status,
-                'reason' => $absence->reason,
-            ];
-        });
-
-        return ['absences' => $mapped->values()->toArray(), 'count' => $mapped->count()];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function getDailySummary(string $companyId, int $userId): array
-    {
-        $today = Carbon::today()->toDateString();
-
-        // #6532 — non-manager : agrégats restreints à soi-même.
-        $checkins = AttendanceLog::where('company_id', $companyId)
-            ->whereDate('date', $today);
-
-        $onLeave = Absence::where('company_id', $companyId)
-            ->whereDate('start_date', '<=', $today)
-            ->whereDate('end_date', '>=', $today)
-            ->where('status', 'approved');
-
-        if (! $this->actorIsManager($companyId, $userId)) {
-            $checkins->where('employee_id', $userId);
-            $onLeave->where('employee_id', $userId);
-        }
-
-        return [
-            'date' => $today,
-            'checkins' => $checkins->count(),
-            'employees_on_leave' => $onLeave->distinct('employee_id')->count('employee_id'),
-        ];
-    }
-
-    /**
-     * #6532 — un acteur non-manager (employé) ne voit que ses propres
-     * données sur les outils PII (défense en profondeur, par-dessus la
-     * matrice ai.tool_permissions qui exige déjà le rôle manager).
-     */
-    private function actorIsManager(string $companyId, int $userId): bool
-    {
-        return $this->toolPermissionPolicy->resolveRole($userId, $companyId) === 'manager';
-    }
-
-    /**
-     * @param  array<string, mixed>  $args
-     * @return array<string, mixed>
-     */
-    private function getNotifications(string $companyId, int $userId, array $args): array
-    {
-        // L'employé doit appartenir au tenant appelant (garde isolation §II).
-        if (! Employee::where('company_id', $companyId)->where('id', $userId)->exists()) {
-            return ['notifications' => [], 'count' => 0];
-        }
-
-        $limit = min($this->intArgument($args, 'limit', 10), 50);
-        $onlyUnread = filter_var($this->stringArgument($args, 'unread_only', 'false'), FILTER_VALIDATE_BOOLEAN);
-
-        // #7481 — l'assistant lit le MÊME store que `GET /notifications`
-        // (`notifications`), sinon il annonçait des notifications que la boîte
-        // de réception de l'utilisateur n'affichait pas — et inversement.
-        $query = Notification::where('employee_id', $userId);
-
-        if ($onlyUnread) {
-            $query->where('is_read', false);
-        }
-
-        $notifications = $query->orderByDesc('created_at')
-            ->limit($limit)
-            ->get(['id', 'type', 'title', 'body', 'is_read', 'created_at']);
-
-        $mapped = $notifications->map(function (Notification $notification) {
-            return [
-                'id' => $notification->id,
-                'title' => $notification->title,
-                'body' => $notification->body,
-                'read' => (bool) $notification->is_read,
-                'created_at' => $notification->created_at?->toIso8601String(),
-            ];
-        });
-
-        return ['notifications' => $mapped->values()->toArray(), 'count' => $mapped->count()];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function getLeaveBalances(string $companyId, int $userId): array
-    {
-        $balances = LeaveBalance::where('company_id', $companyId)
-            ->where('employee_id', $userId)
-            ->orderBy('absence_type_id')
-            ->get(['id', 'absence_type_id', 'balance', 'used', 'pending', 'year']);
-
-        return ['leave_balances' => $balances->toArray(), 'count' => $balances->count()];
-    }
-
-    /**
-     * @return array<string, mixed>
-     */
-    private function getPayrollSummary(string $companyId, int $userId): array
-    {
-        $payrolls = Payroll::where('company_id', $companyId)
-            ->where('employee_id', $userId)
-            ->orderByDesc('period_year')
-            ->orderByDesc('period_month')
-            ->limit(6)
-            ->get(['id', 'period_month', 'period_year', 'gross_salary', 'net_salary', 'status', 'validated_at']);
-
-        return ['payrolls' => $payrolls->toArray(), 'count' => $payrolls->count()];
-    }
-
-    /**
-     * B1 (#6854) — agrégats d'effectif du périmètre du manager (entreprise
-     * pour les rôles company-wide, département pour `dept`, équipe directe
-     * pour `superviseur` — scope canonique Employee::visibleToManager()).
-     * Sortie AGRÉGÉE uniquement : aucune donnée nominative (privacy A6,
-     * #6853) ; la liste nominative reste l'apanage du REST HR.
-     *
-     * @return array<string, mixed>
-     */
-    private function getTeamOverview(string $companyId, int $userId): array
-    {
-        /** @var Employee|null $actor */
-        $actor = Employee::where('company_id', $companyId)->find($userId);
-
-        if ($actor === null) {
-            return ['error' => 'Employee not found'];
-        }
-
-        // Défense en profondeur (#6532) : un non-manager (jamais atteint via
-        // la matrice ai.tool_permissions, rôle manager requis) ne voit que
-        // lui-même — parité avec les outils PII existants.
-        $query = Employee::query()
-            ->where('company_id', $companyId)
-            ->whereNotIn('status', ['archived', 'departed']);
-
-        if ($actor->isManager()) {
-            $query->visibleToManager($actor);
-        } else {
-            $query->where('id', $userId);
-        }
-
-        $employees = $query->with('department:id,name')
-            ->get(['id', 'department_id', 'contract_type', 'status']);
-
-        $byDepartment = [];
-        foreach ($employees->groupBy('department_id') as $group) {
-            $byDepartment[] = [
-                'department' => $group->first()?->department?->name,
-                'count' => $group->count(),
-            ];
-        }
-        usort($byDepartment, static fn (array $a, array $b): int => strcmp(
-            (string) ($a['department'] ?? ''),
-            (string) ($b['department'] ?? ''),
-        ));
-
-        return [
-            'scope' => ! $actor->isManager() ? 'self' : ($actor->isTeamScoped() ? 'team' : 'company'),
-            'total' => $employees->count(),
-            // Tri déterministe des agrégats (#8261) : countBy() conserve
-            // l'ordre de première occurrence, qui dépend du plan d'exécution
-            // Postgres (aucun ORDER BY sur la requête source) — la sortie
-            // JSON de l'outil devait donc varier d'un appel à l'autre.
-            'by_status' => $employees->countBy('status')->sortKeys()->all(),
-            'by_contract_type' => $employees->countBy('contract_type')->sortKeys()->all(),
-            'by_department' => $byDepartment,
-        ];
-    }
-
-    /**
-     * B1 (#6854) — absences récentes du périmètre du manager sur une période
-     * (chevauchement start/end, défaut 30 derniers jours), agrégées par
-     * statut. Sortie non nominative : identifiants employés uniquement, pas
-     * de motif (raison) ni de données brutes sensibles (privacy A6, #6853).
-     *
-     * @param  array<string, mixed>  $args
-     * @return array<string, mixed>
-     */
-    private function getTeamAbsencesRecent(string $companyId, int $userId, array $args): array
-    {
-        /** @var Employee|null $actor */
-        $actor = Employee::where('company_id', $companyId)->find($userId);
-
-        if ($actor === null) {
-            return ['error' => 'Employee not found'];
-        }
-
-        $from = $this->stringArgument($args, 'from', Carbon::today()->subDays(30)->toDateString());
-        $to = $this->stringArgument($args, 'to', Carbon::today()->toDateString());
-
-        $query = Absence::where('company_id', $companyId)
-            ->where('start_date', '<=', $to)
-            ->where('end_date', '>=', $from);
-
-        if ($actor->isManager()) {
-            // Périmètre canonique du manager (visibleToManager, fails closed).
-            $teamIds = Employee::query()
-                ->where('company_id', $companyId)
-                ->whereNotIn('status', ['archived', 'departed'])
-                ->visibleToManager($actor)
-                ->pluck('id');
-            $query->whereIn('employee_id', $teamIds);
-        } else {
-            // Défense en profondeur (#6532) : un non-manager ne voit que ses
-            // propres absences (matrice : rôle manager requis).
-            $query->where('employee_id', $userId);
-        }
-
-        $status = $this->stringArgument($args, 'status', '');
-        if ($status !== '') {
-            $query->where('status', $status);
-        }
-
-        $total = (clone $query)->count();
-        $byStatus = (clone $query)->select('status')->get()->countBy('status')->all();
-
-        $absences = $query->with('absenceType:id,name')
-            ->orderByDesc('start_date')
-            ->limit(20)
-            ->get(['id', 'employee_id', 'absence_type_id', 'start_date', 'end_date', 'days_count', 'status']);
-
-        $mapped = $absences->map(fn (Absence $absence): array => [
-            'id' => $absence->id,
-            'employee_id' => $absence->employee_id,
-            'type' => $absence->absenceType?->name,
-            'start_date' => $absence->start_date->toDateString(),
-            'end_date' => $absence->end_date?->toDateString(),
-            'days_count' => $absence->days_count,
-            'status' => $absence->status,
-        ]);
-
-        return [
-            'period' => ['from' => $from, 'to' => $to],
-            'total' => $total,
-            'count' => $mapped->count(),
-            'by_status' => $byStatus,
-            'absences' => $mapped->values()->toArray(),
-        ];
-    }
-
-    /**
-     * B1 (#6854) — soldes de congés d'un employé (snapshot canonique
-     * LeaveBalance du module Planning, propriétaire PA2-ARCH-002) pour une
-     * année. Un employé ne consulte que son propre solde (#6532) ; un
-     * manager consulte tout employé du tenant (parité LeavePolicyController).
-     *
-     * @param  array<string, mixed>  $args
-     * @return array<string, mixed>
-     */
-    private function getEmployeeLeaveBalance(string $companyId, int $userId, array $args): array
-    {
-        /** @var Employee|null $actor */
-        $actor = Employee::where('company_id', $companyId)->find($userId);
-
-        if ($actor === null) {
-            return ['error' => 'Employee not found'];
-        }
-
-        $requestedId = $this->intArgument($args, 'employee_id', $userId);
-        $year = $this->intArgument($args, 'year', (int) now()->format('Y'));
-
-        // #6532 — pas de fuite d'existence : un non-manager qui demande le
-        // solde d'un autre employé reçoit « not found », pas un refus bavard.
-        if (! $actor->isManager() && $requestedId !== $userId) {
-            return ['error' => 'Employee not found'];
-        }
-
-        if ($requestedId !== $userId
-            && ! Employee::where('company_id', $companyId)->where('id', $requestedId)->exists()) {
-            return ['error' => 'Employee not found'];
-        }
-
-        $balances = LeaveBalance::query()
-            ->where('company_id', $companyId)
-            ->where('employee_id', $requestedId)
-            ->forYear($year)
-            ->with('absenceType:id,name')
-            ->orderBy('absence_type_id')
-            ->get(['id', 'absence_type_id', 'balance', 'used', 'pending', 'year']);
-
-        $mapped = $balances->map(fn (LeaveBalance $balance): array => [
-            'absence_type' => $balance->absenceType?->name,
-            'balance' => $balance->balance,
-            'used' => $balance->used,
-            'pending' => $balance->pending,
-            'year' => $balance->year,
-        ]);
-
-        return [
-            'employee_id' => $requestedId,
-            'year' => $year,
-            'count' => $mapped->count(),
-            'leave_balances' => $mapped->values()->toArray(),
-        ];
-    }
-
-    /**
-     * B2 (#6855) — statut agrégé de la paie du tenant (BC-07 PAYROLL).
-     *
-     * Réutilise les modèles canoniques `PayrollRun`/`PaySlip` (contrat
-     * PayrollRunController) : dernier run clôturé (validé/payé/verrouillé) et
-     * run en cours éventuel (draft/calculating/processing/calculated/error)
-     * avec progression — bulletins générés/validés rapportés à l'effectif du
-     * run. Sortie AGRÉGÉE : statuts, dates et compteurs uniquement — jamais de
-     * montants (nominatifs ou totaux), jamais de bulletins (privacy A6, #6853).
-     * Lecteur : manager RH/principal (matrice ai.tool_permissions, rôle
-     * manager + payroll.view) — fail-closed sinon (#6532).
-     *
-     * @return array<string, mixed>
-     */
-    private function getPayrollCurrentStatus(string $companyId, int $userId): array
-    {
-        /** @var Employee|null $actor */
-        $actor = Employee::where('company_id', $companyId)->find($userId);
-
-        if ($actor === null) {
-            return ['error' => 'Employee not found'];
-        }
-
-        // #6532 — défense en profondeur : un non-manager (jamais atteint via la
-        // matrice ai.tool_permissions) n'accède pas au statut de paie.
-        if (! $actor->isManager()) {
-            return ['error' => 'Employee not found'];
-        }
-
-        $runs = PayrollRun::query()
-            ->where('company_id', $companyId)
-            ->where('status', '!=', PayrollRun::STATUS_CANCELLED)
-            ->orderByDesc('period_end')
-            ->orderByDesc('id')
-            ->limit(30)
-            ->get();
-
-        $currentRun = null;
-        $lastClosedRun = null;
-
-        /** @var PayrollRun $run */
-        foreach ($runs as $run) {
-            if (in_array($run->status, [
-                PayrollRun::STATUS_DRAFT,
-                PayrollRun::STATUS_CALCULATING,
-                PayrollRun::STATUS_PROCESSING,
-                PayrollRun::STATUS_CALCULATED,
-                PayrollRun::STATUS_ERROR,
-            ], true) && $currentRun === null) {
-                $currentRun = $run;
-            }
-
-            if (in_array($run->status, [
-                PayrollRun::STATUS_VALIDATED,
-                PayrollRun::STATUS_PAID,
-                PayrollRun::STATUS_LOCKED,
-            ], true) && $lastClosedRun === null) {
-                $lastClosedRun = $run;
-            }
-
-            if ($currentRun !== null && $lastClosedRun !== null) {
-                break;
-            }
-        }
-
-        return [
-            'has_current_run' => $currentRun !== null,
-            'current_run' => $currentRun !== null ? $this->payrollRunStatusPayload($currentRun) : null,
-            'last_closed_run' => $lastClosedRun !== null ? $this->payrollRunStatusPayload($lastClosedRun) : null,
-            'as_of' => now()->toIso8601String(),
-        ];
-    }
-
-    /**
-     * Payload agrégé d'un run : identité temporelle, statut, effectif et
-     * compteurs de bulletins — explicitement AUCUN montant (privacy A6,
-     * #6853). `validated` = bulletins au statut `validated` (scope canonique
-     * PaySlip::scopeValidated).
-     *
-     * @return array<string, mixed>
-     */
-    private function payrollRunStatusPayload(PayrollRun $run): array
-    {
-        $slipsCount = PaySlip::query()->where('payroll_run_id', $run->id)->count();
-        $validatedSlipsCount = PaySlip::query()
-            ->where('payroll_run_id', $run->id)
-            ->where('status', 'validated')
-            ->count();
-
-        return [
-            'id' => $run->id,
-            'status' => $run->status,
-            'period' => [
-                'start' => $run->period_start->toDateString(),
-                'end' => $run->period_end->toDateString(),
-            ],
-            'employee_count' => $run->employee_count,
-            'slips_count' => $slipsCount,
-            'validated_slips_count' => $validatedSlipsCount,
-            'calculated_at' => $run->calculated_at?->toIso8601String(),
-            'validated_at' => $run->validated_at?->toIso8601String(),
-            'paid_at' => $run->paid_at?->toIso8601String(),
-            'updated_at' => $run->updated_at?->toIso8601String(),
-        ];
-    }
-
-    /**
-     * R3 Communication (#7688) — handler du read-tool `email_classify` :
-     * classification IA d'un message synchronisé, PARITÉ avec le pipeline
-     * canonique (`ClassifyCommunicationMessageJob`) — service
-     * `EmailClassificationService` (sortie validée contre la taxonomie du
-     * tenant, contenu traité comme donnée hostile, budget fail-closed) puis,
-     * si le message est classé, chaînage idempotent de la préparation de
-     * réponse R5 (le job dédupplique via l'UNIQUE company+message).
-     *
-     * @param  array<string, mixed>  $args
-     * @return array<string, mixed>
-     */
-    private function classifyCommunicationMessage(string $companyId, array $args): array
-    {
-        $message = $this->findCommunicationMessage($companyId, $args['message_id'] ?? null);
-
-        if (! $message instanceof CommunicationMessage) {
-            return ['error' => 'Message not found'];
-        }
-
-        $force = filter_var($args['force'] ?? false, FILTER_VALIDATE_BOOL);
-
-        app(EmailClassificationService::class)->classify($message, $force);
-        $message->refresh();
-
-        // Parité avec le job canonique : une classification réussie alimente
-        // le pipeline des réponses assistées R5 (#7690) — idempotent (UNIQUE
-        // company+message dans la file Pending, aucun doublon au rejeu).
-        if ($message->classification_status === CommunicationMessage::CLASSIFICATION_CLASSIFIED) {
-            PrepareCommunicationReplyJob::dispatch($companyId, (string) $message->id);
-        }
-
-        return [
-            'message_id' => $message->id,
-            'classification_status' => $message->classification_status,
-            'category' => $message->ai_category,
-            'language' => $message->ai_language,
-            'sentiment' => $message->ai_sentiment,
-            'action' => $message->ai_action,
-            'confidence' => $message->ai_confidence,
-            'error' => $message->classification_error,
-        ];
-    }
-
-    /**
-     * R5 Communication (#7690) — handler du read-tool `email_reply_draft` :
-     * brouillon de réponse à un email entrant classé. Chemin canonique
-     * `CommunicationReplyService::prepare()` : la POLITIQUE de la boîte
-     * (off/draft/confirm/auto) décide — le texte généré entre dans la file
-     * Pending (validation humaine en confirm), et le mode `draft` dépose en
-     * plus un brouillon RÉVERSIBLE dans le Gmail du propriétaire
-     * (`gmail.compose`, jamais d'envoi).
-     *
-     * #8023 — le mode `auto` (envoi direct) est EXCLU de ce chemin read-tool :
-     * `prepare(..., allowAutoSend: false)` rétrograde `auto` en `confirm`. Un
-     * tool call est décidé par le LLM DANS la boucle de l'Orchestrator, sans
-     * validation humaine préalable : il ne doit pas y produire d'ENVOI Gmail
-     * synchrone et irréversible (`CommunicationReplyService::handleAuto()` →
-     * `GoogleGmailReplySender::send()`), contrairement au chemin canonique
-     * (job `PrepareCommunicationReplyJob`) qui conserve le mode `auto` opt-in.
-     * Le brouillon généré est malgré tout renvoyé par l'outil (il alimente la
-     * file Pending) ; l'envoi éventuel reste une décision humaine explicite
-     * (endpoint approve, propriétaire de la boîte).
-     *
-     * @param  array<string, mixed>  $args
-     * @return array<string, mixed>
-     */
-    private function draftCommunicationReply(string $companyId, array $args): array
-    {
-        $message = $this->findCommunicationMessage($companyId, $args['message_id'] ?? null);
-
-        if (! $message instanceof CommunicationMessage) {
-            return ['error' => 'Message not found'];
-        }
-
-        if ($message->classification_status !== CommunicationMessage::CLASSIFICATION_CLASSIFIED) {
-            return [
-                'error' => 'message_not_classified',
-                'message' => "Classifiez d'abord le message (outil email_classify) avant de demander un brouillon.",
-            ];
-        }
-
-        // #8023 — `allowAutoSend: false` : le tool force le mode non-envoyant
-        // (auto rétrogradé en confirm) — aucune sortie Gmail synchrone ici.
-        app(CommunicationReplyService::class)->prepare($message, allowAutoSend: false);
-
-        /** @var CommunicationPendingReply|null $reply */
-        $reply = CommunicationPendingReply::query()
-            ->where('company_id', $companyId)
-            ->where('message_id', $message->id)
-            ->first();
-
-        if ($reply === null) {
-            // Politique off (ou message inéligible : sortant, auto-répondeur,
-            // liste) — aucune proposition créée : c'est le comportement voulu.
-            return [
-                'message_id' => $message->id,
-                'status' => 'no_reply_prepared',
-                'message' => "Aucun brouillon préparé : la politique de réponse de la boîte est inactive pour cette catégorie (ou le message n'est pas éligible).",
-            ];
-        }
-
-        return [
-            'message_id' => $message->id,
-            'pending_reply_id' => $reply->id,
-            'status' => $reply->status,
-            'mode' => $reply->mode,
-            'subject' => $reply->subject,
-            'body' => $reply->body,
-            'confidence' => $reply->ai_confidence,
-        ];
-    }
-
-    /**
-     * Message Communication du tenant courant (clé UUID) — défense en
-     * profondeur : filtre `company_id` explicite, le pipeline IA résout le
-     * tenant depuis la session, jamais depuis les arguments du LLM.
-     */
-    private function findCommunicationMessage(string $companyId, mixed $messageId): ?CommunicationMessage
-    {
-        if (! is_string($messageId) || $messageId === '') {
-            return null;
-        }
-
-        /** @var CommunicationMessage|null $message */
-        $message = CommunicationMessage::query()
-            ->where('company_id', $companyId)
-            ->find($messageId);
-
-        return $message;
     }
 }

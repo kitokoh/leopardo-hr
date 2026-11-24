@@ -49,7 +49,20 @@ final class TransitionOpportunityStageRequest extends FormRequest
             ],
             // Obligatoire pour `lost` : une affaire perdue sans raison ecrite
             // est inexploitable au bilan trimestriel.
-            'lost_reason' => ['required_if:stage,lost', 'nullable', 'string', 'max:500'],
+            //
+            // #9886 — et INTERDIT partout ailleurs. `required_if` seul laissait
+            // passer un motif sur `won` : l'action l'ecrivait alors dans
+            // `notes`, et une affaire gagnee portait un motif de perte dans son
+            // historique commercial. `prohibited_unless` refuse en 422 au lieu
+            // d'ignorer en silence — une donnee trompeuse doit etre rejetee,
+            // pas filtree.
+            'lost_reason' => [
+                'nullable',
+                'string',
+                'max:500',
+                'required_if:stage,lost',
+                'prohibited_unless:stage,lost',
+            ],
             'amount' => ['nullable', 'numeric', 'min:0'],
             'expected_close_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string', 'max:5000'],
