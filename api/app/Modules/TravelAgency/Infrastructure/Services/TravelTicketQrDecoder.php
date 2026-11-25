@@ -180,11 +180,15 @@ final class TravelTicketQrDecoder
             return null;
         }
 
+        // `$size` est borne a 21..57 et congrue a 17 modulo 4 (garde ci-dessus),
+        // donc les seules valeurs possibles sont 21, 25, ... 57 et `$version`
+        // vaut toujours 1..10 : exactement les cles de `BLOCKS`. Le controle
+        // `isset(self::BLOCKS[$version])` qui suivait etait donc du code mort,
+        // et PHPStan 2.3 le prouve (`isset.offset` sur une forme de tableau
+        // fermee). Il est retire plutot que simule : la garde qui compte est
+        // celle sur `$size`, juste au-dessus, et une version ajoutee a `BLOCKS`
+        // sans elargir cette garde ne serait de toute facon jamais atteinte.
         $version = intdiv($size - 17, 4);
-
-        if (! isset(self::BLOCKS[$version])) {
-            return null;
-        }
 
         $grid = $this->sampleGrid($matrix, $minX, $minY, $moduleSize, $size);
 
