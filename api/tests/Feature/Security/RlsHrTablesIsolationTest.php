@@ -53,24 +53,44 @@ final class RlsHrTablesIsolationTest extends TestCase
         'absences' => [
             'employee_id' => 1,
             'absence_type_id' => 1,
-            'start_date' => '2026-01-05',
-            'end_date' => '2026-01-06',
             'days_count' => 2,
         ],
         'contracts' => [
             'employee_id' => 1,
-            'start_date' => '2026-01-01',
         ],
         'leave_balances' => [
             'employee_id' => 1,
             'absence_type_id' => 1,
-            'year' => 2026,
         ],
         'attendance_logs' => [
             'employee_id' => 1,
-            'date' => '2026-01-05',
         ],
     ];
+
+    /**
+     * Colonnes de date a renseigner, en RELATIF a maintenant.
+     *
+     * Le garde #8396 interdit une date calendaire figee dans le passe : elle
+     * pourrit avec le temps (un test ecrit avec une date fixe devient
+     * faux en 2027). Les valeurs sont donc calculees a l'execution.
+     *
+     * @return array<string, mixed>
+     */
+    private function datesFor(string $table): array
+    {
+        $today = now()->toDateString();
+
+        return match ($table) {
+            'absences' => [
+                'start_date' => $today,
+                'end_date' => now()->addDay()->toDateString(),
+            ],
+            'contracts' => ['start_date' => $today],
+            'attendance_logs' => ['date' => $today],
+            'leave_balances' => ['year' => (int) now()->year],
+            default => [],
+        };
+    }
 
     private bool $roleCreated = false;
 
@@ -149,11 +169,11 @@ final class RlsHrTablesIsolationTest extends TestCase
             DB::table($table)->whereIn('company_id', [self::TENANT_A, self::TENANT_B])->delete();
 
             DB::table($table)->insert([
-                array_merge($required, $this->timestampsFor($table), [
+                array_merge($required, $this->datesFor($table), $this->timestampsFor($table), [
                     'company_id' => self::TENANT_A,
                     'employee_id' => 1,
                 ]),
-                array_merge($required, $this->timestampsFor($table), [
+                array_merge($required, $this->datesFor($table), $this->timestampsFor($table), [
                     'company_id' => self::TENANT_B,
                     // `leave_balances` porte UNIQUE (employee_id,
                     // absence_type_id, year) : deux lignes du meme employe
@@ -204,7 +224,7 @@ final class RlsHrTablesIsolationTest extends TestCase
 
         $affected = $this->affectedAsProbe(
             self::TENANT_B,
-            "UPDATE shared_tenants.{$table} SET start_date = '2020-01-01' WHERE company_id = '".self::TENANT_A."'"
+            "UPDATE shared_tenants.{$table} SET company_id = '".self::TENANT_B."' WHERE company_id = '".self::TENANT_A."'"
         );
 
         expect($affected)->toBe(0, 'RLS doit empecher toute ecriture hors du tenant courant.');
