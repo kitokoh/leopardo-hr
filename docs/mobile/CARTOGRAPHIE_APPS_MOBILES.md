@@ -24,7 +24,7 @@ store distinctes, des permissions distinctes et des cycles de release distincts.
 
 | Persona | App | Identifiant | Plateformes | Contrepartie web | État mesuré |
 |---|---|---|---|---|---|
-| Visiteur / client final / candidat | `leopardo_public` | `com.leopardo.publicapp` | Android + iOS | `front/web/src/app/decouvrir`, `(public)`, `[companySlug]`, 8 verticales `public-surfaces` | 36 fichiers Dart, 3 écrans (découverte, fiche commerce, activité), 9 fichiers de test, 8 verticales au registre |
+| Visiteur / client final / candidat | `leopardo_public` | `com.leopardo.publicapp` | Android + iOS | `front/web/src/app/decouvrir`, `(public)`, `[companySlug]`, 8 verticales `public-surfaces` | 38 fichiers Dart, 3 écrans (découverte, fiche commerce, activité), 10 fichiers de test, 8 verticales au registre, registre de parcours (#9907) |
 
 **Conformité au web — ce qui est aligné** : les 8 verticales (`restaurant`, `retail`,
 `hospitality`, `trade`, `travel`, `pharmacy`, `vtc`, `careers`), leurs `basePath`
@@ -128,6 +128,27 @@ branche par app de matrice et interdit le repli générique **en fin** de chaîn
 | Projets iOS de `leopardo_cameras` et `leopardo_travel_agent` | non (Android-only déclaré) | dev mobile, sur décision produit |
 | Écrans stats de `leopardo_accounting` / `leopardo_marketing` encore mock | non (déclaré dans leurs README) | dev mobile |
 | Suite de tests de `leopardo_marketing` (0 fichier) | non | dev mobile |
+
+> **État mesuré au 2026-11-24 (#9907)** — le registre
+> `lib/features/journey/domain/journey_registry.dart` déclare, pour chacune des
+> 8 verticales, le parcours réellement disponible et le motif exact de ce qui
+> manque. Un test échoue si une verticale est absente, si un type est dupliqué
+> ou si un blocage n'a pas de clé i18n dans les 4 locales.
+>
+> | Verticale | Parcours | Contrat appelable |
+> |---|---|---|
+> | Boutiques (`retail`) | **natif** | `GET /public/market/products`, `POST /public/market/orders`, `GET /public/market/orders/{ref}` |
+> | Séjour (`hospitality`) | **natif** | `…/availability`, `POST …/reservations`, `GET …/reservations/{ref}` |
+> | Restaurant | demande | `POST /public/contact-requests` — commande bloquée (jeton boutique par tenant) |
+> | Entreprises (`trade`) | demande | `POST /public/contact-requests` — devis structuré absent du contrat |
+> | VTC | demande | `POST /public/contact-requests` — course bloquée (pas de géocodage d'adresse) |
+> | Billets (`travel`) | **bloqué** | aucun provider `public.discoverable` |
+> | Pharmacies | **bloqué** | aucune route publique (ni catalogue, ni resolver) |
+> | Emploi (`careers`) | **bloqué** | aucun provider `public.discoverable` |
+>
+> Les 5 blocages sont portés par le registre (motif + clé i18n) et affichés à
+> l'écran : une verticale bloquée dit *pourquoi*, elle n'affiche pas un bouton
+> mort. Les parcours natifs boutiques/séjour restent à câbler côté écrans.
 
 ## 6. Comment ajouter une app (procédure complète)
 

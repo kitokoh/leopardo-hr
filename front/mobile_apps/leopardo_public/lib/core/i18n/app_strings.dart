@@ -92,12 +92,14 @@ class AppStrings {
           'Publiez votre Page gratuitement et apparaissez dans la recherche.',
       'merchantInviteCta': 'Publier ma Page',
       'discoveryUseLocation': 'Utiliser ma position',
-      'discoveryLocationDenied': 'Sans votre position, choisissez votre ville pour voir ce qui est autour.',
+      'discoveryLocationDenied':
+          'Sans votre position, choisissez votre ville pour voir ce qui est autour.',
 
       // États obligatoires (chaque écran)
       'stateLoading': 'Chargement…',
       'stateEmptyTitle': 'Rien ici pour le moment',
-      'stateEmptyBody': 'Aucun commerce publié dans cette ville pour l’instant. Revenez bientôt.',
+      'stateEmptyBody':
+          'Aucun commerce publié dans cette ville pour l’instant. Revenez bientôt.',
       'stateNoResultsTitle': 'Aucun résultat',
       'stateNoResultsBody': 'Essayez un autre mot, ou élargissez la zone.',
       'stateNoResultsWiden': 'Élargir la recherche',
@@ -108,7 +110,8 @@ class AppStrings {
       'stateOfflineBody':
           'Voici ce que nous avions gardé de votre dernière visite.',
       'stateNotFoundTitle': 'Page introuvable',
-      'stateNotFoundBody': 'Ce commerce n’est plus disponible. Il a peut-être fermé ou cessé d’être publié.',
+      'stateNotFoundBody':
+          'Ce commerce n’est plus disponible. Il a peut-être fermé ou cessé d’être publié.',
       'stateNotFoundAction': 'Revenir à la recherche',
       'stateNotAvailable': 'Indisponible pour le moment',
 
@@ -130,7 +133,8 @@ class AppStrings {
       'businessPhotos': 'Photos',
       'businessActionsUnavailable':
           'Ce commerce ne propose pas encore cette action.',
-      'businessMultipleEstablishments': 'Cet établissement fait partie d’un commerce avec plusieurs adresses.',
+      'businessMultipleEstablishments':
+          'Cet établissement fait partie d’un commerce avec plusieurs adresses.',
 
       // Commun
       'commonCancel': 'Annuler',
@@ -141,15 +145,18 @@ class AppStrings {
 
       // Messages (M2) — présents pour que l’onglet ne soit jamais muet
       'messagesEmptyTitle': 'Aucune conversation',
-      'messagesEmptyBody': 'Quand vous contacterez un commerçant, la conversation apparaîtra ici.',
+      'messagesEmptyBody':
+          'Quand vous contacterez un commerçant, la conversation apparaîtra ici.',
       'messagesAssistant': 'Léa',
       'messagesAssistantBadge': 'Assistante IA',
       'messagesUnread': 'Non lus',
-      'messagesComingSoon': 'La messagerie arrive avec votre compte. Aucun message n’est perdu entre-temps.',
+      'messagesComingSoon':
+          'La messagerie arrive avec votre compte. Aucun message n’est perdu entre-temps.',
 
       // Activités (M3)
       'activityEmptyTitle': 'Aucune activité',
-      'activityEmptyBody': 'Vos commandes et réservations apparaîtront ici dès votre premier contact.',
+      'activityEmptyBody':
+          'Vos commandes et réservations apparaîtront ici dès votre premier contact.',
       'activityOrders': 'Commandes',
       'activityBookings': 'Réservations',
       'activityFavorites': 'Favoris',
@@ -164,7 +171,8 @@ class AppStrings {
       'profileDelete': 'Supprimer mon compte',
       'profileSignIn': 'Se connecter',
       'profileNotSignedIn': 'Vous naviguez sans compte',
-      'profileNotSignedInBody': 'Vous pouvez tout consulter. Un compte n’est demandé qu’au moment de contacter un commerçant.',
+      'profileNotSignedInBody':
+          'Vous pouvez tout consulter. Un compte n’est demandé qu’au moment de contacter un commerçant.',
       'profileComingSoon': 'Disponible avec votre compte.',
 
       // Activités, favoris, historique (M3)
@@ -179,6 +187,24 @@ class AppStrings {
       'favoritesUnavailable': 'Ce commerce n’est plus disponible',
       'searchHistoryTitle': 'Recherches récentes',
       'searchHistoryClear': 'Effacer l’historique',
+
+      // Parcours transactionnels par verticale (#9907) — le motif affiché
+      // quand l'app ne peut pas mener la transaction elle-même.
+      'journeyReasonRestaurantOrder':
+          'La commande en ligne n’est pas encore ouverte au grand public. Envoyez votre demande : le restaurant vous répond.',
+      'journeyReasonTradeQuote':
+          'Le devis détaillé se prépare avec l’entreprise. Envoyez votre demande, elle revient avec une proposition.',
+      'journeyReasonVtcRide':
+          'Réserver une course demande de choisir une adresse de départ et d’arrivée. Envoyez votre demande, l’opérateur vous rappelle.',
+      'journeyReasonTravelPortal':
+          'Les billets ne sont pas encore accessibles depuis cette application.',
+      'journeyReasonPharmacyCatalog':
+          'Le catalogue des pharmacies n’est pas encore publié.',
+      'journeyReasonCareersPortal':
+          'Les offres d’emploi ne sont pas encore accessibles depuis cette application.',
+      'journeyRequestCta': 'Envoyer une demande',
+      'journeyNativeCta': 'Commander',
+      'journeyBlockedTitle': 'Pas encore disponible',
     },
 
     // ───────────────────────────── EN ─────────────────────────────
@@ -218,7 +244,8 @@ class AppStrings {
       'stateOfflineTitle': 'You are offline',
       'stateOfflineBody': 'Here is what we kept from your last visit.',
       'stateNotFoundTitle': 'Page not found',
-      'stateNotFoundBody': 'This business is no longer available. It may have closed or stopped publishing.',
+      'stateNotFoundBody':
+          'This business is no longer available. It may have closed or stopped publishing.',
       'stateNotFoundAction': 'Back to search',
       'stateNotAvailable': 'Not available right now',
       'businessOpenNow': 'Open',
@@ -250,7 +277,8 @@ class AppStrings {
       'messagesAssistant': 'Léa',
       'messagesAssistantBadge': 'AI assistant',
       'messagesUnread': 'Unread',
-      'messagesComingSoon': 'Messaging arrives with your account. No message is lost in the meantime.',
+      'messagesComingSoon':
+          'Messaging arrives with your account. No message is lost in the meantime.',
       'activityEmptyTitle': 'No activity',
       'activityEmptyBody':
           'Your orders and bookings will appear here after your first contact.',
@@ -266,7 +294,8 @@ class AppStrings {
       'profileDelete': 'Delete my account',
       'profileSignIn': 'Sign in',
       'profileNotSignedIn': 'You are browsing without an account',
-      'profileNotSignedInBody': 'You can browse everything. An account is only asked for when you contact a business.',
+      'profileNotSignedInBody':
+          'You can browse everything. An account is only asked for when you contact a business.',
       'profileComingSoon': 'Available with your account.',
 
       // Activities, favourites, history (M3)
@@ -281,6 +310,23 @@ class AppStrings {
       'favoritesUnavailable': 'This business is no longer available',
       'searchHistoryTitle': 'Recent searches',
       'searchHistoryClear': 'Clear history',
+
+      // Per-vertical transactional journeys (#9907).
+      'journeyReasonRestaurantOrder':
+          'Online ordering is not open to the public yet. Send a request and the restaurant will reply.',
+      'journeyReasonTradeQuote':
+          'A detailed quote is prepared with the company. Send a request and they will come back with an offer.',
+      'journeyReasonVtcRide':
+          'Booking a ride needs a pickup and a drop-off address. Send a request and the operator will call you back.',
+      'journeyReasonTravelPortal':
+          'Tickets are not reachable from this app yet.',
+      'journeyReasonPharmacyCatalog':
+          'The pharmacy catalogue is not published yet.',
+      'journeyReasonCareersPortal':
+          'Job offers are not reachable from this app yet.',
+      'journeyRequestCta': 'Send a request',
+      'journeyNativeCta': 'Order',
+      'journeyBlockedTitle': 'Not available yet',
     },
 
     // ───────────────────────────── AR (RTL) ─────────────────────────────
@@ -382,6 +428,20 @@ class AppStrings {
       'favoritesUnavailable': 'هذا المتجر لم يعد متاحًا',
       'searchHistoryTitle': 'عمليات البحث الأخيرة',
       'searchHistoryClear': 'مسح السجل',
+
+      // مسارات المعاملات لكل قطاع (#9907).
+      'journeyReasonRestaurantOrder':
+          'الطلب عبر الإنترنت غير متاح للعموم بعد. أرسل طلبك وسيرد عليك المطعم.',
+      'journeyReasonTradeQuote':
+          'يُعدّ عرض السعر المفصل مع الشركة. أرسل طلبك وستعود إليك بعرض.',
+      'journeyReasonVtcRide':
+          'حجز رحلة يتطلب عنوان الانطلاق والوصول. أرسل طلبك وسيتصل بك المشغّل.',
+      'journeyReasonTravelPortal': 'التذاكر غير متاحة من هذا التطبيق بعد.',
+      'journeyReasonPharmacyCatalog': 'دليل الصيدليات لم يُنشر بعد.',
+      'journeyReasonCareersPortal': 'عروض العمل غير متاحة من هذا التطبيق بعد.',
+      'journeyRequestCta': 'أرسل طلبًا',
+      'journeyNativeCta': 'اطلب',
+      'journeyBlockedTitle': 'غير متاح بعد',
     },
 
     // ───────────────────────────── TR ─────────────────────────────
@@ -422,7 +482,8 @@ class AppStrings {
       'stateOfflineTitle': 'Çevrimdışısın',
       'stateOfflineBody': 'Son ziyaretinden sakladıklarımız bunlar.',
       'stateNotFoundTitle': 'Sayfa bulunamadı',
-      'stateNotFoundBody': 'Bu işletme artık mevcut değil. Kapanmış veya yayımdan kaldırılmış olabilir.',
+      'stateNotFoundBody':
+          'Bu işletme artık mevcut değil. Kapanmış veya yayımdan kaldırılmış olabilir.',
       'stateNotFoundAction': 'Aramaya dön',
       'stateNotAvailable': 'Şu an kullanılamıyor',
       'businessOpenNow': 'Açık',
@@ -454,9 +515,11 @@ class AppStrings {
       'messagesAssistant': 'Léa',
       'messagesAssistantBadge': 'Yapay zekâ asistanı',
       'messagesUnread': 'Okunmamış',
-      'messagesComingSoon': 'Mesajlaşma hesabınla birlikte gelir. Bu arada hiçbir mesaj kaybolmaz.',
+      'messagesComingSoon':
+          'Mesajlaşma hesabınla birlikte gelir. Bu arada hiçbir mesaj kaybolmaz.',
       'activityEmptyTitle': 'Etkinlik yok',
-      'activityEmptyBody': 'Siparişlerin ve rezervasyonların ilk iletişiminden sonra burada görünecek.',
+      'activityEmptyBody':
+          'Siparişlerin ve rezervasyonların ilk iletişiminden sonra burada görünecek.',
       'activityOrders': 'Siparişler',
       'activityBookings': 'Rezervasyonlar',
       'activityFavorites': 'Favoriler',
@@ -469,7 +532,8 @@ class AppStrings {
       'profileDelete': 'Hesabımı sil',
       'profileSignIn': 'Giriş yap',
       'profileNotSignedIn': 'Hesapsız geziyorsun',
-      'profileNotSignedInBody': 'Her şeye bakabilirsin. Hesap yalnızca bir işletmeyle iletişime geçerken istenir.',
+      'profileNotSignedInBody':
+          'Her şeye bakabilirsin. Hesap yalnızca bir işletmeyle iletişime geçerken istenir.',
       'profileComingSoon': 'Hesabınla kullanılabilir.',
 
       // Etkinlikler, favoriler, arama geçmişi (M3)
@@ -484,6 +548,22 @@ class AppStrings {
       'favoritesUnavailable': 'Bu işletme artık mevcut değil',
       'searchHistoryTitle': 'Son aramalar',
       'searchHistoryClear': 'Geçmişi temizle',
+
+      // Dikey başına işlem akışları (#9907).
+      'journeyReasonRestaurantOrder':
+          'Çevrimiçi sipariş henüz herkese açık değil. Talebinizi gönderin, restoran size dönsün.',
+      'journeyReasonTradeQuote':
+          'Ayrıntılı teklif şirketle birlikte hazırlanır. Talebinizi gönderin, size bir öneriyle dönsünler.',
+      'journeyReasonVtcRide':
+          'Yolculuk rezervasyonu kalkış ve varış adresi gerektirir. Talebinizi gönderin, operatör sizi arasın.',
+      'journeyReasonTravelPortal':
+          'Biletlere bu uygulamadan henüz ulaşılamıyor.',
+      'journeyReasonPharmacyCatalog': 'Eczane kataloğu henüz yayımlanmadı.',
+      'journeyReasonCareersPortal':
+          'İş ilanlarına bu uygulamadan henüz ulaşılamıyor.',
+      'journeyRequestCta': 'Talep gönder',
+      'journeyNativeCta': 'Sipariş ver',
+      'journeyBlockedTitle': 'Henüz kullanılamıyor',
     },
   };
 }
