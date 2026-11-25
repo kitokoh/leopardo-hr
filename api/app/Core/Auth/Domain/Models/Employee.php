@@ -444,7 +444,12 @@ class Employee extends Authenticatable implements HasApiTokensContract
             ['email' => $this->email],
             [
                 'company_id' => $this->company_id,
-                'schema_name' => $this->company?->schema_name ?? 'shared_tenants',
+                // #9922 — `?->` etait redondant : `??` supprime deja l'erreur
+                // d'acces sur un `company` null, et `Company::$schema_name` est
+                // declare `string` (non nullable). Le `?->` laissait croire que
+                // `schema_name` pouvait lui-meme etre null, ce qui n'est pas le
+                // cas : la valeur de repli ne couvre que l'absence de company.
+                'schema_name' => $this->company->schema_name ?? 'shared_tenants',
                 'employee_id' => $this->id,
                 'role' => $this->userLookupRole(),
             ]

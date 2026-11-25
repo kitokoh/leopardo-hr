@@ -1303,6 +1303,7 @@
             <file>tests/Feature/Security/KioskDeviceCodeAtRestTest.php</file>
             <file>tests/Feature/Security/MassAssignmentTest.php</file>
             <file>tests/Feature/Security/MetricsAccessTest.php</file>
+            <file>tests/Feature/Security/MigrationGuardObservabilityTest.php</file>
             <file>tests/Feature/Security/ModuleGrantsTest.php</file>
             <file>tests/Feature/Security/OtpLogRedactionTest.php</file>
             <file>tests/Feature/Security/PasswordHashFillableTest.php</file>
@@ -1315,6 +1316,7 @@
             <file>tests/Feature/Security/ResourceAccessLifecycleTest.php</file>
             <file>tests/Feature/Security/ResourceScopedRbacTest.php</file>
             <file>tests/Feature/Security/ResourceScopedVerticalPoliciesTest.php</file>
+            <file>tests/Feature/Security/RlsHrTablesIsolationTest.php</file>
             <file>tests/Feature/Security/RlsTenantIsolationTest.php</file>
             <file>tests/Feature/Security/RouteCollisionGuardTest.php</file>
             <file>tests/Feature/Security/SalaryAdvanceSecurityTest.php</file>
@@ -1569,7 +1571,7 @@
           et detruit le marqueur `__mvp_fixture_ready`.
 
           FeatureMvpFixture : 242 fichiers.
-          FeatureRest       : 1119 fichiers.
+          FeatureRest       : 1121 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
             <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
@@ -2705,6 +2707,7 @@
             <file>tests/Feature/Security/KioskDeviceCodeAtRestTest.php</file>
             <file>tests/Feature/Security/MassAssignmentTest.php</file>
             <file>tests/Feature/Security/MetricsAccessTest.php</file>
+            <file>tests/Feature/Security/MigrationGuardObservabilityTest.php</file>
             <file>tests/Feature/Security/OtpLogRedactionTest.php</file>
             <file>tests/Feature/Security/PasswordHashFillableTest.php</file>
             <file>tests/Feature/Security/PayrollCrossTenantAdversarialTest.php</file>
@@ -2712,6 +2715,7 @@
             <file>tests/Feature/Security/PayrollTeamScopeTest.php</file>
             <file>tests/Feature/Security/PublicApplyResumeUrlGuardTest.php</file>
             <file>tests/Feature/Security/PublicShopCaptchaTest.php</file>
+            <file>tests/Feature/Security/RlsHrTablesIsolationTest.php</file>
             <file>tests/Feature/Security/RlsTenantIsolationTest.php</file>
             <file>tests/Feature/Security/RouteCollisionGuardTest.php</file>
             <file>tests/Feature/Security/SalaryAdvanceSecurityTest.php</file>
