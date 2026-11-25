@@ -232,7 +232,7 @@ class TenantConnectorController extends Controller
             return new JsonResponse([
                 'error' => 'CONNECTOR_NOT_AI',
                 'message' => 'CONNECTOR_NOT_AI',
-                'localized_message' => 'Cette connexion n\'est pas un modèle d\'IA : aucune consommation de tokens à suivre.',
+                'localized_message' => __('connectors.not_ai'),
             ], 422);
         }
 
@@ -265,7 +265,7 @@ class TenantConnectorController extends Controller
             return new JsonResponse([
                 'error' => 'CONNECTOR_NOT_AI',
                 'message' => 'CONNECTOR_NOT_AI',
-                'localized_message' => 'Cette connexion n\'est pas un modèle d\'IA : aucune consommation de tokens à suivre.',
+                'localized_message' => __('connectors.not_ai'),
             ], 422);
         }
 
@@ -276,7 +276,7 @@ class TenantConnectorController extends Controller
             return new JsonResponse([
                 'error' => 'CONNECTOR_AI_USAGE_INVALID',
                 'message' => 'CONNECTOR_AI_USAGE_INVALID',
-                'localized_message' => 'Les compteurs de tokens doivent être des entiers positifs ou nuls.',
+                'localized_message' => __('connectors.usage_invalid'),
             ], 422);
         }
 
