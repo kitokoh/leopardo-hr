@@ -7,6 +7,9 @@ import '../../core/providers/app_providers.dart';
 import '../../features/business_profile/screens/business_profile_route.dart';
 import '../../features/discovery/screens/discovery_home_screen.dart';
 import '../../features/activity/screens/activity_tab.dart';
+import '../../features/journeys/screens/contact_request_screen.dart';
+import '../../features/journeys/screens/retail_order_screen.dart';
+import '../../features/journeys/screens/stay_reservation_screen.dart';
 import '../../features/tabs/secondary_tabs.dart';
 
 /// Coque à 4 onglets.
@@ -140,6 +143,32 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/business/:type/:slug',
         builder: (context, state) => BusinessProfileRoute(state: state),
       ),
+      // Parcours transactionnels (issue #9907). Déclarés hors de la coque :
+      // un lien profond vers une commande ou une réservation doit s'ouvrir
+      // directement, sans passer par la liste de découverte.
+      //
+      // Chaque route porte le TYPE dans son chemin (`order`, `stay`,
+      // `contact/:type`) : une seule route générique ne permettrait pas de
+      // distinguer une réservation de séjour d'une commande au moment du
+      // parsing, et le premier `if (type == ...)` reviendrait dans l'écran.
+      GoRoute(
+        path: '/journey/order/:slug',
+        builder: (context, state) =>
+            RetailOrderScreen(sellerSlug: state.pathParameters['slug'] ?? ''),
+      ),
+      GoRoute(
+        path: '/journey/stay/:slug',
+        builder: (context, state) =>
+            StayReservationScreen(slug: state.pathParameters['slug'] ?? ''),
+      ),
+      GoRoute(
+        path: '/journey/contact/:type/:slug',
+        builder: (context, state) => ContactRequestScreen(
+          type: state.pathParameters['type'] ?? '',
+          slug: state.pathParameters['slug'] ?? '',
+        ),
+      ),
+
       // Toute route inconnue : 404 présenté comme une information (voir
       // NotFoundState), jamais comme une panne.
       GoRoute(

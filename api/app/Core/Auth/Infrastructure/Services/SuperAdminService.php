@@ -69,7 +69,23 @@ class SuperAdminService
         return "otpauth://totp/{$label}?secret={$secret}&issuer={$issuer}&algorithm=SHA1&digits=6&period=30";
     }
 
-    private function google2fa(): ?object
+    /**
+     * #9922 — le type de retour etait `?object`, ce qui rendait les trois
+     * appels (`generateSecretKey`, `verifyKey`, `getQRCodeUrl`) invérifiables :
+     * PHPStan ne pouvait que constater « methode inconnue sur object ».
+     *
+     * `pragmarx/google2fa` est une dependance OPTIONNELLE (absente de
+     * composer.json) : le service fonctionne sans elle grace au repli TOTP
+     * maison. Le type `?Google2FA` est donc sur, a l'execution comme a
+     * l'analyse :
+     *   - a l'execution, la classe n'est instanciee que si `class_exists()`
+     *     est vrai, et `null` est renvoye sinon — une annotation de type ne
+     *     charge pas la classe ;
+     *   - a l'analyse, `phpstan-stubs/Google2FA.php` (declare dans
+     *     `scanFiles`) fournit la surface reelle de la bibliotheque, donc les
+     *     trois appels sont verifies au lieu d'etre geles en baseline.
+     */
+    private function google2fa(): ?Google2FA
     {
         if (! class_exists(Google2FA::class)) {
             return null;

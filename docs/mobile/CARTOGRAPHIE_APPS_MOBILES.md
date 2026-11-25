@@ -24,7 +24,7 @@ store distinctes, des permissions distinctes et des cycles de release distincts.
 
 | Persona | App | Identifiant | Plateformes | Contrepartie web | État mesuré |
 |---|---|---|---|---|---|
-| Visiteur / client final / candidat | `leopardo_public` | `com.leopardo.publicapp` | Android + iOS | `front/web/src/app/decouvrir`, `(public)`, `[companySlug]`, 8 verticales `public-surfaces` | 36 fichiers Dart, 3 écrans (découverte, fiche commerce, activité), 9 fichiers de test, 8 verticales au registre |
+| Visiteur / client final / candidat | `leopardo_public` | `com.leopardo.publicapp` | Android + iOS | `front/web/src/app/decouvrir`, `(public)`, `[companySlug]`, 8 verticales `public-surfaces` | 47 fichiers Dart, 11 fichiers de test, 8 verticales au **registre des parcours** (`lib/features/journeys/domain/journey_registry.dart`) |
 
 **Conformité au web — ce qui est aligné** : les 8 verticales (`restaurant`, `retail`,
 `hospitality`, `trade`, `travel`, `pharmacy`, `vtc`, `careers`), leurs `basePath`
@@ -33,22 +33,29 @@ store distinctes, des permissions distinctes et des cycles de release distincts.
 côté mobile et identiques au registre web. Une verticale inconnue rend `null`
 (fail-closed), jamais une identité par défaut.
 
-**Conformité au web — ce qui n'est PAS fait, et qui n'est pas masqué** :
+**Parcours transactionnels — état MESURÉ depuis #9907** :
 
-| Parcours web | État mobile | Nature du travail |
-|---|---|---|
-| `/restaurants` : menu, commande, suivi | fiche + boutons d'action génériques | parcours de commande à écrire |
-| `/boutiques` : catalogue, panier | fiche + boutons | panier/commande à écrire |
-| `/stay` : disponibilité, réservation | fiche | réservation à écrire |
-| `/billets` : recherche, achat | fiche | achat à écrire |
-| `/entreprises` : demande de devis (B2B) | fiche | formulaire de devis à écrire |
-| `/operateurs` : course VTC | fiche | course à écrire |
-| `/pharmacies` : garde, produits | fiche | catalogue à écrire |
-| `/emploi` : offres, candidature | fiche | liste d'offres + candidature à écrire |
+Le registre `journey_registry.dart` porte les 8 verticales, leur type de
+découverte, le parcours disponible et **le motif exact de ce qui manque**.
+`test/journey_registry_test.dart` refuse un registre incomplet, un type
+dupliqué, un motif sans clé i18n (4 locales) ou un `contactTargetType` que la
+passerelle de demande refuserait.
 
-Autrement dit : **le canal est défini et l'identité est conforme ; les parcours
-transactionnels verticaux ne le sont pas encore.** C'est le chantier produit
-principal du grand public, et il est listé ici pour ne pas être « oublié ».
+| Verticale (`/…`) | Type `public.discover` | Parcours mobile | Ce qui reste bloqué, et pourquoi |
+|---|---|---|---|
+| `/restaurants` | `restaurant` | **demande** native (`POST /public/contact-requests`) | la **commande** exige `X-Restaurant-Shop-Token`, un jeton par tenant émis au back-office |
+| `/boutiques` | `retail_shop` | **commande + suivi** natifs (catalogue → panier → `POST /public/market/orders` → suivi par référence + jeton) | — |
+| `/stay` | `hospitality_property` | **réservation + suivi** natifs (dates → disponibilités → `POST …/reservations` → suivi par code) | — |
+| `/entreprises` | `trade_company` | **demande de devis** native | le devis **structuré** (lignes, quantités, incoterm) n'existe pas dans le contrat public |
+| `/pharmacies` | `pharmacy` | **bloqué** | ni catalogue public, ni resolver dans `PublicProfileLocator::types()` (une demande serait un 422) |
+| `/operateurs` | `vtc_operator` | **demande** native | la **course** exige `pickup` ET `dropoff` en lat/lng : l'app n'a pas de recherche d'adresse |
+| `/billets` | *(aucun)* | **bloqué** | aucun provider `public.discoverable` : aucune entrée depuis la découverte |
+| `/emploi` | *(aucun)* | **bloqué** | idem : le portail carrières n'est pas exposé par la découverte |
+
+Autrement dit : **2 verticales sont couvertes de bout en bout**, **3 le sont par
+la passerelle de demande**, **3 n'ont aucun contrat appelable**. Les blocages
+ne sont pas des oublis : ils sont nommés à l'écran (clé i18n du registre) et
+listés ici pour la prochaine tranche serveur.
 
 ### Professionnel — apps RH et gestion
 
@@ -124,7 +131,7 @@ branche par app de matrice et interdit le repli générique **en fin** de chaîn
 |---|---|---|
 | Enregistrer 6 apps dans Firebase + créer `FIREBASE_{MARKETING,TRAVEL_AGENT,CAMERAS,PUBLIC,POS_RETAIL,POS_RESTAURANT}_ANDROID_APP_ID` | oui pour l'installation testeur | propriétaire (console Firebase) |
 | Créer `FIREBASE_APP_ID_HR` pour retirer le repli documenté de `hr` | non (le canal fonctionne sur `FIREBASE_APP_ID`) | propriétaire (secrets du dépôt) |
-| Parcours transactionnels des 8 verticales côté `leopardo_public` | non (canal utilisable en consultation) | dev mobile |
+| Parcours transactionnels restants côté `leopardo_public` : commande restaurant, devis B2B structuré, course VTC, catalogue pharmacie, entrées travel/careers | non (2 verticales natives + 3 via demande livrées en #9907) | dev mobile **et** dev backend (les 5 blocages exigent un contrat public) |
 | Projets iOS de `leopardo_cameras` et `leopardo_travel_agent` | non (Android-only déclaré) | dev mobile, sur décision produit |
 | Écrans stats de `leopardo_accounting` / `leopardo_marketing` encore mock | non (déclaré dans leurs README) | dev mobile |
 | Suite de tests de `leopardo_marketing` (0 fichier) | non | dev mobile |
