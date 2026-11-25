@@ -59,6 +59,8 @@ class ConnectorAiModelsTest extends TestCase
 
     /**
      * Crée une connexion IA pour le tenant courant et rend son id.
+     *
+     * @param  array<string, mixed>  $config
      */
     private function createAiConnection(Company $company, array $config = []): int
     {
