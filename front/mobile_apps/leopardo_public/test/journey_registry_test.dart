@@ -103,10 +103,7 @@ void main() {
       expect(retail.blockerFor('order'), isNull);
 
       final restaurant = journeyByCode('restaurant')!;
-      expect(
-        restaurant.blockerFor('order'),
-        'journeyBlockerRestaurantOrder',
-      );
+      expect(restaurant.blockerFor('order'), 'journeyBlockerRestaurantOrder');
     });
   });
 

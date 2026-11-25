@@ -217,6 +217,27 @@ class CrmOpportunityStageTest extends TestCase
         ])->assertStatus(422)->assertJsonValidationErrors('lost_reason');
     }
 
+    /**
+     * Le motif de perte n'est pas seulement interdit sur `won` : il l'est sur
+     * TOUTE etape qui n'est pas `lost`. Sans cette regle, un appelant qui
+     * envoie `stage=negotiation` + `lost_reason` croit avoir enregistre une
+     * perte alors que l'affaire reste ouverte — et la ligne `notes` porterait
+     * un motif de perte sur une affaire en cours.
+     */
+    public function test_reason_on_an_open_stage_is_refused(): void
+    {
+        Sanctum::actingAs($this->manager($this->companyA));
+
+        $opportunity = $this->opportunity($this->companyA);
+
+        $this->patchJson("/api/v1/crm/opportunities/{$opportunity->id}/stage", [
+            'stage' => 'negotiation',
+            'lost_reason' => 'motif sans objet',
+        ])->assertStatus(422)->assertJsonValidationErrors('lost_reason');
+
+        $this->assertSame('prospecting', $opportunity->refresh()->stage);
+    }
+
     // ─── La trace ────────────────────────────────────────────────────────────
 
     public function test_the_previous_stage_is_journaled_in_notes_and_timeline(): void

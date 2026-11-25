@@ -32,6 +32,10 @@ class UpdateTravelStationRequest extends FormRequest
             'address' => ['nullable', 'string', 'max:255'],
             'contact_phone' => ['nullable', 'string', 'max:40'],
             'timezone' => ['sometimes', 'string', 'timezone'],
+            // M5 — délai minimal de correspondance imposé par la gare.
+            // `nullable` : envoyer null retire la surcharge et rend la gare au
+            // défaut du tenant.
+            'min_connection_minutes' => ['nullable', 'integer', 'min:15', 'max:240'],
             'is_terminal' => ['sometimes', 'boolean'],
             'status' => ['sometimes', 'string', Rule::in(['active', 'disabled'])],
         ];

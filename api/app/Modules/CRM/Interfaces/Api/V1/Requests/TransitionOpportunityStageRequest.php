@@ -77,6 +77,7 @@ final class TransitionOpportunityStageRequest extends FormRequest
         return [
             'stage.in' => __('crm.opportunities.stage_invalid'),
             'lost_reason.required_if' => __('crm.opportunities.lost_reason_required'),
+            'lost_reason.prohibited_unless' => __('crm.opportunities.lost_reason_only_when_lost'),
         ];
     }
 

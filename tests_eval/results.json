@@ -1,0 +1,642 @@
+[
+  {
+    "persona": "principal",
+    "feature": "ping (smoke)",
+    "method": "GET",
+    "path": "/travel/ping",
+    "status": 200,
+    "ms": 46,
+    "snippet": "{\"status\":\"ok\",\"service\":\"travelagency\"}",
+    "note": ""
+  },
+  {
+    "persona": "rh",
+    "feature": "ping (smoke)",
+    "method": "GET",
+    "path": "/travel/ping",
+    "status": 200,
+    "ms": 47,
+    "snippet": "{\"status\":\"ok\",\"service\":\"travelagency\"}",
+    "note": ""
+  },
+  {
+    "persona": "dept",
+    "feature": "ping (smoke)",
+    "method": "GET",
+    "path": "/travel/ping",
+    "status": 200,
+    "ms": 38,
+    "snippet": "{\"status\":\"ok\",\"service\":\"travelagency\"}",
+    "note": ""
+  },
+  {
+    "persona": "comptable",
+    "feature": "ping (smoke)",
+    "method": "GET",
+    "path": "/travel/ping",
+    "status": 200,
+    "ms": 59,
+    "snippet": "{\"status\":\"ok\",\"service\":\"travelagency\"}",
+    "note": ""
+  },
+  {
+    "persona": "superviseur",
+    "feature": "ping (smoke)",
+    "method": "GET",
+    "path": "/travel/ping",
+    "status": 200,
+    "ms": 38,
+    "snippet": "{\"status\":\"ok\",\"service\":\"travelagency\"}",
+    "note": ""
+  },
+  {
+    "persona": "employe",
+    "feature": "ping (smoke)",
+    "method": "GET",
+    "path": "/travel/ping",
+    "status": 200,
+    "ms": 38,
+    "snippet": "{\"status\":\"ok\",\"service\":\"travelagency\"}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "countries",
+    "method": "GET",
+    "path": "/travel/countries",
+    "status": 200,
+    "ms": 50,
+    "snippet": "{\"data\":[{\"id\":1,\"iso2\":\"AF\",\"iso3\":\"AFG\",\"name\":\"Afghanistan\",\"phone_code\":93,\"status\":\"active\"},{\"id\":2,\"iso2\":\"AL\",\"iso3\":\"ALB\",\"name\":\"Albania\",\"phone_code\":355,\"status\":\"active\"},{\"id\":3,\"iso2\":\"DZ\",\"iso3\":\"DZA\",\"name\":\"Algeria\",\"phone_code\":213,\"status\":\"active\"},{\"id\":4,\"iso2\":\"AS\",\"iso3\":\"ASM\",\"name\":\"American Samoa\",\"phone_code\":1684,\"status\":\"active\"},{\"id\":5,\"iso2\":\"AD\",\"iso3\":\"AND\",\"na",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "cities",
+    "method": "GET",
+    "path": "/travel/cities",
+    "status": 200,
+    "ms": 48,
+    "snippet": "{\"data\":[{\"id\":11,\"country_iso2\":\"CI\",\"name\":\"Abidjan\",\"region\":\"Abidjan\",\"latitude\":5.36,\"longitude\":-4.0083,\"status\":\"active\"},{\"id\":41,\"country_iso2\":\"NG\",\"name\":\"Abuja\",\"region\":\"FCT\",\"latitude\":9.0765,\"longitude\":7.3986,\"status\":\"active\"},{\"id\":45,\"country_iso2\":\"GH\",\"name\":\"Accra\",\"region\":\"Greater Accra\",\"latitude\":5.6037,\"longitude\":-0.187,\"status\":\"active\"},{\"id\":66,\"country_iso2\":\"ET\",\"n",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "stations",
+    "method": "GET",
+    "path": "/travel/stations",
+    "status": 200,
+    "ms": 55,
+    "snippet": "{\"data\":[{\"id\":1,\"code\":\"DLA-CENTRE\",\"name\":\"Gare Routi\\u00e8re de Douala\",\"city_id\":10,\"address\":null,\"contact_phone\":null,\"timezone\":\"Africa\\/Douala\",\"is_terminal\":true,\"status\":\"active\",\"created_at\":\"2026-11-22T13:26:19.000000Z\",\"updated_at\":\"2026-11-22T13:26:19.000000Z\"},{\"id\":3,\"code\":\"ABJ-ADJAME\",\"name\":\"Gare d'Adjam\\u00e9 (Abidjan)\",\"city_id\":14,\"address\":null,\"contact_phone\":null,\"timezone",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "offices",
+    "method": "GET",
+    "path": "/travel/offices",
+    "status": 200,
+    "ms": 42,
+    "snippet": "{\"data\":[{\"id\":1,\"name\":\"Bureau Centre-ville Douala\",\"city_id\":10,\"address\":null,\"contact_phone\":null,\"status\":\"active\",\"created_at\":\"2026-11-22T13:26:19.000000Z\",\"updated_at\":\"2026-11-22T13:26:19.000000Z\"},{\"id\":2,\"name\":\"Bureau Centre-ville Yaound\\u00e9\",\"city_id\":10,\"address\":null,\"contact_phone\":null,\"status\":\"active\",\"created_at\":\"2026-11-22T13:26:19.000000Z\",\"updated_at\":\"2026-11-22T13:26:19",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "carriers",
+    "method": "GET",
+    "path": "/travel/carriers",
+    "status": 200,
+    "ms": 54,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/carriers?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/carriers?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/carriers?page=1\",\"label\":\"1\",\"page\":1,\"acti",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "classes",
+    "method": "GET",
+    "path": "/travel/classes",
+    "status": 200,
+    "ms": 39,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/classes?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/classes?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/classes?page=1\",\"label\":\"1\",\"page\":1,\"active\"",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "vehicles",
+    "method": "GET",
+    "path": "/travel/vehicles",
+    "status": 200,
+    "ms": 62,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/vehicles?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/vehicles?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/vehicles?page=1\",\"label\":\"1\",\"page\":1,\"acti",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "routes",
+    "method": "GET",
+    "path": "/travel/routes",
+    "status": 200,
+    "ms": 39,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/routes?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/routes?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/routes?page=1\",\"label\":\"1\",\"page\":1,\"active\":tr",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "trips",
+    "method": "GET",
+    "path": "/travel/trips",
+    "status": 200,
+    "ms": 57,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"label\":\"1\",\"page\":1,\"active\":true}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "bookings",
+    "method": "GET",
+    "path": "/travel/bookings",
+    "status": 200,
+    "ms": 75,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/bookings?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/bookings?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/bookings?page=1\",\"label\":\"1\",\"page\":1,\"acti",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "rental-vehicles",
+    "method": "GET",
+    "path": "/travel/rental-vehicles",
+    "status": 200,
+    "ms": 46,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/rental-vehicles?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/rental-vehicles?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/rental-vehicles?page=1\",\"labe",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "rental-bookings",
+    "method": "GET",
+    "path": "/travel/rental-bookings",
+    "status": 200,
+    "ms": 46,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/rental-bookings?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/rental-bookings?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/rental-bookings?page=1\",\"labe",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "hotels",
+    "method": "GET",
+    "path": "/travel/hotels",
+    "status": 200,
+    "ms": 40,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/hotels?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/hotels?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/hotels?page=1\",\"label\":\"1\",\"page\":1,\"active\":tr",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "quotes",
+    "method": "GET",
+    "path": "/travel/quotes",
+    "status": 200,
+    "ms": 60,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/quotes?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/quotes?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/quotes?page=1\",\"label\":\"1\",\"page\":1,\"active\":tr",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "cancellation-policies",
+    "method": "GET",
+    "path": "/travel/cancellation-policies",
+    "status": 200,
+    "ms": 44,
+    "snippet": "{\"data\":[],\"meta\":{\"current_page\":1,\"last_page\":1,\"per_page\":50,\"total\":0}}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "currency-rates",
+    "method": "GET",
+    "path": "/travel/currency-rates",
+    "status": 200,
+    "ms": 60,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/currency-rates?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/currency-rates?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/currency-rates?page=1\",\"label\":",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "distributor-keys",
+    "method": "GET",
+    "path": "/travel/distributor-keys",
+    "status": 200,
+    "ms": 40,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "webhook-subscriptions",
+    "method": "GET",
+    "path": "/travel/webhook-subscriptions",
+    "status": 200,
+    "ms": 43,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "tourist-sites",
+    "method": "GET",
+    "path": "/travel/tourist-sites",
+    "status": 200,
+    "ms": 50,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "articles",
+    "method": "GET",
+    "path": "/travel/articles",
+    "status": 200,
+    "ms": 65,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/articles?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/articles?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/articles?page=1\",\"label\":\"1\",\"page\":1,\"acti",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "comments",
+    "method": "GET",
+    "path": "/travel/comments",
+    "status": 200,
+    "ms": 41,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/comments?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/comments?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/comments?page=1\",\"label\":\"1\",\"page\":1,\"acti",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "quizzes",
+    "method": "GET",
+    "path": "/travel/quizzes",
+    "status": 200,
+    "ms": 42,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "adverts",
+    "method": "GET",
+    "path": "/travel/adverts",
+    "status": 200,
+    "ms": 50,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "adverts/manage",
+    "method": "GET",
+    "path": "/travel/adverts/manage",
+    "status": 200,
+    "ms": 38,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "advert-types",
+    "method": "GET",
+    "path": "/travel/advert-types",
+    "status": 200,
+    "ms": 47,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "advert-positions",
+    "method": "GET",
+    "path": "/travel/advert-positions",
+    "status": 200,
+    "ms": 37,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "advert-prices",
+    "method": "GET",
+    "path": "/travel/advert-prices",
+    "status": 200,
+    "ms": 66,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "staff-assignments",
+    "method": "GET",
+    "path": "/travel/staff-assignments",
+    "status": 200,
+    "ms": 35,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/staff-assignments?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/staff-assignments?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/staff-assignments?page=1\"",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "contacts",
+    "method": "GET",
+    "path": "/travel/contacts",
+    "status": 200,
+    "ms": 51,
+    "snippet": "{\"data\":[],\"meta\":{\"total\":0,\"count\":0,\"filters\":{\"search\":\"\",\"consent\":null}}}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "corporate-accounts",
+    "method": "GET",
+    "path": "/travel/corporate-accounts",
+    "status": 200,
+    "ms": 36,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "corporate-quotes",
+    "method": "GET",
+    "path": "/travel/corporate-quotes",
+    "status": 200,
+    "ms": 37,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "reports/dashboard",
+    "method": "GET",
+    "path": "/travel/reports/dashboard",
+    "status": 200,
+    "ms": 53,
+    "snippet": "{\"data\":{\"date\":\"2026-11-22\",\"period_days\":1,\"trip_id\":null,\"sales_today\":0,\"passengers\":0,\"revenue_minor\":0,\"confirmed_minor\":0,\"cancellations\":0,\"occupancy_rate\":0,\"trips_count\":0}}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "reports/sales",
+    "method": "GET",
+    "path": "/travel/reports/sales",
+    "status": 422,
+    "ms": 72,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"from\":[\"Le champ from est obligatoire.\"],\"to\":[\"Le champ to est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "reports/occupancy",
+    "method": "GET",
+    "path": "/travel/reports/occupancy",
+    "status": 422,
+    "ms": 38,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"from\":[\"Le champ from est obligatoire.\"],\"to\":[\"Le champ to est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "reports/revenue",
+    "method": "GET",
+    "path": "/travel/reports/revenue",
+    "status": 422,
+    "ms": 53,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"from\":[\"Le champ from est obligatoire.\"],\"to\":[\"Le champ to est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "reports/cancellations",
+    "method": "GET",
+    "path": "/travel/reports/cancellations",
+    "status": 422,
+    "ms": 39,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"from\":[\"Le champ from est obligatoire.\"],\"to\":[\"Le champ to est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "reports/offices",
+    "method": "GET",
+    "path": "/travel/reports/offices",
+    "status": 422,
+    "ms": 37,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"from\":[\"Le champ from est obligatoire.\"],\"to\":[\"Le champ to est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "fleet/tracking",
+    "method": "GET",
+    "path": "/travel/fleet/tracking",
+    "status": 200,
+    "ms": 48,
+    "snippet": "{\"data\":{\"vehicles\":[],\"summary\":{\"vehicles\":0,\"with_position\":0,\"current\":0,\"stale\":0,\"unavailable\":0,\"measured\":0,\"estimated\":0},\"stale_after_minutes\":30}}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "shop/trips",
+    "method": "GET",
+    "path": "/travel/shop/trips",
+    "status": 200,
+    "ms": 40,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/shop\\/trips?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/shop\\/trips?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/shop\\/trips?page=1\",\"label\":\"1\",\"page",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "shop/connections",
+    "method": "GET",
+    "path": "/travel/shop/connections",
+    "status": 422,
+    "ms": 70,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"origin_city_id\":[\"Le champ origin city id est obligatoire.\"],\"destination_city_id\":[\"Le champ destination city id est obligatoire.\"],\"date\":[\"Le champ date est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "pdv/session/current",
+    "method": "GET",
+    "path": "/travel/pdv/session/current",
+    "status": 200,
+    "ms": 42,
+    "snippet": "{\"data\":null}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "public-shop-token",
+    "method": "GET",
+    "path": "/travel/public-shop-token",
+    "status": 200,
+    "ms": 49,
+    "snippet": "{\"data\":null}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "loyalty/account",
+    "method": "GET",
+    "path": "/travel/loyalty/account",
+    "status": 422,
+    "ms": 40,
+    "snippet": "{\"error\":\"contact_identifier requis.\",\"message\":\"contact_identifier requis.\",\"localized_message\":\"Some fields are incorrect.\"}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "loyalty/rewards",
+    "method": "GET",
+    "path": "/travel/loyalty/rewards",
+    "status": 200,
+    "ms": 58,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "loyalty/entries",
+    "method": "GET",
+    "path": "/travel/loyalty/entries",
+    "status": 422,
+    "ms": 41,
+    "snippet": "{\"error\":\"contact_identifier requis.\",\"message\":\"contact_identifier requis.\",\"localized_message\":\"Some fields are incorrect.\"}",
+    "note": ""
+  },
+  {
+    "persona": "principal",
+    "feature": "article-categories",
+    "method": "GET",
+    "path": "/travel/article-categories",
+    "status": 200,
+    "ms": 53,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "employe",
+    "feature": "reports/dashboard (doit refuser)",
+    "method": "GET",
+    "path": "/travel/reports/dashboard",
+    "status": 403,
+    "ms": 40,
+    "snippet": "{\"error\":\"FORBIDDEN\",\"message\":\"FORBIDDEN\",\"localized_message\":\"You do not have permission for this action.\"}",
+    "note": ""
+  },
+  {
+    "persona": "employe",
+    "feature": "stations create (doit refuser)",
+    "method": "POST",
+    "path": "/travel/stations",
+    "status": 422,
+    "ms": 56,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"code\":[\"Le champ code est obligatoire.\"],\"name\":[\"Le champ name est obligatoire.\"],\"city_id\":[\"Le champ city id est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "persona": "employe",
+    "feature": "bookings create (doit refuser)",
+    "method": "POST",
+    "path": "/travel/bookings",
+    "status": 422,
+    "ms": 38,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"trip_id\":[\"Le champ trip id est obligatoire.\"],\"idempotency_key\":[\"Le champ idempotency key est obligatoire.\"],\"passengers\":[\"Le champ passengers est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "persona": "employe",
+    "feature": "distributor-keys (doit refuser)",
+    "method": "GET",
+    "path": "/travel/distributor-keys",
+    "status": 403,
+    "ms": 63,
+    "snippet": "{\"error\":\"FORBIDDEN\",\"message\":\"FORBIDDEN\",\"localized_message\":\"You do not have permission for this action.\"}",
+    "note": ""
+  },
+  {
+    "persona": "rh",
+    "feature": "reports/dashboard (rh)",
+    "method": "GET",
+    "path": "/travel/reports/dashboard",
+    "status": 200,
+    "ms": 42,
+    "snippet": "{\"data\":{\"date\":\"2026-11-22\",\"period_days\":1,\"trip_id\":null,\"sales_today\":0,\"passengers\":0,\"revenue_minor\":0,\"confirmed_minor\":0,\"cancellations\":0,\"occupancy_rate\":0,\"trips_count\":0}}",
+    "note": ""
+  },
+  {
+    "persona": "rh",
+    "feature": "distributor-keys (rh)",
+    "method": "GET",
+    "path": "/travel/distributor-keys",
+    "status": 200,
+    "ms": 45,
+    "snippet": "{\"data\":[]}",
+    "note": ""
+  },
+  {
+    "persona": "comptable",
+    "feature": "reports/dashboard",
+    "method": "GET",
+    "path": "/travel/reports/dashboard",
+    "status": 403,
+    "ms": 39,
+    "snippet": "{\"error\":\"FORBIDDEN\",\"message\":\"FORBIDDEN\",\"localized_message\":\"You do not have permission for this action.\"}",
+    "note": ""
+  },
+  {
+    "persona": "comptable",
+    "feature": "trips (lecture)",
+    "method": "GET",
+    "path": "/travel/trips",
+    "status": 200,
+    "ms": 41,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"label\":\"1\",\"page\":1,\"active\":true}",
+    "note": ""
+  },
+  {
+    "persona": "dept",
+    "feature": "reports/dashboard",
+    "method": "GET",
+    "path": "/travel/reports/dashboard",
+    "status": 403,
+    "ms": 48,
+    "snippet": "{\"error\":\"FORBIDDEN\",\"message\":\"FORBIDDEN\",\"localized_message\":\"You do not have permission for this action.\"}",
+    "note": ""
+  },
+  {
+    "persona": "dept",
+    "feature": "trips (lecture)",
+    "method": "GET",
+    "path": "/travel/trips",
+    "status": 200,
+    "ms": 80,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"label\":\"1\",\"page\":1,\"active\":true}",
+    "note": ""
+  },
+  {
+    "persona": "superviseur",
+    "feature": "reports/dashboard",
+    "method": "GET",
+    "path": "/travel/reports/dashboard",
+    "status": 403,
+    "ms": 41,
+    "snippet": "{\"error\":\"FORBIDDEN\",\"message\":\"FORBIDDEN\",\"localized_message\":\"You do not have permission for this action.\"}",
+    "note": ""
+  },
+  {
+    "persona": "superviseur",
+    "feature": "trips (lecture)",
+    "method": "GET",
+    "path": "/travel/trips",
+    "status": 200,
+    "ms": 48,
+    "snippet": "{\"data\":[],\"links\":{\"first\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"last\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"prev\":null,\"next\":null},\"meta\":{\"current_page\":1,\"from\":null,\"last_page\":1,\"links\":[{\"url\":null,\"label\":\"&laquo; Previous\",\"page\":null,\"active\":false},{\"url\":\"http:\\/\\/localhost:8000\\/api\\/v1\\/travel\\/trips?page=1\",\"label\":\"1\",\"page\":1,\"active\":true}",
+    "note": ""
+  }
+]

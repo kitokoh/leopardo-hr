@@ -1,0 +1,258 @@
+{
+  "ops": [
+    {
+      "label": "lire trajets",
+      "method": "GET",
+      "path": "/travel/trips",
+      "expected": "tout employe"
+    },
+    {
+      "label": "lire rapports",
+      "method": "GET",
+      "path": "/travel/reports/dashboard",
+      "expected": "travel.reports"
+    },
+    {
+      "label": "creer gare",
+      "method": "POST",
+      "path": "/travel/stations",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "creer transporteur",
+      "method": "POST",
+      "path": "/travel/carriers",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "creer voyage",
+      "method": "POST",
+      "path": "/travel/trips",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "creer reservation",
+      "method": "POST",
+      "path": "/travel/bookings",
+      "expected": "travel.agent"
+    },
+    {
+      "label": "cle distributeur",
+      "method": "GET",
+      "path": "/travel/distributor-keys",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "webhooks",
+      "method": "GET",
+      "path": "/travel/webhook-subscriptions",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "export rapport",
+      "method": "POST",
+      "path": "/travel/reports/export",
+      "expected": "travel.reports"
+    },
+    {
+      "label": "ouvrir PDV",
+      "method": "POST",
+      "path": "/travel/pdv/session/open",
+      "expected": "travel.agent"
+    },
+    {
+      "label": "affecter equipage",
+      "method": "POST",
+      "path": "/travel/staff-assignments",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "creer article",
+      "method": "POST",
+      "path": "/travel/articles",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "creer quiz",
+      "method": "POST",
+      "path": "/travel/quizzes",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "creer annonce type",
+      "method": "POST",
+      "path": "/travel/advert-types",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "creer hotel",
+      "method": "POST",
+      "path": "/travel/hotels",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "creer vehicule location",
+      "method": "POST",
+      "path": "/travel/rental-vehicles",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "politique annulation",
+      "method": "POST",
+      "path": "/travel/cancellation-policies",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "taux devise",
+      "method": "POST",
+      "path": "/travel/currency-rates",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "compte corporate",
+      "method": "POST",
+      "path": "/travel/corporate-accounts",
+      "expected": "travel.manage"
+    },
+    {
+      "label": "site touristique",
+      "method": "POST",
+      "path": "/travel/tourist-sites",
+      "expected": "travel.manage"
+    }
+  ],
+  "matrix": {
+    "principal": {
+      "lire trajets": 200,
+      "lire rapports": 200,
+      "creer gare": 201,
+      "creer transporteur": 201,
+      "creer voyage": 201,
+      "creer reservation": 422,
+      "cle distributeur": 200,
+      "webhooks": 200,
+      "export rapport": 202,
+      "ouvrir PDV": 201,
+      "affecter equipage": 201,
+      "creer article": 201,
+      "creer quiz": 201,
+      "creer annonce type": 201,
+      "creer hotel": 201,
+      "creer vehicule location": 201,
+      "politique annulation": 201,
+      "taux devise": 201,
+      "compte corporate": 201,
+      "site touristique": 201
+    },
+    "rh": {
+      "lire trajets": 200,
+      "lire rapports": 200,
+      "creer gare": 500,
+      "creer transporteur": 500,
+      "creer voyage": 500,
+      "creer reservation": 422,
+      "cle distributeur": 200,
+      "webhooks": 200,
+      "export rapport": 202,
+      "ouvrir PDV": 422,
+      "affecter equipage": 409,
+      "creer article": 201,
+      "creer quiz": 201,
+      "creer annonce type": 422,
+      "creer hotel": 201,
+      "creer vehicule location": 500,
+      "politique annulation": 201,
+      "taux devise": 422,
+      "compte corporate": 500,
+      "site touristique": 201
+    },
+    "dept": {
+      "lire trajets": 200,
+      "lire rapports": 403,
+      "creer gare": 403,
+      "creer transporteur": 403,
+      "creer voyage": 403,
+      "creer reservation": 403,
+      "cle distributeur": 403,
+      "webhooks": 403,
+      "export rapport": 403,
+      "ouvrir PDV": 422,
+      "affecter equipage": 403,
+      "creer article": 403,
+      "creer quiz": 403,
+      "creer annonce type": 422,
+      "creer hotel": 403,
+      "creer vehicule location": 403,
+      "politique annulation": 403,
+      "taux devise": 403,
+      "compte corporate": 403,
+      "site touristique": 403
+    },
+    "comptable": {
+      "lire trajets": 200,
+      "lire rapports": 403,
+      "creer gare": 403,
+      "creer transporteur": 403,
+      "creer voyage": 403,
+      "creer reservation": 403,
+      "cle distributeur": 403,
+      "webhooks": 403,
+      "export rapport": 403,
+      "ouvrir PDV": 422,
+      "affecter equipage": 403,
+      "creer article": 403,
+      "creer quiz": 403,
+      "creer annonce type": 422,
+      "creer hotel": 403,
+      "creer vehicule location": 403,
+      "politique annulation": 403,
+      "taux devise": 403,
+      "compte corporate": 403,
+      "site touristique": 403
+    },
+    "superviseur": {
+      "lire trajets": 200,
+      "lire rapports": 403,
+      "creer gare": 403,
+      "creer transporteur": 403,
+      "creer voyage": 403,
+      "creer reservation": 403,
+      "cle distributeur": 403,
+      "webhooks": 403,
+      "export rapport": 403,
+      "ouvrir PDV": 422,
+      "affecter equipage": 403,
+      "creer article": 403,
+      "creer quiz": 403,
+      "creer annonce type": 422,
+      "creer hotel": 403,
+      "creer vehicule location": 403,
+      "politique annulation": 403,
+      "taux devise": 403,
+      "compte corporate": 403,
+      "site touristique": 403
+    },
+    "employe": {
+      "lire trajets": 200,
+      "lire rapports": 403,
+      "creer gare": 403,
+      "creer transporteur": 403,
+      "creer voyage": 403,
+      "creer reservation": 403,
+      "cle distributeur": 403,
+      "webhooks": 403,
+      "export rapport": 403,
+      "ouvrir PDV": 422,
+      "affecter equipage": 403,
+      "creer article": 403,
+      "creer quiz": 403,
+      "creer annonce type": 422,
+      "creer hotel": 403,
+      "creer vehicule location": 403,
+      "politique annulation": 403,
+      "taux devise": 403,
+      "compte corporate": 403,
+      "site touristique": 403
+    }
+  }
+}

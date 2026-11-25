@@ -1,0 +1,407 @@
+[
+  {
+    "step": "ping",
+    "method": "GET",
+    "path": "/travel/ping",
+    "status": 200,
+    "ms": 38,
+    "snippet": "{\"status\":\"ok\",\"service\":\"travelagency\"}",
+    "note": ""
+  },
+  {
+    "step": "liste villes",
+    "method": "GET",
+    "path": "/travel/cities",
+    "status": 200,
+    "ms": 55,
+    "snippet": "{\"data\":[{\"id\":11,\"country_iso2\":\"CI\",\"name\":\"Abidjan\",\"region\":\"Abidjan\",\"latitude\":5.36,\"longitude\":-4.0083,\"status\":\"active\"},{\"id\":41,\"country_iso2\":\"NG\",\"name\":\"Abuja\",\"region\":\"FCT\",\"latitude\":9.0765,\"longitude\":7.3986,\"status\":\"active\"},{\"id\":45,\"country_iso2\":\"GH\",\"name\":\"Accra\",\"region\":\"Greater Accra\",\"latitude\":5.6037,\"longitude\":-0.187,\"status\":\"active\"},{\"id\":66,\"country_iso2\":\"ET\",\"name\":\"Addis-Abeba\",\"region\":\"Addis-Abeba\",\"latitude\":9.0054,\"longitude\":38.7636,\"status\":\"active\"},{",
+    "note": ""
+  },
+  {
+    "step": "creer transporteur",
+    "method": "POST",
+    "path": "/travel/carriers",
+    "status": 201,
+    "ms": 40,
+    "snippet": "{\"data\":{\"id\":1,\"code\":\"CAR-EVAL-1\",\"name\":\"Transport Eval\",\"type\":\"bus\",\"contact_phone\":null,\"logo_asset_id\":null,\"status\":null,\"created_at\":\"2026-11-22T13:27:08.000000Z\",\"updated_at\":\"2026-11-22T13:27:08.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "creer classe",
+    "method": "POST",
+    "path": "/travel/classes",
+    "status": 201,
+    "ms": 75,
+    "snippet": "{\"data\":{\"id\":1,\"code\":\"CLS-EVAL-1\",\"label\":\"Ordinaire\",\"color\":null,\"priority\":1,\"status\":null,\"created_at\":\"2026-11-22T13:27:08.000000Z\",\"updated_at\":\"2026-11-22T13:27:08.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "creer vehicule",
+    "method": "POST",
+    "path": "/travel/vehicles",
+    "status": 201,
+    "ms": 43,
+    "snippet": "{\"data\":{\"id\":1,\"code\":\"VEH-EVAL-1\",\"registration_number\":null,\"seat_capacity\":50,\"seat_layout\":{\"aisle_after\":2,\"seats_per_row\":4},\"effective_seat_layout\":{\"seats_per_row\":4,\"aisle_after\":2,\"is_configured\":true},\"carrier_id\":1,\"status\":\"active\",\"notes\":null,\"created_at\":\"2026-11-22T13:27:08.000000Z\",\"updated_at\":\"2026-11-22T13:27:08.000000Z\",\"position\":null}}",
+    "note": ""
+  },
+  {
+    "step": "creer ligne",
+    "method": "POST",
+    "path": "/travel/routes",
+    "status": 201,
+    "ms": 54,
+    "snippet": "{\"data\":{\"id\":1,\"code\":\"RTE-EVAL-1\",\"origin_city_id\":11,\"destination_city_id\":41,\"distance_km\":300,\"duration_min\":240,\"status\":\"active\",\"stops\":[],\"created_at\":\"2026-11-22T13:27:08.000000Z\",\"updated_at\":\"2026-11-22T13:27:08.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "ajouter arret",
+    "method": "POST",
+    "path": "/travel/routes/1/stops",
+    "status": 201,
+    "ms": 40,
+    "snippet": "{\"data\":{\"id\":1,\"route_id\":1,\"city_id\":45,\"rank\":1,\"is_stopover\":true,\"min_duration_min\":null,\"created_at\":\"2026-11-22T13:27:08.000000Z\",\"updated_at\":\"2026-11-22T13:27:08.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "creer voyage",
+    "method": "POST",
+    "path": "/travel/trips",
+    "status": 201,
+    "ms": 71,
+    "snippet": "{\"data\":{\"id\":1,\"code\":\"TRP-EVAL-1\",\"route_id\":1,\"carrier_id\":1,\"vehicle_id\":1,\"departure_date\":\"2026-11-25\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-25\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"status\":\"draft\",\"published_at\":null,\"prices\":[],\"created_at\":\"2026-11-22T13:27:08.000000Z\",\"updated_at\":\"2026-11-22T13:27:08.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "creer tarif",
+    "method": "POST",
+    "path": "/travel/trips/1/prices",
+    "status": 422,
+    "ms": 68,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"adult_price_minor\":[\"Le champ adult price minor est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "step": "publier voyage",
+    "method": "POST",
+    "path": "/travel/trips/1/publish",
+    "status": 200,
+    "ms": 56,
+    "snippet": "{\"data\":{\"id\":1,\"code\":\"TRP-EVAL-1\",\"route_id\":1,\"carrier_id\":1,\"vehicle_id\":1,\"departure_date\":\"2026-11-25\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-25\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"status\":\"published\",\"published_at\":\"2026-11-22T13:27:08.000000Z\",\"prices\":[],\"created_at\":\"2026-11-22T13:27:08.000000Z\",\"updated_at\":\"2026-11-22T13:27:08.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "plan de sieges",
+    "method": "GET",
+    "path": "/travel/trips/1/seats",
+    "status": 200,
+    "ms": 43,
+    "snippet": "{\"data\":{\"trip_id\":1,\"code\":\"TRP-EVAL-1\",\"total_seats\":50,\"seat_layout\":{\"seats_per_row\":4,\"aisle_after\":2,\"is_configured\":true},\"seats\":[{\"seat_number\":1,\"status\":\"free\",\"booking_reference\":null},{\"seat_number\":2,\"status\":\"free\",\"booking_reference\":null},{\"seat_number\":3,\"status\":\"free\",\"booking_reference\":null},{\"seat_number\":4,\"status\":\"free\",\"booking_reference\":null},{\"seat_number\":5,\"status\":\"free\",\"booking_reference\":null},{\"seat_number\":6,\"status\":\"free\",\"booking_reference\":null},{\"seat_n",
+    "note": ""
+  },
+  {
+    "step": "recherche voyage",
+    "method": "GET",
+    "path": "/travel/trips/search",
+    "status": 200,
+    "ms": 46,
+    "snippet": "{\"data\":[{\"id\":1,\"code\":\"TRP-EVAL-1\",\"route_id\":1,\"carrier_id\":1,\"vehicle_id\":1,\"departure_date\":\"2026-11-25\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-25\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"status\":\"published\",\"published_at\":\"2026-11-22T13:27:08.000000Z\",\"prices\":[],\"route\":{\"id\":1,\"code\":\"RTE-EVAL-1\",\"origin_city_id\":11,\"destination_city_id\":41,\"distance_km\":300,\"duration_min\":240,\"status\":\"active\",\"stops\":[{\"id\":1,\"route_id\":1,\"city_id\":45,\"rank\":",
+    "note": ""
+  },
+  {
+    "step": "creer reservation",
+    "method": "POST",
+    "path": "/travel/bookings",
+    "status": 422,
+    "ms": 59,
+    "snippet": "{\"error\":\"Aucun tarif defini pour cette classe sur ce trajet.\",\"message\":\"Aucun tarif defini pour cette classe sur ce trajet.\",\"localized_message\":\"Some fields are incorrect.\"}",
+    "note": ""
+  },
+  {
+    "step": "confirmer reservation",
+    "method": "POST",
+    "path": "/travel/bookings/None/confirm",
+    "status": 500,
+    "ms": 50,
+    "snippet": "{\"error\":\"INTERNAL_ERROR\",\"message\":\"INTERNAL_ERROR\",\"localized_message\":\"Une erreur est survenue. Veuillez r\\u00e9essayer.\"}",
+    "note": ""
+  },
+  {
+    "step": "emettre billets",
+    "method": "POST",
+    "path": "/travel/bookings/None/issue-ticket",
+    "status": 500,
+    "ms": 51,
+    "snippet": "{\"error\":\"INTERNAL_ERROR\",\"message\":\"INTERNAL_ERROR\",\"localized_message\":\"Une erreur est survenue. Veuillez r\\u00e9essayer.\"}",
+    "note": ""
+  },
+  {
+    "step": "manifeste passagers",
+    "method": "GET",
+    "path": "/travel/trips/1/manifest",
+    "status": 200,
+    "ms": 40,
+    "snippet": "{\"data\":[],\"crew\":[]}",
+    "note": ""
+  },
+  {
+    "step": "rapport ventes",
+    "method": "GET",
+    "path": "/travel/reports/sales",
+    "status": 200,
+    "ms": 43,
+    "snippet": "{\"data\":{\"from\":\"2026-10-23T00:00:00+00:00\",\"to\":\"2026-12-22T00:00:00+00:00\",\"filters\":{\"trip_id\":null,\"route_id\":null,\"source\":null,\"status\":null,\"office_id\":null},\"bookings_count\":0,\"passengers_count\":0,\"revenue_minor\":0,\"by_source\":[],\"by_status\":[]}}",
+    "note": ""
+  },
+  {
+    "step": "rapport occupation",
+    "method": "GET",
+    "path": "/travel/reports/occupancy",
+    "status": 200,
+    "ms": 49,
+    "snippet": "{\"data\":{\"from\":\"2026-10-23T00:00:00+00:00\",\"to\":\"2026-12-22T00:00:00+00:00\",\"trip_id\":null,\"route_id\":null,\"trips_count\":1,\"by_trip\":[{\"trip_id\":1,\"code\":\"TRP-EVAL-1\",\"route_id\":1,\"departure_date\":\"2026-11-25\",\"seats_sold\":0,\"total_seats\":50,\"occupancy_rate\":0}]}}",
+    "note": ""
+  },
+  {
+    "step": "rapport revenus",
+    "method": "GET",
+    "path": "/travel/reports/revenue",
+    "status": 200,
+    "ms": 78,
+    "snippet": "{\"data\":{\"from\":\"2026-10-23T00:00:00+00:00\",\"to\":\"2026-12-22T00:00:00+00:00\",\"trip_id\":null,\"source\":null,\"office_id\":null,\"confirmed_minor\":0,\"refunded_minor\":0,\"net_minor\":0,\"by_status\":[]}}",
+    "note": ""
+  },
+  {
+    "step": "rapport annulations",
+    "method": "GET",
+    "path": "/travel/reports/cancellations",
+    "status": 200,
+    "ms": 41,
+    "snippet": "{\"data\":{\"from\":\"2026-10-23T00:00:00+00:00\",\"to\":\"2026-12-22T00:00:00+00:00\",\"trip_id\":null,\"source\":null,\"office_id\":null,\"cancellations_count\":0,\"passengers_count\":0,\"amount_minor\":0,\"by_source\":[],\"by_reason\":[]}}",
+    "note": ""
+  },
+  {
+    "step": "rapport dashboard",
+    "method": "GET",
+    "path": "/travel/reports/dashboard",
+    "status": 200,
+    "ms": 59,
+    "snippet": "{\"data\":{\"date\":\"2026-11-22\",\"period_days\":1,\"trip_id\":null,\"sales_today\":0,\"passengers\":0,\"revenue_minor\":0,\"confirmed_minor\":0,\"cancellations\":0,\"occupancy_rate\":0,\"trips_count\":0}}",
+    "note": ""
+  },
+  {
+    "step": "rapport agences",
+    "method": "GET",
+    "path": "/travel/reports/offices",
+    "status": 200,
+    "ms": 41,
+    "snippet": "{\"data\":{\"from\":\"2026-10-23T00:00:00+00:00\",\"to\":\"2026-12-22T00:00:00+00:00\",\"source\":null,\"offices\":[{\"office_id\":1,\"name\":\"Bureau Centre-ville Douala\",\"city\":\"Limb\\u00e9\",\"bookings_count\":0,\"passengers_count\":0,\"revenue_minor\":0,\"cancellations_count\":0},{\"office_id\":2,\"name\":\"Bureau Centre-ville Yaound\\u00e9\",\"city\":\"Limb\\u00e9\",\"bookings_count\":0,\"passengers_count\":0,\"revenue_minor\":0,\"cancellations_count\":0},{\"office_id\":null,\"name\":\"Sans agence (ventes en ligne)\",\"city\":null,\"bookings_count",
+    "note": ""
+  },
+  {
+    "step": "export rapport",
+    "method": "POST",
+    "path": "/travel/reports/export",
+    "status": 422,
+    "ms": 42,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"report_type\":[\"Le champ report type est obligatoire.\"],\"idempotency_key\":[\"Le champ idempotency key est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "step": "creer devis",
+    "method": "POST",
+    "path": "/travel/quotes",
+    "status": 422,
+    "ms": 37,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"idempotency_key\":[\"Le champ idempotency key est obligatoire.\"],\"passengers\":[\"Le champ passengers doit \\u00eatre un tableau.\",\"Le tableau passengers doit contenir au moins 5 \\u00e9l\\u00e9ments.\"]}}",
+    "note": ""
+  },
+  {
+    "step": "aller-retour",
+    "method": "POST",
+    "path": "/travel/round-trips",
+    "status": 422,
+    "ms": 67,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"return_trip_id\":[\"Les champs return trip id et outbound trip id doivent \\u00eatre diff\\u00e9rents.\"],\"booking_source\":[\"Le champ booking source est obligatoire.\"],\"idempotency_key\":[\"Le champ idempotency key est obligatoire.\"],\"passengers\":[\"Le champ passengers est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "step": "creer hotel",
+    "method": "POST",
+    "path": "/travel/hotels",
+    "status": 422,
+    "ms": 42,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"classification\":[\"Le champ classification est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "step": "creer vehicule location",
+    "method": "POST",
+    "path": "/travel/rental-vehicles",
+    "status": 422,
+    "ms": 61,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"code\":[\"Le champ code est obligatoire.\"],\"title\":[\"Le champ title est obligatoire.\"],\"price_per_day_minor\":[\"Le champ price per day minor est obligatoire.\"],\"currency\":[\"Le champ currency est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "step": "fidelite opt-in",
+    "method": "POST",
+    "path": "/travel/loyalty/opt-in",
+    "status": 200,
+    "ms": 40,
+    "snippet": "{\"data\":{\"contact_identifier\":\"client@eval.dz\",\"opted_in\":true,\"points_balance\":0}}",
+    "note": ""
+  },
+  {
+    "step": "compte fidelite",
+    "method": "GET",
+    "path": "/travel/loyalty/account",
+    "status": 200,
+    "ms": 40,
+    "snippet": "{\"data\":{\"contact_identifier\":\"client@eval.dz\",\"opt_in\":true,\"points_balance\":0}}",
+    "note": ""
+  },
+  {
+    "step": "creer taux devise",
+    "method": "POST",
+    "path": "/travel/currency-rates",
+    "status": 422,
+    "ms": 47,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"from_currency\":[\"Le champ from currency est obligatoire.\"],\"to_currency\":[\"Le champ to currency est obligatoire.\"],\"rate_minor\":[\"Le champ rate minor est obligatoire.\"],\"valid_from\":[\"Le champ valid from est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "step": "creer politique annulation",
+    "method": "POST",
+    "path": "/travel/cancellation-policies",
+    "status": 422,
+    "ms": 38,
+    "snippet": "{\"error\":\"VALIDATION_ERROR\",\"message\":\"VALIDATION_ERROR\",\"localized_message\":\"Certains champs sont incorrects.\",\"errors\":{\"hours_before_departure\":[\"Le champ hours before departure est obligatoire.\"],\"penalty_percent\":[\"Le champ penalty percent est obligatoire.\"]}}",
+    "note": ""
+  },
+  {
+    "step": "creer cle distributeur",
+    "method": "POST",
+    "path": "/travel/distributor-keys",
+    "status": 201,
+    "ms": 68,
+    "snippet": "{\"data\":{\"id\":1,\"name\":\"Distributeur Eval\",\"scopes\":[\"catalog.read\"],\"api_key\":\"dsk_NHuM4PcP4sFMMZnlBmrVVCzn7j62ZOSOJu7LoqNo\",\"created_at\":\"2026-11-22T13:27:09.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "creer webhook",
+    "method": "POST",
+    "path": "/travel/webhook-subscriptions",
+    "status": 201,
+    "ms": 57,
+    "snippet": "{\"data\":{\"id\":\"b7d5c744-a17c-4980-818d-397bc6415a10\",\"name\":\"example.com\",\"url\":\"https:\\/\\/example.com\\/hook\",\"carrier_id\":null,\"events\":[\"travel.booking.confirmed.v1\"],\"active\":true,\"has_secret\":true,\"created_at\":\"2026-11-22T13:27:10+00:00\",\"updated_at\":\"2026-11-22T13:27:10+00:00\",\"secret_prefix\":\"271e536b\",\"secret\":\"qP65fZ0rw92J6yias02qrvxG5DCfIs3heiWMezo3\"}}",
+    "note": ""
+  },
+  {
+    "step": "creer article",
+    "method": "POST",
+    "path": "/travel/articles",
+    "status": 201,
+    "ms": 40,
+    "snippet": "{\"data\":{\"id\":1,\"category_id\":null,\"slug\":\"article-eval\",\"title\":\"Article Eval\",\"body\":\"Contenu de test\",\"status\":\"draft\",\"author_type\":\"employee\",\"author_id\":1,\"published_at\":null,\"moderated_at\":null,\"created_at\":\"2026-11-22T13:27:10.000000Z\",\"updated_at\":\"2026-11-22T13:27:10.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "commenter article",
+    "method": "POST",
+    "path": "/travel/articles/1/comments",
+    "status": 201,
+    "ms": 64,
+    "snippet": "{\"data\":{\"id\":1,\"article_id\":1,\"author_type\":\"employee\",\"author_id\":1,\"content\":\"Commentaire Eval\",\"body\":\"Commentaire Eval\",\"status\":\"pending\",\"report_reason\":null,\"reported_at\":null,\"moderated_at\":null,\"created_at\":\"2026-11-22T13:27:10.000000Z\",\"updated_at\":\"2026-11-22T13:27:10.000000Z\"}}",
+    "note": ""
+  },
+  {
+    "step": "creer site touristique",
+    "method": "POST",
+    "path": "/travel/tourist-sites",
+    "status": 201,
+    "ms": 41,
+    "snippet": "{\"data\":{\"id\":1,\"name\":\"Site Eval\",\"description\":\"Un site\",\"city_id\":11,\"latitude\":null,\"longitude\":null,\"image_asset_id\":null,\"status\":\"active\"}}",
+    "note": ""
+  },
+  {
+    "step": "creer quiz",
+    "method": "POST",
+    "path": "/travel/quizzes",
+    "status": 429,
+    "ms": 68,
+    "snippet": "{\"error\":\"TOO_MANY_REQUESTS\",\"message\":\"TOO_MANY_REQUESTS\",\"localized_message\":\"Trop de requ\\u00eates. R\\u00e9essayez plus tard.\"}",
+    "note": ""
+  },
+  {
+    "step": "creer type annonce",
+    "method": "POST",
+    "path": "/travel/advert-types",
+    "status": 429,
+    "ms": 38,
+    "snippet": "{\"error\":\"TOO_MANY_REQUESTS\",\"message\":\"TOO_MANY_REQUESTS\",\"localized_message\":\"Trop de requ\\u00eates. R\\u00e9essayez plus tard.\"}",
+    "note": ""
+  },
+  {
+    "step": "formulaire contact",
+    "method": "POST",
+    "path": "/travel/contact",
+    "status": 429,
+    "ms": 57,
+    "snippet": "{\"error\":\"TOO_MANY_REQUESTS\",\"message\":\"TOO_MANY_REQUESTS\",\"localized_message\":\"Trop de requ\\u00eates. R\\u00e9essayez plus tard.\"}",
+    "note": ""
+  },
+  {
+    "step": "affecter equipage",
+    "method": "POST",
+    "path": "/travel/staff-assignments",
+    "status": 429,
+    "ms": 48,
+    "snippet": "{\"error\":\"TOO_MANY_REQUESTS\",\"message\":\"TOO_MANY_REQUESTS\",\"localized_message\":\"Trop de requ\\u00eates. R\\u00e9essayez plus tard.\"}",
+    "note": ""
+  },
+  {
+    "step": "ouvrir session PDV",
+    "method": "POST",
+    "path": "/travel/pdv/session/open",
+    "status": 429,
+    "ms": 46,
+    "snippet": "{\"error\":\"TOO_MANY_REQUESTS\",\"message\":\"TOO_MANY_REQUESTS\",\"localized_message\":\"Trop de requ\\u00eates. R\\u00e9essayez plus tard.\"}",
+    "note": ""
+  },
+  {
+    "step": "jeton boutique publique",
+    "method": "GET",
+    "path": "/travel/public-shop-token",
+    "status": 429,
+    "ms": 39,
+    "snippet": "{\"error\":\"TOO_MANY_REQUESTS\",\"message\":\"TOO_MANY_REQUESTS\",\"localized_message\":\"Trop de requ\\u00eates. R\\u00e9essayez plus tard.\"}",
+    "note": ""
+  },
+  {
+    "step": "sync mobile",
+    "method": "POST",
+    "path": "/travel/mobile/sync",
+    "status": 429,
+    "ms": 64,
+    "snippet": "{\"error\":\"TOO_MANY_REQUESTS\",\"message\":\"TOO_MANY_REQUESTS\",\"localized_message\":\"Trop de requ\\u00eates. R\\u00e9essayez plus tard.\"}",
+    "note": ""
+  },
+  {
+    "step": "suivi flotte",
+    "method": "GET",
+    "path": "/travel/fleet/tracking",
+    "status": 429,
+    "ms": 38,
+    "snippet": "{\"error\":\"TOO_MANY_REQUESTS\",\"message\":\"TOO_MANY_REQUESTS\",\"localized_message\":\"Trop de requ\\u00eates. R\\u00e9essayez plus tard.\"}",
+    "note": ""
+  },
+  {
+    "step": "position vehicule",
+    "method": "POST",
+    "path": "/travel/vehicles/1/position",
+    "status": 429,
+    "ms": 37,
+    "snippet": "{\"error\":\"TOO_MANY_REQUESTS\",\"message\":\"TOO_MANY_REQUESTS\",\"localized_message\":\"Trop de requ\\u00eates. R\\u00e9essayez plus tard.\"}",
+    "note": ""
+  }
+]

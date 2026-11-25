@@ -1,3 +1,44 @@
+## 2026-11-24 — Travel : délai de correspondance par gare, inventaire hôtelier et écran de réglage (M5/M4)
+
+Surface : `api/database/migrations/tenant/2026_11_23_000200_add_min_connection_minutes_to_travel_stations.php`, `.../Application/Services/ConnectionDelayResolver.php` (nouveau), `.../Application/Services/TravelConnectionService.php`, `.../Application/Actions/ConnectionSearchAction.php`, `.../Domain/Models/TravelStation.php`, `.../Interfaces/Api/V1/Controllers/TravelConnectionController.php`, `.../Interfaces/Api/V1/Controllers/TravelTripController.php`, `.../Requests/{Store,Update}TravelStationRequest.php`, `.../Resources/TravelStationResource.php`, `api/config/travel.php`, `api/lang/{fr,en,ar,tr}/travel.php`, `api/tests/Feature/Travel/TravelConnectionDelayTest.php` (nouveau, 12 tests), `api/tests/Feature/Travel/TravelHotelInventoryConcurrencyTest.php` (nouveau, 2 tests), `api/tests/Support/travel_hotel_race_worker.php` (nouveau).
+
+**Pourquoi c'est un scénario de test** : le délai minimal de correspondance était figé à **deux endroits** — la constante `MIN_CONNECTION_MINUTES = 45` et un littéral `45` dans `TravelConnectionController`. C'est pourtant une donnée d'exploitation : une gare de brousse où l'on traverse la ville n'a pas le même besoin qu'un terminal où l'on change de quai. Un réglage figé fait soit vendre des correspondances infaisables, soit refuser des trajets possibles.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| une gare à 90 min exclut une correspondance de 60 min que le défaut acceptait | l'exploitant réglerait sa gare et le moteur continuerait à vendre l'itinéraire infaisable |
+| une gare à 15 min accepte une correspondance de 20 min que le défaut refusait | le réglage ne pourrait jamais assouplir, seulement durcir |
+| une gare sans réglage (`NULL`) retombe sur le défaut du tenant | toute gare non configurée deviendrait invendable |
+| la gare la plus contraignante gagne quand plusieurs gares desservent la ville | un itinéraire infaisable depuis la gare exigeante serait vendu via une autre |
+| une surcharge `?min_connection_minutes=` hors bornes rend 422 | l'appelant imposerait un délai absurde sans contrôle |
+| la contrainte CHECK 15..240 refuse 14 / 241 / 0 en base | une écriture hors passerelle HTTP contournerait le réglage |
+| deux processus OS simultanés sur la dernière chambre : exactement un 201 et un 409 | une implémentation sans `FOR UPDATE` passerait le test séquentiel et surréserverait en production |
+| capacité 2 : deux processus réussissent tous les deux | un verrou trop large (sérialisant tout) passerait pour un correctif |
+| l'inventaire consommé une seule fois, la réservation unique en base | une double décrémentation passerait inaperçue derrière deux réponses 201 |
+
+**Couverture exécutée** — `php artisan test tests/Feature/Travel/TravelConnectionDelayTest.php` → **12 passed (40 assertions)** ; `TravelHotelInventoryConcurrencyTest` en séquentiel **2 passed (8 assertions)** et en `--parallel --processes=2` **2 passed** ; suite `tests/Feature/Travel` complète → **793 passed, 2 696 assertions, 0 échec** ; `phpstan-strict.neon` sur les 2 tests → **0 erreur** ; `pint --test` → PASS ; `ControllerCoverageRatchetTest` → 3 passed ; `check-hardcoded-accented-messages.sh` → PASS.
+
+**Défauts révélés par l'écriture des tests** — (1) le worker de course lisait `env()`, qui renvoie `null` quand la config est en cache : en CI les processus enfants se connectaient à une base sans la `Company` du test, d'où un 500 `ModelNotFoundException` au lieu du 409 attendu ; corrigé en lisant la connexion PDO réellement ouverte et en passant la base en argument. (2) `ControllerCoverageRatchetTest` restait rouge parce que `TravelConnectionController`, désormais couvert, figurait encore dans la baseline. (3) Un message français était codé en dur dans `TravelTripController` au lieu de `__('travel.connections.invalid_delay')`.
+
+**Non couvert** — le test de course n'a pas été observé sur un runner CI après correctif (processus `php` enfants). Le build `next build` de production n'est pas rejoué dans cette entrée.
+
+## 2026-11-23 — Mobile : le placeholder `{class}` cassait la génération l10n (#9872)
+
+Surface : `shared/i18n/locales/{fr,en,tr,ar}.json` (clé `eduFeechargesBatchclassbanner`), catalogues générés `front/mobile_apps/leopardo_core/lib/l10n/app_*.arb`, `front/web/src/locales/*`, `api/lang/*`.
+
+**Pourquoi c'est un scénario de test** : le build Flutter échouait à la génération des localisations, avant toute compilation, avec `'class' can't be used as an identifier because it's a keyword`. La clé `eduFeechargesBatchclassbanner` (#9792) portait un placeholder nommé `{class}` ; `gen-l10n` le transforme en **paramètre Dart** nommé `class`, qui est un mot réservé du langage. Le message d'erreur ne nomme ni la clé ni la locale : sans ce scénario, la cause se cherche dans le code Dart alors qu'elle est dans un catalogue JSON.
+
+| Scénario | Ce qui serait cassé sans lui |
+|---|---|
+| aucun placeholder de `shared/i18n` ne porte un nom réservé Dart (`class`, `switch`, `default`, `new`, `var`, `final`, `const`, `if`, `else`, `for`, `while`, `return`, `this`, `super`, `void`, `int`, `double`, `bool`, `true`, `false`, `null`, `enum`, `extends`, `implements`, `with`, `is`, `as`, `in`, `do`, `try`, `catch`, `throw`, `break`, `continue`, `assert`, `static`, `abstract`, `operator`, `typedef`, `late`, `required`, `covariant`, `external`, `factory`, `get`, `set`, `mixin`, `part`, `show`, `hide`, `export`, `import`, `library`, `on`, `rethrow`, `yield`, `await`, `async`, `sync`) | `gen-l10n` produit du Dart invalide et **tout** le build mobile échoue, sur les 5 apps |
+| le placeholder renommé `{className}` est présent dans les **4** locales, pas seulement celle où l'erreur est apparue | une locale oubliée casse le build de son ARB, et le message d'erreur ne dit pas laquelle |
+| les catalogues générés (ARB mobile, web, admin, backend) sont resynchronisés après le renommage | `validate-and-sync` échoue sur `git diff --exit-code` : les surfaces générées divergent de la source |
+| aucune occurrence de `{class}` ne subsiste dans les ARB ni dans `shared/i18n` | une réintroduction par un futur sync repasserait inaperçue jusqu'au build |
+
+**Couverture exécutée** — `grep -rn "{class}"` sur `front/mobile_apps/leopardo_core/lib/l10n/*.arb` et `shared/i18n/locales/*.json` → **0 occurrence** ; `node shared/i18n/validators/validate.js` → `I18N_VALIDATION_OK (4 locales)` ; `check-i18n-catalog-parity.sh` → parité OK ; `sync-mobile/web/backend` → idempotents (une seconde exécution ne produit plus de diff).
+
+**Non couvert** — le build Flutter lui-même n'a pas été exécuté dans le sandbox (pas de SDK Dart) : la mesure est le run CI `Mobile Smoke Build`.
+
 ## 2026-11-23 — École : reçu PDF par encaissement de lot et lot depuis la fiche d'un élève (#9793)
 
 Surface : `api/database/migrations/tenant/2026_11_23_000100_9793_add_batch_id_to_edu_fee_payments.php` (nouveau), `.../Infrastructure/Services/EduFeeBatchReceiptPdfRenderer.php` (nouveau), `api/resources/views/pdf/edu-fee-batch-receipt.blade.php` (nouveau), `.../Application/Actions/RecordEduFeeBatchPaymentsAction.php` (`batch_id`), `.../Infrastructure/Services/EduFeeService.php` (`batch_id` à l'écriture), `.../Domain/Models/EduFeePayment.php` (`batch_id` fillable), `.../Controllers/EduFeePaymentController.php` (`batchReceipt`), `.../Controllers/EduFeeChargeController.php` (`forStudent`), `api/routes/modules/edu_manager.php` (`GET /fee-payments/batches/{batch}/receipt.pdf`, `GET /students/{student}/fee-charges`), `api/lang/{fr,en,ar,tr}/pdf.php`, `api/tests/Feature/EduManager/EduFeeBatchReceiptTest.php` (nouveau, 6 tests), `front/web/src/app/(dashboard)/edu-manager/fee-charges/batch/page.tsx` (lot depuis un élève + lien reçu), `.../students/page.tsx` (action « encaisser en lot »), `.../__tests__/edu-fee-student-batch-receipt.test.tsx` (nouveau, 2 tests), `shared/i18n/locales/{fr,en,ar,tr}.json` + catalogues générés.

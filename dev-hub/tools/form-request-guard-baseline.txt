@@ -129,7 +129,6 @@ api/app/Modules/EdgeSync/Interfaces/Api/V1/Controllers/EdgeNodeController.php:62
 api/app/Modules/Expense/Interfaces/Api/V1/Controllers/ExpenseClaimController.php:116
 api/app/Modules/Expense/Interfaces/Api/V1/Controllers/ExpenseClaimController.php:230
 api/app/Modules/Expense/Interfaces/Api/V1/Controllers/ExpenseClaimController.php:47
-api/app/Modules/Expense/Interfaces/Api/V1/Controllers/ExpenseStatsController.php:35
 api/app/Modules/FarmOs/Interfaces/Api/V1/Controllers/CropCycleController.php:47
 api/app/Modules/FarmOs/Interfaces/Api/V1/Controllers/CropCycleController.php:71
 api/app/Modules/FarmOs/Interfaces/Api/V1/Controllers/FarmAppsController.php:198
@@ -181,13 +180,12 @@ api/app/Modules/HR/Interfaces/Api/V1/Controllers/ContractController.php:302
 api/app/Modules/HR/Interfaces/Api/V1/Controllers/ContractController.php:372
 api/app/Modules/HR/Interfaces/Api/V1/Controllers/ContractController.php:399
 api/app/Modules/HR/Interfaces/Api/V1/Controllers/ContractController.php:58
-api/app/Modules/HR/Interfaces/Api/V1/Controllers/EmployeeController.php:64
 api/app/Modules/HR/Interfaces/Api/V1/Controllers/EmployeeImportController.php:28
 api/app/Modules/HR/Interfaces/Api/V1/Controllers/ExportController.php:217
 api/app/Modules/HR/Interfaces/Api/V1/Controllers/ExportController.php:32
 api/app/Modules/HR/Interfaces/Api/V1/Controllers/ExportController.php:74
 api/app/Modules/HR/Interfaces/Api/V1/Controllers/HrController.php:106
-api/app/Modules/HR/Interfaces/Api/V1/Controllers/HrController.php:194
+api/app/Modules/HR/Interfaces/Api/V1/Controllers/HrController.php:200
 api/app/Modules/HR/Interfaces/Api/V1/Controllers/MeController.php:38
 api/app/Modules/HR/Interfaces/Api/V1/Controllers/MeController.php:75
 api/app/Modules/HR/Interfaces/Api/V1/Controllers/MeController.php:97
@@ -239,7 +237,6 @@ api/app/Modules/Paiements/Interfaces/Api/V1/Controllers/TenantPaymentController.
 api/app/Modules/Payroll/Interfaces/Api/V1/Controllers/BankExportController.php:122
 api/app/Modules/Payroll/Interfaces/Api/V1/Controllers/BankExportController.php:36
 api/app/Modules/Payroll/Interfaces/Api/V1/Controllers/BankExportController.php:69
-api/app/Modules/Payroll/Interfaces/Api/V1/Controllers/BulkPaymentController.php:53
 api/app/Modules/Payroll/Interfaces/Api/V1/Controllers/CotisationSimulationController.php:61
 api/app/Modules/Payroll/Interfaces/Api/V1/Controllers/EmployeeLoanController.php:55
 api/app/Modules/Payroll/Interfaces/Api/V1/Controllers/IslamicCalendarController.php:68
@@ -274,7 +271,6 @@ api/app/Modules/Payroll/Interfaces/Api/V1/Controllers/TaxSlabController.php:50
 api/app/Modules/Planning/Interfaces/Api/V1/Controllers/LeavePolicyController.php:201
 api/app/Modules/Planning/Interfaces/Api/V1/Controllers/LeavePolicyController.php:54
 api/app/Modules/Planning/Interfaces/Api/V1/Controllers/LeavePolicyController.php:99
-api/app/Modules/Planning/Interfaces/Api/V1/Controllers/PlanningController.php:19
 api/app/Modules/Planning/Interfaces/Api/V1/Controllers/ProjectController.php:30
 api/app/Modules/Planning/Interfaces/Api/V1/Controllers/ProjectController.php:55
 api/app/Modules/Planning/Interfaces/Api/V1/Controllers/ProjectController.php:88

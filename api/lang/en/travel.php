@@ -37,4 +37,7 @@ return [
         'room_unavailable' => 'Room unavailable on :date: not enough availability.',
         'below_sold_rooms' => 'Cannot go below the number of rooms already sold on :date.',
     ],
+    'connections' => [
+        'invalid_delay' => 'The connection delay must be between 15 and 240 minutes.',
+    ],
 ];
