@@ -5624,6 +5624,28 @@ trait CreatesMvpSchema
             });
         }
 
+        // #9925 (BC-14 INTEGRATION) — suivi des tokens consommés par connexion
+        // IA. Miroir de la migration tenant
+        // 2026_11_25_000200_9925_create_connector_ai_usage_table : une ligne par
+        // (connexion, mois), compteurs cumulés. Sans cette table, les tests
+        // Connecteurs passant par CreatesMvpSchema exploseraient en 42P01
+        // (régression #5418).
+        if (! Schema::hasTable($this->moduleTable('connector_ai_usage'))) {
+            Schema::create($this->moduleTable('connector_ai_usage'), function (Blueprint $table): void {
+                $table->id();
+                $table->uuid('company_id')->index();
+                $table->unsignedBigInteger('connection_id')->index();
+                $table->string('period', 7)->index();
+                $table->unsignedBigInteger('input_tokens')->default(0);
+                $table->unsignedBigInteger('output_tokens')->default(0);
+                $table->unsignedBigInteger('total_tokens')->default(0);
+                $table->timestamps();
+
+                $table->unique(['connection_id', 'period'], 'connector_ai_usage_connection_period_unique');
+                $table->index(['company_id', 'connection_id', 'period'], 'connector_ai_usage_lookup_idx');
+            });
+        }
+
     }
 
     private function createVerticalParityTables(): void

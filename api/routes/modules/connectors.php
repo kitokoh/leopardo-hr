@@ -34,5 +34,10 @@ ModuleRoutes::tenantModule('connectors', function (): void {
         Route::patch('/connections/{id}/status', [TenantConnectorController::class, 'setStatus'])->whereNumber('id');
         Route::delete('/connections/{id}', [TenantConnectorController::class, 'destroy'])->whereNumber('id');
         Route::post('/connections/{id}/test', [TenantConnectorController::class, 'test'])->whereNumber('id');
+        // #9925 — enregistrement de la consommation de tokens d'une connexion IA.
+        Route::post('/connections/{id}/usage', [TenantConnectorController::class, 'recordUsage'])->whereNumber('id');
     });
+
+    // Lecture de la consommation — tout manager du tenant.
+    Route::get('/connections/{id}/usage', [TenantConnectorController::class, 'usage'])->whereNumber('id');
 });
