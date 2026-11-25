@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use App\Modules\Planning\Domain\Models\LeaveAccrual;
 use App\Modules\Planning\Domain\Models\LeaveBalance;
 use App\Modules\Planning\Domain\Models\LeavePolicy;
@@ -39,9 +41,9 @@ class LeaveCarryForward extends Command
         $this->info("Processing carry-forward from {$fromYear} to {$toYear}...");
 
         // Commande globale : elle traite tous les tenants et ne doit pas
-        // hériter d’un `current_company` éventuellement présent dans le
+        // heriter d'un `current_company` eventuellement present dans le
         // processus de test/worker.
-        $policies = LeavePolicy::withoutGlobalScopes()
+        $policies = LeavePolicy::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')
             ->where('active', true)
             ->where('carry_forward', true)
             ->get();
@@ -50,57 +52,33 @@ class LeaveCarryForward extends Command
         $expired = 0;
 
         foreach ($policies as $policy) {
-            $balances = LeaveBalance::withoutGlobalScopes()
-                ->where('company_id', $policy->company_id)
-                ->where('absence_type_id', $policy->absence_type_id)
-                ->where('year', $fromYear)
-                ->get();
+            // #9924 — RLS sur `leave_balances` / `leave_accruals`. La policy
+            // compare `company_id` a `app.current_company_id` ; sans tenant
+            // publie, `current_setting(..., true)` vaut NULL et AUCUNE ligne
+            // n'est visible — les updates seraient silencieusement sans effet.
+            //
+            // `crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')` ne contourne que le scope Eloquent, pas
+            // RLS. `withinTenant()` publie le tenant ET pose le search_path,
+            // puis restaure l'etat precedent en `finally`.
+            //
+            // `LeavePolicy` n'a pas de relation `company()` : on resout la
+            // company par son id. Une politique orpheline (company supprimee)
+            // est ignoree — il n'y a alors aucun tenant a publier, et ses
+            // soldes ne sont plus atteignables de toute facon.
+            $company = Company::query()->find($policy->company_id);
 
-            foreach ($balances as $oldBalance) {
-                try {
-                    DB::transaction(function () use ($policy, $oldBalance, $toYear, &$carried): void {
-                        // Issue #2416 : les jours `pending` (demandes en attente,
-                        // réservés par AbsenceService depuis #2329) doivent être
-                        // déduits du solde reportable — sinon une demande
-                        // approuvée après le report consomme le solde de la
-                        // nouvelle année.
-                        $unused = max(0, $oldBalance->balance - $oldBalance->used - $oldBalance->pending);
-                        if ($unused <= 0) {
-                            return;
-                        }
+            if ($company === null) {
+                Log::warning('Carry-forward : politique orpheline ignoree', [
+                    'leave_policy_id' => $policy->id,
+                    'company_id' => $policy->company_id,
+                ]);
 
-                        $maxCarry = $policy->carry_forward_max ?? $unused;
-                        $carryAmount = min($unused, $maxCarry);
-
-                        $newBalance = LeaveBalance::withoutGlobalScopes()->firstOrCreate(
-                            [
-                                'company_id' => $policy->company_id,
-                                'employee_id' => $oldBalance->employee_id,
-                                'absence_type_id' => $policy->absence_type_id,
-                                'year' => $toYear,
-                            ],
-                            ['balance' => 0, 'used' => 0, 'pending' => 0]
-                        );
-
-                        $newBalance->increment('balance', $carryAmount);
-
-                        LeaveAccrual::withoutGlobalScopes()->create([
-                            'company_id' => $policy->company_id,
-                            'employee_id' => $oldBalance->employee_id,
-                            'leave_policy_id' => $policy->id,
-                            'amount' => $carryAmount,
-                            'type' => 'carry_forward',
-                            'description' => "Report de {$carryAmount} jour(s) de ".($toYear - 1),
-                            'effective_date' => now()->startOfYear()->toDateString(),
-                        ]);
-
-                        $carried++;
-                    });
-                } catch (\Throwable $e) {
-                    Log::warning("Carry-forward failed for employee {$oldBalance->employee_id}: {$e->getMessage()}");
-
-                }
+                continue;
             }
+
+            app(TenantManager::class)->withinTenant($company, function () use ($policy, $fromYear, $toYear, &$carried): void {
+                $this->carryForwardForPolicy($policy, $fromYear, $toYear, $carried);
+            });
         }
 
         $this->expireOldCarryForwards($toYear, $expired);
@@ -110,9 +88,67 @@ class LeaveCarryForward extends Command
         return self::SUCCESS;
     }
 
+    /**
+     * Report des soldes d'une politique, sous le tenant deja publie.
+     */
+    private function carryForwardForPolicy(LeavePolicy $policy, int $fromYear, int $toYear, int &$carried): void
+    {
+        $balances = LeaveBalance::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')
+            ->where('company_id', $policy->company_id)
+            ->where('absence_type_id', $policy->absence_type_id)
+            ->where('year', $fromYear)
+            ->get();
+
+        foreach ($balances as $oldBalance) {
+            try {
+                DB::transaction(function () use ($policy, $oldBalance, $toYear, &$carried): void {
+                    // Issue #2416 : les jours `pending` (demandes en attente,
+                    // réservés par AbsenceService depuis #2329) doivent être
+                    // déduits du solde reportable — sinon une demande
+                    // approuvée après le report consomme le solde de la
+                    // nouvelle année.
+                    $unused = max(0, $oldBalance->balance - $oldBalance->used - $oldBalance->pending);
+                    if ($unused <= 0) {
+                        return;
+                    }
+
+                    $maxCarry = $policy->carry_forward_max ?? $unused;
+                    $carryAmount = min($unused, $maxCarry);
+
+                    $newBalance = LeaveBalance::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')->firstOrCreate(
+                        [
+                            'company_id' => $policy->company_id,
+                            'employee_id' => $oldBalance->employee_id,
+                            'absence_type_id' => $policy->absence_type_id,
+                            'year' => $toYear,
+                        ],
+                        ['balance' => 0, 'used' => 0, 'pending' => 0]
+                    );
+
+                    $newBalance->increment('balance', $carryAmount);
+
+                    LeaveAccrual::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')->create([
+                        'company_id' => $policy->company_id,
+                        'employee_id' => $oldBalance->employee_id,
+                        'leave_policy_id' => $policy->id,
+                        'amount' => $carryAmount,
+                        'type' => 'carry_forward',
+                        'description' => "Report de {$carryAmount} jour(s) de ".($toYear - 1),
+                        'effective_date' => now()->startOfYear()->toDateString(),
+                    ]);
+
+                    $carried++;
+                });
+            } catch (\Throwable $e) {
+                Log::warning("Carry-forward failed for employee {$oldBalance->employee_id}: {$e->getMessage()}");
+
+            }
+        }
+    }
+
     private function expireOldCarryForwards(int $currentYear, int &$expired): void
     {
-        $policies = LeavePolicy::withoutGlobalScopes()
+        $policies = LeavePolicy::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')
             ->where('active', true)
             ->where('carry_forward', true)
             ->whereNotNull('carry_forward_expiry_days')
@@ -126,31 +162,50 @@ class LeaveCarryForward extends Command
                 continue;
             }
 
-            $carryForwards = LeaveAccrual::withoutGlobalScopes()
-                ->where('leave_policy_id', $policy->id)
-                ->where('type', 'carry_forward')
-                ->where('effective_date', now()->startOfYear()->toDateString())
-                ->whereNull('expired_at')
-                ->get();
+            // #9924 — meme raison que ci-dessus : sans tenant publie, la
+            // policy RLS rend les lignes invisibles et l'expiration ne
+            // s'applique jamais (echec silencieux).
+            $company = Company::query()->find($policy->company_id);
 
-            foreach ($carryForwards as $accrual) {
-                $balance = LeaveBalance::withoutGlobalScopes()
-                    ->where('company_id', $accrual->company_id)
-                    ->where('employee_id', $accrual->employee_id)
-                    ->where('absence_type_id', $policy->absence_type_id)
-                    ->where('year', $currentYear)
-                    ->first();
-
-                if ($balance) {
-                    $deduction = min($accrual->amount, $balance->balance - $balance->used);
-                    if ($deduction > 0) {
-                        $balance->decrement('balance', $deduction);
-                    }
-                }
-
-                $accrual->update(['expired_at' => now()]);
-                $expired++;
+            if ($company === null) {
+                continue;
             }
+
+            app(TenantManager::class)->withinTenant($company, function () use ($policy, $currentYear, &$expired): void {
+                $this->expireForPolicy($policy, $currentYear, $expired);
+            });
+        }
+    }
+
+    /**
+     * Expiration des reports d'une politique, sous le tenant deja publie.
+     */
+    private function expireForPolicy(LeavePolicy $policy, int $currentYear, int &$expired): void
+    {
+        $carryForwards = LeaveAccrual::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')
+            ->where('leave_policy_id', $policy->id)
+            ->where('type', 'carry_forward')
+            ->where('effective_date', now()->startOfYear()->toDateString())
+            ->whereNull('expired_at')
+            ->get();
+
+        foreach ($carryForwards as $accrual) {
+            $balance = LeaveBalance::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')
+                ->where('company_id', $accrual->company_id)
+                ->where('employee_id', $accrual->employee_id)
+                ->where('absence_type_id', $policy->absence_type_id)
+                ->where('year', $currentYear)
+                ->first();
+
+            if ($balance) {
+                $deduction = min($accrual->amount, $balance->balance - $balance->used);
+                if ($deduction > 0) {
+                    $balance->decrement('balance', $deduction);
+                }
+            }
+
+            $accrual->update(['expired_at' => now()]);
+            $expired++;
         }
     }
 }
