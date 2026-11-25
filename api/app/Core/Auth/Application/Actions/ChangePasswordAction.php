@@ -22,7 +22,17 @@ final class ChangePasswordAction
      */
     public function execute(Employee $employee, string $currentPassword, string $newPassword): array
     {
-        if (! Hash::check($currentPassword, $employee->password_hash)) {
+        // #9922 — `password_hash` est declare `string|null` sur le modele
+        // (colonne nullable en base : un employe invite n'a pas encore de mot
+        // de passe). `Hash::check()` exige un `string`. On traite explicitement
+        // le cas « pas encore de mot de passe » comme un echec de verification,
+        // au lieu de laisser PHPStan signaler un `string|null` transmis a un
+        // parametre `string` — et au lieu de caster en `(string)`, ce qui
+        // aurait transforme un `null` en chaine vide et fait passer un
+        // `Hash::check('', '')` silencieux.
+        $storedHash = $employee->password_hash;
+
+        if ($storedHash === null || ! Hash::check($currentPassword, $storedHash)) {
             throw new class('Mot de passe actuel incorrect') extends DomainException
             {
                 public function errorCode(): string

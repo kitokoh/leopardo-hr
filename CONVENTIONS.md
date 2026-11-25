@@ -124,6 +124,62 @@ private function resolveTableSchema(string $table): ?string
 - Utiliser `DB::table($table)` (résolution search_path) pour les lectures/écritures.
 - Un garde `if ($schema === null) { return; }` remplace `Schema::hasTable()`.
 
+#### Règle « un garde silencieux est un bug » (#9923)
+
+Un garde d'existence est légitime : il tolère qu'une migration tourne avant la
+création de sa table (ordre de déploiement, restauration partielle,
+`migrate --path` sélectif). Ce qui ne l'est pas, c'est son **silence**.
+
+Mesure sur ce dépôt : **350 migrations** portent un early-return sur
+`schemaTableExists()`, dont **338** font du DDL. Chacune peut se terminer sans
+avoir rien fait, en laissant un `migrate:status` vert.
+
+Le défaut #9896 est né exactement de là :
+
+```php
+if (! schemaTableExists('bulk_payment_claims')) {
+    return;   // <- rien dans les logs, migration marquée « Ran »
+}
+```
+
+Résultat : `ENABLE` + `FORCE ROW LEVEL SECURITY` posés, **aucune politique
+RLS**. La protection était annoncée et absente.
+
+**Règle** : un garde d'existence sur du **DDL** doit être bruyant, ou ne pas
+exister.
+
+```php
+// ✅ Migration nouvelle ou réparée : étendre GuardedMigration
+use App\Database\Migrations\GuardedMigration;
+
+return new class extends GuardedMigration
+{
+    public function up(): void
+    {
+        if (! schemaTableExists('employees')) {
+            $this->skipBecauseTableMissing('employees', 'colonne cnps_matricule non ajoutée');
+
+            return;
+        }
+
+        // ... DDL
+    }
+};
+```
+
+- `skipBecauseTableMissing()` → `Log::warning` + sortie console : l'effet est
+  **absent**, il faut le voir.
+- `skipBecauseColumnExists()` → `Log::info` : l'effet est **déjà présent**
+  (idempotence normale). Confondre les deux noierait le vrai signal.
+
+**Sonde** : `php artisan migrations:skipped-effects` liste les migrations
+exécutées dans un ordre incompatible avec leur horodatage — la signature du
+défaut #9896. `--strict` en fait un échec de pipeline de déploiement.
+
+Les 350 migrations existantes ne sont pas réécrites (diff illisible, et elles
+sont déjà exécutées en production) : la sonde couvre l'existant, la classe de
+base couvre le neuf.
+
 
 ### 2.7 DDD pour nouveaux modules
 
