@@ -37,7 +37,7 @@
       <span class="badge badge-done">✔ exécuté</span>
       <span class="chip">Profil : <a href="../profils/employe.html">Employé</a></span>
       <span class="chip">Module : <a href="../modules/attendance.html">Pointage (Attendance)</a></span>
-      <span class="chip hist-count" data-hist-count="UC-02">0 modifications</span>
+      <span class="chip hist-count" data-hist-count="UC-02">1 modification</span>
     </div>
   </div>
 </div>
@@ -75,8 +75,8 @@
         <tr>
           <td class="center"><span class="note note-good">5/5</span></td>
           <td class="obs"><code>POST /attendance/check-in</code> → <strong>201</strong>, <code>id=1</code>, <code>session_number=1</code>, <code>check_in=2026-11-03T15:57:38+00:00</code>, <code>timezone=Africa/Algiers</code>, <code>method=mobile</code>. <code>GET /attendance/today</code> → <strong>200</strong>, <code>checked_in=true</code>, <code>session_number=1</code>, <code>check_in_time=16:57</code>. <code>POST /attendance/check-out</code> → <strong>200</strong>, <code>check_out</code> renseigné. Second <code>check-in</code> immédiat → <strong>201</strong>, <code>session_number=2</code> (nouvelle session, pas de doublon). Un <code>check-in</code> alors qu&#x27;une session est déjà ouverte renvoie <strong>422 <code>ALREADY_CHECKED_IN</code></strong> avec message localisé — jamais de 500. Horodatage serveur UTC + heure locale entreprise corrects.</td>
-          <td class="center human-cell" data-human-note="UC-02"><span class="muted">—</span></td>
-          <td class="human-cell" data-human-obs="UC-02"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
+          <td class="center human-cell" data-human-note="UC-02"><span class="note-badge">3/5</span></td>
+          <td class="human-cell" data-human-obs="UC-02">Surface OK (GET /attendance -&gt; 200 en persona employe). Le cycle complet entree/sortie n&#x27;a pas ete rejoue : seule la lecture a ete mesuree.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>
       </tbody>
     </table>
@@ -84,12 +84,21 @@
 </section>
 
 <section class="panel hist-panel" data-hist-panel="UC-02">
-  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-02">0</span></h3>
+  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-02">1</span></h3>
   <p class="muted small">Toutes les saisies de notation humaine de ce cas, de la plus récente à la plus ancienne.
   Chaque enregistrement depuis le portail ajoute une entrée horodatée (UTC).</p>
   <div class="hist-body" data-hist-body="UC-02">
-    <p class="hist-empty muted">Aucune modification enregistrée pour ce cas.
-    La première note saisie ci-dessous créera la première entrée d'historique.</p>
+    <div class="table-wrap">
+      <table class="data-table hist-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Auteur</th><th class="center">Note (/5)</th>
+            <th>Observation</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody><tr><td class="nowrap">2026-11-25 08:45:00 UTC</td><td>QA Agent (Teamily)</td><td class="center"><span class="note-badge">3/5</span></td><td class="obs">Surface OK (GET /attendance -&gt; 200 en persona employe). Le cycle complet entree/sortie n&#x27;a pas ete rejoue : seule la lecture a ete mesuree.</td><td><span class="hist-badge hist-created">création</span></td></tr></tbody>
+      </table>
+    </div>
   </div>
 </section>
 

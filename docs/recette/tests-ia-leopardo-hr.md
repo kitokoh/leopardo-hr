@@ -44,9 +44,13 @@ Connexion acceptée, redirection vers le tableau de bord employé, session persi
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | Exécuté contre l'API locale reconstruite. `POST /api/v1/auth/login` (karim.aouad@example.com / password123) → **200**, jeton Sanctum retourné (`token_type`, `token_expires_at`), `data.role = "employee"`. `GET /api/v1/auth/me` avec le jeton → **200** (profil complet, session valide). Mauvais mot de passe → **401** (pas de fuite). L'UI web Next.js n'a pas pu être servie : `next build` est tué par la limite mémoire de l'environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n'a donc pas été observé dans un navigateur. Le socle d'authentification est conforme. |  |  |
+| 4 | Exécuté contre l'API locale reconstruite. `POST /api/v1/auth/login` (karim.aouad@example.com / password123) → **200**, jeton Sanctum retourné (`token_type`, `token_expires_at`), `data.role = "employee"`. `GET /api/v1/auth/me` avec le jeton → **200** (profil complet, session valide). Mauvais mot de passe → **401** (pas de fuite). L'UI web Next.js n'a pas pu être servie : `next build` est tué par la limite mémoire de l'environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n'a donc pas été observé dans un navigateur. Le socle d'authentification est conforme. | 4 | Connexion verifiee : POST /api/v1/auth/login -> 200 + JWT pour 5 personas sur 5 (principal, RH, comptable, superviseur, employe). Token accepte ensuite par GET /me/* (200). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 4 | Connexion verifiee : POST /api/v1/auth/login -> 200 + JWT pour 5 personas sur 5 (principal, RH, comptable, superviseur, employe). Token accepte ensuite par GET /me/* (200). | création |
 
 ---
 
@@ -72,9 +76,13 @@ Prérequis : Jeton Sanctum valide obtenu via `POST /api/v1/auth/login` ; endpoin
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | `POST /attendance/check-in` → **201**, `id=1`, `session_number=1`, `check_in=2026-11-03T15:57:38+00:00`, `timezone=Africa/Algiers`, `method=mobile`. `GET /attendance/today` → **200**, `checked_in=true`, `session_number=1`, `check_in_time=16:57`. `POST /attendance/check-out` → **200**, `check_out` renseigné. Second `check-in` immédiat → **201**, `session_number=2` (nouvelle session, pas de doublon). Un `check-in` alors qu'une session est déjà ouverte renvoie **422 `ALREADY_CHECKED_IN`** avec message localisé — jamais de 500. Horodatage serveur UTC + heure locale entreprise corrects. |  |  |
+| 5 | `POST /attendance/check-in` → **201**, `id=1`, `session_number=1`, `check_in=2026-11-03T15:57:38+00:00`, `timezone=Africa/Algiers`, `method=mobile`. `GET /attendance/today` → **200**, `checked_in=true`, `session_number=1`, `check_in_time=16:57`. `POST /attendance/check-out` → **200**, `check_out` renseigné. Second `check-in` immédiat → **201**, `session_number=2` (nouvelle session, pas de doublon). Un `check-in` alors qu'une session est déjà ouverte renvoie **422 `ALREADY_CHECKED_IN`** avec message localisé — jamais de 500. Horodatage serveur UTC + heure locale entreprise corrects. | 3 | Surface OK (GET /attendance -> 200 en persona employe). Le cycle complet entree/sortie n'a pas ete rejoue : seule la lecture a ete mesuree. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | Surface OK (GET /attendance -> 200 en persona employe). Le cycle complet entree/sortie n'a pas ete rejoue : seule la lecture a ete mesuree. | création |
 
 ---
 
@@ -99,9 +107,13 @@ Le pointage par matricule aboutit avec un retour visuel explicite ; un matricule
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | Kiosque servi par le pont local (`bridge.py`, port 8037) et piloté dans Chromium headless. Écran d'accueil chargé : titre « TechCorp Algerie SARL », « Entree principale », indicateur « Connection OK — auto sync active », sélecteur de langue (FR/EN/TR/AR), 5 onglets (Punch, Employee, Announcements, Leave, QR Code). Sélection d'un employé de démo (Karim Aouad, DZ-EMP-003) puis pointage via `POST /local/punch` → **201**, `sync_status=queued`, `external_event_id` généré. Matricule inconnu (`UNKNOWN-999`) → **201** mis en file (comportement *offline-first*). Bascule en `ar` → `document.documentElement.dir = "rtl"`, `lang="ar"` (RTL effectif). Aucun plantage. |  |  |
+| 4 | Kiosque servi par le pont local (`bridge.py`, port 8037) et piloté dans Chromium headless. Écran d'accueil chargé : titre « TechCorp Algerie SARL », « Entree principale », indicateur « Connection OK — auto sync active », sélecteur de langue (FR/EN/TR/AR), 5 onglets (Punch, Employee, Announcements, Leave, QR Code). Sélection d'un employé de démo (Karim Aouad, DZ-EMP-003) puis pointage via `POST /local/punch` → **201**, `sync_status=queued`, `external_event_id` généré. Matricule inconnu (`UNKNOWN-999`) → **201** mis en file (comportement *offline-first*). Bascule en `ar` → `document.documentElement.dir = "rtl"`, `lang="ar"` (RTL effectif). Aucun plantage. | 0 | Non executable ici : le kiosque exige un boitier biometrique et une interface physique ; aucun endpoint kiosque sans parametre n'existe au route:list. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable ici : le kiosque exige un boitier biometrique et une interface physique ; aucun endpoint kiosque sans parametre n'existe au route:list. | création |
 
 ---
 
@@ -126,9 +138,13 @@ Demande créée « en attente », visible par le manager, approuvée avec succè
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | `POST /absences` (absence_type_id=1 « Conge annuel », 2026-12-01→2026-12-03) → **201**, `id=13`, `status="pending"`, `days_count=3`. `GET /absences` (Manager RH) → **200**, la demande #13 est présente. `POST /absences/13/approve` → **200**, `status="approved"`, `approved_by=2`. Seconde approbation → **422 `ABSENCE_NOT_PENDING`** (code métier explicite, pas de doublon, pas de 500). Validation : absence_type_id manquant → **422** avec message localisé. |  |  |
+| 5 | `POST /absences` (absence_type_id=1 « Conge annuel », 2026-12-01→2026-12-03) → **201**, `id=13`, `status="pending"`, `days_count=3`. `GET /absences` (Manager RH) → **200**, la demande #13 est présente. `POST /absences/13/approve` → **200**, `status="approved"`, `approved_by=2`. Seconde approbation → **422 `ABSENCE_NOT_PENDING`** (code métier explicite, pas de doublon, pas de 500). Validation : absence_type_id manquant → **422** avec message localisé. | 3 | GET /absences -> 200 (employe), GET /absence-types -> 404 : le chemin de liste fonctionne, la route des types d'absence n'existe pas sous ce nom. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /absences -> 200 (employe), GET /absence-types -> 404 : le chemin de liste fonctionne, la route des types d'absence n'existe pas sous ce nom. | création |
 
 ---
 
@@ -152,9 +168,13 @@ La liste ne contient que les bulletins de l'utilisateur connecté ; le PDF est t
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | `GET /me/pay-slips` → **200** (liste paginée, `data: []` pour l'employé de démo — aucun bulletin n'est généré par le seeder). Accès à un bulletin inexistant/tiers (`/me/pay-slips/999999`) → **404 `RESOURCE_NOT_FOUND`** avec message localisé, sans fuite d'information. Le contrôle d'accès est conforme ; le téléchargement PDF n'a pas pu être vérifié faute de bulletin en base. |  |  |
+| 4 | `GET /me/pay-slips` → **200** (liste paginée, `data: []` pour l'employé de démo — aucun bulletin n'est généré par le seeder). Accès à un bulletin inexistant/tiers (`/me/pay-slips/999999`) → **404 `RESOURCE_NOT_FOUND`** avec message localisé, sans fuite d'information. Le contrôle d'accès est conforme ; le téléchargement PDF n'a pas pu être vérifié faute de bulletin en base. | 2 | DEFECT : GET /payrolls en persona employe (self-service bulletin) -> 403 FORBIDDEN. L'employe ne peut pas lire ses propres bulletins alors que l'API repond 200 pour GET /attendance et /absences du meme compte. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 2 | DEFECT : GET /payrolls en persona employe (self-service bulletin) -> 403 FORBIDDEN. L'employe ne peut pas lire ses propres bulletins alors que l'API repond 200 pour GET /attendance et /absences du meme compte. | création |
 
 ---
 
@@ -178,9 +198,13 @@ Le manager comptable obtient une simulation cohérente et détaillée ; l'employ
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | `GET /salary-structures` (comptable) → **200**, structures DZ listées (base_salary, currency DZD). `POST /payroll/simulate` (gross_salary=180000, country_code=DZ) → **200**, détail complet : `gross`, `country_code`, bloc `compliance` (niveau « pilot », avertissement de validation légale, source `docs/payroll/DZ_COMPLIANCE.md`), `correlation_id`. Même appel avec le jeton employé → **403 `MANAGER_REQUIRED`** (contrôle de rôle effectif). |  |  |
+| 5 | `GET /salary-structures` (comptable) → **200**, structures DZ listées (base_salary, currency DZD). `POST /payroll/simulate` (gross_salary=180000, country_code=DZ) → **200**, détail complet : `gross`, `country_code`, bloc `compliance` (niveau « pilot », avertissement de validation légale, source `docs/payroll/DZ_COMPLIANCE.md`), `correlation_id`. Même appel avec le jeton employé → **403 `MANAGER_REQUIRED`** (contrôle de rôle effectif). | 3 | GET /payroll/audit -> 403 INSUFFICIENT_ROLE pour le persona comptable ('Your manager role does not have access to this resource'). A confirmer cote produit : soit le role demo est sous-dote, soit l'audit de paie est ferme au comptable. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /payroll/audit -> 403 INSUFFICIENT_ROLE pour le persona comptable ('Your manager role does not have access to this resource'). A confirmer cote produit : soit le role demo est sous-dote, soit l'audit de paie est ferme au comptable. | création |
 
 ---
 
@@ -205,9 +229,13 @@ Création, modification et archivage fonctionnent ; les validations renvoient de
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 2 | `GET /employees` → **200** (pagination + filtrage OK). `POST /employees` (mot de passe conforme) → **201**, employé #28 créé. **`PUT /employees/28` → 500 `INTERNAL_ERROR`** : le log montre `Error: Unknown named parameter $contract_type at app/Modules/HR/Application/DTOs/UpdateEmployeeDTO.php:66` — la mise à jour d'un employé est **cassée** (défaillance fonctionnelle majeure). `POST /employees/28/archive` → **200**, `status="archived"`. Email déjà utilisé → **422** avec double message. La création et l'archivage sont conformes, mais la modification échoue en 500. *(Corrigé depuis par le patch d'audit — à re-tester.)* |  |  |
+| 2 | `GET /employees` → **200** (pagination + filtrage OK). `POST /employees` (mot de passe conforme) → **201**, employé #28 créé. **`PUT /employees/28` → 500 `INTERNAL_ERROR`** : le log montre `Error: Unknown named parameter $contract_type at app/Modules/HR/Application/DTOs/UpdateEmployeeDTO.php:66` — la mise à jour d'un employé est **cassée** (défaillance fonctionnelle majeure). `POST /employees/28/archive` → **200**, `status="archived"`. Email déjà utilisé → **422** avec double message. La création et l'archivage sont conformes, mais la modification échoue en 500. *(Corrigé depuis par le patch d'audit — à re-tester.)* | 3 | GET /employees -> 200 (RH) et POST /employees -> 403 MANAGER_REQUIRED pour un employe : le controle d'acces est correct sur les deux sens. Creation/modification/archivage non rejoues. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /employees -> 200 (RH) et POST /employees -> 403 MANAGER_REQUIRED pour un employe : le controle d'acces est correct sur les deux sens. Creation/modification/archivage non rejoues. | création |
 
 ---
 
@@ -231,9 +259,13 @@ Toute tentative d'accès inter-tenant renvoie 403/404 ; aucune fuite d'identifia
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | Jeton `pharmaplus-casablanca` (MA) utilisé pour lire l'employé #6 de `techcorp-algerie` (DZ) → **404 `RESOURCE_NOT_FOUND`** (pas de fuite). `GET /employees` avec le jeton MA → **200**, aucune donnée de TechCorp (recherche « techcorp »/« Karim » absente). Le tenant est résolu côté serveur (jeton), jamais depuis un paramètre client. |  |  |
+| 5 | Jeton `pharmaplus-casablanca` (MA) utilisé pour lire l'employé #6 de `techcorp-algerie` (DZ) → **404 `RESOURCE_NOT_FOUND`** (pas de fuite). `GET /employees` avec le jeton MA → **200**, aucune donnée de TechCorp (recherche « techcorp »/« Karim » absente). Le tenant est résolu côté serveur (jeton), jamais depuis un paramètre client. | 3 | Isolation : les modules non souscrits renvoient 403 (aucune fuite de donnees inter-tenant observee sur la matrice RBAC), mais l'isolation n'a pas ete attaquee avec deux tenants actifs comparables. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | Isolation : les modules non souscrits renvoient 403 (aucune fuite de donnees inter-tenant observee sur la matrice RBAC), mais l'isolation n'a pas ete attaquee avec deux tenants actifs comparables. | création |
 
 ---
 
@@ -257,9 +289,13 @@ Les quatre langues s'appliquent sans rechargement cassé ; le RTL est correct ; 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | API : `GET /auth/me` expose `language` et `is_rtl` ; `PATCH /auth/language {language:"ar"}` → **200**, puis `is_rtl=true` confirmé sur `/auth/me`. Kiosque : bascule en `ar` → `dir="rtl"`, `lang="ar"`. Aucune clé de traduction brute détectée dans le DOM (`[]`). Tests kiosque `npm test` → **40 tests OK** (i18n 4 langues / 228 clés, parité + usage vérifiés). |  |  |
+| 5 | API : `GET /auth/me` expose `language` et `is_rtl` ; `PATCH /auth/language {language:"ar"}` → **200**, puis `is_rtl=true` confirmé sur `/auth/me`. Kiosque : bascule en `ar` → `dir="rtl"`, `lang="ar"`. Aucune clé de traduction brute détectée dans le DOM (`[]`). Tests kiosque `npm test` → **40 tests OK** (i18n 4 langues / 228 clés, parité + usage vérifiés). | 0 | Non execute dans ce run : aucun cas i18n/RTL n'a ete pilote (necessite une verification navigateur sur les 4 locales). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute dans ce run : aucun cas i18n/RTL n'a ete pilote (necessite une verification navigateur sur les 4 locales). | création |
 
 ---
 
@@ -283,9 +319,13 @@ Le kiosque reste utilisable hors-ligne, met l'événement en file, affiche un é
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | Le pont local met chaque pointage en file SQLite (`sync_status=queued`) et incrémente `queue_count` (2 → 3 après un pointage) ; `dead_letter_count=0`. L'état est exposé par `GET /local/status` (`online`, `queue_count`, `last_error`, `last_sync_at`). La borne reste pleinement utilisable sans cloud. La resynchronisation vers le cloud n'a pas pu être validée de bout en bout : le point de synchronisation cloud n'est pas configuré en local (`last_error=HTTP_404`). |  |  |
+| 4 | Le pont local met chaque pointage en file SQLite (`sync_status=queued`) et incrémente `queue_count` (2 → 3 après un pointage) ; `dead_letter_count=0`. L'état est exposé par `GET /local/status` (`online`, `queue_count`, `last_error`, `last_sync_at`). La borne reste pleinement utilisable sans cloud. La resynchronisation vers le cloud n'a pas pu être validée de bout en bout : le point de synchronisation cloud n'est pas configuré en local (`last_error=HTTP_404`). | 0 | Non executable ici : le mode degrade kiosque/EdgeSync exige le client mobile ou le boitier, plus une coupure reseau controlee. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable ici : le mode degrade kiosque/EdgeSync exige le client mobile ou le boitier, plus une coupure reseau controlee. | création |
 
 ---
 
@@ -309,9 +349,13 @@ Les entités sont créées et liées correctement, le pipeline reflète le chang
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | `GET /crm/accounts` (Manager RH) → **200** (liste paginée). `POST /crm/accounts {name, email}` → **201**, compte créé (`id=2`, `status` renseigné). Le module CRM client répond correctement et est bien distinct du CRM commercial plateforme (routes `/platform/...` séparées, protégées par `platform.permission`). |  |  |
+| 5 | `GET /crm/accounts` (Manager RH) → **200** (liste paginée). `POST /crm/accounts {name, email}` → **201**, compte créé (`id=2`, `status` renseigné). Le module CRM client répond correctement et est bien distinct du CRM commercial plateforme (routes `/platform/...` séparées, protégées par `platform.permission`). | 3 | GET /crm/accounts -> 200 en persona principal. Le CRUD comptes/contacts/opportunites n'a pas ete rejoue. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /crm/accounts -> 200 en persona principal. Le CRUD comptes/contacts/opportunites n'a pas ete rejoue. | création |
 
 ---
 
@@ -335,9 +379,13 @@ La vitrine s'affiche correctement sur desktop et mobile ; la demande d'essai est
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | Endpoint d'ingestion des leads `POST /marketing/leads` : payload valide (`external_id`, `type=demo_request`, `email`) → **201** (`{id, external_id, status:"new"}`) ; email invalide → **422** avec message localisé ; champs obligatoires manquants → **422** explicite. La vitrine Next.js elle-même n'a pas pu être servie (build tué par la limite mémoire 2 Go), donc le rendu visuel desktop/mobile n'a pas été observé. |  |  |
+| 4 | Endpoint d'ingestion des leads `POST /marketing/leads` : payload valide (`external_id`, `type=demo_request`, `email`) → **201** (`{id, external_id, status:"new"}`) ; email invalide → **422** avec message localisé ; champs obligatoires manquants → **422** explicite. La vitrine Next.js elle-même n'a pas pu être servie (build tué par la limite mémoire 2 Go), donc le rendu visuel desktop/mobile n'a pas été observé. | 3 | GET /marketing/posts -> 200. La vitrine publique et la demande d'essai (surface publique) n'ont pas ete exercees. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /marketing/posts -> 200. La vitrine publique et la demande d'essai (surface publique) n'ont pas ete exercees. | création |
 
 ---
 
@@ -360,9 +408,13 @@ Prérequis : Accès réseau à l'API de production.
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | Environnement local : `GET /health` → **200** (`status:"ok"`) ; `/health/live` → **200** ; `/health/ready` → **200** avec matrice `checks` (database ok, redis ok/skipped, queue ok/sync, mail ok/array, `failed_checks:[]`). `GET /demo-users` → **404** (mode démo désactivé par défaut, conforme au durcissement documenté). La documentation `/docs` (Scramble) et la comparaison de version avec le commit attendu n'ont pas été vérifiées localement. |  |  |
+| 4 | Environnement local : `GET /health` → **200** (`status:"ok"`) ; `/health/live` → **200** ; `/health/ready` → **200** avec matrice `checks` (database ok, redis ok/skipped, queue ok/sync, mail ok/array, `failed_checks:[]`). `GET /demo-users` → **404** (mode démo désactivé par défaut, conforme au durcissement documenté). La documentation `/docs` (Scramble) et la comparaison de version avec le commit attendu n'ont pas été vérifiées localement. | 3 | GET /api/v1/health -> 200 (status ok, modules listes). ANOMALIE : GET /platform/announcements -> 401 UNAUTHENTICATED avec un JWT pourtant valide (le meme token lit /me en 200). Un utilisateur authentifie sans role plateforme devrait recevoir 403, pas 401. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /api/v1/health -> 200 (status ok, modules listes). ANOMALIE : GET /platform/announcements -> 401 UNAUTHENTICATED avec un JWT pourtant valide (le meme token lit /me en 200). Un utilisateur authentifie sans role plateforme devrait recevoir 403, pas 401. | création |
 
 ---
 
@@ -387,9 +439,13 @@ Le parcours recherche → réservation → suivi → annulation fonctionne de bo
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | `GET /public/travel/shop/trips` sans jeton → **401** « Jeton boutique manquant (X-Travel-Shop-Token) » ; avec un jeton invalide → **401** « Jeton boutique invalide ». Le garde-fou *fail-closed* est effectif (aucune donnée exposée sans jeton tenant valide). Le parcours complet n'a pas pu être exécuté : aucun tenant de démonstration n'a la solution TravelAgency activée avec un jeton boutique émis. |  |  |
+| 4 | `GET /public/travel/shop/trips` sans jeton → **401** « Jeton boutique manquant (X-Travel-Shop-Token) » ; avec un jeton invalide → **401** « Jeton boutique invalide ». Le garde-fou *fail-closed* est effectif (aucune donnée exposée sans jeton tenant valide). Le parcours complet n'a pas pu être exécuté : aucun tenant de démonstration n'a la solution TravelAgency activée avec un jeton boutique émis. | 3 | Boutique TravelAgency : 238 requetes du harnais, 82,4 % en 2xx ; gating par plan verifie (403 FEATURE_NOT_ENABLED sans le flag, 200 avec). DEF-01 (500 sur identifiant de reservation non numerique) touche ce parcours. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | Boutique TravelAgency : 238 requetes du harnais, 82,4 % en 2xx ; gating par plan verifie (403 FEATURE_NOT_ENABLED sans le flag, 200 avec). DEF-01 (500 sur identifiant de reservation non numerique) touche ce parcours. | création |
 
 ---
 
@@ -413,9 +469,13 @@ Connexion acceptée, tableau de bord chargé avec des indicateurs cohérents du 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /me/* et /auth/2fa/status -> 200 en persona principal ; le tableau de bord complet n'a pas ete verifie visuellement. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /me/* et /auth/2fa/status -> 200 en persona principal ; le tableau de bord complet n'a pas ete verifie visuellement. | création |
 
 ---
 
@@ -439,9 +499,13 @@ Création et affectation fonctionnent ; l'organigramme reflète les changements 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /departments -> 200 (RH). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /departments -> 200 (RH). | création |
 
 ---
 
@@ -465,9 +529,13 @@ L'invitation aboutit, le rôle est attribué dans les limites du délégable, l'
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | IAM : POST /roles -> 404 (route inexistante sous ce nom) ; RBAC verifie par ailleurs (la matrice par persona montre 14 operations correctement filtrees). L'attribution de roles n'a pas ete rejouee. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | IAM : POST /roles -> 404 (route inexistante sous ce nom) ; RBAC verifie par ailleurs (la matrice par persona montre 14 operations correctement filtrees). L'attribution de roles n'a pas ete rejouee. | création |
 
 ---
 
@@ -491,9 +559,13 @@ Le planning s'affiche, les heures supplémentaires sont calculées et validées/
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /attendance -> 200 ; validation des heures supplementaires non rejouee. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /attendance -> 200 ; validation des heures supplementaires non rejouee. | création |
 
 ---
 
@@ -517,9 +589,13 @@ Le bulletin est généré, le PDF s'ouvre et les montants sont cohérents ; l'em
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : generation/téléchargement PDF de bulletin exige un worker et un stockage de fichiers non monte ici. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : generation/téléchargement PDF de bulletin exige un worker et un stockage de fichiers non monte ici. | création |
 
 ---
 
@@ -543,9 +619,13 @@ Les opérations aboutissent, l'état de l'entreprise est reflété, la suspensio
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : la console Super Admin exige un compte plateforme dedie absent du jeu de demo. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : la console Super Admin exige un compte plateforme dedie absent du jeu de demo. | création |
 
 ---
 
@@ -569,9 +649,13 @@ L'impersonation est possible, clairement signalée, réversible, et journalisée
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : l'impersonation encadree exige un compte support et une piste d'audit dediee. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : l'impersonation encadree exige un compte support et une piste d'audit dediee. | création |
 
 ---
 
@@ -595,9 +679,13 @@ Les données de facturation sont consultables, les actions hors périmètre sont
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /billing/ai-credits -> 200 ; GET /billing/subscription -> 404 'Aucun abonnement actif' (coherent avec un tenant de demo sans abonnement). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /billing/ai-credits -> 200 ; GET /billing/subscription -> 404 'Aucun abonnement actif' (coherent avec un tenant de demo sans abonnement). | création |
 
 ---
 
@@ -621,9 +709,13 @@ Le kill switch produit un effet immédiat et réversible, les nœuds Edge sont s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | Ops plateforme partiellement verifie : GET /edge -> 200, GET /approvals/history -> 200. Le kill switch n'a pas ete declenche. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | Ops plateforme partiellement verifie : GET /edge -> 200, GET /approvals/history -> 200. Le kill switch n'a pas ete declenche. | création |
 
 ---
 
@@ -647,9 +739,13 @@ Les annonces et campagnes sont gérées, la vitrine reflète les publications, l
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /marketing/posts -> 200 en persona marketing/principal. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /marketing/posts -> 200 en persona marketing/principal. | création |
 
 ---
 
@@ -673,9 +769,13 @@ L'offre est créée et publiée, les candidatures sont suivies, le pipeline refl
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /recruitment/ats/applicants -> 200 (RH). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /recruitment/ats/applicants -> 200 (RH). | création |
 
 ---
 
@@ -699,9 +799,13 @@ La bibliothèque s'affiche correctement, la navigation est fluide, le cache publ
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED (module Showcase non inclus dans le plan du tenant de demo). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED (module Showcase non inclus dans le plan du tenant de demo). | création |
 
 ---
 
@@ -725,9 +829,13 @@ L'écriture équilibrée est acceptée, la déséquilibrée refusée avec un cod
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /accounting/activation -> 200 (comptable). Ecritures et cloture non rejouees. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /accounting/activation -> 200 (comptable). Ecritures et cloture non rejouees. | création |
 
 ---
 
@@ -751,9 +859,13 @@ L'export est complet et réimportable, le rapprochement identifie correctement l
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | Comptabilite servie (200) ; export/rapprochement bancaire non rejoue (necessite un fichier de releve). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | Comptabilite servie (200) ; export/rapprochement bancaire non rejoue (necessite un fichier de releve). | création |
 
 ---
 
@@ -777,9 +889,13 @@ La note suit le cycle attendu, le rejet exige un motif, et l'employé voit l'ét
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /expense-claims -> 200 (employe). Soumission/validation non rejouees. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /expense-claims -> 200 (employe). Soumission/validation non rejouees. | création |
 
 ---
 
@@ -803,9 +919,13 @@ Le remboursement est tracé une seule fois, le montant est correct, et le rejeu 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | Notes de frais servies (200) ; impact paie non verifie. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | Notes de frais servies (200) ; impact paie non verifie. | création |
 
 ---
 
@@ -829,9 +949,13 @@ Le planning se crée et se publie, les conflits sont signalés avant publication
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /planning -> 200 (principal). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /planning -> 200 (principal). | création |
 
 ---
 
@@ -855,9 +979,13 @@ La tâche circule correctement, la preuve est horodatée et attribuée, et le re
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /tasks -> 200 (employe). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /tasks -> 200 (employe). | création |
 
 ---
 
@@ -881,9 +1009,13 @@ L'offre est publiée, visible publiquement avec les bonnes métadonnées, puis r
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /recruitment/ats/applicants -> 200 ; page carrieres publique non verifiee. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /recruitment/ats/applicants -> 200 ; page carrieres publique non verifiee. | création |
 
 ---
 
@@ -907,9 +1039,13 @@ Chaque transition est enregistrée avec auteur et date, le rejet est motivé, et
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | Pipeline de candidatures servi (200) ; cycle complet non rejoue. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | Pipeline de candidatures servi (200) ; cycle complet non rejoue. | création |
 
 ---
 
@@ -933,9 +1069,13 @@ Le ciblage est respecté, l'annonce est lisible, et le compteur de lecture refl�
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /communication/analytics -> 200. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /communication/analytics -> 200. | création |
 
 ---
 
@@ -959,9 +1099,13 @@ Chaque canal suit la préférence enregistrée, sans effet de bord sur les autre
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /notifications -> 200 (employe). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /notifications -> 200 (employe). | création |
 
 ---
 
@@ -985,9 +1129,13 @@ Le tenant est créé une seule fois, l'utilisateur peut se connecter, et la doub
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : le provisioning d'essai guide cree un tenant reel ; non lance pour ne pas polluer la base de demo. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : le provisioning d'essai guide cree un tenant reel ; non lance pour ne pas polluer la base de demo. | création |
 
 ---
 
@@ -1011,9 +1159,13 @@ La reprise se fait à l'étape atteinte, les données déjà saisies sont conser
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : reprise de parcours interrompu exige une session navigateur persistante. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : reprise de parcours interrompu exige une session navigateur persistante. | création |
 
 ---
 
@@ -1037,9 +1189,13 @@ Le catalogue est cohérent, l'historique de prix est conservé, la désactivatio
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /catalog/categories -> 403 FEATURE_NOT_ENABLED ('Your plan does not include the B2B Catalog module'). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /catalog/categories -> 403 FEATURE_NOT_ENABLED ('Your plan does not include the B2B Catalog module'). | création |
 
 ---
 
@@ -1063,9 +1219,13 @@ Les résultats respectent les permissions du rôle, aucune donnée hors périmè
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : la recherche transverse (SearchIntelligence) n'a pas d'endpoint sans parametre au route:list. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : la recherche transverse (SearchIntelligence) n'a pas d'endpoint sans parametre au route:list. | création |
 
 ---
 
@@ -1089,9 +1249,13 @@ Chaque langue expose ses propres métadonnées, les balises canoniques et `hrefl
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /pages -> 200. SEO multilingue non verifie. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /pages -> 200. SEO multilingue non verifie. | création |
 
 ---
 
@@ -1115,9 +1279,13 @@ Les surfaces publiques s'affichent correctement sur desktop et mobile, la naviga
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED. | création |
 
 ---
 
@@ -1141,9 +1309,13 @@ Un ouvrage ne peut être prêté qu'une fois, le retour le remet à disposition,
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /library/progress -> 200. Pret/retour non rejoue. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /library/progress -> 200. Pret/retour non rejoue. | création |
 
 ---
 
@@ -1167,9 +1339,13 @@ La caméra est enregistrée et supervisée, l'état reflète la réalité du flu
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /cameras -> 403 FEATURE_NOT_ENABLED ('Upgrade to Business'). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /cameras -> 403 FEATURE_NOT_ENABLED ('Upgrade to Business'). | création |
 
 ---
 
@@ -1193,9 +1369,13 @@ L'incident est tracé, l'intervention suit son cycle, et l'historique de mainten
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : module cameras non souscrit (403 FEATURE_NOT_ENABLED). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : module cameras non souscrit (403 FEATURE_NOT_ENABLED). | création |
 
 ---
 
@@ -1219,9 +1399,13 @@ Le véhicule est suivi de bout en bout, les échéances déclenchent des alertes
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /fleet/live-map -> 200 (principal). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /fleet/live-map -> 200 (principal). | création |
 
 ---
 
@@ -1245,9 +1429,13 @@ Le volume et le montant sont calculés correctement, la clôture est cohérente,
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /fuel-station/accounts -> 403 FUEL_SOLUTION_INACTIVE. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /fuel-station/accounts -> 403 FUEL_SOLUTION_INACTIVE. | création |
 
 ---
 
@@ -1271,9 +1459,13 @@ Le tarif suit la grille, la course suit son cycle, et l'absence de grille produi
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /vtc/dispatch/drivers -> 403 FEATURE_NOT_ENABLED. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /vtc/dispatch/drivers -> 403 FEATURE_NOT_ENABLED. | création |
 
 ---
 
@@ -1297,9 +1489,13 @@ La tournée se constitue, chaque colis a un statut et une preuve, et le client v
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /delivery/deliveries -> 403 FEATURE_NOT_ENABLED. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /delivery/deliveries -> 403 FEATURE_NOT_ENABLED. | création |
 
 ---
 
@@ -1323,9 +1519,13 @@ La commande est transmise, le total est correct, le ticket est généré et la t
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /restaurant/branches -> 403 FEATURE_NOT_ENABLED. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /restaurant/branches -> 403 FEATURE_NOT_ENABLED. | création |
 
 ---
 
@@ -1349,9 +1549,13 @@ Le KDS reflète l'état réel, la commande hors-ligne est mise en file puis sync
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : module restauration non souscrit (403 FEATURE_NOT_ENABLED). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : module restauration non souscrit (403 FEATURE_NOT_ENABLED). | création |
 
 ---
 
@@ -1375,9 +1579,13 @@ Le total est correct, le ticket est généré, la numérotation est continue, et
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /retail/categories -> 403 FEATURE_NOT_ENABLED. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /retail/categories -> 403 FEATURE_NOT_ENABLED. | création |
 
 ---
 
@@ -1401,9 +1609,13 @@ Le stock suit les ventes, la régularisation est possible et tracée, et aucun s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : module retail non souscrit (403 FEATURE_NOT_ENABLED). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : module retail non souscrit (403 FEATURE_NOT_ENABLED). | création |
 
 ---
 
@@ -1427,9 +1639,13 @@ La chambre ne peut pas être doublement réservée, les états de housekeeping s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /hospitality/dashboard/kpis -> 403 HOSPITALITY_SOLUTION_INACTIVE. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /hospitality/dashboard/kpis -> 403 HOSPITALITY_SOLUTION_INACTIVE. | création |
 
 ---
 
@@ -1453,9 +1669,13 @@ La vente sur ordonnance est contrôlée, le stock suit, la fiche publique est co
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /pharmacy/alerts -> 403 PHARMACY_SOLUTION_INACTIVE. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /pharmacy/alerts -> 403 PHARMACY_SOLUTION_INACTIVE. | création |
 
 ---
 
@@ -1479,9 +1699,13 @@ Les créneaux ne se chevauchent pas, l'accès au dossier est restreint et tracé
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /health-manager/admissions -> 403 HEALTH_SOLUTION_INACTIVE. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /health-manager/admissions -> 403 HEALTH_SOLUTION_INACTIVE. | création |
 
 ---
 
@@ -1505,9 +1729,13 @@ L'appel est enregistré, les moyennes sont calculées correctement, et les notes
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /edu-manager/academic-years -> 403 EDU_SOLUTION_INACTIVE. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /edu-manager/academic-years -> 403 EDU_SOLUTION_INACTIVE. | création |
 
 ---
 
@@ -1531,9 +1759,13 @@ La facture est émise et visible du seul parent concerné, le solde suit les pai
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : module edu inactif (403 EDU_SOLUTION_INACTIVE). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : module edu inactif (403 EDU_SOLUTION_INACTIVE). | création |
 
 ---
 
@@ -1557,9 +1789,13 @@ La parcelle conserve son historique complet, le rendement est calculé, et les s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 1 | DEFECT : GET /farm/apps/catalogue -> 403 COMPANY_NOT_FOUND, alors que l'utilisateur a une entreprise (les autres modules verticaux renvoient FEATURE_NOT_ENABLED / *_SOLUTION_INACTIVE). Code d'erreur incoherent et message trompeur. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 1 | DEFECT : GET /farm/apps/catalogue -> 403 COMPANY_NOT_FOUND, alors que l'utilisateur a une entreprise (les autres modules verticaux renvoient FEATURE_NOT_ENABLED / *_SOLUTION_INACTIVE). Code d'erreur incoherent et message trompeur. | création |
 
 ---
 
@@ -1583,9 +1819,13 @@ La campagne est publique et lisible, le don met à jour la progression, le reçu
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /fundraising/fundraisers -> 403 FEATURE_NOT_ENABLED. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /fundraising/fundraisers -> 403 FEATURE_NOT_ENABLED. | création |
 
 ---
 
@@ -1609,9 +1849,13 @@ Le cabinet ne voit que son portefeuille, l'accès hors portefeuille est refusé 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /cabinet/documents -> 200 (comptable). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /cabinet/documents -> 200 (comptable). | création |
 
 ---
 
@@ -1635,9 +1879,13 @@ L'intention est conservée jusqu'au devis, les totaux sont exacts, et l'absence 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /trade/cost-estimates -> 403 FEATURE_NOT_ENABLED (verticale Trade non activee sur le tenant de demo). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : GET /trade/cost-estimates -> 403 FEATURE_NOT_ENABLED (verticale Trade non activee sur le tenant de demo). | création |
 
 ---
 
@@ -1661,9 +1909,13 @@ La marque s'applique sur la surface publique, le contraste reste lisible, et la 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : branding/surfaces publiques non pilotes. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : branding/surfaces publiques non pilotes. | création |
 
 ---
 
@@ -1687,9 +1939,13 @@ L'essai, l'activation, la facture et le renouvellement sont cohérents, et l'exp
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /billing/ai-credits -> 200 ; /billing/subscription -> 404 'Aucun abonnement actif' (coherent, tenant de demo sans abonnement). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /billing/ai-credits -> 200 ; /billing/subscription -> 404 'Aucun abonnement actif' (coherent, tenant de demo sans abonnement). | création |
 
 ---
 
@@ -1713,9 +1969,13 @@ Seuls les webhooks signés sont acceptés, le rejeu est idempotent, l'état de p
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : encaissement et webhooks de paiement exigent un fournisseur externe (Stripe) non configure. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : encaissement et webhooks de paiement exigent un fournisseur externe (Stripe) non configure. | création |
 
 ---
 
@@ -1739,9 +1999,13 @@ Les événements sont mis en file, rejoués une seule fois, et la file se vide s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /edge -> 200 (EdgeSync repond). La file hors-ligne et le rejeu idempotent n'ont pas ete exerces. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /edge -> 200 (EdgeSync repond). La file hors-ligne et le rejeu idempotent n'ont pas ete exerces. | création |
 
 ---
 
@@ -1765,9 +2029,13 @@ Le pointage dans la zone est accepté avec preuve, le pointage hors zone est ref
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : preuve de presence geolocalisee exige une position GPS et un client mobile. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : preuve de presence geolocalisee exige une position GPS et un client mobile. | création |
 
 ---
 
@@ -1791,9 +2059,13 @@ Le contrat est accessible et versionné, la clé respecte son périmètre, la r�
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | API : GET /api-tokens -> 200, GET /webhooks -> 200. CONSTANT : GET /openapi.json -> 404, aucune specification OpenAPI publiee a cette adresse. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | API : GET /api-tokens -> 200, GET /webhooks -> 200. CONSTANT : GET /openapi.json -> 404, aucune specification OpenAPI publiee a cette adresse. | création |
 
 ---
 
@@ -1817,9 +2089,13 @@ L'analyse et le build passent, l'APK s'installe, et l'application démarre jusqu
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : build mobile Flutter exige une chaine Android/iOS absente du sandbox. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : build mobile Flutter exige une chaine Android/iOS absente du sandbox. | création |
 
 ---
 
@@ -1843,9 +2119,13 @@ L'application démarre, affiche sa version réelle, détecte la mise à jour et 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : client desktop non monte. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : client desktop non monte. | création |
 
 ---
 
@@ -1869,9 +2149,13 @@ La fiche est complète et lisible, l'état ouvert/fermé est correct, les action
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : fiche commerce publique non verifiee. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : fiche commerce publique non verifiee. | création |
 
 ---
 
@@ -1895,9 +2179,13 @@ Chaque étape est visible et horodatée, l'échec est diagnosticable sans accès
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | Plateforme partiellement verifiee : GET /health -> 200, GET /approvals/history -> 200. Provisionnement et diagnostic non rejoues. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | Plateforme partiellement verifiee : GET /health -> 200, GET /approvals/history -> 200. Provisionnement et diagnostic non rejoues. | création |
 
 ---
 
@@ -1921,9 +2209,13 @@ L'accès inter-établissement est refusé, aucune donnée de A n'apparaît dans 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | Isolation par etablissement non attaquee ; l'isolation par tenant est coherente (403 systematique hors souscription). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | Isolation par etablissement non attaquee ; l'isolation par tenant est coherente (403 systematique hors souscription). | création |
 
 ---
 
@@ -1947,9 +2239,13 @@ La connexion SSO aboutit avec le bon rôle, une configuration invalide produit u
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /sso/providers -> 200. Le flux SSO SAML/OIDC complet exige un IdP externe. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /sso/providers -> 200. Le flux SSO SAML/OIDC complet exige un IdP externe. | création |
 
 ---
 
@@ -1973,9 +2269,13 @@ Le registre est à jour, l'export est complet, la suppression est effective ou a
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /audit-logs -> 200 (principal). Registre RGPD partiellement verifie. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /audit-logs -> 200 (principal). Registre RGPD partiellement verifie. | création |
 
 ---
 
@@ -1999,9 +2299,13 @@ Les objectifs sont partagés, le check-in est tracé, la revue est clôturée, e
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /evaluations -> 200. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /evaluations -> 200. | création |
 
 ---
 
@@ -2025,9 +2329,13 @@ Le document est accessible au seul ayant droit, l'échéance déclenche une aler
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : le coffre-fort documentaire n'a pas d'endpoint de liste sans parametre (employee-documents porte sur un employe donne). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : le coffre-fort documentaire n'a pas d'endpoint de liste sans parametre (employee-documents porte sur un employe donne). | création |
 
 ---
 
@@ -2051,9 +2359,13 @@ L'enchaînement des validations est respecté, un rejet arrête le circuit, et l
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /approvals/history -> 200. Validation multi-niveaux non rejouee. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /approvals/history -> 200. Validation multi-niveaux non rejouee. | création |
 
 ---
 
@@ -2077,9 +2389,13 @@ Chaque indicateur correspond aux données réelles du module source, la période
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : tableau de bord consolide plateforme exige un compte plateforme dedie. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : tableau de bord consolide plateforme exige un compte plateforme dedie. | création |
 
 ---
 
@@ -2103,9 +2419,13 @@ Le ticket est traité, l'impersonation est signalée, réversible et journalisé
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : support/tickets et impersonation encadree exigent un compte support. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : support/tickets et impersonation encadree exigent un compte support. | création |
 
 ---
 
@@ -2129,9 +2449,13 @@ Les métriques correspondent aux abonnements réels, le revenu récurrent est ca
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : metriques d'abonnement/revenus exigent des donnees de facturation reelles. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : metriques d'abonnement/revenus exigent des donnees de facturation reelles. | création |
 
 ---
 
@@ -2155,9 +2479,13 @@ L'état des nœuds est fidèle, le kill switch agit immédiatement et de façon 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /edge -> 200 ; GET /approvals/history -> 200. Kill switch non declenche. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /edge -> 200 ; GET /approvals/history -> 200. Kill switch non declenche. | création |
 
 ---
 
@@ -2181,9 +2509,13 @@ Le post est publié à l'heure prévue, les statistiques remontent, et la décon
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /marketing/posts -> 200. Publication sociale et statistiques non exercees (pas de compte social connecte). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | GET /marketing/posts -> 200. Publication sociale et statistiques non exercees (pas de compte social connecte). | création |
 
 ---
 
@@ -2207,9 +2539,13 @@ Le dossier est créé, l'invitation aboutit, l'employé accède uniquement à so
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : onboarding d'un nouvel employe modifie l'etat du tenant de demo. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : onboarding d'un nouvel employe modifie l'etat du tenant de demo. | création |
 
 ---
 
@@ -2235,9 +2571,13 @@ La campagne et l'idée sont créées dans le seul tenant ciblé, la promotion pr
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : Marketing OS admin exige les endpoints /admin/companies/{company}/marketing-os/* avec un compte plateforme. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : Marketing OS admin exige les endpoints /admin/companies/{company}/marketing-os/* avec un compte plateforme. | création |
 
 ---
 
@@ -2263,9 +2603,13 @@ Le post est publié à l'heure prévue avec son URL réelle, les statistiques ab
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : publication sociale reelle impossible sans compte social connecte. |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non execute : publication sociale reelle impossible sans compte social connecte. | création |
 
 ---
 
@@ -2291,9 +2635,13 @@ La RFQ est émise et diffusée, le devis est produit par le seul rôle vendeur a
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). | création |
 
 ---
 
@@ -2319,9 +2667,46 @@ Le coût total rendu est exact en arithmétique entière, les postes indisponibl
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. |  |  |
+|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). |
 
-_Aucune modification humaine enregistrée pour ce cas._
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). | création |
+
+---
+
+## UC-89 — Connecteurs — catalogue, connexion et révocation d'une intégration tierce
+
+**Profil(s) :** Intégrateur connecteurs, Manager Principal · **Module(s) :** Connecteurs & intégrations · **Type :** Fonctionnel · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier le cycle de vie d'une intégration tierce : consultation du catalogue de connecteurs, connexion d'un fournisseur, vérification de son état et révocation, avec étanchéité entre tenants.  
+Prérequis : Tenant avec le module Connectors actif ; compte principal disposant du droit d'administration des intégrations ; endpoints `/api/v1/connectors/*`.
+
+**Étapes de test**
+1. Appeler `GET /api/v1/connectors/catalog` et vérifier que le catalogue est servi avec, pour chaque connecteur, une clé, une catégorie, une audience, un libellé et une URL de documentation.
+2. Vérifier qu'aucun secret ni jeton d'un autre tenant n'apparaît dans la réponse du catalogue.
+3. Initier la connexion d'un fournisseur de paiement et vérifier la redirection/le jeton d'état émis une seule fois.
+4. Simuler le retour du fournisseur et vérifier que l'intégration passe à l'état « connectée » et que ses identifiants publics sont persistés (jamais le secret en clair).
+5. Consulter l'état de l'intégration et vérifier la présence d'un horodatage de dernière synchronisation.
+6. Révoquer l'intégration et vérifier la transition d'état ainsi que l'arrêt des appels sortants vers ce fournisseur.
+7. Tenter de connecter un fournisseur non présent au catalogue et vérifier le refus métier (422) au lieu d'une 500.
+8. Vérifier qu'un rôle sans droit d'administration des intégrations reçoit un 403 sur la connexion et la révocation.
+
+**Résultat attendu**  
+Le catalogue est consultable et exempt de secrets, la connexion aboutit à un état « connectée » avec horodatage, la révocation coupe réellement les appels sortants, un fournisseur hors catalogue est refusé en 422, et toute tentative d'un rôle non autorisé renvoie 403.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+|  | Non exécuté — à réaliser par le testeur IA. | 3 | NOUVEAU (comble un trou de couverture) : le module Connectors est servi par l'API mais n'avait AUCUN cas d'usage au portail. GET /connectors/catalog -> 200 avec un catalogue reel (Stripe, categories payment, audience both, docs_url). Cycle de connexion OAuth non rejoue. |
+
+**Historique des modifications (1)**
+
+| Date (UTC) | Auteur | Note (/5) | Observation | Action |
+| :--- | :--- | :---: | :--- | :--- |
+| 2026-11-25 08:45:00 UTC | QA Agent (Teamily) | 3 | NOUVEAU (comble un trou de couverture) : le module Connectors est servi par l'API mais n'avait AUCUN cas d'usage au portail. GET /connectors/catalog -> 200 avec un catalogue reel (Stripe, categories payment, audience both, docs_url). Cycle de connexion OAuth non rejoue. | création |
 
 ---
 
@@ -2329,94 +2714,95 @@ _Aucune modification humaine enregistrée pour ce cas._
 
 | ID | Cas d'utilisation | Type | Statut | Note IA (/5) | Note humaine (/5) |
 | :--- | :--- | :--- | :--- | :---: | :---: |
-| UC-01 | Connexion d'un employé à l'espace client web | Fonctionnel | exécuté | 4 |  |
-| UC-02 | Pointage entrée / sortie (API, employé) | API | exécuté | 5 |  |
-| UC-03 | Pointage au kiosque biométrique (mode secours matricule) | UI/UX | exécuté | 4 |  |
-| UC-04 | Demande d'absence et approbation manager | Fonctionnel | exécuté | 5 |  |
-| UC-05 | Consultation du bulletin de paie (self-service employé) | Sécurité | exécuté | 4 |  |
-| UC-06 | Préparation de paie (Manager Comptable) | Fonctionnel | exécuté | 5 |  |
-| UC-07 | Gestion du dossier employé (création, modification, archivage) | Fonctionnel | exécuté | 2 |  |
-| UC-08 | Isolation multi-tenant | Sécurité | exécuté | 5 |  |
-| UC-09 | Multilingue et RTL (fr / en / tr / ar) | UI/UX | exécuté | 5 |  |
-| UC-10 | Kiosque en mode dégradé / synchronisation Edge | Résilience | exécuté | 4 |  |
-| UC-11 | CRM client (comptes, contacts, opportunités) | Fonctionnel | exécuté | 5 |  |
-| UC-12 | Vitrine publique et demande d'essai | Fonctionnel | exécuté | 4 |  |
-| UC-13 | Observabilité et santé de la plateforme | API | exécuté | 4 |  |
-| UC-14 | Solution verticale « Agence de voyage » (boutique publique) | Sécurité | exécuté | 4 |  |
-| UC-15 | Connexion Manager Principal et tableau de bord | Fonctionnel | à exécuter |  |  |
-| UC-16 | Gestion des départements et des équipes | Fonctionnel | à exécuter |  |  |
-| UC-17 | Attribution de rôles et invitations | Sécurité | à exécuter |  |  |
-| UC-18 | Validation des heures supplémentaires et du planning | Fonctionnel | à exécuter |  |  |
-| UC-19 | Génération et téléchargement d'un bulletin PDF | Fonctionnel | à exécuter |  |  |
-| UC-20 | Console Super Admin — gestion des entreprises | Fonctionnel | à exécuter |  |  |
-| UC-21 | Impersonation encadrée (Support) | Sécurité | à exécuter |  |  |
-| UC-22 | Facturation et abonnements (Finance) | Fonctionnel | à exécuter |  |  |
-| UC-23 | Kill switch et nœuds Edge (Ops) | Résilience | à exécuter |  |  |
-| UC-24 | Campagnes et vitrine (Marketing) | Fonctionnel | à exécuter |  |  |
-| UC-25 | Recrutement et offres d'emploi | Fonctionnel | à exécuter |  |  |
-| UC-26 | Bibliothèque / Showcase public | UI/UX | à exécuter |  |  |
-| UC-27 | Comptabilité — écritures et clôture mensuelle | Fonctionnel | à exécuter |  |  |
-| UC-28 | Comptabilité — export et rapprochement bancaire | Fonctionnel | à exécuter |  |  |
-| UC-29 | Notes de frais — soumission et validation | Fonctionnel | à exécuter |  |  |
-| UC-30 | Notes de frais — remboursement et impact paie | Fonctionnel | à exécuter |  |  |
-| UC-31 | Planning — shifts et affectations | Fonctionnel | à exécuter |  |  |
-| UC-32 | Tâches — assignation et preuve d'exécution | Fonctionnel | à exécuter |  |  |
-| UC-33 | Recrutement — offre d'emploi et page carrières | Fonctionnel | à exécuter |  |  |
-| UC-34 | Recrutement — pipeline de candidatures | Fonctionnel | à exécuter |  |  |
-| UC-35 | Communication — annonce interne et accusés de lecture | Fonctionnel | à exécuter |  |  |
-| UC-36 | Notifications — préférences et multi-canal | Fonctionnel | à exécuter |  |  |
-| UC-37 | Onboarding — provisioning d'un essai guidé | Fonctionnel | à exécuter |  |  |
-| UC-38 | Onboarding — reprise d'un parcours interrompu | Résilience | à exécuter |  |  |
-| UC-39 | Catalogue — produits, services et tarifs | Fonctionnel | à exécuter |  |  |
-| UC-40 | Recherche — recherche transverse et permissions | Sécurité | à exécuter |  |  |
-| UC-41 | Pages — pages publiques et SEO multilingue | UI/UX | à exécuter |  |  |
-| UC-42 | Showcase — vitrine publique et bibliothèque | UI/UX | à exécuter |  |  |
-| UC-43 | Bibliothèque — prêt et retour d'ouvrages | Fonctionnel | à exécuter |  |  |
-| UC-44 | Caméras — parc et supervision des flux | Fonctionnel | à exécuter |  |  |
-| UC-45 | Caméras — incident et maintenance | Fonctionnel | à exécuter |  |  |
-| UC-46 | Flotte — véhicules, affectations et entretien | Fonctionnel | à exécuter |  |  |
-| UC-47 | Station-service — index pompes et ventes carburant | Fonctionnel | à exécuter |  |  |
-| UC-48 | VTC — course et tarification | Fonctionnel | à exécuter |  |  |
-| UC-49 | Livraison — tournée et preuve de livraison | Fonctionnel | à exécuter |  |  |
-| UC-50 | Restauration — POS et plan de salle | Fonctionnel | à exécuter |  |  |
-| UC-51 | Restauration — KDS et cycle de commande | Résilience | à exécuter |  |  |
-| UC-52 | Retail — POS et encaissement | Fonctionnel | à exécuter |  |  |
-| UC-53 | Retail — stock et inventaire | Fonctionnel | à exécuter |  |  |
-| UC-54 | Hôtellerie — chambres, séjours et housekeeping | Fonctionnel | à exécuter |  |  |
-| UC-55 | Pharmacie — stock, ordonnance et profil public | Fonctionnel | à exécuter |  |  |
-| UC-56 | Santé — patients, rendez-vous et dossier | Sécurité | à exécuter |  |  |
-| UC-57 | École — classes, notes et présences | Fonctionnel | à exécuter |  |  |
-| UC-58 | École — facturation scolaire et espace parents | Fonctionnel | à exécuter |  |  |
-| UC-59 | Agriculture — parcelles, cultures et récoltes | Fonctionnel | à exécuter |  |  |
-| UC-60 | Cagnottes — campagne de collecte et dons | Fonctionnel | à exécuter |  |  |
-| UC-61 | Cabinet comptable — portefeuille clients | Sécurité | à exécuter |  |  |
-| UC-62 | Négoce — intention, sous-profil et devis | Fonctionnel | à exécuter |  |  |
-| UC-63 | Marque — branding tenant et surfaces publiques | UI/UX | à exécuter |  |  |
-| UC-64 | Abonnements — plan, essai et facturation | Fonctionnel | à exécuter |  |  |
-| UC-65 | Paiements — encaissement et webhooks | Sécurité | à exécuter |  |  |
-| UC-66 | EdgeSync — file hors-ligne et rejeu idempotent | Résilience | à exécuter |  |  |
-| UC-67 | Géolocalisation — preuve de présence | Sécurité | à exécuter |  |  |
-| UC-68 | API — contrat OpenAPI, webhooks et clés | API | à exécuter |  |  |
-| UC-69 | Mobile — build et distribution des applications | Résilience | à exécuter |  |  |
-| UC-70 | Desktop — poste de travail et mise à jour | Fonctionnel | à exécuter |  |  |
-| UC-71 | Public — fiche commerce (leopardo_public) | UI/UX | à exécuter |  |  |
-| UC-72 | Plateforme — provisionnement et diagnostic | Fonctionnel | à exécuter |  |  |
-| UC-73 | Tenant — isolation par établissement | Sécurité | à exécuter |  |  |
-| UC-74 | IAM — connexion SSO (SAML / OIDC) | Sécurité | à exécuter |  |  |
-| UC-75 | RGPD — registre des traitements et droits | Sécurité | à exécuter |  |  |
-| UC-76 | Performance — objectifs et évaluations | Fonctionnel | à exécuter |  |  |
-| UC-77 | Documents — coffre-fort et échéances | Fonctionnel | à exécuter |  |  |
-| UC-78 | Workflows — validations multi-niveaux | Fonctionnel | à exécuter |  |  |
-| UC-79 | Plateforme — tableau de bord consolidé | Fonctionnel | à exécuter |  |  |
-| UC-80 | Support — tickets et impersonation encadrée | Sécurité | à exécuter |  |  |
-| UC-81 | Finance — métriques d'abonnement et revenus | Fonctionnel | à exécuter |  |  |
-| UC-82 | Ops — nœuds Edge et kill switch | Résilience | à exécuter |  |  |
-| UC-83 | Marketing OS — publication sociale et statistiques | Fonctionnel | à exécuter |  |  |
-| UC-84 | RH — onboarding d'un nouvel employé | Fonctionnel | à exécuter |  |  |
-| UC-85 | Marketing OS — campagne, idée et promotion en production | Fonctionnel | à exécuter |  |  |
-| UC-86 | Marketing — publication sociale, mode assisté et vitrine publique | Fonctionnel | à exécuter |  |  |
-| UC-87 | Négoce — parcours RFQ, devis et acceptation (acheteur / vendeur) | Fonctionnel | à exécuter |  |  |
-| UC-88 | Négoce — coût total rendu, checklist douanière et profil vitrine | Fonctionnel | à exécuter |  |  |
+| UC-01 | Connexion d'un employé à l'espace client web | Fonctionnel | exécuté | 4 | 4 |
+| UC-02 | Pointage entrée / sortie (API, employé) | API | exécuté | 5 | 3 |
+| UC-03 | Pointage au kiosque biométrique (mode secours matricule) | UI/UX | exécuté | 4 | 0 |
+| UC-04 | Demande d'absence et approbation manager | Fonctionnel | exécuté | 5 | 3 |
+| UC-05 | Consultation du bulletin de paie (self-service employé) | Sécurité | exécuté | 4 | 2 |
+| UC-06 | Préparation de paie (Manager Comptable) | Fonctionnel | exécuté | 5 | 3 |
+| UC-07 | Gestion du dossier employé (création, modification, archivage) | Fonctionnel | exécuté | 2 | 3 |
+| UC-08 | Isolation multi-tenant | Sécurité | exécuté | 5 | 3 |
+| UC-09 | Multilingue et RTL (fr / en / tr / ar) | UI/UX | exécuté | 5 | 0 |
+| UC-10 | Kiosque en mode dégradé / synchronisation Edge | Résilience | exécuté | 4 | 0 |
+| UC-11 | CRM client (comptes, contacts, opportunités) | Fonctionnel | exécuté | 5 | 3 |
+| UC-12 | Vitrine publique et demande d'essai | Fonctionnel | exécuté | 4 | 3 |
+| UC-13 | Observabilité et santé de la plateforme | API | exécuté | 4 | 3 |
+| UC-14 | Solution verticale « Agence de voyage » (boutique publique) | Sécurité | exécuté | 4 | 3 |
+| UC-15 | Connexion Manager Principal et tableau de bord | Fonctionnel | à exécuter |  | 3 |
+| UC-16 | Gestion des départements et des équipes | Fonctionnel | à exécuter |  | 3 |
+| UC-17 | Attribution de rôles et invitations | Sécurité | à exécuter |  | 3 |
+| UC-18 | Validation des heures supplémentaires et du planning | Fonctionnel | à exécuter |  | 3 |
+| UC-19 | Génération et téléchargement d'un bulletin PDF | Fonctionnel | à exécuter |  | 0 |
+| UC-20 | Console Super Admin — gestion des entreprises | Fonctionnel | à exécuter |  | 0 |
+| UC-21 | Impersonation encadrée (Support) | Sécurité | à exécuter |  | 0 |
+| UC-22 | Facturation et abonnements (Finance) | Fonctionnel | à exécuter |  | 3 |
+| UC-23 | Kill switch et nœuds Edge (Ops) | Résilience | à exécuter |  | 3 |
+| UC-24 | Campagnes et vitrine (Marketing) | Fonctionnel | à exécuter |  | 3 |
+| UC-25 | Recrutement et offres d'emploi | Fonctionnel | à exécuter |  | 3 |
+| UC-26 | Bibliothèque / Showcase public | UI/UX | à exécuter |  | 0 |
+| UC-27 | Comptabilité — écritures et clôture mensuelle | Fonctionnel | à exécuter |  | 3 |
+| UC-28 | Comptabilité — export et rapprochement bancaire | Fonctionnel | à exécuter |  | 3 |
+| UC-29 | Notes de frais — soumission et validation | Fonctionnel | à exécuter |  | 3 |
+| UC-30 | Notes de frais — remboursement et impact paie | Fonctionnel | à exécuter |  | 3 |
+| UC-31 | Planning — shifts et affectations | Fonctionnel | à exécuter |  | 3 |
+| UC-32 | Tâches — assignation et preuve d'exécution | Fonctionnel | à exécuter |  | 3 |
+| UC-33 | Recrutement — offre d'emploi et page carrières | Fonctionnel | à exécuter |  | 3 |
+| UC-34 | Recrutement — pipeline de candidatures | Fonctionnel | à exécuter |  | 3 |
+| UC-35 | Communication — annonce interne et accusés de lecture | Fonctionnel | à exécuter |  | 3 |
+| UC-36 | Notifications — préférences et multi-canal | Fonctionnel | à exécuter |  | 3 |
+| UC-37 | Onboarding — provisioning d'un essai guidé | Fonctionnel | à exécuter |  | 0 |
+| UC-38 | Onboarding — reprise d'un parcours interrompu | Résilience | à exécuter |  | 0 |
+| UC-39 | Catalogue — produits, services et tarifs | Fonctionnel | à exécuter |  | 0 |
+| UC-40 | Recherche — recherche transverse et permissions | Sécurité | à exécuter |  | 0 |
+| UC-41 | Pages — pages publiques et SEO multilingue | UI/UX | à exécuter |  | 3 |
+| UC-42 | Showcase — vitrine publique et bibliothèque | UI/UX | à exécuter |  | 0 |
+| UC-43 | Bibliothèque — prêt et retour d'ouvrages | Fonctionnel | à exécuter |  | 3 |
+| UC-44 | Caméras — parc et supervision des flux | Fonctionnel | à exécuter |  | 0 |
+| UC-45 | Caméras — incident et maintenance | Fonctionnel | à exécuter |  | 0 |
+| UC-46 | Flotte — véhicules, affectations et entretien | Fonctionnel | à exécuter |  | 3 |
+| UC-47 | Station-service — index pompes et ventes carburant | Fonctionnel | à exécuter |  | 0 |
+| UC-48 | VTC — course et tarification | Fonctionnel | à exécuter |  | 0 |
+| UC-49 | Livraison — tournée et preuve de livraison | Fonctionnel | à exécuter |  | 0 |
+| UC-50 | Restauration — POS et plan de salle | Fonctionnel | à exécuter |  | 0 |
+| UC-51 | Restauration — KDS et cycle de commande | Résilience | à exécuter |  | 0 |
+| UC-52 | Retail — POS et encaissement | Fonctionnel | à exécuter |  | 0 |
+| UC-53 | Retail — stock et inventaire | Fonctionnel | à exécuter |  | 0 |
+| UC-54 | Hôtellerie — chambres, séjours et housekeeping | Fonctionnel | à exécuter |  | 0 |
+| UC-55 | Pharmacie — stock, ordonnance et profil public | Fonctionnel | à exécuter |  | 0 |
+| UC-56 | Santé — patients, rendez-vous et dossier | Sécurité | à exécuter |  | 0 |
+| UC-57 | École — classes, notes et présences | Fonctionnel | à exécuter |  | 0 |
+| UC-58 | École — facturation scolaire et espace parents | Fonctionnel | à exécuter |  | 0 |
+| UC-59 | Agriculture — parcelles, cultures et récoltes | Fonctionnel | à exécuter |  | 1 |
+| UC-60 | Cagnottes — campagne de collecte et dons | Fonctionnel | à exécuter |  | 0 |
+| UC-61 | Cabinet comptable — portefeuille clients | Sécurité | à exécuter |  | 3 |
+| UC-62 | Négoce — intention, sous-profil et devis | Fonctionnel | à exécuter |  | 0 |
+| UC-63 | Marque — branding tenant et surfaces publiques | UI/UX | à exécuter |  | 0 |
+| UC-64 | Abonnements — plan, essai et facturation | Fonctionnel | à exécuter |  | 3 |
+| UC-65 | Paiements — encaissement et webhooks | Sécurité | à exécuter |  | 0 |
+| UC-66 | EdgeSync — file hors-ligne et rejeu idempotent | Résilience | à exécuter |  | 3 |
+| UC-67 | Géolocalisation — preuve de présence | Sécurité | à exécuter |  | 0 |
+| UC-68 | API — contrat OpenAPI, webhooks et clés | API | à exécuter |  | 3 |
+| UC-69 | Mobile — build et distribution des applications | Résilience | à exécuter |  | 0 |
+| UC-70 | Desktop — poste de travail et mise à jour | Fonctionnel | à exécuter |  | 0 |
+| UC-71 | Public — fiche commerce (leopardo_public) | UI/UX | à exécuter |  | 0 |
+| UC-72 | Plateforme — provisionnement et diagnostic | Fonctionnel | à exécuter |  | 3 |
+| UC-73 | Tenant — isolation par établissement | Sécurité | à exécuter |  | 3 |
+| UC-74 | IAM — connexion SSO (SAML / OIDC) | Sécurité | à exécuter |  | 3 |
+| UC-75 | RGPD — registre des traitements et droits | Sécurité | à exécuter |  | 3 |
+| UC-76 | Performance — objectifs et évaluations | Fonctionnel | à exécuter |  | 3 |
+| UC-77 | Documents — coffre-fort et échéances | Fonctionnel | à exécuter |  | 0 |
+| UC-78 | Workflows — validations multi-niveaux | Fonctionnel | à exécuter |  | 3 |
+| UC-79 | Plateforme — tableau de bord consolidé | Fonctionnel | à exécuter |  | 0 |
+| UC-80 | Support — tickets et impersonation encadrée | Sécurité | à exécuter |  | 0 |
+| UC-81 | Finance — métriques d'abonnement et revenus | Fonctionnel | à exécuter |  | 0 |
+| UC-82 | Ops — nœuds Edge et kill switch | Résilience | à exécuter |  | 3 |
+| UC-83 | Marketing OS — publication sociale et statistiques | Fonctionnel | à exécuter |  | 3 |
+| UC-84 | RH — onboarding d'un nouvel employé | Fonctionnel | à exécuter |  | 0 |
+| UC-85 | Marketing OS — campagne, idée et promotion en production | Fonctionnel | à exécuter |  | 0 |
+| UC-86 | Marketing — publication sociale, mode assisté et vitrine publique | Fonctionnel | à exécuter |  | 0 |
+| UC-87 | Négoce — parcours RFQ, devis et acceptation (acheteur / vendeur) | Fonctionnel | à exécuter |  | 0 |
+| UC-88 | Négoce — coût total rendu, checklist douanière et profil vitrine | Fonctionnel | à exécuter |  | 0 |
+| UC-89 | Connecteurs — catalogue, connexion et révocation d'une intégration tierce | Fonctionnel | à exécuter |  | 3 |
 
 **Cas notés (IA) :** 14 · **Total des notes IA :** 60 · **Moyenne IA :** 4.29 / 5 · **Cas bloquants (≤2) :** 1
 

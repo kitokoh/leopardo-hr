@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UC-89 — Connecteurs — catalogue, connexion et révocation d&#x27;une intégration tierce — Portail de recette Leopardo</title>
+<link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body data-notes-url="../notes-humaines.json">
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">L</span>
+      <span class="brand-text">Portail de recette <small>leopardo-hr</small></span>
+    </a>
+    <nav class="mainnav">
+      <a href="../index.html">Accueil</a>
+      <a href="../profils/index.html">Profils</a>
+      <a href="../modules/index.html">Modules</a>
+      <a href="../recap.html">Récapitulatif</a>
+      <a href="../tests-ia-leopardo-hr.md">Markdown</a>
+      <a href="../prompt-agent-testeur.md">Prompt IA</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1 class="page-title">UC-89 — Connecteurs — catalogue, connexion et révocation d&#x27;une intégration tierce</h1>
+  <p class="page-sub">Fiche de résultats du cas d&#x27;usage.</p>
+  
+<nav class="breadcrumb"><a href="../index.html">Portail</a> <span class="sep">›</span> <a href="../profils/index.html">Profils</a> <span class="sep">›</span> <a href="../profils/integrateur-connecteurs.html">Intégrateur connecteurs</a> <span class="sep">›</span> <span aria-current="page">UC-89</span></nav>
+<div class="uc-head">
+  <div class="uc-id">UC-89</div>
+  <div class="uc-head-main">
+    <h2 class="uc-title">Connecteurs — catalogue, connexion et révocation d&#x27;une intégration tierce</h2>
+    <div class="chips">
+      <span class="badge" style="background:#2563eb1a;color:#2563eb;border-color:#2563eb33">Fonctionnel</span>
+      <span class="badge badge-todo">◻ à exécuter</span>
+      <span class="chip">Profil : <a href="../profils/integrateur-connecteurs.html">Intégrateur connecteurs</a> · <a href="../profils/manager-principal.html">Manager Principal</a></span>
+      <span class="chip">Module : <a href="../modules/connectors.html">Connecteurs &amp; intégrations</a></span>
+      <span class="chip hist-count" data-hist-count="UC-89">1 modification</span>
+    </div>
+  </div>
+</div>
+
+<div class="uc-grid">
+  <section class="panel">
+    <h3>Description / préconditions</h3>
+    <p>Vérifier le cycle de vie d&#x27;une intégration tierce : consultation du catalogue de connecteurs, connexion d&#x27;un fournisseur, vérification de son état et révocation, avec étanchéité entre tenants.</p>
+    <p class="muted"><strong>Prérequis :</strong> Tenant avec le module Connectors actif ; compte principal disposant du droit d&#x27;administration des intégrations ; endpoints <code>/api/v1/connectors/*</code>.</p>
+  </section>
+  <section class="panel">
+    <h3>Résultat attendu</h3>
+    <p>Le catalogue est consultable et exempt de secrets, la connexion aboutit à un état « connectée » avec horodatage, la révocation coupe réellement les appels sortants, un fournisseur hors catalogue est refusé en 422, et toute tentative d&#x27;un rôle non autorisé renvoie 403.</p>
+  </section>
+</div>
+
+<section class="panel">
+  <h3>Étapes de test</h3>
+  <ol class="steps"><li>Appeler <code>GET /api/v1/connectors/catalog</code> et vérifier que le catalogue est servi avec, pour chaque connecteur, une clé, une catégorie, une audience, un libellé et une URL de documentation.</li><li>Vérifier qu&#x27;aucun secret ni jeton d&#x27;un autre tenant n&#x27;apparaît dans la réponse du catalogue.</li><li>Initier la connexion d&#x27;un fournisseur de paiement et vérifier la redirection/le jeton d&#x27;état émis une seule fois.</li><li>Simuler le retour du fournisseur et vérifier que l&#x27;intégration passe à l&#x27;état « connectée » et que ses identifiants publics sont persistés (jamais le secret en clair).</li><li>Consulter l&#x27;état de l&#x27;intégration et vérifier la présence d&#x27;un horodatage de dernière synchronisation.</li><li>Révoquer l&#x27;intégration et vérifier la transition d&#x27;état ainsi que l&#x27;arrêt des appels sortants vers ce fournisseur.</li><li>Tenter de connecter un fournisseur non présent au catalogue et vérifier le refus métier (422) au lieu d&#x27;une 500.</li><li>Vérifier qu&#x27;un rôle sans droit d&#x27;administration des intégrations reçoit un 403 sur la connexion et la révocation.</li></ol>
+</section>
+
+<section class="panel">
+  <h3>Fiche de résultats</h3>
+  <div class="table-wrap">
+    <table class="result-table">
+      <thead>
+        <tr>
+          <th class="col-note">Note IA (/5)</th>
+          <th>Observation IA</th>
+          <th class="col-note">Note humaine (/5)</th>
+          <th>Observation humaine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="center"><span class="note note-empty">—</span></td>
+          <td class="obs"><span class="muted">Non exécuté — à réaliser par le testeur IA.</span></td>
+          <td class="center human-cell" data-human-note="UC-89"><span class="note-badge">3/5</span></td>
+          <td class="human-cell" data-human-obs="UC-89">NOUVEAU (comble un trou de couverture) : le module Connectors est servi par l&#x27;API mais n&#x27;avait AUCUN cas d&#x27;usage au portail. GET /connectors/catalog -&gt; 200 avec un catalogue reel (Stripe, categories payment, audience both, docs_url). Cycle de connexion OAuth non rejoue.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel hist-panel" data-hist-panel="UC-89">
+  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-89">1</span></h3>
+  <p class="muted small">Toutes les saisies de notation humaine de ce cas, de la plus récente à la plus ancienne.
+  Chaque enregistrement depuis le portail ajoute une entrée horodatée (UTC).</p>
+  <div class="hist-body" data-hist-body="UC-89">
+    <div class="table-wrap">
+      <table class="data-table hist-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Auteur</th><th class="center">Note (/5)</th>
+            <th>Observation</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody><tr><td class="nowrap">2026-11-25 08:45:00 UTC</td><td>QA Agent (Teamily)</td><td class="center"><span class="note-badge">3/5</span></td><td class="obs">NOUVEAU (comble un trou de couverture) : le module Connectors est servi par l&#x27;API mais n&#x27;avait AUCUN cas d&#x27;usage au portail. GET /connectors/catalog -&gt; 200 avec un catalogue reel (Stripe, categories payment, audience both, docs_url). Cycle de connexion OAuth non rejoue.</td><td><span class="hist-badge hist-created">création</span></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="panel eval-panel" data-uc="UC-89"
+         data-repo="Kitokoh/leopardo-hr" data-branch="main"
+         data-path="docs/recette/notes-humaines.json" data-notes-url="../notes-humaines.json">
+  <h3>Votre évaluation humaine</h3>
+  <p class="muted">Les notes saisies ici sont <strong>enregistrées dans le dépôt</strong>
+  (<code>docs/recette/notes-humaines.json</code>) via l'API GitHub : elles sont donc versionnées et visibles par tous.
+  Un jeton personnel GitHub est requis ; il reste stocké <strong>uniquement dans votre navigateur</strong>.</p>
+
+  <details class="token-box">
+    <summary>Configurer mon jeton GitHub</summary>
+    <div class="token-body">
+      <p class="muted small">Créez un token sur
+        <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a>
+        avec le scope <code>repo</code> (token classique) ou la permission
+        <code>Contents: Read and write</code> (token fin). Il n'est envoyé qu'à
+        <code>api.github.com</code> et n'est jamais écrit dans le dépôt.</p>
+      <label>Jeton GitHub
+        <input type="password" class="gh-token" autocomplete="off" spellcheck="false"
+               placeholder="ghp_… ou github_pat_…">
+      </label>
+      <label>Votre nom (affiché comme auteur)
+        <input type="text" class="gh-author" autocomplete="off" placeholder="ex. Amina T.">
+      </label>
+      <div class="eval-actions">
+        <button class="btn btn-primary token-save" type="button">Enregistrer le jeton</button>
+        <button class="btn btn-ghost token-clear" type="button">Effacer le jeton</button>
+        <span class="token-status muted"></span>
+      </div>
+    </div>
+  </details>
+
+  <div class="eval-form">
+    <label>Note humaine (/5)
+      <select class="eval-note">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+    </label>
+    <label class="eval-obs-label">Observation humaine
+      <textarea class="eval-obs" rows="3" placeholder="Décrivez factuellement ce que vous avez observé…"></textarea>
+    </label>
+    <div class="eval-actions">
+      <button class="btn btn-primary eval-save" type="button">Enregistrer dans le dépôt</button>
+      <a class="btn btn-ghost" href="https://github.com/Kitokoh/leopardo-hr/edit/main/docs/recette/notes-humaines.json" target="_blank" rel="noopener">Éditer sur GitHub</a>
+      <span class="eval-status muted"></span>
+    </div>
+    <p class="eval-meta muted small"></p>
+  </div>
+</section>
+
+<p class="uc-nav">
+  <a class="btn-back" href="../index.html">← Portail</a>
+  <a class="btn-back" href="../profils/integrateur-connecteurs.html">← Profil Intégrateur connecteurs</a>
+  <a class="btn-back" href="../modules/connectors.html">← Module Connecteurs &amp; intégrations</a>
+</p>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p>Portail de recette <strong>leopardo-hr</strong> — dépôt
+      <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
+      Colonnes « Note IA » / « Observation IA » remplies par le testeur IA ;
+      colonnes « Note humaine » / « Observation humaine » réservées à l'évaluation humaine.</p>
+  </div>
+</footer>
+<script src="../assets/portal.js"></script>
+</body>
+</html>

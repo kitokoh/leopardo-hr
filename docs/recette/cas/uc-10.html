@@ -37,7 +37,7 @@
       <span class="badge badge-done">✔ exécuté</span>
       <span class="chip">Profil : <a href="../profils/superviseur-kiosque.html">Superviseur / Kiosque</a></span>
       <span class="chip">Module : <a href="../modules/kiosque.html">Kiosque &amp; EdgeSync</a></span>
-      <span class="chip hist-count" data-hist-count="UC-10">0 modifications</span>
+      <span class="chip hist-count" data-hist-count="UC-10">1 modification</span>
     </div>
   </div>
 </div>
@@ -75,8 +75,8 @@
         <tr>
           <td class="center"><span class="note note-good">4/5</span></td>
           <td class="obs">Le pont local met chaque pointage en file SQLite (<code>sync_status=queued</code>) et incrémente <code>queue_count</code> (2 → 3 après un pointage) ; <code>dead_letter_count=0</code>. L&#x27;état est exposé par <code>GET /local/status</code> (<code>online</code>, <code>queue_count</code>, <code>last_error</code>, <code>last_sync_at</code>). La borne reste pleinement utilisable sans cloud. La resynchronisation vers le cloud n&#x27;a pas pu être validée de bout en bout : le point de synchronisation cloud n&#x27;est pas configuré en local (<code>last_error=HTTP_404</code>).</td>
-          <td class="center human-cell" data-human-note="UC-10"><span class="muted">—</span></td>
-          <td class="human-cell" data-human-obs="UC-10"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
+          <td class="center human-cell" data-human-note="UC-10"><span class="note-badge">0/5</span></td>
+          <td class="human-cell" data-human-obs="UC-10">Non executable ici : le mode degrade kiosque/EdgeSync exige le client mobile ou le boitier, plus une coupure reseau controlee.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>
       </tbody>
     </table>
@@ -84,12 +84,21 @@
 </section>
 
 <section class="panel hist-panel" data-hist-panel="UC-10">
-  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-10">0</span></h3>
+  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-10">1</span></h3>
   <p class="muted small">Toutes les saisies de notation humaine de ce cas, de la plus récente à la plus ancienne.
   Chaque enregistrement depuis le portail ajoute une entrée horodatée (UTC).</p>
   <div class="hist-body" data-hist-body="UC-10">
-    <p class="hist-empty muted">Aucune modification enregistrée pour ce cas.
-    La première note saisie ci-dessous créera la première entrée d'historique.</p>
+    <div class="table-wrap">
+      <table class="data-table hist-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Auteur</th><th class="center">Note (/5)</th>
+            <th>Observation</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody><tr><td class="nowrap">2026-11-25 08:45:00 UTC</td><td>QA Agent (Teamily)</td><td class="center"><span class="note-badge">0/5</span></td><td class="obs">Non executable ici : le mode degrade kiosque/EdgeSync exige le client mobile ou le boitier, plus une coupure reseau controlee.</td><td><span class="hist-badge hist-created">création</span></td></tr></tbody>
+      </table>
+    </div>
   </div>
 </section>
 

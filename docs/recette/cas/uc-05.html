@@ -37,7 +37,7 @@
       <span class="badge badge-done">✔ exécuté</span>
       <span class="chip">Profil : <a href="../profils/employe.html">Employé</a></span>
       <span class="chip">Module : <a href="../modules/payroll.html">Paie (Payroll)</a></span>
-      <span class="chip hist-count" data-hist-count="UC-05">0 modifications</span>
+      <span class="chip hist-count" data-hist-count="UC-05">1 modification</span>
     </div>
   </div>
 </div>
@@ -75,8 +75,8 @@
         <tr>
           <td class="center"><span class="note note-good">4/5</span></td>
           <td class="obs"><code>GET /me/pay-slips</code> → <strong>200</strong> (liste paginée, <code>data: []</code> pour l&#x27;employé de démo — aucun bulletin n&#x27;est généré par le seeder). Accès à un bulletin inexistant/tiers (<code>/me/pay-slips/999999</code>) → <strong>404 <code>RESOURCE_NOT_FOUND</code></strong> avec message localisé, sans fuite d&#x27;information. Le contrôle d&#x27;accès est conforme ; le téléchargement PDF n&#x27;a pas pu être vérifié faute de bulletin en base.</td>
-          <td class="center human-cell" data-human-note="UC-05"><span class="muted">—</span></td>
-          <td class="human-cell" data-human-obs="UC-05"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
+          <td class="center human-cell" data-human-note="UC-05"><span class="note-badge">2/5</span></td>
+          <td class="human-cell" data-human-obs="UC-05">DEFECT : GET /payrolls en persona employe (self-service bulletin) -&gt; 403 FORBIDDEN. L&#x27;employe ne peut pas lire ses propres bulletins alors que l&#x27;API repond 200 pour GET /attendance et /absences du meme compte.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>
       </tbody>
     </table>
@@ -84,12 +84,21 @@
 </section>
 
 <section class="panel hist-panel" data-hist-panel="UC-05">
-  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-05">0</span></h3>
+  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-05">1</span></h3>
   <p class="muted small">Toutes les saisies de notation humaine de ce cas, de la plus récente à la plus ancienne.
   Chaque enregistrement depuis le portail ajoute une entrée horodatée (UTC).</p>
   <div class="hist-body" data-hist-body="UC-05">
-    <p class="hist-empty muted">Aucune modification enregistrée pour ce cas.
-    La première note saisie ci-dessous créera la première entrée d'historique.</p>
+    <div class="table-wrap">
+      <table class="data-table hist-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Auteur</th><th class="center">Note (/5)</th>
+            <th>Observation</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody><tr><td class="nowrap">2026-11-25 08:45:00 UTC</td><td>QA Agent (Teamily)</td><td class="center"><span class="note-badge">2/5</span></td><td class="obs">DEFECT : GET /payrolls en persona employe (self-service bulletin) -&gt; 403 FORBIDDEN. L&#x27;employe ne peut pas lire ses propres bulletins alors que l&#x27;API repond 200 pour GET /attendance et /absences du meme compte.</td><td><span class="hist-badge hist-created">création</span></td></tr></tbody>
+      </table>
+    </div>
   </div>
 </section>
 
