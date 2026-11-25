@@ -11,6 +11,13 @@ parameters:
         - app
         - routes
         - tests
+    # #9922 — stubs de types pour les dépendances OPTIONNELLES.
+    #
+    # `scanFiles` fait lire le fichier par PHPStan sans l'ajouter à l'autoload
+    # d'exécution : le stub n'existe que pour l'analyse. Voir le docblock de
+    # phpstan-stubs/Google2FA.php pour le raisonnement complet.
+    scanFiles:
+        - phpstan-stubs/Google2FA.php
     tmpDir: storage/phpstan
     excludePaths:
         - bootstrap/cache
