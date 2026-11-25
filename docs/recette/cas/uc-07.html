@@ -37,7 +37,7 @@
       <span class="badge badge-done">✔ exécuté</span>
       <span class="chip">Profil : <a href="../profils/manager-rh.html">Manager RH</a></span>
       <span class="chip">Module : <a href="../modules/hr.html">Dossier employé (HR)</a></span>
-      <span class="chip hist-count" data-hist-count="UC-07">0 modifications</span>
+      <span class="chip hist-count" data-hist-count="UC-07">1 modification</span>
     </div>
   </div>
 </div>
@@ -75,8 +75,8 @@
         <tr>
           <td class="center"><span class="note note-bad">2/5</span></td>
           <td class="obs"><code>GET /employees</code> → <strong>200</strong> (pagination + filtrage OK). <code>POST /employees</code> (mot de passe conforme) → <strong>201</strong>, employé #28 créé. <strong><code>PUT /employees/28</code> → 500 <code>INTERNAL_ERROR</code></strong> : le log montre <code>Error: Unknown named parameter $contract_type at app/Modules/HR/Application/DTOs/UpdateEmployeeDTO.php:66</code> — la mise à jour d&#x27;un employé est <strong>cassée</strong> (défaillance fonctionnelle majeure). <code>POST /employees/28/archive</code> → <strong>200</strong>, <code>status=&quot;archived&quot;</code>. Email déjà utilisé → <strong>422</strong> avec double message. La création et l&#x27;archivage sont conformes, mais la modification échoue en 500. *(Corrigé depuis par le patch d&#x27;audit — à re-tester.)*</td>
-          <td class="center human-cell" data-human-note="UC-07"><span class="muted">—</span></td>
-          <td class="human-cell" data-human-obs="UC-07"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
+          <td class="center human-cell" data-human-note="UC-07"><span class="note-badge">3/5</span></td>
+          <td class="human-cell" data-human-obs="UC-07">GET /employees -&gt; 200 (RH) et POST /employees -&gt; 403 MANAGER_REQUIRED pour un employe : le controle d&#x27;acces est correct sur les deux sens. Creation/modification/archivage non rejoues.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>
       </tbody>
     </table>
@@ -84,12 +84,21 @@
 </section>
 
 <section class="panel hist-panel" data-hist-panel="UC-07">
-  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-07">0</span></h3>
+  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-07">1</span></h3>
   <p class="muted small">Toutes les saisies de notation humaine de ce cas, de la plus récente à la plus ancienne.
   Chaque enregistrement depuis le portail ajoute une entrée horodatée (UTC).</p>
   <div class="hist-body" data-hist-body="UC-07">
-    <p class="hist-empty muted">Aucune modification enregistrée pour ce cas.
-    La première note saisie ci-dessous créera la première entrée d'historique.</p>
+    <div class="table-wrap">
+      <table class="data-table hist-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Auteur</th><th class="center">Note (/5)</th>
+            <th>Observation</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody><tr><td class="nowrap">2026-11-25 08:45:00 UTC</td><td>QA Agent (Teamily)</td><td class="center"><span class="note-badge">3/5</span></td><td class="obs">GET /employees -&gt; 200 (RH) et POST /employees -&gt; 403 MANAGER_REQUIRED pour un employe : le controle d&#x27;acces est correct sur les deux sens. Creation/modification/archivage non rejoues.</td><td><span class="hist-badge hist-created">création</span></td></tr></tbody>
+      </table>
+    </div>
   </div>
 </section>
 

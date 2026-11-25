@@ -37,7 +37,7 @@
       <span class="badge badge-done">✔ exécuté</span>
       <span class="chip">Profil : <a href="../profils/employe.html">Employé</a></span>
       <span class="chip">Module : <a href="../modules/iam.html">Authentification &amp; IAM</a></span>
-      <span class="chip hist-count" data-hist-count="UC-01">0 modifications</span>
+      <span class="chip hist-count" data-hist-count="UC-01">1 modification</span>
     </div>
   </div>
 </div>
@@ -75,8 +75,8 @@
         <tr>
           <td class="center"><span class="note note-good">4/5</span></td>
           <td class="obs">Exécuté contre l&#x27;API locale reconstruite. <code>POST /api/v1/auth/login</code> (karim.aouad@example.com / password123) → <strong>200</strong>, jeton Sanctum retourné (<code>token_type</code>, <code>token_expires_at</code>), <code>data.role = &quot;employee&quot;</code>. <code>GET /api/v1/auth/me</code> avec le jeton → <strong>200</strong> (profil complet, session valide). Mauvais mot de passe → <strong>401</strong> (pas de fuite). L&#x27;UI web Next.js n&#x27;a pas pu être servie : <code>next build</code> est tué par la limite mémoire de l&#x27;environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n&#x27;a donc pas été observé dans un navigateur. Le socle d&#x27;authentification est conforme.</td>
-          <td class="center human-cell" data-human-note="UC-01"><span class="muted">—</span></td>
-          <td class="human-cell" data-human-obs="UC-01"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
+          <td class="center human-cell" data-human-note="UC-01"><span class="note-badge">4/5</span></td>
+          <td class="human-cell" data-human-obs="UC-01">Connexion verifiee : POST /api/v1/auth/login -&gt; 200 + JWT pour 5 personas sur 5 (principal, RH, comptable, superviseur, employe). Token accepte ensuite par GET /me/* (200).<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>
       </tbody>
     </table>
@@ -84,12 +84,21 @@
 </section>
 
 <section class="panel hist-panel" data-hist-panel="UC-01">
-  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-01">0</span></h3>
+  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-01">1</span></h3>
   <p class="muted small">Toutes les saisies de notation humaine de ce cas, de la plus récente à la plus ancienne.
   Chaque enregistrement depuis le portail ajoute une entrée horodatée (UTC).</p>
   <div class="hist-body" data-hist-body="UC-01">
-    <p class="hist-empty muted">Aucune modification enregistrée pour ce cas.
-    La première note saisie ci-dessous créera la première entrée d'historique.</p>
+    <div class="table-wrap">
+      <table class="data-table hist-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Auteur</th><th class="center">Note (/5)</th>
+            <th>Observation</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody><tr><td class="nowrap">2026-11-25 08:45:00 UTC</td><td>QA Agent (Teamily)</td><td class="center"><span class="note-badge">4/5</span></td><td class="obs">Connexion verifiee : POST /api/v1/auth/login -&gt; 200 + JWT pour 5 personas sur 5 (principal, RH, comptable, superviseur, employe). Token accepte ensuite par GET /me/* (200).</td><td><span class="hist-badge hist-created">création</span></td></tr></tbody>
+      </table>
+    </div>
   </div>
 </section>
 

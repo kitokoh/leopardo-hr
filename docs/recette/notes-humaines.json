@@ -5,624 +5,1346 @@
     "repo": "Kitokoh/leopardo-hr",
     "path": "docs/recette/notes-humaines.json",
     "updated_at": "",
-    "couverture": "UC-01 → UC-88 (socle RH & paie + tous les projets du monorepo, dont Marketing OS et Négoce)"
+    "couverture": "UC-01 → UC-88 (socle RH & paie + tous les projets du monorepo, dont Marketing OS et Négoce)",
+    "derniere_evaluation": "2026-11-25T08:45:00Z",
+    "evaluation_par": "QA Agent (Teamily)",
+    "methode": "API locale Laravel 12 + PostgreSQL 15 + PostGIS montee pour ce run ; 7 scripts tests_eval (238 requetes) + sonde transverse 48 modules + tests cibles gating/RBAC/erreurs. Detail : rapport de test joint."
   },
   "notes": {
     "UC-01": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 4,
+      "observation_humaine": "Connexion verifiee : POST /api/v1/auth/login -> 200 + JWT pour 5 personas sur 5 (principal, RH, comptable, superviseur, employe). Token accepte ensuite par GET /me/* (200).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 4,
+          "observation_humaine": "Connexion verifiee : POST /api/v1/auth/login -> 200 + JWT pour 5 personas sur 5 (principal, RH, comptable, superviseur, employe). Token accepte ensuite par GET /me/* (200).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-02": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "Surface OK (GET /attendance -> 200 en persona employe). Le cycle complet entree/sortie n'a pas ete rejoue : seule la lecture a ete mesuree.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "Surface OK (GET /attendance -> 200 en persona employe). Le cycle complet entree/sortie n'a pas ete rejoue : seule la lecture a ete mesuree.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-03": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable ici : le kiosque exige un boitier biometrique et une interface physique ; aucun endpoint kiosque sans parametre n'existe au route:list.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable ici : le kiosque exige un boitier biometrique et une interface physique ; aucun endpoint kiosque sans parametre n'existe au route:list.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-04": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /absences -> 200 (employe), GET /absence-types -> 404 : le chemin de liste fonctionne, la route des types d'absence n'existe pas sous ce nom.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /absences -> 200 (employe), GET /absence-types -> 404 : le chemin de liste fonctionne, la route des types d'absence n'existe pas sous ce nom.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-05": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 2,
+      "observation_humaine": "DEFECT : GET /payrolls en persona employe (self-service bulletin) -> 403 FORBIDDEN. L'employe ne peut pas lire ses propres bulletins alors que l'API repond 200 pour GET /attendance et /absences du meme compte.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 2,
+          "observation_humaine": "DEFECT : GET /payrolls en persona employe (self-service bulletin) -> 403 FORBIDDEN. L'employe ne peut pas lire ses propres bulletins alors que l'API repond 200 pour GET /attendance et /absences du meme compte.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-06": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /payroll/audit -> 403 INSUFFICIENT_ROLE pour le persona comptable ('Your manager role does not have access to this resource'). A confirmer cote produit : soit le role demo est sous-dote, soit l'audit de paie est ferme au comptable.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /payroll/audit -> 403 INSUFFICIENT_ROLE pour le persona comptable ('Your manager role does not have access to this resource'). A confirmer cote produit : soit le role demo est sous-dote, soit l'audit de paie est ferme au comptable.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-07": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /employees -> 200 (RH) et POST /employees -> 403 MANAGER_REQUIRED pour un employe : le controle d'acces est correct sur les deux sens. Creation/modification/archivage non rejoues.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /employees -> 200 (RH) et POST /employees -> 403 MANAGER_REQUIRED pour un employe : le controle d'acces est correct sur les deux sens. Creation/modification/archivage non rejoues.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-08": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "Isolation : les modules non souscrits renvoient 403 (aucune fuite de donnees inter-tenant observee sur la matrice RBAC), mais l'isolation n'a pas ete attaquee avec deux tenants actifs comparables.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "Isolation : les modules non souscrits renvoient 403 (aucune fuite de donnees inter-tenant observee sur la matrice RBAC), mais l'isolation n'a pas ete attaquee avec deux tenants actifs comparables.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-09": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute dans ce run : aucun cas i18n/RTL n'a ete pilote (necessite une verification navigateur sur les 4 locales).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute dans ce run : aucun cas i18n/RTL n'a ete pilote (necessite une verification navigateur sur les 4 locales).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-10": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable ici : le mode degrade kiosque/EdgeSync exige le client mobile ou le boitier, plus une coupure reseau controlee.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable ici : le mode degrade kiosque/EdgeSync exige le client mobile ou le boitier, plus une coupure reseau controlee.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-11": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /crm/accounts -> 200 en persona principal. Le CRUD comptes/contacts/opportunites n'a pas ete rejoue.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /crm/accounts -> 200 en persona principal. Le CRUD comptes/contacts/opportunites n'a pas ete rejoue.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-12": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /marketing/posts -> 200. La vitrine publique et la demande d'essai (surface publique) n'ont pas ete exercees.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /marketing/posts -> 200. La vitrine publique et la demande d'essai (surface publique) n'ont pas ete exercees.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-13": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /api/v1/health -> 200 (status ok, modules listes). ANOMALIE : GET /platform/announcements -> 401 UNAUTHENTICATED avec un JWT pourtant valide (le meme token lit /me en 200). Un utilisateur authentifie sans role plateforme devrait recevoir 403, pas 401.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /api/v1/health -> 200 (status ok, modules listes). ANOMALIE : GET /platform/announcements -> 401 UNAUTHENTICATED avec un JWT pourtant valide (le meme token lit /me en 200). Un utilisateur authentifie sans role plateforme devrait recevoir 403, pas 401.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-14": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "Boutique TravelAgency : 238 requetes du harnais, 82,4 % en 2xx ; gating par plan verifie (403 FEATURE_NOT_ENABLED sans le flag, 200 avec). DEF-01 (500 sur identifiant de reservation non numerique) touche ce parcours.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "Boutique TravelAgency : 238 requetes du harnais, 82,4 % en 2xx ; gating par plan verifie (403 FEATURE_NOT_ENABLED sans le flag, 200 avec). DEF-01 (500 sur identifiant de reservation non numerique) touche ce parcours.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-15": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /me/* et /auth/2fa/status -> 200 en persona principal ; le tableau de bord complet n'a pas ete verifie visuellement.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /me/* et /auth/2fa/status -> 200 en persona principal ; le tableau de bord complet n'a pas ete verifie visuellement.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-16": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /departments -> 200 (RH).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /departments -> 200 (RH).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-17": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "IAM : POST /roles -> 404 (route inexistante sous ce nom) ; RBAC verifie par ailleurs (la matrice par persona montre 14 operations correctement filtrees). L'attribution de roles n'a pas ete rejouee.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "IAM : POST /roles -> 404 (route inexistante sous ce nom) ; RBAC verifie par ailleurs (la matrice par persona montre 14 operations correctement filtrees). L'attribution de roles n'a pas ete rejouee.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-18": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /attendance -> 200 ; validation des heures supplementaires non rejouee.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /attendance -> 200 ; validation des heures supplementaires non rejouee.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-19": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : generation/téléchargement PDF de bulletin exige un worker et un stockage de fichiers non monte ici.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : generation/téléchargement PDF de bulletin exige un worker et un stockage de fichiers non monte ici.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-20": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : la console Super Admin exige un compte plateforme dedie absent du jeu de demo.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : la console Super Admin exige un compte plateforme dedie absent du jeu de demo.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-21": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : l'impersonation encadree exige un compte support et une piste d'audit dediee.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : l'impersonation encadree exige un compte support et une piste d'audit dediee.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-22": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /billing/ai-credits -> 200 ; GET /billing/subscription -> 404 'Aucun abonnement actif' (coherent avec un tenant de demo sans abonnement).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /billing/ai-credits -> 200 ; GET /billing/subscription -> 404 'Aucun abonnement actif' (coherent avec un tenant de demo sans abonnement).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-23": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "Ops plateforme partiellement verifie : GET /edge -> 200, GET /approvals/history -> 200. Le kill switch n'a pas ete declenche.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "Ops plateforme partiellement verifie : GET /edge -> 200, GET /approvals/history -> 200. Le kill switch n'a pas ete declenche.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-24": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /marketing/posts -> 200 en persona marketing/principal.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /marketing/posts -> 200 en persona marketing/principal.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-25": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /recruitment/ats/applicants -> 200 (RH).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /recruitment/ats/applicants -> 200 (RH).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-26": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED (module Showcase non inclus dans le plan du tenant de demo).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED (module Showcase non inclus dans le plan du tenant de demo).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-27": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /accounting/activation -> 200 (comptable). Ecritures et cloture non rejouees.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /accounting/activation -> 200 (comptable). Ecritures et cloture non rejouees.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-28": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "Comptabilite servie (200) ; export/rapprochement bancaire non rejoue (necessite un fichier de releve).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "Comptabilite servie (200) ; export/rapprochement bancaire non rejoue (necessite un fichier de releve).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-29": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /expense-claims -> 200 (employe). Soumission/validation non rejouees.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /expense-claims -> 200 (employe). Soumission/validation non rejouees.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-30": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "Notes de frais servies (200) ; impact paie non verifie.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "Notes de frais servies (200) ; impact paie non verifie.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-31": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /planning -> 200 (principal).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /planning -> 200 (principal).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-32": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /tasks -> 200 (employe).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /tasks -> 200 (employe).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-33": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /recruitment/ats/applicants -> 200 ; page carrieres publique non verifiee.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /recruitment/ats/applicants -> 200 ; page carrieres publique non verifiee.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-34": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "Pipeline de candidatures servi (200) ; cycle complet non rejoue.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "Pipeline de candidatures servi (200) ; cycle complet non rejoue.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-35": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /communication/analytics -> 200.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /communication/analytics -> 200.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-36": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /notifications -> 200 (employe).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /notifications -> 200 (employe).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-37": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : le provisioning d'essai guide cree un tenant reel ; non lance pour ne pas polluer la base de demo.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : le provisioning d'essai guide cree un tenant reel ; non lance pour ne pas polluer la base de demo.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-38": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : reprise de parcours interrompu exige une session navigateur persistante.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : reprise de parcours interrompu exige une session navigateur persistante.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-39": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /catalog/categories -> 403 FEATURE_NOT_ENABLED ('Your plan does not include the B2B Catalog module').",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /catalog/categories -> 403 FEATURE_NOT_ENABLED ('Your plan does not include the B2B Catalog module').",
+          "action": "creation"
+        }
+      ]
     },
     "UC-40": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : la recherche transverse (SearchIntelligence) n'a pas d'endpoint sans parametre au route:list.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : la recherche transverse (SearchIntelligence) n'a pas d'endpoint sans parametre au route:list.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-41": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /pages -> 200. SEO multilingue non verifie.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /pages -> 200. SEO multilingue non verifie.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-42": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-43": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /library/progress -> 200. Pret/retour non rejoue.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /library/progress -> 200. Pret/retour non rejoue.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-44": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /cameras -> 403 FEATURE_NOT_ENABLED ('Upgrade to Business').",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /cameras -> 403 FEATURE_NOT_ENABLED ('Upgrade to Business').",
+          "action": "creation"
+        }
+      ]
     },
     "UC-45": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : module cameras non souscrit (403 FEATURE_NOT_ENABLED).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : module cameras non souscrit (403 FEATURE_NOT_ENABLED).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-46": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /fleet/live-map -> 200 (principal).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /fleet/live-map -> 200 (principal).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-47": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /fuel-station/accounts -> 403 FUEL_SOLUTION_INACTIVE.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /fuel-station/accounts -> 403 FUEL_SOLUTION_INACTIVE.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-48": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /vtc/dispatch/drivers -> 403 FEATURE_NOT_ENABLED.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /vtc/dispatch/drivers -> 403 FEATURE_NOT_ENABLED.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-49": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /delivery/deliveries -> 403 FEATURE_NOT_ENABLED.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /delivery/deliveries -> 403 FEATURE_NOT_ENABLED.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-50": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /restaurant/branches -> 403 FEATURE_NOT_ENABLED.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /restaurant/branches -> 403 FEATURE_NOT_ENABLED.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-51": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : module restauration non souscrit (403 FEATURE_NOT_ENABLED).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : module restauration non souscrit (403 FEATURE_NOT_ENABLED).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-52": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /retail/categories -> 403 FEATURE_NOT_ENABLED.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /retail/categories -> 403 FEATURE_NOT_ENABLED.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-53": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : module retail non souscrit (403 FEATURE_NOT_ENABLED).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : module retail non souscrit (403 FEATURE_NOT_ENABLED).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-54": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /hospitality/dashboard/kpis -> 403 HOSPITALITY_SOLUTION_INACTIVE.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /hospitality/dashboard/kpis -> 403 HOSPITALITY_SOLUTION_INACTIVE.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-55": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /pharmacy/alerts -> 403 PHARMACY_SOLUTION_INACTIVE.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /pharmacy/alerts -> 403 PHARMACY_SOLUTION_INACTIVE.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-56": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /health-manager/admissions -> 403 HEALTH_SOLUTION_INACTIVE.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /health-manager/admissions -> 403 HEALTH_SOLUTION_INACTIVE.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-57": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /edu-manager/academic-years -> 403 EDU_SOLUTION_INACTIVE.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /edu-manager/academic-years -> 403 EDU_SOLUTION_INACTIVE.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-58": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : module edu inactif (403 EDU_SOLUTION_INACTIVE).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : module edu inactif (403 EDU_SOLUTION_INACTIVE).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-59": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 1,
+      "observation_humaine": "DEFECT : GET /farm/apps/catalogue -> 403 COMPANY_NOT_FOUND, alors que l'utilisateur a une entreprise (les autres modules verticaux renvoient FEATURE_NOT_ENABLED / *_SOLUTION_INACTIVE). Code d'erreur incoherent et message trompeur.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 1,
+          "observation_humaine": "DEFECT : GET /farm/apps/catalogue -> 403 COMPANY_NOT_FOUND, alors que l'utilisateur a une entreprise (les autres modules verticaux renvoient FEATURE_NOT_ENABLED / *_SOLUTION_INACTIVE). Code d'erreur incoherent et message trompeur.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-60": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /fundraising/fundraisers -> 403 FEATURE_NOT_ENABLED.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /fundraising/fundraisers -> 403 FEATURE_NOT_ENABLED.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-61": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /cabinet/documents -> 200 (comptable).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /cabinet/documents -> 200 (comptable).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-62": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : GET /trade/cost-estimates -> 403 FEATURE_NOT_ENABLED (verticale Trade non activee sur le tenant de demo).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : GET /trade/cost-estimates -> 403 FEATURE_NOT_ENABLED (verticale Trade non activee sur le tenant de demo).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-63": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : branding/surfaces publiques non pilotes.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : branding/surfaces publiques non pilotes.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-64": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /billing/ai-credits -> 200 ; /billing/subscription -> 404 'Aucun abonnement actif' (coherent, tenant de demo sans abonnement).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /billing/ai-credits -> 200 ; /billing/subscription -> 404 'Aucun abonnement actif' (coherent, tenant de demo sans abonnement).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-65": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : encaissement et webhooks de paiement exigent un fournisseur externe (Stripe) non configure.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : encaissement et webhooks de paiement exigent un fournisseur externe (Stripe) non configure.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-66": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /edge -> 200 (EdgeSync repond). La file hors-ligne et le rejeu idempotent n'ont pas ete exerces.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /edge -> 200 (EdgeSync repond). La file hors-ligne et le rejeu idempotent n'ont pas ete exerces.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-67": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : preuve de presence geolocalisee exige une position GPS et un client mobile.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : preuve de presence geolocalisee exige une position GPS et un client mobile.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-68": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "API : GET /api-tokens -> 200, GET /webhooks -> 200. CONSTANT : GET /openapi.json -> 404, aucune specification OpenAPI publiee a cette adresse.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "API : GET /api-tokens -> 200, GET /webhooks -> 200. CONSTANT : GET /openapi.json -> 404, aucune specification OpenAPI publiee a cette adresse.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-69": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : build mobile Flutter exige une chaine Android/iOS absente du sandbox.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : build mobile Flutter exige une chaine Android/iOS absente du sandbox.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-70": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : client desktop non monte.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : client desktop non monte.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-71": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : fiche commerce publique non verifiee.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : fiche commerce publique non verifiee.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-72": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "Plateforme partiellement verifiee : GET /health -> 200, GET /approvals/history -> 200. Provisionnement et diagnostic non rejoues.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "Plateforme partiellement verifiee : GET /health -> 200, GET /approvals/history -> 200. Provisionnement et diagnostic non rejoues.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-73": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "Isolation par etablissement non attaquee ; l'isolation par tenant est coherente (403 systematique hors souscription).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "Isolation par etablissement non attaquee ; l'isolation par tenant est coherente (403 systematique hors souscription).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-74": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /sso/providers -> 200. Le flux SSO SAML/OIDC complet exige un IdP externe.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /sso/providers -> 200. Le flux SSO SAML/OIDC complet exige un IdP externe.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-75": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /audit-logs -> 200 (principal). Registre RGPD partiellement verifie.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /audit-logs -> 200 (principal). Registre RGPD partiellement verifie.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-76": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /evaluations -> 200.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /evaluations -> 200.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-77": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : le coffre-fort documentaire n'a pas d'endpoint de liste sans parametre (employee-documents porte sur un employe donne).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : le coffre-fort documentaire n'a pas d'endpoint de liste sans parametre (employee-documents porte sur un employe donne).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-78": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /approvals/history -> 200. Validation multi-niveaux non rejouee.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /approvals/history -> 200. Validation multi-niveaux non rejouee.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-79": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : tableau de bord consolide plateforme exige un compte plateforme dedie.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : tableau de bord consolide plateforme exige un compte plateforme dedie.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-80": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : support/tickets et impersonation encadree exigent un compte support.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : support/tickets et impersonation encadree exigent un compte support.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-81": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : metriques d'abonnement/revenus exigent des donnees de facturation reelles.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : metriques d'abonnement/revenus exigent des donnees de facturation reelles.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-82": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /edge -> 200 ; GET /approvals/history -> 200. Kill switch non declenche.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /edge -> 200 ; GET /approvals/history -> 200. Kill switch non declenche.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-83": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 3,
+      "observation_humaine": "GET /marketing/posts -> 200. Publication sociale et statistiques non exercees (pas de compte social connecte).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "GET /marketing/posts -> 200. Publication sociale et statistiques non exercees (pas de compte social connecte).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-84": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : onboarding d'un nouvel employe modifie l'etat du tenant de demo.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : onboarding d'un nouvel employe modifie l'etat du tenant de demo.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-85": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : Marketing OS admin exige les endpoints /admin/companies/{company}/marketing-os/* avec un compte plateforme.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : Marketing OS admin exige les endpoints /admin/companies/{company}/marketing-os/* avec un compte plateforme.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-86": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non execute : publication sociale reelle impossible sans compte social connecte.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non execute : publication sociale reelle impossible sans compte social connecte.",
+          "action": "creation"
+        }
+      ]
     },
     "UC-87": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*).",
+          "action": "creation"
+        }
+      ]
     },
     "UC-88": {
-      "note_humaine": null,
-      "observation_humaine": "",
-      "auteur": "",
-      "date_modification": "",
-      "historique": []
+      "note_humaine": 0,
+      "observation_humaine": "Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*).",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 0,
+          "observation_humaine": "Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*).",
+          "action": "creation"
+        }
+      ]
+    },
+    "UC-89": {
+      "note_humaine": 3,
+      "observation_humaine": "NOUVEAU (comble un trou de couverture) : le module Connectors est servi par l'API mais n'avait AUCUN cas d'usage au portail. GET /connectors/catalog -> 200 avec un catalogue reel (Stripe, categories payment, audience both, docs_url). Cycle de connexion OAuth non rejoue.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-25T08:45:00Z",
+      "historique": [
+        {
+          "date": "2026-11-25T08:45:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "note_humaine": 3,
+          "observation_humaine": "NOUVEAU (comble un trou de couverture) : le module Connectors est servi par l'API mais n'avait AUCUN cas d'usage au portail. GET /connectors/catalog -> 200 avec un catalogue reel (Stripe, categories payment, audience both, docs_url). Cycle de connexion OAuth non rejoue.",
+          "action": "creation"
+        }
+      ]
     }
   }
 }

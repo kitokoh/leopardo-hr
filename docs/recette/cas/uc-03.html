@@ -37,7 +37,7 @@
       <span class="badge badge-done">✔ exécuté</span>
       <span class="chip">Profil : <a href="../profils/superviseur-kiosque.html">Superviseur / Kiosque</a> · <a href="../profils/employe.html">Employé</a></span>
       <span class="chip">Module : <a href="../modules/kiosque.html">Kiosque &amp; EdgeSync</a></span>
-      <span class="chip hist-count" data-hist-count="UC-03">0 modifications</span>
+      <span class="chip hist-count" data-hist-count="UC-03">1 modification</span>
     </div>
   </div>
 </div>
@@ -75,8 +75,8 @@
         <tr>
           <td class="center"><span class="note note-good">4/5</span></td>
           <td class="obs">Kiosque servi par le pont local (<code>bridge.py</code>, port 8037) et piloté dans Chromium headless. Écran d&#x27;accueil chargé : titre « TechCorp Algerie SARL », « Entree principale », indicateur « Connection OK — auto sync active », sélecteur de langue (FR/EN/TR/AR), 5 onglets (Punch, Employee, Announcements, Leave, QR Code). Sélection d&#x27;un employé de démo (Karim Aouad, DZ-EMP-003) puis pointage via <code>POST /local/punch</code> → <strong>201</strong>, <code>sync_status=queued</code>, <code>external_event_id</code> généré. Matricule inconnu (<code>UNKNOWN-999</code>) → <strong>201</strong> mis en file (comportement *offline-first*). Bascule en <code>ar</code> → <code>document.documentElement.dir = &quot;rtl&quot;</code>, <code>lang=&quot;ar&quot;</code> (RTL effectif). Aucun plantage.</td>
-          <td class="center human-cell" data-human-note="UC-03"><span class="muted">—</span></td>
-          <td class="human-cell" data-human-obs="UC-03"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
+          <td class="center human-cell" data-human-note="UC-03"><span class="note-badge">0/5</span></td>
+          <td class="human-cell" data-human-obs="UC-03">Non executable ici : le kiosque exige un boitier biometrique et une interface physique ; aucun endpoint kiosque sans parametre n&#x27;existe au route:list.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>
       </tbody>
     </table>
@@ -84,12 +84,21 @@
 </section>
 
 <section class="panel hist-panel" data-hist-panel="UC-03">
-  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-03">0</span></h3>
+  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-03">1</span></h3>
   <p class="muted small">Toutes les saisies de notation humaine de ce cas, de la plus récente à la plus ancienne.
   Chaque enregistrement depuis le portail ajoute une entrée horodatée (UTC).</p>
   <div class="hist-body" data-hist-body="UC-03">
-    <p class="hist-empty muted">Aucune modification enregistrée pour ce cas.
-    La première note saisie ci-dessous créera la première entrée d'historique.</p>
+    <div class="table-wrap">
+      <table class="data-table hist-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Auteur</th><th class="center">Note (/5)</th>
+            <th>Observation</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody><tr><td class="nowrap">2026-11-25 08:45:00 UTC</td><td>QA Agent (Teamily)</td><td class="center"><span class="note-badge">0/5</span></td><td class="obs">Non executable ici : le kiosque exige un boitier biometrique et une interface physique ; aucun endpoint kiosque sans parametre n&#x27;existe au route:list.</td><td><span class="hist-badge hist-created">création</span></td></tr></tbody>
+      </table>
+    </div>
   </div>
 </section>
 

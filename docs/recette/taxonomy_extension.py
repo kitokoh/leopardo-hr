@@ -103,6 +103,10 @@ PROFILES_EXT = [
          desc="API OpenAPI, webhooks, clés, SDK et auto-hébergement.",
          personas=["Développeur intégrateur — compte API"],
          surfaces=["Documentation API", "Webhooks", "Dépôt GitHub"]),
+    dict(slug="integrateur-connecteurs", name="Intégrateur connecteurs", icon="🔌", color="#0e7490",
+         desc="Catalogue de connecteurs tiers (paiement, messagerie, comptabilité), connexion OAuth, vérification d'état et révocation.",
+         personas=["Responsable intégrations — TechCorp DZ"],
+         surfaces=["Espace client web", "Catalogue de connecteurs"]),
 ]
 
 # ---------------------------------------------------------------------------
@@ -110,6 +114,8 @@ PROFILES_EXT = [
 # ---------------------------------------------------------------------------
 
 MODULES_EXT = [
+    dict(slug="connectors", name="Connecteurs & intégrations", icon="🔌",
+         desc="Catalogue de connecteurs tiers, connexion et révocation, état de santé des intégrations (module Connectors)."),
     dict(slug="accounting", name="Comptabilité", icon="🧾",
          desc="Plan comptable, écritures, journaux, clôtures et exports (module Accounting)."),
     dict(slug="expense", name="Notes de frais", icon="🧮",
@@ -185,7 +191,7 @@ MODULES_EXT = [
 ]
 
 # ---------------------------------------------------------------------------
-# CAS D'USAGE — UC-27 → UC-84
+# CAS D'USAGE — UC-27 → UC-89
 # ---------------------------------------------------------------------------
 
 USE_CASES_EXT = [
@@ -1014,5 +1020,25 @@ USE_CASES_EXT = [
                 "Renseigner le profil commercial puis publier la vitrine, et vérifier l'apparition de l'entreprise sur la surface publique.",
                 "Dépublier et vérifier que la fiche disparaît de la vitrine sans casser les données internes."],
          expected="Le coût total rendu est exact en arithmétique entière, les postes indisponibles sont exclus du total mais visibles, la checklist douanière porte toujours son avertissement légal et signale les informations manquantes, et la publication du profil est un acte distinct qui rend la fiche visible puis invisible sur la vitrine.",
+         note_ia="", obs_ia=""),
+
+    # --- Connecteurs & intégrations : module Connectors --------------------
+    # Surface : `/api/v1/connectors/*`. Cas ajouté après la campagne QA du
+    # 2026-11-25 : le module répondait en 200 au catalogue mais n'avait AUCUN
+    # cas d'usage au portail (trou de couverture relevé par la sonde transverse).
+    dict(id="UC-89", title="Connecteurs — catalogue, connexion et révocation d'une intégration tierce",
+         profiles=["integrateur-connecteurs", "manager-principal"], modules=["connectors"], type="Fonctionnel",
+         status="à exécuter",
+         desc="Vérifier le cycle de vie d'une intégration tierce : consultation du catalogue de connecteurs, connexion d'un fournisseur, vérification de son état et révocation, avec étanchéité entre tenants.",
+         pre="Tenant avec le module Connectors actif ; compte principal disposant du droit d'administration des intégrations ; endpoints `/api/v1/connectors/*`.",
+         steps=["Appeler `GET /api/v1/connectors/catalog` et vérifier que le catalogue est servi avec, pour chaque connecteur, une clé, une catégorie, une audience, un libellé et une URL de documentation.",
+                "Vérifier qu'aucun secret ni jeton d'un autre tenant n'apparaît dans la réponse du catalogue.",
+                "Initier la connexion d'un fournisseur de paiement et vérifier la redirection/le jeton d'état émis une seule fois.",
+                "Simuler le retour du fournisseur et vérifier que l'intégration passe à l'état « connectée » et que ses identifiants publics sont persistés (jamais le secret en clair).",
+                "Consulter l'état de l'intégration et vérifier la présence d'un horodatage de dernière synchronisation.",
+                "Révoquer l'intégration et vérifier la transition d'état ainsi que l'arrêt des appels sortants vers ce fournisseur.",
+                "Tenter de connecter un fournisseur non présent au catalogue et vérifier le refus métier (422) au lieu d'une 500.",
+                "Vérifier qu'un rôle sans droit d'administration des intégrations reçoit un 403 sur la connexion et la révocation."],
+         expected="Le catalogue est consultable et exempt de secrets, la connexion aboutit à un état « connectée » avec horodatage, la révocation coupe réellement les appels sortants, un fournisseur hors catalogue est refusé en 422, et toute tentative d'un rôle non autorisé renvoie 403.",
          note_ia="", obs_ia=""),
 ]

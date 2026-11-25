@@ -37,7 +37,7 @@
       <span class="badge badge-done">✔ exécuté</span>
       <span class="chip">Profil : <a href="../profils/manager-comptable.html">Manager Comptable</a></span>
       <span class="chip">Module : <a href="../modules/payroll.html">Paie (Payroll)</a></span>
-      <span class="chip hist-count" data-hist-count="UC-06">0 modifications</span>
+      <span class="chip hist-count" data-hist-count="UC-06">1 modification</span>
     </div>
   </div>
 </div>
@@ -75,8 +75,8 @@
         <tr>
           <td class="center"><span class="note note-good">5/5</span></td>
           <td class="obs"><code>GET /salary-structures</code> (comptable) → <strong>200</strong>, structures DZ listées (base_salary, currency DZD). <code>POST /payroll/simulate</code> (gross_salary=180000, country_code=DZ) → <strong>200</strong>, détail complet : <code>gross</code>, <code>country_code</code>, bloc <code>compliance</code> (niveau « pilot », avertissement de validation légale, source <code>docs/payroll/DZ_COMPLIANCE.md</code>), <code>correlation_id</code>. Même appel avec le jeton employé → <strong>403 <code>MANAGER_REQUIRED</code></strong> (contrôle de rôle effectif).</td>
-          <td class="center human-cell" data-human-note="UC-06"><span class="muted">—</span></td>
-          <td class="human-cell" data-human-obs="UC-06"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
+          <td class="center human-cell" data-human-note="UC-06"><span class="note-badge">3/5</span></td>
+          <td class="human-cell" data-human-obs="UC-06">GET /payroll/audit -&gt; 403 INSUFFICIENT_ROLE pour le persona comptable (&#x27;Your manager role does not have access to this resource&#x27;). A confirmer cote produit : soit le role demo est sous-dote, soit l&#x27;audit de paie est ferme au comptable.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>
       </tbody>
     </table>
@@ -84,12 +84,21 @@
 </section>
 
 <section class="panel hist-panel" data-hist-panel="UC-06">
-  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-06">0</span></h3>
+  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-06">1</span></h3>
   <p class="muted small">Toutes les saisies de notation humaine de ce cas, de la plus récente à la plus ancienne.
   Chaque enregistrement depuis le portail ajoute une entrée horodatée (UTC).</p>
   <div class="hist-body" data-hist-body="UC-06">
-    <p class="hist-empty muted">Aucune modification enregistrée pour ce cas.
-    La première note saisie ci-dessous créera la première entrée d'historique.</p>
+    <div class="table-wrap">
+      <table class="data-table hist-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Auteur</th><th class="center">Note (/5)</th>
+            <th>Observation</th><th>Action</th>
+          </tr>
+        </thead>
+        <tbody><tr><td class="nowrap">2026-11-25 08:45:00 UTC</td><td>QA Agent (Teamily)</td><td class="center"><span class="note-badge">3/5</span></td><td class="obs">GET /payroll/audit -&gt; 403 INSUFFICIENT_ROLE pour le persona comptable (&#x27;Your manager role does not have access to this resource&#x27;). A confirmer cote produit : soit le role demo est sous-dote, soit l&#x27;audit de paie est ferme au comptable.</td><td><span class="hist-badge hist-created">création</span></td></tr></tbody>
+      </table>
+    </div>
   </div>
 </section>
 
