@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Security;
 
+use App\Core\Tenant\Domain\Models\Company;
+use App\Core\Tenant\TenantManager;
 use Illuminate\Database\Connection;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
@@ -154,6 +156,12 @@ final class RlsHrTablesIsolationTest extends TestCase
      */
     public function test_each_hr_table_isolates_tenants_and_fails_closed(): void
     {
+        // Les 4 tables portent une FK vers `employees` : sans employes, l'insert
+        // echoue en 23503 AVANT que RLS n'entre en jeu, et le test ne prouve
+        // rien sur l'isolation. On cree un employe par tenant (un employe
+        // appartient a un seul tenant, c'est aussi le cas reel).
+        $this->seedEmployees();
+
         foreach (self::TABLES as $table => $required) {
             $exists = DB::selectOne('SELECT to_regclass(?) AS t', ['shared_tenants.'.$table]);
 
@@ -213,14 +221,17 @@ final class RlsHrTablesIsolationTest extends TestCase
             $this->markTestSkipped('contracts absente de cette base.');
         }
 
+        $this->seedEmployees();
+
         DB::statement('GRANT SELECT, INSERT, UPDATE, DELETE ON shared_tenants.'.$table.' TO '.self::ROLE);
         DB::table($table)->whereIn('company_id', [self::TENANT_A, self::TENANT_B])->delete();
 
-        DB::table($table)->insert(array_merge(self::TABLES[$table], [
-            'company_id' => self::TENANT_A,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]));
+        DB::table($table)->insert(array_merge(
+            self::TABLES[$table],
+            $this->datesFor($table),
+            $this->timestampsFor($table),
+            ['company_id' => self::TENANT_A, 'employee_id' => 1]
+        ));
 
         $affected = $this->affectedAsProbe(
             self::TENANT_B,
@@ -295,6 +306,113 @@ final class RlsHrTablesIsolationTest extends TestCase
         }
 
         return $out;
+    }
+
+    /**
+     * Cree un employe par tenant, si absent.
+     *
+     * `employees` porte RLS depuis #9897 : l'insert doit donc publier le
+     * tenant courant, sinon la politique `WITH CHECK` le refuse. On passe par
+     * `TenantManager::withinTenant()` — c'est aussi la preuve que le cablage
+     * du tenant fonctionne pour une ecriture applicative.
+     */
+    private function seedEmployees(): void
+    {
+        $this->seedCompanies();
+        $this->seedAbsenceTypes();
+
+        foreach ([1 => self::TENANT_A, 2 => self::TENANT_B] as $id => $companyId) {
+            $exists = DB::table('shared_tenants.employees')->where('id', $id)->exists();
+
+            if ($exists) {
+                continue;
+            }
+
+            $company = Company::query()->find($companyId);
+
+            if ($company === null) {
+                continue;
+            }
+
+            app(TenantManager::class)->withinTenant($company, function () use ($id, $companyId): void {
+                DB::table('shared_tenants.employees')->insert([
+                    'id' => $id,
+                    'company_id' => $companyId,
+                    'first_name' => 'Probe',
+                    'last_name' => 'Tenant'.$id,
+                    'email' => 'probe'.$id.'@rls.test',
+                    'password_hash' => bcrypt('secret'),
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            });
+        }
+    }
+
+    /**
+     * Cree les deux companies de test, si absentes.
+     *
+     * `employees.company_id` porte une FK vers `public.companies` : sans
+     * company, l'insert echoue en 23503 avant meme que RLS n'entre en jeu.
+     * `public.companies` est HORS RLS (schema `public`), donc l'insert n'a pas
+     * besoin de publier un tenant.
+     */
+    private function seedCompanies(): void
+    {
+        foreach ([self::TENANT_A => 'RLS Probe A', self::TENANT_B => 'RLS Probe B'] as $id => $name) {
+            if (DB::table('public.companies')->where('id', $id)->exists()) {
+                continue;
+            }
+
+            DB::table('public.companies')->insert([
+                'id' => $id,
+                'name' => $name,
+                'slug' => 'rls-probe-'.substr($id, 0, 8),
+                'sector' => 'test',
+                'country' => 'DZ',
+                'city' => 'Alger',
+                'email' => 'probe-'.substr($id, 0, 8).'@rls.test',
+                'plan_id' => 1,
+                'schema_name' => 'shared_tenants',
+                'subscription_start' => now()->toDateString(),
+                'subscription_end' => now()->addYear()->toDateString(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * Cree les deux types d'absence de test, si absents.
+     *
+     * `absences.absence_type_id` et `leave_balances.absence_type_id` portent
+     * une FK vers `shared_tenants.absence_types`. La table est dans le schema
+     * tenant : l'insert publie donc le tenant courant.
+     */
+    private function seedAbsenceTypes(): void
+    {
+        foreach ([1 => self::TENANT_A, 2 => self::TENANT_B] as $id => $companyId) {
+            if (DB::table('shared_tenants.absence_types')->where('id', $id)->exists()) {
+                continue;
+            }
+
+            $company = Company::query()->find($companyId);
+
+            if ($company === null) {
+                continue;
+            }
+
+            app(TenantManager::class)->withinTenant($company, function () use ($id, $companyId): void {
+                DB::table('shared_tenants.absence_types')->insert([
+                    'id' => $id,
+                    'company_id' => $companyId,
+                    'name' => 'Probe Type '.$id,
+                    'code' => 'PROBE'.$id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            });
+        }
     }
 
     private function createProbeRole(): void
