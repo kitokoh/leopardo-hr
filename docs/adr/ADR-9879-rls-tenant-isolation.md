@@ -244,6 +244,71 @@ SELECT count(*) FROM shared_tenants.pay_slips;  -- sans app.current_company_id
 
 **Point d'attention** : le rôle `leopardo_app` ne doit **pas** être propriétaire des tables, sinon `FORCE ROW LEVEL SECURITY` est indispensable (il l'est déjà) et toute future table créée par un autre rôle devra recevoir les `GRANT` (d'où `ALTER DEFAULT PRIVILEGES`).
 
+## Étape 5 — tables RH nominatives (#9924)
+
+### Inventaire mesuré, et pourquoi il fallait le faire
+
+`database/scripts/rls/inventory-company-id-tables.sh` mesure la base réelle :
+
+```
+523 tables `shared_tenants` portant `company_id`
+  4 couvertes (étapes 1, 3, 4)
+  1 bloquée  (tax_slabs — voir ci-dessous)
+ 87 à couvrir, `company_id` nullable mais 0 ligne à NULL
+431 à couvrir, `company_id` NOT NULL
+```
+
+Ajouter 500 politiques d'un coup serait une faute : l'ADR exige un inventaire
+des accès légitimes **avant** chaque politique, et une politique inerte donne
+une fausse impression de sécurité — pire que l'absence.
+
+### Lot livré : 4 tables RH nominatives
+
+| Table | `company_id` | Lignes NULL | Accès `withoutGlobalScopes()` | Verdict |
+|---|---|---|---|---|
+| `absences` | nullable | 0 | — | couverte |
+| `contracts` | NOT NULL | 0 | — | couverte |
+| `leave_balances` | NOT NULL | 0 | `LeaveCarryForward` | **corrigé** |
+| `attendance_logs` | nullable | 0 | `PlatformCompanyHealthService` | OK (filtre explicite) |
+
+**Le point qui a bloqué, et sa correction.** `LeaveCarryForward` itérait les
+politiques de congés de **tous** les tenants sans publier le tenant courant.
+Sous RLS, `current_setting('app.current_company_id', true)` vaut `NULL`, la
+comparaison vaut `NULL`, et **aucune ligne n'est visible** : le report de
+congés aurait été silencieusement sans effet. Chaque boucle passe désormais par
+`TenantManager::withinTenant()`, qui publie le tenant et restaure l'état
+précédent en `finally`.
+
+`withoutGlobalScopes()` ne contourne que le scope Eloquent, **pas** RLS — c'est
+précisément ce qu'on veut : le scope applicatif peut être retiré par erreur, la
+politique PostgreSQL non.
+
+### `tax_slabs` : exclue explicitement, avec sa raison
+
+L'inventaire la classe « bloquée » : 6 lignes à `company_id` NULL. Ce ne sont
+**pas** des données orphelines — ce sont les **barèmes légaux partagés**
+(repli `whereNull('company_id')` dans
+`AbstractCountryRules::resolveTaxSlabsFromDatabase()`). Les filtrer par tenant
+casserait le calcul de paie de toute company sans barème propre.
+
+Elle demande une politique à sémantique différente :
+
+```sql
+USING (company_id IS NULL OR company_id::text = current_setting('app.current_company_id', true))
+```
+
+C'est une décision séparée, car elle change la sémantique de lecture des
+barèmes. Elle est **exclue**, pas oubliée — et `tenant:rls-status` ne la compte
+pas, avec ce motif en commentaire.
+
+### Preuve
+
+`tests/Feature/Security/RlsHrTablesIsolationTest.php` — **3 tests, 29
+assertions**. Comme pour #9879, le test crée un rôle **non-superuser** : un
+compte fait en tant qu'utilisateur applicatif (SUPERUSER) passerait au vert
+sans rien prouver. Vérifié par table : tenant A → 1, tenant B → 1, aucun
+tenant → **0** (fail-closed), écriture hors tenant → **0 ligne affectée**.
+
 ## Conséquences
 
 **Positives** : filet indépendant du code applicatif ; un `DB::table()` oublié ne fuit plus ; fail-closed par défaut.
