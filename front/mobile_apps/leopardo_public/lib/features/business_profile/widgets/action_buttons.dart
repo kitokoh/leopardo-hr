@@ -33,14 +33,25 @@ class BusinessActionRow extends StatelessWidget {
     required this.strings,
     required this.profile,
     this.onContact,
+    this.onAction,
+    this.nativeActions = const <String>{},
   });
 
   final AppStrings strings;
   final BusinessProfile profile;
 
-  /// Remplacé en M2 par la navigation vers la conversation (qui déclenche la
-  /// demande de numéro à ce moment-là, jamais avant).
+  /// Ouvre la passerelle de demande (`POST /public/contact-requests`).
   final VoidCallback? onContact;
+
+  /// Action de fiche servie par un écran natif (`order`, `booking`).
+  final ValueChanged<String>? onAction;
+
+  /// Actions natives déclarées par le registre des parcours (#9907).
+  ///
+  /// C'est lui, et non `actionUrls`, qui décide qu'une commande est jouable
+  /// dans l'app : une verticale peut exposer une URL web sans avoir de contrat
+  /// public appelable (`restaurant`).
+  final Set<String> nativeActions;
 
   /// Ordre d'affichage STABLE : le geste principal du parcours critique
   /// (« Contacter ») est toujours à la même place, sinon la personne le cherche
@@ -69,10 +80,12 @@ class BusinessActionRow extends StatelessWidget {
       };
 
       final hasDestination = profile.actionUrls[action] != null;
-      // « contact » a une destination native (la conversation, en M2) ; les
-      // autres dépendent d'une URL exposée par le serveur.
-      final reachable =
-          action == 'contact' ? onContact != null : hasDestination;
+      // « contact » a une destination native (la passerelle de demande) ; les
+      // autres dépendent soit d'une URL exposée par le serveur, soit d'un
+      // écran natif déclaré par le registre des parcours.
+      final reachable = action == 'contact'
+          ? onContact != null
+          : (hasDestination || nativeActions.contains(action));
 
       specs.add(
         _ActionSpec(
@@ -131,8 +144,15 @@ class BusinessActionRow extends StatelessWidget {
       return;
     }
 
-    // Destination exposée mais navigation mobile hors périmètre M1 : on ne
-    // fait pas semblant. M3 branchera la commande et la réservation.
+    // Commande / réservation : l'écran appelant sait s'il existe un parcours
+    // natif pour cette verticale. Sinon, la destination est web (ou absente) :
+    // on le dit plutôt que d'ouvrir un écran qui n'existe pas.
+    final handler = onAction;
+    if (handler != null && (nativeActions.contains(action) || hasDestination)) {
+      handler(action);
+      return;
+    }
+
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(strings.t('commonNoModule'))));
   }
