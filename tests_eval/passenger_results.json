@@ -4,17 +4,17 @@
     "method": "GET",
     "path": "/public/travel/shop/trips",
     "status": 200,
-    "ms": 69,
-    "snippet": "{\"data\":[{\"id\":1,\"code\":\"TRP-EVAL-1\",\"route_id\":1,\"carrier_id\":1,\"vehicle_id\":1,\"departure_date\":\"2026-11-25\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-25\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"status\":\"published\",\"published_at\":\"2026-11-22T13:27:08.000000Z\",\"prices\":[],\"route\":{\"id\":1,\"code\":\"RTE-EVAL-1\",\"origin_city_id\":11,\"destination_city_id\":41,\"distance_km\":300,\"duration_min\":240,\"status\":\"active\",\"stops\":[{\"id\":1,\"route_id\":1,\"city_id\":45,\"rank\":1,\"is_stopover\":true,\"min_duration_min\":null,\"created_at\":\"2026-11-22T13:27:08.000000Z\",\"updated_at\"",
+    "ms": 68,
+    "snippet": "{\"data\":[{\"id\":1,\"code\":\"TRP-EVAL-1\",\"route_id\":1,\"carrier_id\":1,\"vehicle_id\":1,\"departure_date\":\"2026-11-28\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-28\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"status\":\"published\",\"published_at\":\"2026-11-25T08:52:32.000000Z\",\"prices\":[],\"route\":{\"id\":1,\"code\":\"RTE-EVAL-1\",\"origin_city_id\":11,\"destination_city_id\":41,\"distance_km\":300,\"duration_min\":240,\"status\":\"active\",\"stops\":[{\"id\":1,\"route_id\":1,\"city_id\":45,\"rank\":1,\"is_stopover\":true,\"min_duration_min\":null,\"created_at\":\"2026-11-25T08:52:32.000000Z\",\"updated_at\"",
     "note": ""
   },
   {
     "step": "boutique: detail trajet",
     "method": "GET",
-    "path": "/public/travel/shop/trips/4",
+    "path": "/public/travel/shop/trips/2",
     "status": 200,
-    "ms": 40,
-    "snippet": "{\"data\":{\"id\":4,\"code\":\"TRP-E2A-9930\",\"route_id\":6,\"carrier_id\":5,\"vehicle_id\":5,\"departure_date\":\"2026-11-27\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-27\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"status\":\"published\",\"published_at\":\"2026-11-22T13:29:18.000000Z\",\"prices\":[{\"id\":1,\"trip_id\":4,\"class_id\":4,\"adult_price_minor\":250000,\"child_price_minor\":150000,\"currency\":\"DZD\",\"created_at\":\"2026-11-22T13:29:18.000000Z\",\"updated_at\":\"2026-11-22T13:29:18.000000Z\"}],\"route\":{\"id\":6,\"code\":\"RTE-E2-9930\",\"origin_city_id\":49,\"destination_city_id\":54,\"distance_km\"",
+    "ms": 111,
+    "snippet": "{\"data\":{\"id\":2,\"code\":\"TRP-E2A-9765\",\"route_id\":2,\"carrier_id\":2,\"vehicle_id\":2,\"departure_date\":\"2026-11-30\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-30\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"status\":\"published\",\"published_at\":\"2026-11-25T08:52:36.000000Z\",\"prices\":[{\"id\":1,\"trip_id\":2,\"class_id\":2,\"adult_price_minor\":250000,\"child_price_minor\":150000,\"currency\":\"DZD\",\"created_at\":\"2026-11-25T08:52:36.000000Z\",\"updated_at\":\"2026-11-25T08:52:36.000000Z\"}],\"route\":{\"id\":2,\"code\":\"RTE-E2-9765\",\"origin_city_id\":1,\"destination_city_id\":61,\"distance_km\":",
     "note": ""
   },
   {
@@ -22,16 +22,16 @@
     "method": "POST",
     "path": "/public/travel/shop/bookings",
     "status": 201,
-    "ms": 63,
-    "snippet": "{\"data\":{\"id\":11,\"reference\":\"GV-4TEIGQPVUV\",\"trip_id\":4,\"status\":\"pending\",\"passenger_count\":1,\"total_amount_minor\":250000,\"currency\":\"DZD\",\"booking_source\":\"online\",\"payment_status\":\"pending\",\"expires_at\":\"2026-11-22T13:47:32.000000Z\",\"version\":null,\"passengers\":[{\"id\":15,\"booking_id\":11,\"full_name\":\"Passager Public\",\"birth_date\":null,\"document_type\":null,\"has_document\":false,\"age_category\":\"adult\",\"class_id\":4,\"seat_number\":35,\"unit_price_minor\":250000}],\"contact_email\":\"passager35511@mail.dz\",\"contact_phone\":\"+213555000111\",\"notify_consent\":true,\"round_trip_group_id\":null,\"return_booking_i",
+    "ms": 78,
+    "snippet": "{\"data\":{\"id\":7,\"reference\":\"GV-X4GB4G47P5\",\"trip_id\":2,\"status\":\"pending\",\"passenger_count\":1,\"total_amount_minor\":250000,\"currency\":\"DZD\",\"booking_source\":\"online\",\"payment_status\":\"pending\",\"expires_at\":\"2026-11-25T09:08:00.000000Z\",\"version\":null,\"passengers\":[{\"id\":11,\"booking_id\":7,\"full_name\":\"Passager Public\",\"birth_date\":null,\"document_type\":null,\"has_document\":false,\"age_category\":\"adult\",\"class_id\":2,\"seat_number\":44,\"unit_price_minor\":250000}],\"contact_email\":\"passager24878@mail.dz\",\"contact_phone\":\"+213555000111\",\"notify_consent\":true,\"round_trip_group_id\":null,\"return_booking_id\"",
     "note": ""
   },
   {
     "step": "boutique: suivi reservation",
     "method": "GET",
-    "path": "/public/travel/shop/bookings/GV-4TEIGQPVUV",
+    "path": "/public/travel/shop/bookings/GV-X4GB4G47P5",
     "status": 404,
-    "ms": 40,
+    "ms": 48,
     "snippet": "{\"error\":\"RESOURCE_NOT_FOUND\",\"message\":\"RESOURCE_NOT_FOUND\",\"localized_message\":\"Ressource introuvable.\"}",
     "note": ""
   },
@@ -40,8 +40,8 @@
     "method": "POST",
     "path": "/public/travel/payments/initiate",
     "status": 201,
-    "ms": 69,
-    "snippet": "{\"data\":{\"reference\":\"PAY-8KIHTBRHXT\",\"provider_reference\":\"CASH-C04197A016CA\",\"status\":\"pending\"}}",
+    "ms": 74,
+    "snippet": "{\"data\":{\"reference\":\"PAY-QSR0ZEVK88\",\"provider_reference\":\"CASH-D780470C47EB\",\"status\":\"pending\"}}",
     "note": ""
   },
   {
@@ -49,8 +49,8 @@
     "method": "POST",
     "path": "/public/travel/marketplace/account/register",
     "status": 201,
-    "ms": 208,
-    "snippet": "{\"data\":{\"account\":{\"id\":7,\"name\":\"Client Market\",\"email\":\"client35511@mail.dz\",\"phone\":null,\"created_at\":\"2026-11-22T13:32:32+00:00\"},\"token\":\"47|leo_8hLDEMDfjAF3iF9OSicW9lhpQT5VahLGHHaAYreG91d356f4\",\"claimed_bookings\":0}}",
+    "ms": 292,
+    "snippet": "{\"data\":{\"account\":{\"id\":1,\"name\":\"Client Market\",\"email\":\"client24878@mail.dz\",\"phone\":null,\"created_at\":\"2026-11-25T08:53:00+00:00\"},\"token\":\"20|leo_z3P0OVSMXT4uc2nO8BrcNf2ad76Wm6Crou94OiIh09371dff\",\"claimed_bookings\":0}}",
     "note": ""
   },
   {
@@ -58,8 +58,8 @@
     "method": "POST",
     "path": "/public/travel/marketplace/account/login",
     "status": 200,
-    "ms": 217,
-    "snippet": "{\"data\":{\"account\":{\"id\":7,\"name\":\"Client Market\",\"email\":\"client35511@mail.dz\",\"phone\":null,\"created_at\":\"2026-11-22T13:32:32+00:00\"},\"token\":\"48|leo_E564z2OlLPBzz6aryCgD6VcfSvJKmRKQTvi0SeiY15eb0248\"}}",
+    "ms": 299,
+    "snippet": "{\"data\":{\"account\":{\"id\":1,\"name\":\"Client Market\",\"email\":\"client24878@mail.dz\",\"phone\":null,\"created_at\":\"2026-11-25T08:53:00+00:00\"},\"token\":\"21|leo_ZMuGOrNs7msH8Xlq5RWLrtTSU9wEJxhVoELqcJDL3b29aad5\"}}",
     "note": ""
   },
   {
@@ -67,8 +67,8 @@
     "method": "GET",
     "path": "/public/travel/marketplace/account/me",
     "status": 200,
-    "ms": 39,
-    "snippet": "{\"data\":{\"account\":{\"id\":7,\"name\":\"Client Market\",\"email\":\"client35511@mail.dz\",\"phone\":null,\"created_at\":\"2026-11-22T13:32:32+00:00\"}}}",
+    "ms": 49,
+    "snippet": "{\"data\":{\"account\":{\"id\":1,\"name\":\"Client Market\",\"email\":\"client24878@mail.dz\",\"phone\":null,\"created_at\":\"2026-11-25T08:53:00+00:00\"}}}",
     "note": ""
   },
   {
@@ -76,7 +76,7 @@
     "method": "GET",
     "path": "/public/travel/marketplace/account/bookings",
     "status": 200,
-    "ms": 33,
+    "ms": 67,
     "snippet": "{\"data\":[],\"meta\":{\"current_page\":1,\"per_page\":20,\"total\":0,\"last_page\":1}}",
     "note": ""
   },
@@ -85,8 +85,8 @@
     "method": "GET",
     "path": "/public/travel/marketplace/trips",
     "status": 200,
-    "ms": 37,
-    "snippet": "{\"data\":[{\"id\":1,\"code\":\"TRP-EVAL-1\",\"departure_date\":\"2026-11-25\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-25\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"available_seats\":50,\"origin_city\":{\"name\":\"Abidjan\",\"country_iso2\":\"CI\"},\"destination_city\":{\"name\":\"Abuja\",\"country_iso2\":\"NG\"},\"prices\":[],\"price_from_minor\":null,\"currency\":null,\"seat_layout\":{\"seats_per_row\":4,\"aisle_after\":2,\"is_configured\":true},\"agency\":{\"name\":\"TechCorp Algerie SARL\"}},{\"id\":2,\"code\":\"TRP-E2A\",\"departure_date\":\"2026-11-27\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-27\",",
+    "ms": 109,
+    "snippet": "{\"data\":[{\"id\":1,\"code\":\"TRP-EVAL-1\",\"departure_date\":\"2026-11-28\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-28\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"available_seats\":50,\"origin_city\":{\"name\":\"Abidjan\",\"country_iso2\":\"CI\"},\"destination_city\":{\"name\":\"Abuja\",\"country_iso2\":\"NG\"},\"prices\":[],\"price_from_minor\":null,\"currency\":null,\"seat_layout\":{\"seats_per_row\":4,\"aisle_after\":2,\"is_configured\":true},\"agency\":{\"name\":\"TechCorp Algerie SARL\"}},{\"id\":2,\"code\":\"TRP-E2A-9765\",\"departure_date\":\"2026-11-30\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11",
     "note": ""
   },
   {
@@ -94,8 +94,8 @@
     "method": "GET",
     "path": "/public/travel/marketplace/trips/1",
     "status": 200,
-    "ms": 60,
-    "snippet": "{\"data\":{\"id\":1,\"code\":\"TRP-EVAL-1\",\"departure_date\":\"2026-11-25\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-25\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"available_seats\":50,\"origin_city\":{\"name\":\"Abidjan\",\"country_iso2\":\"CI\"},\"destination_city\":{\"name\":\"Abuja\",\"country_iso2\":\"NG\"},\"prices\":[],\"price_from_minor\":null,\"currency\":null,\"seat_layout\":{\"seats_per_row\":4,\"aisle_after\":2,\"is_configured\":true},\"agency\":{\"name\":\"TechCorp Algerie SARL\"},\"seats\":[{\"seat_number\":1,\"status\":\"free\"},{\"seat_number\":2,\"status\":\"free\"},{\"seat_number\":3,\"status\":\"free\"},{\"",
+    "ms": 58,
+    "snippet": "{\"data\":{\"id\":1,\"code\":\"TRP-EVAL-1\",\"departure_date\":\"2026-11-28\",\"departure_time\":\"08:00:00\",\"arrival_date\":\"2026-11-28\",\"arrival_time\":\"12:00:00\",\"means_of_transport\":\"bus\",\"total_seats\":50,\"available_seats\":50,\"origin_city\":{\"name\":\"Abidjan\",\"country_iso2\":\"CI\"},\"destination_city\":{\"name\":\"Abuja\",\"country_iso2\":\"NG\"},\"prices\":[],\"price_from_minor\":null,\"currency\":null,\"seat_layout\":{\"seats_per_row\":4,\"aisle_after\":2,\"is_configured\":true},\"agency\":{\"name\":\"TechCorp Algerie SARL\"},\"seats\":[{\"seat_number\":1,\"status\":\"free\"},{\"seat_number\":2,\"status\":\"free\"},{\"seat_number\":3,\"status\":\"free\"},{\"",
     "note": ""
   },
   {
@@ -103,8 +103,8 @@
     "method": "POST",
     "path": "/public/travel/marketplace/bookings",
     "status": 201,
-    "ms": 46,
-    "snippet": "{\"data\":{\"id\":12,\"reference\":\"GV-CWHWBW3JIQ\",\"trip_id\":4,\"status\":\"pending\",\"passenger_count\":1,\"total_amount_minor\":250000,\"currency\":\"DZD\",\"booking_source\":\"marketplace\",\"payment_status\":\"pending\",\"expires_at\":\"2026-11-22T13:47:33.000000Z\",\"version\":null,\"passengers\":[{\"id\":16,\"booking_id\":12,\"full_name\":\"Client Market\",\"birth_date\":null,\"document_type\":null,\"has_document\":false,\"age_category\":\"adult\",\"class_id\":4,\"seat_number\":12,\"unit_price_minor\":250000}],\"contact_email\":\"mkt35511@mail.dz\",\"contact_phone\":null,\"notify_consent\":false,\"round_trip_group_id\":null,\"return_booking_id\":null,\"leg",
+    "ms": 63,
+    "snippet": "{\"data\":{\"id\":8,\"reference\":\"GV-OL15JF6KJ8\",\"trip_id\":2,\"status\":\"pending\",\"passenger_count\":1,\"total_amount_minor\":250000,\"currency\":\"DZD\",\"booking_source\":\"marketplace\",\"payment_status\":\"pending\",\"expires_at\":\"2026-11-25T09:08:01.000000Z\",\"version\":null,\"passengers\":[{\"id\":12,\"booking_id\":8,\"full_name\":\"Client Market\",\"birth_date\":null,\"document_type\":null,\"has_document\":false,\"age_category\":\"adult\",\"class_id\":2,\"seat_number\":8,\"unit_price_minor\":250000}],\"contact_email\":\"mkt24878@mail.dz\",\"contact_phone\":null,\"notify_consent\":false,\"round_trip_group_id\":null,\"return_booking_id\":null,\"leg\":n",
     "note": ""
   }
 ]
