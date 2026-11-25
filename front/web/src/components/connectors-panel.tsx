@@ -74,6 +74,14 @@ type CheckResult = {
   checks?: Array<{ key: string; ok: boolean; detail: string }>;
 };
 
+type AiUsage = {
+  connection_id: number;
+  period: string;
+  used_tokens: number;
+  budget_tokens: number | null;
+  remaining_tokens: number | null;
+};
+
 const STATUS_STYLES: Record<string, string> = {
   active: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   draft: 'bg-amber-50 text-amber-700 border-amber-200',
@@ -106,6 +114,7 @@ export function ConnectorsPanel() {
 
   const [testingId, setTestingId] = useState<number | null>(null);
   const [checks, setChecks] = useState<Record<number, CheckResult>>({});
+  const [aiUsage, setAiUsage] = useState<Record<number, AiUsage>>({});
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -124,6 +133,24 @@ export function ConnectorsPanel() {
       setCatalog(catalogData.data?.items ?? []);
       setConnections(connectionsData.data?.items ?? []);
       setIntegrations(overviewData.data?.integrations ?? []);
+
+      // #9925 — pour chaque connexion IA, on charge sa consommation de tokens.
+      const aiConnections = (connectionsData.data?.items ?? []).filter((c) => c.catalog_key.startsWith('ai_'));
+      const usageMap: Record<number, AiUsage> = {};
+      await Promise.all(
+        aiConnections.map(async (connection) => {
+          try {
+            const res = await apiFetch(`/connectors/connections/${connection.id}/usage`);
+            const data = (await res.json()) as { data?: AiUsage };
+            if (data.data) {
+              usageMap[connection.id] = data.data;
+            }
+          } catch {
+            // Une connexion IA sans usage n'affiche rien : on ne casse pas l'écran.
+          }
+        })
+      );
+      setAiUsage(usageMap);
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Impossible de charger les connecteurs.');
     } finally {
@@ -415,6 +442,40 @@ export function ConnectorsPanel() {
                         </ul>
                       ) : null}
                     </div>
+                  ) : null}
+
+                  {/* #9925 — consommation de tokens d'une connexion IA. */}
+                  {connection.catalog_key.startsWith('ai_') && aiUsage[connection.id] ? (
+                    (() => {
+                      const usage = aiUsage[connection.id];
+                      if (!usage) return null;
+                      return (
+                        <div className="mt-3 rounded-lg border border-indigo-100 bg-indigo-50/50 p-3 text-xs text-slate-700">
+                          <p className="flex items-center gap-1.5 font-semibold text-indigo-800">
+                            Consommation de tokens ({usage.period})
+                          </p>
+                          <p className="mt-1">
+                            {usage.used_tokens.toLocaleString('fr-FR')} tokens consommés
+                            {usage.budget_tokens !== null
+                              ? ` sur ${usage.budget_tokens.toLocaleString('fr-FR')}`
+                              : ' (budget illimité)'}
+                          </p>
+                          {usage.budget_tokens !== null ? (
+                            <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-200">
+                              <div
+                                className="h-full rounded-full bg-indigo-500"
+                                style={{
+                                  width: `${Math.min(
+                                    100,
+                                    (usage.used_tokens / usage.budget_tokens) * 100
+                                  )}%`,
+                                }}
+                              />
+                            </div>
+                          ) : null}
+                        </div>
+                      );
+                    })()
                   ) : null}
                 </article>
               ))

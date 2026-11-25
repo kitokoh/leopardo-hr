@@ -424,6 +424,62 @@ class ConnectorCatalogSeeder extends Seeder
                     ['key' => 'service_account_key', 'label' => 'Clé du compte de service (JSON)', 'type' => 'textarea', 'secret' => true, 'required' => false],
                 ],
             ],
+
+            // ── Intelligence artificielle (les deux surfaces) ──
+            //
+            // Un modèle d'IA est un connecteur comme un autre : le SUPERADMIN le
+            // PROPOSE au catalogue (audience `both`), et un TENANT peut
+            // l'ACTIVER en créant une connexion. La consommation de tokens est
+            // suivie par connexion (`connector_ai_usage`) et bornée par un
+            // budget mensuel optionnel (`monthly_token_budget`).
+            [
+                'key' => 'ai_openai',
+                'category' => 'ai',
+                'audience' => 'both',
+                'label' => 'Modèle OpenAI',
+                'provider' => 'OpenAI',
+                'docs_url' => 'https://platform.openai.com/docs',
+                'sort_order' => 600,
+                'field_schema' => [
+                    ['key' => 'model', 'label' => 'Modèle', 'type' => 'text', 'required' => true, 'placeholder' => 'gpt-4o', 'help' => 'Identifiant du modèle (ex. gpt-4o, gpt-4o-mini).'],
+                    ['key' => 'api_key', 'label' => 'Clé API', 'type' => 'password', 'secret' => true, 'required' => true, 'placeholder' => 'sk-…'],
+                    ['key' => 'max_tokens', 'label' => 'Tokens max par appel', 'type' => 'number', 'required' => false, 'placeholder' => '1024'],
+                    ['key' => 'temperature', 'label' => 'Température (0-2)', 'type' => 'number', 'required' => false, 'placeholder' => '0.3'],
+                    ['key' => 'monthly_token_budget', 'label' => 'Budget mensuel de tokens', 'type' => 'number', 'required' => false, 'placeholder' => '100000', 'help' => 'Au-delà, les appels sont refusés (fail-closed). Vide = illimité.'],
+                ],
+            ],
+            [
+                'key' => 'ai_anthropic',
+                'category' => 'ai',
+                'audience' => 'both',
+                'label' => 'Modèle Anthropic',
+                'provider' => 'Anthropic',
+                'docs_url' => 'https://docs.anthropic.com/',
+                'sort_order' => 610,
+                'field_schema' => [
+                    ['key' => 'model', 'label' => 'Modèle', 'type' => 'text', 'required' => true, 'placeholder' => 'claude-sonnet-4-20250514'],
+                    ['key' => 'api_key', 'label' => 'Clé API', 'type' => 'password', 'secret' => true, 'required' => true, 'placeholder' => 'sk-ant-…'],
+                    ['key' => 'max_tokens', 'label' => 'Tokens max par appel', 'type' => 'number', 'required' => false, 'placeholder' => '1024'],
+                    ['key' => 'temperature', 'label' => 'Température (0-1)', 'type' => 'number', 'required' => false, 'placeholder' => '0.3'],
+                    ['key' => 'monthly_token_budget', 'label' => 'Budget mensuel de tokens', 'type' => 'number', 'required' => false, 'placeholder' => '100000', 'help' => 'Au-delà, les appels sont refusés (fail-closed). Vide = illimité.'],
+                ],
+            ],
+            [
+                'key' => 'ai_groq',
+                'category' => 'ai',
+                'audience' => 'both',
+                'label' => 'Modèle Groq',
+                'provider' => 'Groq',
+                'docs_url' => 'https://console.groq.com/docs',
+                'sort_order' => 620,
+                'field_schema' => [
+                    ['key' => 'model', 'label' => 'Modèle', 'type' => 'text', 'required' => true, 'placeholder' => 'openai/gpt-oss-120b'],
+                    ['key' => 'api_key', 'label' => 'Clé API', 'type' => 'password', 'secret' => true, 'required' => true, 'placeholder' => 'gsk_…'],
+                    ['key' => 'max_tokens', 'label' => 'Tokens max par appel', 'type' => 'number', 'required' => false, 'placeholder' => '1024'],
+                    ['key' => 'temperature', 'label' => 'Température (0-2)', 'type' => 'number', 'required' => false, 'placeholder' => '0.3'],
+                    ['key' => 'monthly_token_budget', 'label' => 'Budget mensuel de tokens', 'type' => 'number', 'required' => false, 'placeholder' => '100000', 'help' => 'Au-delà, les appels sont refusés (fail-closed). Vide = illimité.'],
+                ],
+            ],
         ];
     }
 }

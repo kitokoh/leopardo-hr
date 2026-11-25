@@ -7,11 +7,14 @@ namespace App\Modules\Connectors\Interfaces\Api\V1\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Connectors\Domain\Exceptions\ConnectorSchemaViolationException;
 use App\Modules\Connectors\Domain\Models\ConnectorCatalogEntry;
+use App\Modules\Connectors\Domain\Models\ConnectorAiUsage;
 use App\Modules\Connectors\Domain\Models\ConnectorConnection;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorCatalog;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorConnectionTester;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorIntegrationIndex;
 use App\Modules\Connectors\Infrastructure\Services\ConnectorSchemaValidator;
+use App\Modules\Connectors\Infrastructure\Services\ConnectorAiUsageTracker;
+use App\Modules\Connectors\Domain\Exceptions\ConnectorAiBudgetExceededException;
 use App\Modules\Connectors\Interfaces\Api\V1\Requests\StoreTenantConnectorRequest;
 use App\Modules\Connectors\Interfaces\Api\V1\Requests\UpdateTenantConnectorRequest;
 use App\Modules\Connectors\Interfaces\Api\V1\Requests\UpdateTenantConnectorStatusRequest;
@@ -44,6 +47,7 @@ class TenantConnectorController extends Controller
         private readonly ConnectorSchemaValidator $validator,
         private readonly ConnectorConnectionTester $tester,
         private readonly ConnectorIntegrationIndex $index,
+        private readonly ConnectorAiUsageTracker $aiUsage,
     ) {}
 
     /**
@@ -210,6 +214,93 @@ class TenantConnectorController extends Controller
         return new JsonResponse(['data' => [
             'connection' => $this->present($connection),
             'check' => $result,
+        ]]);
+    }
+
+    /**
+     * GET /connectors/connections/{id}/usage — consommation de tokens d'une
+     * connexion IA pour le mois courant, et son budget.
+     *
+     * Réservé aux connexions `ai_*` : une connexion non-IA n'a pas de
+     * consommation à suivre (422 explicite).
+     */
+    public function usage(int $id): JsonResponse
+    {
+        $connection = ConnectorConnection::query()->findOrFail($id);
+
+        if (! str_starts_with($connection->catalog_key, 'ai_')) {
+            return new JsonResponse([
+                'error' => 'CONNECTOR_NOT_AI',
+                'message' => 'CONNECTOR_NOT_AI',
+                'localized_message' => 'Cette connexion n\'est pas un modèle d\'IA : aucune consommation de tokens à suivre.',
+            ], 422);
+        }
+
+        $used = $this->aiUsage->monthlyTotal($connection);
+
+        return new JsonResponse(['data' => [
+            'connection_id' => $connection->id,
+            'period' => ConnectorAiUsage::periodFor(),
+            'used_tokens' => $used,
+            'budget_tokens' => $this->aiUsage->monthlyBudget($connection),
+            'remaining_tokens' => $this->aiUsage->monthlyBudget($connection) !== null
+                ? max(0, $this->aiUsage->monthlyBudget($connection) - $used)
+                : null,
+        ]]);
+    }
+
+    /**
+     * POST /connectors/connections/{id}/usage — enregistre la consommation
+     * réelle d'un appel IA et rend le cumul du mois.
+     *
+     * Fail-closed : si le budget mensuel est déjà atteint, l'appel est refusé
+     * (422 CONNECTOR_AI_BUDGET_EXCEEDED) AVANT tout enregistrement — on ne
+     * comptabilise jamais un appel hors budget.
+     */
+    public function recordUsage(Request $request, int $id): JsonResponse
+    {
+        $connection = ConnectorConnection::query()->findOrFail($id);
+
+        if (! str_starts_with($connection->catalog_key, 'ai_')) {
+            return new JsonResponse([
+                'error' => 'CONNECTOR_NOT_AI',
+                'message' => 'CONNECTOR_NOT_AI',
+                'localized_message' => 'Cette connexion n\'est pas un modèle d\'IA : aucune consommation de tokens à suivre.',
+            ], 422);
+        }
+
+        $input = (int) ($request->input('input_tokens', 0));
+        $output = (int) ($request->input('output_tokens', 0));
+
+        if ($input < 0 || $output < 0) {
+            return new JsonResponse([
+                'error' => 'CONNECTOR_AI_USAGE_INVALID',
+                'message' => 'CONNECTOR_AI_USAGE_INVALID',
+                'localized_message' => 'Les compteurs de tokens doivent être des entiers positifs ou nuls.',
+            ], 422);
+        }
+
+        try {
+            $this->aiUsage->assertWithinBudget($connection);
+        } catch (ConnectorAiBudgetExceededException $exception) {
+            return new JsonResponse([
+                'error' => ConnectorAiBudgetExceededException::ERROR_CODE,
+                'message' => ConnectorAiBudgetExceededException::ERROR_CODE,
+                'localized_message' => $exception->getMessage(),
+                'used_tokens' => $exception->usedTokens(),
+                'budget_tokens' => $exception->budgetTokens(),
+            ], 422);
+        }
+
+        $totals = $this->aiUsage->record($connection, $input, $output);
+
+        return new JsonResponse(['data' => [
+            'connection_id' => $connection->id,
+            'period' => ConnectorAiUsage::periodFor(),
+            'input_tokens' => $totals['input_tokens'],
+            'output_tokens' => $totals['output_tokens'],
+            'total_tokens' => $totals['total_tokens'],
+            'budget_tokens' => $this->aiUsage->monthlyBudget($connection),
         ]]);
     }
 
