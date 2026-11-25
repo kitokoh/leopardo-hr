@@ -6,6 +6,7 @@ namespace Tests\Feature\Security;
 
 use App\Database\Migrations\GuardedMigration;
 use App\Database\Migrations\MigrationOrderInspector;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
@@ -33,7 +34,7 @@ final class MigrationGuardObservabilityTest extends TestCase
      */
     public function test_skip_because_table_missing_logs_a_warning(): void
     {
-        Log::spy();
+        $log = Log::spy();
 
         $migration = new class extends GuardedMigration
         {
@@ -45,7 +46,7 @@ final class MigrationGuardObservabilityTest extends TestCase
 
         $migration->up();
 
-        Log::shouldHaveReceived('warning')
+        $log->shouldHaveReceived('warning')
             ->once()
             ->withArgs(static function (string $message, array $context): bool {
                 return str_contains($message, '#9923')
@@ -60,7 +61,7 @@ final class MigrationGuardObservabilityTest extends TestCase
      */
     public function test_skip_because_column_exists_logs_info_not_warning(): void
     {
-        Log::spy();
+        $log = Log::spy();
 
         $migration = new class extends GuardedMigration
         {
@@ -72,11 +73,11 @@ final class MigrationGuardObservabilityTest extends TestCase
 
         $migration->up();
 
-        Log::shouldHaveReceived('info')
+        $log->shouldHaveReceived('info')
             ->once()
             ->withArgs(static fn (string $message, array $context): bool => $context['column'] === 'cnps_matricule');
 
-        Log::shouldNotHaveReceived('warning');
+        $log->shouldNotHaveReceived('warning');
     }
 
     /**
@@ -139,7 +140,9 @@ final class MigrationGuardObservabilityTest extends TestCase
      */
     public function test_command_reports_a_clear_verdict(): void
     {
-        $exit = $this->artisan('migrations:skipped-effects', ['--json' => true])->run();
+        // `Artisan::call()` retourne un `int` ; `$this->artisan(...)->run()`
+        // est type `PendingCommand|int` et PHPStan ne peut pas trancher.
+        $exit = Artisan::call('migrations:skipped-effects', ['--json' => true]);
 
         $this->assertContains($exit, [0, 1, 2]);
     }

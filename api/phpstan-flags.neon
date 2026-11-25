@@ -5,3 +5,19 @@
 parameters:
     bootstrapFiles:
         - phpstan-flags.php
+
+    # #9922 — stubs de types pour les dependances OPTIONNELLES.
+    #
+    # Place ICI, et non dans phpstan.neon : ce fichier est inclus par TOUTES
+    # les configurations d'analyse (phpstan.neon, phpstan-modules.neon,
+    # phpstan-strict.neon, phpstan.ci.neon). Le mettre dans phpstan.neon seul
+    # laissait le job « PHPStan — Modules Architecture » (qui inclut
+    # phpstan-modules.neon, sans phpstan.neon) signaler 4 `class.notFound` sur
+    # `PragmaRX\Google2FA\Google2FA` — mesure faite en CI sur le commit
+    # d0e40c06c.
+    #
+    # `scanFiles` fait lire le fichier par PHPStan sans l'ajouter a l'autoload
+    # d'execution : le stub n'existe que pour l'analyse. Voir le docblock de
+    # phpstan-stubs/Google2FA.php pour le raisonnement complet.
+    scanFiles:
+        - phpstan-stubs/Google2FA.php
