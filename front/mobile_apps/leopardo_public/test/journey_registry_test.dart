@@ -60,11 +60,7 @@ void main() {
         // la clé brute à l'écran, sur la langue qu'on ne teste jamais.
         for (final locale in AppStrings.supportedLocales) {
           final text = AppStrings.of(locale).t(key!);
-          expect(
-            text,
-            isNot(key),
-            reason: 'clé "$key" absente en $locale',
-          );
+          expect(text, isNot(key), reason: 'clé "$key" absente en $locale');
           expect(text.trim(), isNotEmpty);
         }
       }
