@@ -34,15 +34,20 @@ import 'package:leopardo_public/features/discovery/widgets/discovery_tile.dart';
 ///  3. taper une tuile ouvre la fiche du bon commerce ;
 ///  4. la fiche affiche « Contacter » parce que le serveur a déclaré la
 ///     capacité `contact` — et ne l'affiche PAS quand il ne l'a pas déclarée ;
-///  5. le bouton est DÉSACTIVÉ en M1, avec l'explication visible : c'est la
-///     frontière assumée du lot, pas un bouton mort silencieux ;
-///  6. aucun écran de connexion n'est traversé, aucun champ de téléphone n'est
-///     demandé — la promesse « jamais de compte avant le contact » est vérifiée
-///     mécaniquement, pas seulement documentée.
+///  5. le bouton est ACTIF quand le registre des parcours (#9907) déclare un
+///     `contactTargetType` pour la verticale, et il ouvre alors le formulaire
+///     de demande, consentement DÉCOCHÉ ; il reste DÉSACTIVÉ pour une
+///     verticale sans resolver public (pharmacie), parce que la passerelle
+///     répondrait 422 ;
+///  6. aucun écran de connexion n'est traversé — la promesse « jamais de compte
+///     avant le contact » est vérifiée mécaniquement, pas seulement documentée.
 ///
-/// Le jour où M2 branche `onContact`, le point 5 s'inverse : ce test devra
-/// alors affirmer l'inverse. C'est volontaire — un test qui ne peut pas
-/// s'inverser ne prouve rien sur l'état du produit.
+/// Ce fichier a longtemps affirmé l'inverse du point 5, et c'était JUSTE :
+/// tant que `onContact` n'était pas branché, le bouton devait être désactivé.
+/// #9907 a livré la passerelle de demande, donc le point 5 s'inverse — comme
+/// annoncé ici même. La distinction capacité serveur / jouabilité registre
+/// reste vérifiée par le cas pharmacie : une base qui déclare `contact` sans
+/// resolver public ne produit pas un bouton actif.
 void main() {
   /// Catalogue figé en français : les assertions portent sur des textes, pas
   /// sur des clés, pour qu'une régression de catalogue fasse échouer le test.
@@ -164,8 +169,8 @@ void main() {
     });
 
     testWidgets(
-        'contact : le bouton vient de supportedActions() et reste '
-        'désactivé en M1 — frontière assumée du lot', (tester) async {
+        'contact : le bouton vient de supportedActions() et ouvre la '
+        'passerelle de demande, consentement décoché', (tester) async {
       final discovery = _FakeDiscoveryRepository(items: [_nadia]);
       final profile = _FakeProfileRepository();
 
@@ -190,9 +195,70 @@ void main() {
         reason: 'La capacité `contact` est déclarée : le bouton doit exister.',
       );
 
-      // Et il est DÉSACTIVÉ : M2 n'est pas livré. Un bouton actif qui ne mène
-      // nulle part serait exactement le « bouton mort » que le cahier des
-      // charges interdit.
+      // Et il est ACTIF : `restaurant` porte `contactTargetType` dans le
+      // registre des parcours, donc un écran existe réellement derrière.
+      final button = tester.widget<FilledButton>(
+        find
+            .ancestor(
+              of: find.text(strings.t('businessContact')),
+              matching: find.byType(FilledButton),
+            )
+            .first,
+      );
+      expect(
+        button.onPressed,
+        isNotNull,
+        reason: 'La verticale a un resolver public : le bouton doit ouvrir la '
+            'passerelle de demande (#9907).',
+      );
+
+      await tester.tap(find.text(strings.t('businessContact')).first);
+      await tester.pumpAndSettle();
+
+      // Le formulaire de demande est réellement ouvert…
+      expect(find.text(strings.t('journeyMessage')), findsOneWidget);
+      expect(find.text(strings.t('journeySubmitRequest')), findsOneWidget);
+
+      // … et le consentement n'est JAMAIS coché d'office : le serveur refuse
+      // une demande sans `consent: accepted` (RGPD), l'app ne peut donc pas
+      // décider à la place de la personne.
+      final consent = tester.widget<CheckboxListTile>(
+        find.byType(CheckboxListTile),
+      );
+      expect(consent.value, isFalse);
+
+      // Aucun compte demandé : la promesse du couloir tient toujours.
+      expect(find.text(strings.t('authLoginTitle')), findsNothing);
+    });
+
+    testWidgets(
+        'contact : une verticale sans resolver public garde le bouton '
+        'DÉSACTIVÉ — le registre prime sur la capacité déclarée',
+        (tester) async {
+      // `pharmacy` est déclarée `contact` par ce faux serveur, mais
+      // `PublicProfileLocator::types()` ne connaît pas ce type :
+      // `POST /public/contact-requests` répondrait 422. Un bouton actif
+      // enverrait la personne vers un échec systématique.
+      final discovery = _FakeDiscoveryRepository(
+        items: [_pharmacie],
+        actions: const {
+          'pharmacy': <String>['contact'],
+        },
+      );
+      final profile = _FakeProfileRepository(
+        profile: const BusinessProfile(
+          slug: 'pharmacie-centrale',
+          name: 'Pharmacie Centrale',
+          type: 'pharmacy',
+        ),
+      );
+
+      await tester.pumpWidget(app(discovery: discovery, profile: profile));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(DiscoveryTile));
+      await tester.pumpAndSettle();
+
       final button = tester.widget<FilledButton>(
         find
             .ancestor(
@@ -204,11 +270,10 @@ void main() {
       expect(
         button.onPressed,
         isNull,
-        reason: 'M1 : le contact est une frontière de lot, pas une action.',
+        reason:
+            'Sans `contactTargetType`, le registre interdit le parcours même '
+            'si le serveur déclare la capacité.',
       );
-
-      // Aucun champ de message, aucun champ de téléphone n'a été ouvert.
-      expect(find.byType(TextField), findsNothing);
     });
 
     testWidgets(
@@ -277,6 +342,13 @@ const _boulangerie = DiscoveryItem(
   slug: 'boulangerie-du-port',
   name: 'Boulangerie du Port',
   category: 'restaurant',
+  city: 'Casablanca',
+);
+
+const _pharmacie = DiscoveryItem(
+  type: 'pharmacy',
+  slug: 'pharmacie-centrale',
+  name: 'Pharmacie Centrale',
   city: 'Casablanca',
 );
 

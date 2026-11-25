@@ -1,12 +1,11 @@
 {
   "_comment": "Garde #7960 — baseline des usages bruts de withoutGlobalScope(s) dans api/app. Régénérer via: bash dev-hub/tools/check-without-global-scope.sh --update-baseline. Le total ne doit jamais croître : le nouveau code passe par forCompany()/crossTenantForPlatformAdmin()/crossTenantForSystemTask().",
   "issue": 7960,
-  "total": 253,
+  "total": 246,
   "files": {
     "app/AI/Jobs/ExportAiConversationJob.php": 2,
     "app/Console/Commands/AutoCloseAttendanceCommand.php": 1,
     "app/Console/Commands/FuelAlertsDispatchCommand.php": 2,
-    "app/Console/Commands/LeaveCarryForward.php": 7,
     "app/Console/Commands/PrecalculatePayrollRuns.php": 2,
     "app/Core/Auth/Domain/Models/Employee.php": 1,
     "app/Core/Auth/Infrastructure/Services/AuthService.php": 8,
