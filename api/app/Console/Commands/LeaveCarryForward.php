@@ -43,7 +43,7 @@ class LeaveCarryForward extends Command
         // Commande globale : elle traite tous les tenants et ne doit pas
         // heriter d'un `current_company` eventuellement present dans le
         // processus de test/worker.
-        $policies = LeavePolicy::withoutGlobalScopes()
+        $policies = LeavePolicy::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')
             ->where('active', true)
             ->where('carry_forward', true)
             ->get();
@@ -57,7 +57,7 @@ class LeaveCarryForward extends Command
             // publie, `current_setting(..., true)` vaut NULL et AUCUNE ligne
             // n'est visible — les updates seraient silencieusement sans effet.
             //
-            // `withoutGlobalScopes()` ne contourne que le scope Eloquent, pas
+            // `crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')` ne contourne que le scope Eloquent, pas
             // RLS. `withinTenant()` publie le tenant ET pose le search_path,
             // puis restaure l'etat precedent en `finally`.
             //
@@ -93,7 +93,7 @@ class LeaveCarryForward extends Command
      */
     private function carryForwardForPolicy(LeavePolicy $policy, int $fromYear, int $toYear, int &$carried): void
     {
-        $balances = LeaveBalance::withoutGlobalScopes()
+        $balances = LeaveBalance::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')
             ->where('company_id', $policy->company_id)
             ->where('absence_type_id', $policy->absence_type_id)
             ->where('year', $fromYear)
@@ -115,7 +115,7 @@ class LeaveCarryForward extends Command
                     $maxCarry = $policy->carry_forward_max ?? $unused;
                     $carryAmount = min($unused, $maxCarry);
 
-                    $newBalance = LeaveBalance::withoutGlobalScopes()->firstOrCreate(
+                    $newBalance = LeaveBalance::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')->firstOrCreate(
                         [
                             'company_id' => $policy->company_id,
                             'employee_id' => $oldBalance->employee_id,
@@ -127,7 +127,7 @@ class LeaveCarryForward extends Command
 
                     $newBalance->increment('balance', $carryAmount);
 
-                    LeaveAccrual::withoutGlobalScopes()->create([
+                    LeaveAccrual::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')->create([
                         'company_id' => $policy->company_id,
                         'employee_id' => $oldBalance->employee_id,
                         'leave_policy_id' => $policy->id,
@@ -148,7 +148,7 @@ class LeaveCarryForward extends Command
 
     private function expireOldCarryForwards(int $currentYear, int &$expired): void
     {
-        $policies = LeavePolicy::withoutGlobalScopes()
+        $policies = LeavePolicy::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')
             ->where('active', true)
             ->where('carry_forward', true)
             ->whereNotNull('carry_forward_expiry_days')
@@ -182,7 +182,7 @@ class LeaveCarryForward extends Command
      */
     private function expireForPolicy(LeavePolicy $policy, int $currentYear, int &$expired): void
     {
-        $carryForwards = LeaveAccrual::withoutGlobalScopes()
+        $carryForwards = LeaveAccrual::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')
             ->where('leave_policy_id', $policy->id)
             ->where('type', 'carry_forward')
             ->where('effective_date', now()->startOfYear()->toDateString())
@@ -190,7 +190,7 @@ class LeaveCarryForward extends Command
             ->get();
 
         foreach ($carryForwards as $accrual) {
-            $balance = LeaveBalance::withoutGlobalScopes()
+            $balance = LeaveBalance::crossTenantForSystemTask('Report de conges : commande globale qui itere tous les tenants (#9924)')
                 ->where('company_id', $accrual->company_id)
                 ->where('employee_id', $accrual->employee_id)
                 ->where('absence_type_id', $policy->absence_type_id)
