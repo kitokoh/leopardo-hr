@@ -12,6 +12,7 @@ import '../../../core/widgets/state_widgets.dart';
 import '../../discovery/data/public_discovery_repository.dart';
 import '../../discovery/models/discovery_item.dart';
 import '../../discovery/providers/discovery_providers.dart';
+import '../../journeys/domain/journey_registry.dart';
 import '../../surface/domain/surface_identity.dart';
 import '../../surface/infrastructure/surface_palette_tokens.dart';
 import '../../surface/infrastructure/surface_theme.dart';
@@ -221,6 +222,13 @@ class _Content extends StatelessWidget {
   Widget build(BuildContext context) {
     final isOpen = profile.isOpenAt(DateTime.now());
 
+    // Parcours disponible pour cette verticale (#9907). Le registre est la
+    // SEULE source : `actionUrls` dit ce que le serveur déclare, le registre
+    // dit ce que l'app sait réellement jouer. Les deux sont nécessaires.
+    final journey = journeyByType(profile.type);
+    final nativeActions = journey?.nativeActions ?? const <String>{};
+    final canContact = journey?.canSendRequest ?? false;
+
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
@@ -293,8 +301,34 @@ class _Content extends StatelessWidget {
               ),
               const SizedBox(height: 14),
 
-              // Les actions : SOURCE UNIQUE = supportedActions().
-              BusinessActionRow(strings: strings, profile: profile),
+              // Les actions : SOURCE UNIQUE = supportedActions(), et la
+              // destination dépend du parcours réellement disponible.
+              BusinessActionRow(
+                strings: strings,
+                profile: profile,
+                nativeActions: nativeActions,
+                onContact: canContact
+                    ? () => context.push(
+                          '/journey/contact/${profile.type}/${profile.slug}',
+                        )
+                    : null,
+                onAction: (action) {
+                  if (action == 'order' && journey?.hasNativeOrder == true) {
+                    context.push('/journey/order/${profile.slug}');
+                    return;
+                  }
+                  if (action == 'booking' &&
+                      journey?.hasNativeBooking == true) {
+                    context.push('/journey/stay/${profile.slug}');
+                    return;
+                  }
+                  // Verticale sans contrat appelable : la fiche le dit, elle
+                  // n'ouvre pas un écran vide.
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(strings.t('commonNoModule'))),
+                  );
+                },
+              ),
               const SizedBox(height: 18),
 
               if (profile.description != null) ...[

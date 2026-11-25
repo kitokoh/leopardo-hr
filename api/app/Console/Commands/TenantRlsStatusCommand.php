@@ -57,6 +57,16 @@ final class TenantRlsStatusCommand extends Command
         'pay_slips' => 'etape 3 (#9889)',
         'payroll_runs' => 'etape 3 (#9889)',
         'employees' => 'etape 4 (#9897)',
+        // #9924 — tables RH nominatives. `tax_slabs` est volontairement
+        // ABSENTE : ses 6 lignes a `company_id` NULL sont les baremes legaux
+        // partages (repli `whereNull('company_id')` dans
+        // AbstractCountryRules). La filtrer par tenant casserait le calcul de
+        // paie. Elle demande une politique a semantique differente, decidee
+        // separement — pas un oubli.
+        'absences' => 'etape 5 (#9924)',
+        'contracts' => 'etape 5 (#9924)',
+        'leave_balances' => 'etape 5 (#9924)',
+        'attendance_logs' => 'etape 5 (#9924)',
     ];
 
     public function handle(): int
