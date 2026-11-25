@@ -274,11 +274,13 @@ final class RetailStockService
             return $unitCostMinor;
         }
 
+        // `$quantityDelta > 0.0` et `$currentQuantity > 0.0` sont deja garantis par
+        // les deux gardes ci-dessus (une valeur NAN les fait sortir par la branche
+        // `<= 0.0`, qui est fausse pour NAN : on retombe donc sur `return null` /
+        // `return $unitCostMinor`). Leur somme est donc strictement positive : un
+        // troisieme controle `$totalQuantity <= 0.0` etait du code mort, et PHPStan
+        // le prouve desormais (`smallerOrEqual.alwaysFalse`).
         $totalQuantity = $currentQuantity + $quantityDelta;
-
-        if ($totalQuantity <= 0.0) {
-            return $unitCostMinor;
-        }
 
         $weighted = (($currentQuantity * (int) $currentAverage) + ($quantityDelta * $unitCostMinor)) / $totalQuantity;
 

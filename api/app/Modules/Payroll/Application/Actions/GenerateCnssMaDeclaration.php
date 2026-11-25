@@ -83,6 +83,11 @@ class GenerateCnssMaDeclaration
             return $row;
         })->filter(fn (array $row): bool => $row['gross_salary'] > 0);
 
+        // Le `filter()` ci-dessus retrecit `gross_salary` a une plage strictement
+        // positive (`float<5.0E-324, max>`). Le template `TValue` de `Collection`
+        // n'est pas covariant : elargir explicitement au contrat declare du
+        // generateur, qui attend un `float` ordinaire (PHPStan 2.3).
+        /** @var \Illuminate\Support\Collection<int, array{employee_id: int, num_cnss: string, last_name: string, first_name: string, cin: string, gross_salary: float, days_worked: int}> $declarationRows */
         $generator = new SocialDeclarationGenerator;
         $content = $generator->generateCnssMa(
             $companyName,
