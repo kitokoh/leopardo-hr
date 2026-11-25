@@ -1,142 +1,182 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:leopardo_public/core/i18n/app_strings.dart';
-import 'package:leopardo_public/features/journey/domain/journey_registry.dart';
-import 'package:leopardo_public/features/surface/domain/surface_identity.dart';
+import 'package:leopardo_public/features/journeys/data/contact_request_gateway.dart';
+import 'package:leopardo_public/features/journeys/domain/journey_registry.dart';
 
-/// Garde du registre des parcours transactionnels (#9907).
+/// Le registre des parcours est la seule chose qui empêche une verticale de
+/// disparaître en silence.
 ///
-/// ## Pourquoi ces tests existent
+/// ## Ce que ces tests protègent
 ///
-/// La cartographie mobile constate que 3 verticales sur 8 ne sont couvertes par
-/// aucun contrat appelable et que 3 parcours précis restent bloqués à
-/// l'intérieur de verticales pourtant couvertes. Ce constat se dégrade tout
-/// seul : une verticale oubliée n'affiche pas d'erreur, elle affiche un bouton
-/// mort. Ces tests rendent l'oubli **mécaniquement impossible**.
+/// Le 2026-11-23 (#9883), une app analysée SEULE ne voyait pas qu'elle portait
+/// l'identifiant d'une autre. Ici, la version silencieuse du même défaut serait
+/// « sept verticales sur huit ont un parcours, la huitième n'a plus rien et
+/// personne ne le remarque ». Ces tests échouent si :
+/// - une verticale de `canonicalJourneyCodes` manque au registre ;
+/// - deux verticales partagent un code ou un type de découverte ;
+/// - une verticale se déclare « bloquée » sans motif, ou « native » sans
+///   capacité ;
+/// - un motif ou un libellé n'existe pas dans les 4 locales ;
+/// - une verticale déclare un `contactTargetType` que la passerelle refuse
+///   (elle enverrait une demande vouée au 422).
 void main() {
-  group('JourneyRegistry — intégrité', () {
-    test('le registre est sain (aucun problème signalé)', () {
-      expect(JourneyRegistry.validate(), isEmpty);
-    });
+  group('couverture des 8 verticales', () {
+    test('chaque code canonique est présent exactement une fois', () {
+      expect(journeyVerticals, hasLength(canonicalJourneyCodes.length));
 
-    test('les 8 verticales sont couvertes, ni plus ni moins', () {
-      expect(JourneyRegistry.all.length, SurfaceVertical.values.length);
-      expect(
-        JourneyRegistry.all.map((e) => e.vertical).toSet(),
-        SurfaceVertical.values.toSet(),
-      );
-    });
-
-    test('l\'ordre suit SurfaceVertical.values', () {
-      // Un ordre libre rendrait les diffs illisibles et masquerait une entrée
-      // ajoutée au mauvais endroit.
-      expect(
-        JourneyRegistry.all.map((e) => e.vertical).toList(),
-        SurfaceVertical.values.toList(),
-      );
-    });
-
-    test('chaque verticale se résout par forVertical', () {
-      for (final vertical in SurfaceVertical.values) {
+      for (final code in canonicalJourneyCodes) {
+        final matches = journeyVerticals.where((v) => v.code == code).toList();
         expect(
-          JourneyRegistry.forVertical(vertical),
-          isNotNull,
-          reason: '${vertical.code} introuvable dans le registre',
+          matches,
+          hasLength(1),
+          reason: 'la verticale « $code » doit être déclarée une seule fois',
         );
       }
     });
+
+    test('aucun code hors du canonique n’est introduit sans mise à jour', () {
+      final declared = journeyVerticals.map((v) => v.code).toSet();
+      expect(declared.difference(canonicalJourneyCodes.toSet()), isEmpty);
+    });
+
+    test('les types de découverte sont uniques', () {
+      final types = journeyVerticals
+          .map((v) => v.discoveryType)
+          .whereType<String>()
+          .toList();
+
+      expect(types.toSet(), hasLength(types.length));
+    });
+
+    test('le lookup par type est fail-closed', () {
+      expect(journeyByType('type-inexistant'), isNull);
+      expect(journeyByType(null), isNull);
+      expect(journeyByType(''), isNull);
+
+      expect(journeyByType('retail_shop')?.code, 'retail');
+      expect(journeyByType('hospitality_property')?.code, 'hospitality');
+      expect(journeyByType('pharmacy')?.code, 'pharmacy');
+    });
+
+    test('le lookup par code est fail-closed', () {
+      expect(journeyByCode('inconnu'), isNull);
+      expect(journeyByCode('restaurant')?.code, 'restaurant');
+    });
   });
 
-  group('JourneyRegistry — motifs et contrats', () {
-    test('tout parcours non natif porte un motif i18n existant', () {
-      for (final entry in JourneyRegistry.all) {
-        if (!entry.isExplained) {
-          continue;
+  group('cohérence mode / capacités / blocages', () {
+    test('un mode natif implique une capacité native', () {
+      for (final vertical in journeyVerticals) {
+        if (vertical.mode == JourneyMode.order) {
+          expect(vertical.hasNativeOrder, isTrue, reason: vertical.code);
+          expect(vertical.nativeActions, contains('order'));
         }
-
-        final key = entry.reasonKey;
-        expect(key, isNotNull, reason: '${entry.vertical.code} sans motif');
-
-        // Le motif doit exister dans les 4 locales : une clé absente affiche
-        // la clé brute à l'écran, sur la langue qu'on ne teste jamais.
-        for (final locale in AppStrings.supportedLocales) {
-          final text = AppStrings.of(locale).t(key!);
-          expect(text, isNot(key), reason: 'clé "$key" absente en $locale');
-          expect(text.trim(), isNotEmpty);
+        if (vertical.mode == JourneyMode.booking) {
+          expect(vertical.hasNativeBooking, isTrue, reason: vertical.code);
+          expect(vertical.nativeActions, contains('booking'));
+        }
+        if (vertical.mode == JourneyMode.request ||
+            vertical.mode == JourneyMode.blocked) {
+          expect(vertical.nativeActions, isEmpty, reason: vertical.code);
         }
       }
     });
 
-    test('un parcours natif n\'a pas de motif à afficher', () {
-      for (final entry in JourneyRegistry.all) {
-        if (entry.isTransactional) {
-          expect(entry.reasonKey, isNull, reason: entry.vertical.code);
-        }
-      }
-    });
-
-    test('un parcours natif déclare au moins un chemin de contrat', () {
-      for (final entry in JourneyRegistry.all) {
-        if (entry.isTransactional) {
-          expect(entry.contractPaths, isNotEmpty, reason: entry.vertical.code);
-        }
-      }
-    });
-
-    test('un parcours bloqué ne déclare aucun chemin', () {
-      for (final entry in JourneyRegistry.all) {
-        if (entry.kind == JourneyKind.blocked) {
-          expect(entry.contractPaths, isEmpty, reason: entry.vertical.code);
-        }
-      }
-    });
-
-    test('les chemins déclarés sont des routes publiques', () {
-      for (final entry in JourneyRegistry.all) {
-        for (final path in entry.contractPaths) {
+    test('une verticale bloquée porte au moins un motif nommé', () {
+      for (final vertical in journeyVerticals) {
+        if (vertical.mode == JourneyMode.blocked) {
           expect(
-            path.startsWith('/public/'),
-            isTrue,
-            reason: '${entry.vertical.code} → $path hors /public/',
+            vertical.blockers,
+            isNotEmpty,
+            reason: '« ${vertical.code} » est bloquée sans dire pourquoi',
           );
+          for (final blocker in vertical.blockers) {
+            expect(blocker.capability, isNotEmpty);
+            expect(blocker.reasonKey, isNotEmpty);
+          }
         }
       }
     });
+
+    test('blockerFor rend null quand la capacité n’est pas bloquée', () {
+      final retail = journeyByCode('retail')!;
+      expect(retail.blockerFor('order'), isNull);
+
+      final restaurant = journeyByCode('restaurant')!;
+      expect(restaurant.blockerFor('order'), 'journeyBlockerRestaurantOrder');
+    });
   });
 
-  group('JourneyRegistry — état mesuré le 2026-11-24', () {
-    test('2 verticales ont un parcours natif (retail, hospitality)', () {
-      final native = JourneyRegistry.all
-          .where((e) => e.kind == JourneyKind.native)
-          .map((e) => e.vertical)
-          .toSet();
+  group('contrat de la passerelle de demande', () {
+    test('un contactTargetType déclaré est accepté par la passerelle', () {
+      for (final vertical in journeyVerticals) {
+        final target = vertical.contactTargetType;
+        if (target == null) continue;
 
-      expect(native, {SurfaceVertical.retail, SurfaceVertical.hospitality});
+        expect(
+          contactTargetTypes,
+          contains(target),
+          reason:
+              '« ${vertical.code} » déclare $target, que la passerelle refuse '
+              '— la demande échouerait en 422',
+        );
+
+        // Et la passerelle doit réellement construire le corps.
+        final payload = ContactRequestGateway.buildPayload(
+          targetType: target,
+          targetSlug: 'demo-slug',
+          name: 'Amina',
+          email: 'amina@example.com',
+          message: 'Bonjour, je souhaite un devis.',
+          idempotencyKey: 'pub-12345678',
+        );
+        expect(payload['target_type'], target);
+      }
     });
 
-    test('3 verticales passent par la passerelle de demande', () {
-      final request = JourneyRegistry.all
-          .where((e) => e.kind == JourneyKind.request)
-          .map((e) => e.vertical)
-          .toSet();
+    test('une verticale bloquée ne promet pas de contact', () {
+      final pharmacy = journeyByCode('pharmacy')!;
+      expect(pharmacy.canSendRequest, isFalse);
+      expect(pharmacy.blockerFor('contact'), isNotNull);
+    });
+  });
 
-      expect(request, {
-        SurfaceVertical.restaurant,
-        SurfaceVertical.trade,
-        SurfaceVertical.vtc,
-      });
+  group('i18n des motifs et des libellés', () {
+    test('chaque libellé et chaque motif existent dans les 4 locales', () {
+      for (final locale in AppStrings.supportedLocales) {
+        final strings = AppStrings.of(locale);
+        final keys = strings.keys;
+
+        for (final vertical in journeyVerticals) {
+          expect(
+            keys,
+            contains(vertical.labelKey),
+            reason: '${vertical.labelKey} manque en $locale',
+          );
+
+          for (final blocker in vertical.blockers) {
+            expect(
+              keys,
+              contains(blocker.reasonKey),
+              reason: '${blocker.reasonKey} manque en $locale',
+            );
+          }
+        }
+      }
     });
 
-    test('3 verticales sont bloquées et le disent', () {
-      final blocked = JourneyRegistry.all
-          .where((e) => e.kind == JourneyKind.blocked)
-          .map((e) => e.vertical)
-          .toSet();
-
-      expect(blocked, {
-        SurfaceVertical.travel,
-        SurfaceVertical.pharmacy,
-        SurfaceVertical.careers,
-      });
+    test('aucun motif ne rend la clé brute', () {
+      // `AppStrings.t` retombe sur la clé brute : une clé oubliée est donc
+      // visible, mais il faut la chercher explicitement pour la remarquer.
+      for (final vertical in journeyVerticals) {
+        for (final blocker in vertical.blockers) {
+          for (final locale in AppStrings.supportedLocales) {
+            final text = AppStrings.of(locale).t(blocker.reasonKey);
+            expect(text, isNot(blocker.reasonKey), reason: locale);
+            expect(text.trim(), isNotEmpty);
+          }
+        }
+      }
     });
   });
 }

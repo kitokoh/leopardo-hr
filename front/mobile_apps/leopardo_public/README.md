@@ -22,9 +22,26 @@ soi, voir sa fiche, lui parler, retrouver ses commandes et ses favoris.
 
 `Contacter` / `Commander` / `Réserver` sont construits **uniquement** à partir de
 `supportedActions()` renvoyé par le serveur. Un bouton n'existe que si le commerçant
-déclare la capacité **et** qu'une destination existe. C'est ce qui garantit qu'il n'y a
-jamais de bouton mort — et c'est pourquoi `Réserver` n'apparaît pas pour les restaurants
-aujourd'hui : aucun contrat public de réservation n'existe encore.
+déclare la capacité **et** qu'une destination existe — le serveur dit ce que la
+verticale sait faire, le **registre des parcours** dit ce que l'application sait
+réellement jouer.
+
+### Parcours transactionnels (issue #9907)
+
+| Écran | Verticale | Contrat public utilisé |
+|---|---|---|
+| `/journey/order/:slug` | `retail_shop` | `GET /public/market/products`, `POST /public/market/orders`, `GET /public/market/orders/{ref}?token=` |
+| `/journey/stay/:slug` | `hospitality_property` | `GET …/properties/{slug}/availability`, `POST …/reservations`, `GET …/reservations/{ref}?code=` |
+| `/journey/contact/:type/:slug` | restaurant, trade, VTC, retail, séjour, vitrine | `POST /public/contact-requests` |
+
+`lib/features/journeys/domain/journey_registry.dart` porte les **8 verticales** et,
+pour chacune, le parcours disponible ou **le motif exact** de son absence. Une verticale
+bloquée (pharmacie, billetterie, emploi) affiche ce motif au lieu d'un bouton mort, et
+`test/journey_registry_test.dart` échoue si une verticale disparaît du registre, si un
+type est dupliqué, ou si un motif n'existe pas dans les 4 locales.
+
+Les blocages mesurés le 2026-11-24 (et leur cause côté serveur) sont listés dans
+`docs/mobile/CARTOGRAPHIE_APPS_MOBILES.md` §2.
 
 ## Architecture
 
@@ -86,6 +103,7 @@ flutter test
 | **M1-ter** | identité produit de cette application | ✅ livré (#9110) |
 | **M2** | OTP téléphone, messages, push | ⛔ **bloqué — porte (b)** : attend L1 (#9091) et L4 (#9094) |
 | **M3** | activités, favoris, historique | ✅ livré (#9108) |
+| **M3-bis** | parcours transactionnels : registre des 8 verticales, commande boutique, réservation séjour, demande universelle | ✅ livré (#9907) — 5 blocages servis nommés, voir la cartographie |
 | **M4** | hors ligne, performance, distribution | ⛔ **bloqué — porte (c)** : dépense de compte développeur |
 
 ## Portes

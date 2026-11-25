@@ -188,6 +188,101 @@ class AppStrings {
       'searchHistoryTitle': 'Recherches récentes',
       'searchHistoryClear': 'Effacer l’historique',
 
+      // ── Parcours transactionnels des 8 verticales (#9907) ──
+      'journeyTitleOrder': 'Commander',
+      'journeyTitleStay': 'Réserver',
+      'journeyTitleContact': 'Contacter',
+      'journeyCatalogNotice':
+          'Les prix sont ceux du commerçant. Le montant final est confirmé par le serveur au moment de la commande.',
+      'journeyProductUnavailable': 'Indisponible',
+      'journeyFieldRequired': 'Ce champ est requis',
+      'journeyFieldInvalidEmail': 'Adresse e-mail invalide',
+      'journeyCheckFields': 'Vérifiez les informations',
+      'journeyCustomer': 'Vos coordonnées',
+      'journeyCustomerName': 'Nom complet',
+      'journeyCustomerPhone': 'Téléphone',
+      'journeyCustomerEmail': 'E-mail (optionnel)',
+      'journeyDelivery': 'Livraison',
+      'journeyDeliveryAddress': 'Adresse',
+      'journeyDeliveryCity': 'Ville',
+      'journeyDeliveryNotes': 'Instructions (optionnel)',
+      'journeyPaymentMethod': 'Paiement',
+      'journeyPaymentCash': 'À la livraison',
+      'journeyPaymentOnline': 'En ligne',
+      'journeyPaymentStatus': 'Statut du paiement',
+      'journeySubmitOrder': 'Confirmer la commande',
+      'journeyCheckout': 'Commander',
+      'journeyTotal': 'Total',
+      'journeyConfirmationSent': 'C’est envoyé.',
+      'journeyConfirmationTitle': 'À conserver',
+      'journeyConfirmationReference': 'Référence',
+      'journeyConfirmationTrackingCode': 'Code de suivi',
+      'journeyKeepCodeNotice':
+          'Ce code ne sera plus affiché. Notez-le avec la référence : il est demandé pour suivre la commande.',
+      'journeyPayNow': 'Payer maintenant',
+      'journeyTrackTitle': 'Suivre',
+      'journeyTrackCode': 'Code de suivi',
+      'journeyTrack': 'Suivre',
+      'journeyTrackStatus': 'Statut',
+      'journeyBlockedTitle': 'Pas encore disponible ici',
+      'journeyBlockedBody':
+          'Ce parcours n’a pas de contrat public appelable depuis l’application. Voici ce qui manque, précisément :',
+      'journeyBlockerRestaurantOrder':
+          'La commande restaurant exige un jeton de boutique émis par l’établissement : elle reste possible sur sa page web.',
+      'journeyBlockerTradeQuote':
+          'Le devis B2B structuré (lignes, quantités, incoterm) n’existe pas encore dans le contrat public : seule une demande libre est possible.',
+      'journeyBlockerVtcRide':
+          'La course VTC exige des coordonnées d’arrivée ; l’application n’a pas de recherche d’adresse, un devis serait faux.',
+      'journeyBlockerPharmacyCatalog':
+          'Aucune route publique n’expose le catalogue d’une pharmacie.',
+      'journeyBlockerPharmacyContact':
+          'La passerelle de demande n’accepte pas le type « pharmacie » : elle répondrait 422.',
+      'journeyBlockerTravelEntry':
+          'La billetterie n’est pas exposée par la découverte : aucune entrée depuis l’application.',
+      'journeyBlockerCareersEntry':
+          'Le portail emploi n’est pas exposé par la découverte : aucune entrée depuis l’application.',
+      'journeyVerticalRestaurant': 'Restaurant',
+      'journeyVerticalRetail': 'Boutique',
+      'journeyVerticalHospitality': 'Séjour',
+      'journeyVerticalTrade': 'Entreprise',
+      'journeyVerticalPharmacy': 'Pharmacie',
+      'journeyVerticalVtc': 'Opérateur VTC',
+      'journeyVerticalTravel': 'Billets',
+      'journeyVerticalCareers': 'Emploi',
+      'journeyStayNotice':
+          'Les disponibilités sont calculées par l’établissement pour vos dates exactes.',
+      'journeyFrom': 'Arrivée',
+      'journeyTo': 'Départ',
+      'journeyDateHint': 'Date au format AAAA-MM-JJ',
+      'journeyAdults': 'Adultes',
+      'journeyChildren': 'Enfants',
+      'journeyCheckAvailability': 'Vérifier les disponibilités',
+      'journeyRoomsAvailable': 'Chambres disponibles',
+      'journeyRoomAvailable': 'Disponible',
+      'journeyRoomSoldOut': 'Complet sur ces dates',
+      'journeyRoomsEmptyTitle': 'Aucune chambre sur ces dates',
+      'journeyRoomsEmptyBody':
+          'Essayez d’autres dates : l’établissement n’a rien de libre sur cette période.',
+      'journeyChangeDates': 'Changer les dates',
+      'journeyGuest': 'Voyageur',
+      'journeyGuestName': 'Nom du voyageur',
+      'journeyContactRequired':
+          'Un e-mail ou un téléphone est nécessaire pour confirmer la réservation.',
+      'journeySubmitBooking': 'Réserver',
+      'journeyRequestNotice':
+          'Votre demande est transmise directement à ce professionnel.',
+      'journeyMessage': 'Message',
+      'journeyMessageTooShort':
+          'Décrivez votre demande en quelques mots (10 caractères minimum)',
+      'journeyConsentLabel':
+          'J’accepte que mes coordonnées soient transmises à ce professionnel pour répondre à ma demande.',
+      'journeyConsentRequired': 'Cochez la case de consentement pour envoyer.',
+      'journeySubmitRequest': 'Envoyer la demande',
+      'journeyPrivacyNotice':
+          'Aucune donnée n’est conservée par l’application : la demande part directement au professionnel.',
+      'journeyRequestSentBody': 'Votre demande a été transmise.',
+      'journeyRequestSentHint':
+          'Le professionnel vous répond sur le contact que vous avez indiqué. Aucun suivi dans l’application pour ce type de demande.',
       // Parcours transactionnels par verticale (#9907) — le motif affiché
       // quand l'app ne peut pas mener la transaction elle-même.
       'journeyReasonRestaurantOrder':
@@ -204,7 +299,6 @@ class AppStrings {
           'Les offres d’emploi ne sont pas encore accessibles depuis cette application.',
       'journeyRequestCta': 'Envoyer une demande',
       'journeyNativeCta': 'Commander',
-      'journeyBlockedTitle': 'Pas encore disponible',
     },
 
     // ───────────────────────────── EN ─────────────────────────────
@@ -311,6 +405,101 @@ class AppStrings {
       'searchHistoryTitle': 'Recent searches',
       'searchHistoryClear': 'Clear history',
 
+      // ── Transactional journeys across the 8 verticals (#9907) ──
+      'journeyTitleOrder': 'Order',
+      'journeyTitleStay': 'Book',
+      'journeyTitleContact': 'Contact',
+      'journeyCatalogNotice':
+          'Prices come from the merchant. The final amount is confirmed by the server when the order is placed.',
+      'journeyProductUnavailable': 'Unavailable',
+      'journeyFieldRequired': 'This field is required',
+      'journeyFieldInvalidEmail': 'Invalid email address',
+      'journeyCheckFields': 'Check your details',
+      'journeyCustomer': 'Your details',
+      'journeyCustomerName': 'Full name',
+      'journeyCustomerPhone': 'Phone',
+      'journeyCustomerEmail': 'Email (optional)',
+      'journeyDelivery': 'Delivery',
+      'journeyDeliveryAddress': 'Address',
+      'journeyDeliveryCity': 'City',
+      'journeyDeliveryNotes': 'Instructions (optional)',
+      'journeyPaymentMethod': 'Payment',
+      'journeyPaymentCash': 'On delivery',
+      'journeyPaymentOnline': 'Online',
+      'journeyPaymentStatus': 'Payment status',
+      'journeySubmitOrder': 'Confirm order',
+      'journeyCheckout': 'Order',
+      'journeyTotal': 'Total',
+      'journeyConfirmationSent': 'Sent.',
+      'journeyConfirmationTitle': 'Keep this',
+      'journeyConfirmationReference': 'Reference',
+      'journeyConfirmationTrackingCode': 'Tracking code',
+      'journeyKeepCodeNotice':
+          'This code will not be shown again. Note it with the reference: it is required to track the order.',
+      'journeyPayNow': 'Pay now',
+      'journeyTrackTitle': 'Track',
+      'journeyTrackCode': 'Tracking code',
+      'journeyTrack': 'Track',
+      'journeyTrackStatus': 'Status',
+      'journeyBlockedTitle': 'Not available here yet',
+      'journeyBlockedBody':
+          'This journey has no public contract the app can call. Here is exactly what is missing:',
+      'journeyBlockerRestaurantOrder':
+          'Restaurant ordering requires a shop token issued by the venue: it remains available on its web page.',
+      'journeyBlockerTradeQuote':
+          'A structured B2B quote (lines, quantities, incoterm) does not exist in the public contract yet: only a free-form request is possible.',
+      'journeyBlockerVtcRide':
+          'A VTC ride needs drop-off coordinates; the app has no address search, so any estimate would be wrong.',
+      'journeyBlockerPharmacyCatalog':
+          'No public route exposes a pharmacy catalogue.',
+      'journeyBlockerPharmacyContact':
+          'The request gateway does not accept the "pharmacy" type: it would answer 422.',
+      'journeyBlockerTravelEntry':
+          'Ticketing is not exposed by discovery: there is no entry point from the app.',
+      'journeyBlockerCareersEntry':
+          'The careers portal is not exposed by discovery: there is no entry point from the app.',
+      'journeyVerticalRestaurant': 'Restaurant',
+      'journeyVerticalRetail': 'Shop',
+      'journeyVerticalHospitality': 'Stay',
+      'journeyVerticalTrade': 'Company',
+      'journeyVerticalPharmacy': 'Pharmacy',
+      'journeyVerticalVtc': 'Ride operator',
+      'journeyVerticalTravel': 'Tickets',
+      'journeyVerticalCareers': 'Jobs',
+      'journeyStayNotice':
+          'Availability is computed by the property for your exact dates.',
+      'journeyFrom': 'Check-in',
+      'journeyTo': 'Check-out',
+      'journeyDateHint': 'Date as YYYY-MM-DD',
+      'journeyAdults': 'Adults',
+      'journeyChildren': 'Children',
+      'journeyCheckAvailability': 'Check availability',
+      'journeyRoomsAvailable': 'Available rooms',
+      'journeyRoomAvailable': 'Available',
+      'journeyRoomSoldOut': 'Sold out for these dates',
+      'journeyRoomsEmptyTitle': 'No room for these dates',
+      'journeyRoomsEmptyBody':
+          'Try other dates: the property has nothing free for this period.',
+      'journeyChangeDates': 'Change dates',
+      'journeyGuest': 'Guest',
+      'journeyGuestName': 'Guest name',
+      'journeyContactRequired':
+          'An email or a phone number is required to confirm the booking.',
+      'journeySubmitBooking': 'Book',
+      'journeyRequestNotice':
+          'Your request goes straight to this professional.',
+      'journeyMessage': 'Message',
+      'journeyMessageTooShort':
+          'Describe your request in a few words (10 characters minimum)',
+      'journeyConsentLabel':
+          'I agree that my contact details are sent to this professional to answer my request.',
+      'journeyConsentRequired': 'Tick the consent box to send.',
+      'journeySubmitRequest': 'Send request',
+      'journeyPrivacyNotice':
+          'The app stores nothing: the request goes directly to the professional.',
+      'journeyRequestSentBody': 'Your request has been sent.',
+      'journeyRequestSentHint':
+          'The professional replies to the contact details you provided. There is no in-app tracking for this kind of request.',
       // Per-vertical transactional journeys (#9907).
       'journeyReasonRestaurantOrder':
           'Online ordering is not open to the public yet. Send a request and the restaurant will reply.',
@@ -326,7 +515,6 @@ class AppStrings {
           'Job offers are not reachable from this app yet.',
       'journeyRequestCta': 'Send a request',
       'journeyNativeCta': 'Order',
-      'journeyBlockedTitle': 'Not available yet',
     },
 
     // ───────────────────────────── AR (RTL) ─────────────────────────────
@@ -429,6 +617,96 @@ class AppStrings {
       'searchHistoryTitle': 'عمليات البحث الأخيرة',
       'searchHistoryClear': 'مسح السجل',
 
+      // ── مسارات المعاملات للقطاعات الثمانية (#9907) ──
+      'journeyTitleOrder': 'اطلب',
+      'journeyTitleStay': 'احجز',
+      'journeyTitleContact': 'تواصل',
+      'journeyCatalogNotice':
+          'الأسعار من التاجر. المبلغ النهائي يؤكده الخادم عند تسجيل الطلب.',
+      'journeyProductUnavailable': 'غير متاح',
+      'journeyFieldRequired': 'هذا الحقل مطلوب',
+      'journeyFieldInvalidEmail': 'بريد إلكتروني غير صالح',
+      'journeyCheckFields': 'تحقق من المعلومات',
+      'journeyCustomer': 'بياناتك',
+      'journeyCustomerName': 'الاسم الكامل',
+      'journeyCustomerPhone': 'الهاتف',
+      'journeyCustomerEmail': 'البريد الإلكتروني (اختياري)',
+      'journeyDelivery': 'التوصيل',
+      'journeyDeliveryAddress': 'العنوان',
+      'journeyDeliveryCity': 'المدينة',
+      'journeyDeliveryNotes': 'تعليمات (اختياري)',
+      'journeyPaymentMethod': 'الدفع',
+      'journeyPaymentCash': 'عند التوصيل',
+      'journeyPaymentOnline': 'عبر الإنترنت',
+      'journeyPaymentStatus': 'حالة الدفع',
+      'journeySubmitOrder': 'تأكيد الطلب',
+      'journeyCheckout': 'اطلب',
+      'journeyTotal': 'المجموع',
+      'journeyConfirmationSent': 'تم الإرسال.',
+      'journeyConfirmationTitle': 'احتفظ بهذا',
+      'journeyConfirmationReference': 'المرجع',
+      'journeyConfirmationTrackingCode': 'رمز التتبع',
+      'journeyKeepCodeNotice':
+          'لن يظهر هذا الرمز مرة أخرى. دوّنه مع المرجع: يُطلب لتتبع الطلب.',
+      'journeyPayNow': 'ادفع الآن',
+      'journeyTrackTitle': 'تتبع',
+      'journeyTrackCode': 'رمز التتبع',
+      'journeyTrack': 'تتبع',
+      'journeyTrackStatus': 'الحالة',
+      'journeyBlockedTitle': 'غير متاح هنا بعد',
+      'journeyBlockedBody':
+          'هذا المسار لا يملك عقدًا عامًا يمكن للتطبيق استدعاؤه. إليك ما ينقص بالتحديد:',
+      'journeyBlockerRestaurantOrder':
+          'طلب المطعم يتطلب رمز متجر يصدره المطعم: يبقى ممكنًا عبر صفحته على الويب.',
+      'journeyBlockerTradeQuote':
+          'عرض السعر المهيكل بين الشركات (الأسطر، الكميات، شروط التسليم) غير موجود بعد في العقد العام: المتاح طلب حر فقط.',
+      'journeyBlockerVtcRide':
+          'رحلة النقل تتطلب إحداثيات الوصول؛ التطبيق لا يملك بحث عنوان، وأي تسعير سيكون خاطئًا.',
+      'journeyBlockerPharmacyCatalog': 'لا يوجد مسار عام يعرض كتالوج الصيدلية.',
+      'journeyBlockerPharmacyContact':
+          'بوابة الطلبات لا تقبل نوع «صيدلية»: سترد بخطأ 422.',
+      'journeyBlockerTravelEntry':
+          'بيع التذاكر غير معروض في الاكتشاف: لا مدخل من التطبيق.',
+      'journeyBlockerCareersEntry':
+          'بوابة التوظيف غير معروضة في الاكتشاف: لا مدخل من التطبيق.',
+      'journeyVerticalRestaurant': 'مطعم',
+      'journeyVerticalRetail': 'متجر',
+      'journeyVerticalHospitality': 'إقامة',
+      'journeyVerticalTrade': 'شركة',
+      'journeyVerticalPharmacy': 'صيدلية',
+      'journeyVerticalVtc': 'مشغل نقل',
+      'journeyVerticalTravel': 'تذاكر',
+      'journeyVerticalCareers': 'توظيف',
+      'journeyStayNotice': 'يتحقق مكان الإقامة من التوفر لتواريخك بالضبط.',
+      'journeyFrom': 'الوصول',
+      'journeyTo': 'المغادرة',
+      'journeyDateHint': 'التاريخ بصيغة YYYY-MM-DD',
+      'journeyAdults': 'بالغون',
+      'journeyChildren': 'أطفال',
+      'journeyCheckAvailability': 'تحقق من التوفر',
+      'journeyRoomsAvailable': 'غرف متاحة',
+      'journeyRoomAvailable': 'متاحة',
+      'journeyRoomSoldOut': 'مكتملة في هذه التواريخ',
+      'journeyRoomsEmptyTitle': 'لا غرف في هذه التواريخ',
+      'journeyRoomsEmptyBody':
+          'جرّب تواريخ أخرى: لا شيء متاح في المؤسسة خلال هذه الفترة.',
+      'journeyChangeDates': 'تغيير التواريخ',
+      'journeyGuest': 'المسافر',
+      'journeyGuestName': 'اسم المسافر',
+      'journeyContactRequired': 'يلزم بريد إلكتروني أو هاتف لتأكيد الحجز.',
+      'journeySubmitBooking': 'احجز',
+      'journeyRequestNotice': 'طلبك يُرسل مباشرة إلى هذا المهني.',
+      'journeyMessage': 'الرسالة',
+      'journeyMessageTooShort': 'اشرح طلبك بكلمات قليلة (10 أحرف على الأقل)',
+      'journeyConsentLabel':
+          'أوافق على إرسال بيانات الاتصال الخاصة بي إلى هذا المهني للرد على طلبي.',
+      'journeyConsentRequired': 'حدّد مربع الموافقة للإرسال.',
+      'journeySubmitRequest': 'أرسل الطلب',
+      'journeyPrivacyNotice':
+          'التطبيق لا يحفظ شيئًا: الطلب يذهب مباشرة إلى المهني.',
+      'journeyRequestSentBody': 'تم إرسال طلبك.',
+      'journeyRequestSentHint':
+          'سيرد المهني على بيانات الاتصال التي أدخلتها. لا يوجد تتبع داخل التطبيق لهذا النوع من الطلبات.',
       // مسارات المعاملات لكل قطاع (#9907).
       'journeyReasonRestaurantOrder':
           'الطلب عبر الإنترنت غير متاح للعموم بعد. أرسل طلبك وسيرد عليك المطعم.',
@@ -441,7 +719,6 @@ class AppStrings {
       'journeyReasonCareersPortal': 'عروض العمل غير متاحة من هذا التطبيق بعد.',
       'journeyRequestCta': 'أرسل طلبًا',
       'journeyNativeCta': 'اطلب',
-      'journeyBlockedTitle': 'غير متاح بعد',
     },
 
     // ───────────────────────────── TR ─────────────────────────────
@@ -549,6 +826,100 @@ class AppStrings {
       'searchHistoryTitle': 'Son aramalar',
       'searchHistoryClear': 'Geçmişi temizle',
 
+      // ── 8 dikey için işlem akışları (#9907) ──
+      'journeyTitleOrder': 'Sipariş ver',
+      'journeyTitleStay': 'Rezervasyon',
+      'journeyTitleContact': 'İletişim',
+      'journeyCatalogNotice':
+          'Fiyatlar işletmeden gelir. Kesin tutar sipariş sırasında sunucu tarafından onaylanır.',
+      'journeyProductUnavailable': 'Mevcut değil',
+      'journeyFieldRequired': 'Bu alan zorunlu',
+      'journeyFieldInvalidEmail': 'Geçersiz e-posta adresi',
+      'journeyCheckFields': 'Bilgileri kontrol edin',
+      'journeyCustomer': 'Bilgileriniz',
+      'journeyCustomerName': 'Ad soyad',
+      'journeyCustomerPhone': 'Telefon',
+      'journeyCustomerEmail': 'E-posta (isteğe bağlı)',
+      'journeyDelivery': 'Teslimat',
+      'journeyDeliveryAddress': 'Adres',
+      'journeyDeliveryCity': 'Şehir',
+      'journeyDeliveryNotes': 'Talimatlar (isteğe bağlı)',
+      'journeyPaymentMethod': 'Ödeme',
+      'journeyPaymentCash': 'Teslimatta',
+      'journeyPaymentOnline': 'Çevrimiçi',
+      'journeyPaymentStatus': 'Ödeme durumu',
+      'journeySubmitOrder': 'Siparişi onayla',
+      'journeyCheckout': 'Sipariş ver',
+      'journeyTotal': 'Toplam',
+      'journeyConfirmationSent': 'Gönderildi.',
+      'journeyConfirmationTitle': 'Bunu saklayın',
+      'journeyConfirmationReference': 'Referans',
+      'journeyConfirmationTrackingCode': 'Takip kodu',
+      'journeyKeepCodeNotice':
+          'Bu kod bir daha gösterilmeyecek. Referansla birlikte not alın: siparişi takip etmek için gerekir.',
+      'journeyPayNow': 'Şimdi öde',
+      'journeyTrackTitle': 'Takip',
+      'journeyTrackCode': 'Takip kodu',
+      'journeyTrack': 'Takip et',
+      'journeyTrackStatus': 'Durum',
+      'journeyBlockedTitle': 'Burada henüz yok',
+      'journeyBlockedBody':
+          'Bu akışın uygulamadan çağrılabilen bir genel sözleşmesi yok. Eksik olan tam olarak şu:',
+      'journeyBlockerRestaurantOrder':
+          'Restoran siparişi işletme tarafından verilen bir mağaza jetonu gerektirir: web sayfasında hâlâ mümkün.',
+      'journeyBlockerTradeQuote':
+          'Yapılandırılmış B2B teklif (satırlar, miktarlar, teslim şartı) genel sözleşmede yok: yalnızca serbest talep mümkün.',
+      'journeyBlockerVtcRide':
+          'VTC yolculuğu varış koordinatları gerektirir; uygulamada adres arama yok, her fiyat yanlış olurdu.',
+      'journeyBlockerPharmacyCatalog':
+          'Eczane kataloğunu yayınlayan genel bir yol yok.',
+      'journeyBlockerPharmacyContact':
+          'Talep geçidi «eczane» türünü kabul etmiyor: 422 dönerdi.',
+      'journeyBlockerTravelEntry':
+          'Bilet satışı keşifte yayınlanmıyor: uygulamadan giriş yok.',
+      'journeyBlockerCareersEntry':
+          'İşe alım portalı keşifte yayınlanmıyor: uygulamadan giriş yok.',
+      'journeyVerticalRestaurant': 'Restoran',
+      'journeyVerticalRetail': 'Mağaza',
+      'journeyVerticalHospitality': 'Konaklama',
+      'journeyVerticalTrade': 'Şirket',
+      'journeyVerticalPharmacy': 'Eczane',
+      'journeyVerticalVtc': 'Ulaşım operatörü',
+      'journeyVerticalTravel': 'Biletler',
+      'journeyVerticalCareers': 'İş',
+      'journeyStayNotice':
+          'Müsaitlik, tam tarihleriniz için tesis tarafından hesaplanır.',
+      'journeyFrom': 'Giriş',
+      'journeyTo': 'Çıkış',
+      'journeyDateHint': 'Tarih YYYY-AA-GG biçiminde',
+      'journeyAdults': 'Yetişkin',
+      'journeyChildren': 'Çocuk',
+      'journeyCheckAvailability': 'Müsaitliği kontrol et',
+      'journeyRoomsAvailable': 'Müsait odalar',
+      'journeyRoomAvailable': 'Müsait',
+      'journeyRoomSoldOut': 'Bu tarihlerde dolu',
+      'journeyRoomsEmptyTitle': 'Bu tarihlerde oda yok',
+      'journeyRoomsEmptyBody':
+          'Başka tarihler deneyin: tesisin bu dönem için boş odası yok.',
+      'journeyChangeDates': 'Tarihleri değiştir',
+      'journeyGuest': 'Misafir',
+      'journeyGuestName': 'Misafir adı',
+      'journeyContactRequired':
+          'Rezervasyonu onaylamak için bir e-posta veya telefon gerekir.',
+      'journeySubmitBooking': 'Rezervasyon yap',
+      'journeyRequestNotice': 'Talebiniz doğrudan bu işletmeye iletilir.',
+      'journeyMessage': 'Mesaj',
+      'journeyMessageTooShort':
+          'Talebinizi birkaç kelimeyle yazın (en az 10 karakter)',
+      'journeyConsentLabel':
+          'İletişim bilgilerimin talebime yanıt vermek için bu işletmeye iletilmesini kabul ediyorum.',
+      'journeyConsentRequired': 'Göndermek için onay kutusunu işaretleyin.',
+      'journeySubmitRequest': 'Talebi gönder',
+      'journeyPrivacyNotice':
+          'Uygulama hiçbir veriyi saklamaz: talep doğrudan işletmeye gider.',
+      'journeyRequestSentBody': 'Talebiniz iletildi.',
+      'journeyRequestSentHint':
+          'İşletme verdiğiniz iletişim bilgisinden yanıtlar. Bu talep türü için uygulama içi takip yok.',
       // Dikey başına işlem akışları (#9907).
       'journeyReasonRestaurantOrder':
           'Çevrimiçi sipariş henüz herkese açık değil. Talebinizi gönderin, restoran size dönsün.',
@@ -563,7 +934,6 @@ class AppStrings {
           'İş ilanlarına bu uygulamadan henüz ulaşılamıyor.',
       'journeyRequestCta': 'Talep gönder',
       'journeyNativeCta': 'Sipariş ver',
-      'journeyBlockedTitle': 'Henüz kullanılamıyor',
     },
   };
 }
