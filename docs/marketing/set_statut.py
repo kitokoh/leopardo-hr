@@ -145,18 +145,27 @@ def main() -> None:
 
     changed, skipped = [], []
     for sid in targets:
+        # Une entree absente n'est PAS « deja dans ce statut » : c'est une
+        # creation. Sans ce cas, un script jamais suivi ne pouvait pas etre
+        # initialise a son statut par defaut (a_ecrire) - le script repondait
+        # « ignore (deja dans ce statut) » et n'ecrivait rien, alors que le
+        # garde-fou de deploiement exige une entree pour chaque script.
+        is_new = sid not in statuts
         entry = statuts.setdefault(sid, {"historique": []})
         old = entry.get("statut", "a_ecrire")
         old_idx = order.index(old) if old in order else 0
 
-        if old == args.statut:
+        if not is_new and old == args.statut:
             skipped.append((sid, "deja dans ce statut"))
             continue
-        if new_idx > old_idx + 1 and not args.force:
+        if not is_new and new_idx > old_idx + 1 and not args.force:
             skipped.append((sid, f"saut d'etape {old} -> {args.statut} (utiliser --force)"))
             continue
 
-        action = "avancement" if new_idx > old_idx else "retour en arriere"
+        if is_new:
+            action = "creation"
+        else:
+            action = "avancement" if new_idx > old_idx else "retour en arriere"
         entry["statut"] = args.statut
         entry["observation"] = args.obs or entry.get("observation", "")
         entry["auteur"] = args.auteur
