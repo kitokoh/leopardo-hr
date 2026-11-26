@@ -839,6 +839,64 @@
         }
       ],
       "audience": "Hoteliers, residence and long-stay rental managers — TikTok, Reels, Shorts"
+    },
+    "VID-29": {
+      "title": "School: the grade, the absence, the parent's call (9:16 TikTok)",
+      "objective": "Decline the School vertical in native vertical format: the grade, the absence and the parent's call, without a long product demonstration. Points to the 16:9 film VID-10 for the full version.",
+      "hook": "The grade is in a spreadsheet. The absence is in a notebook. And the parent is calling the front desk.",
+      "cta": "Full film (16:9) in bio - activate the EduManager pack, with no pack fee.",
+      "beats": [
+        {
+          "vo": "The grade is in a spreadsheet. The absence is in a notebook. And the parent is calling the front desk.",
+          "text": "3 sources. 0 overview."
+        },
+        {
+          "vo": "Three people retype the same information. And nobody knows which version is right.",
+          "text": "Who has the right version?"
+        },
+        {
+          "vo": "Leopardo holds schools and classes in a single reference.",
+          "text": "Schools & classes"
+        },
+        {
+          "vo": "Grades are entered per class and consolidated with no retyping.",
+          "text": "Consolidated grades"
+        },
+        {
+          "vo": "School: from the classroom to the report card. The full film is in bio.",
+          "text": "Full film in bio"
+        }
+      ],
+      "audience": "Private school headteachers, school groups, administrative leads - TikTok, Reels, Shorts"
+    },
+    "VID-30": {
+      "title": "Fuel station: the night, the pump, the margin (9:16 TikTok)",
+      "objective": "Decline the Fuel station vertical in native vertical format: the night, the pump and the margin, without a long product demonstration. Points to the 16:9 film VID-11 for the full version.",
+      "hook": "A station never closes. Your management does.",
+      "cta": "Full film (16:9) in bio - activate the FuelStation pack, with no pack fee.",
+      "beats": [
+        {
+          "vo": "A station never closes. Your management does.",
+          "text": "24/7."
+        },
+        {
+          "vo": "The night reading goes into a notebook. The next day, nobody knows which day to attach it to.",
+          "text": "Which day?"
+        },
+        {
+          "vo": "Leopardo tracks pumps and volumes, and attaches every entry to the right day.",
+          "text": "Pumps & volumes"
+        },
+        {
+          "vo": "Shift teams clock in on the kiosk, even when the network drops.",
+          "text": "Offline kiosk"
+        },
+        {
+          "vo": "Fuel station: from the litre to the night payroll. The full film is in bio.",
+          "text": "Full film in bio"
+        }
+      ],
+      "audience": "Fuel station managers, fuel distribution networks - TikTok, Reels, Shorts"
     }
   }
 }
