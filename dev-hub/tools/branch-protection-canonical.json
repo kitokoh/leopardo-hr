@@ -3,12 +3,14 @@
   "_note_backend_coverage": "Backend Coverage (PHP 8.4 + PostgreSQL 16) n'est PAS requis au merge (fast-path #6928, correction #7096) mais reste exigé à la release (release.yml). Ne pas le remettre dans `contexts` : la remédiation proposée par la garde rejouerait ce canonique et annulerait #7096.",
   "_note_third_party": "Un check posé par une application tierce (Vercel, Cloudflare Workers/Pages, revue de sécurité externe) dépend d'un quota ou d'un abonnement : son échec n'est pas un échec de code. Il ne doit jamais devenir un check requis — voir `third_party_checks_never_required` et docs/ops/CHECKS_TIERS_QUOTA.md (issue #7480).",
   "required_status_checks": {
-    "strict": true,
+    "strict": false,
     "contexts": [
       "PHPStan \u2014 Strict (Core/Modules/Shared, level 8)",
       "Module Structure Validator",
       "Frontend \u2014 ESLint + TypeScript",
-      "actionlint (+ shellcheck)"
+      "actionlint (+ shellcheck)",
+      "Hygiene Guards (env, migrations, pays)",
+      "Statut de distribution coh\u00e9rent"
     ]
   },
   "enforce_admins": true,

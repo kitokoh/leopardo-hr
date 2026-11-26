@@ -28,7 +28,7 @@
 | Paramètre | Valeur |
 |---|---|
 | `enforce_admins` | **✅ true** (activé le 2026-08-26) |
-| `strict` (branche à jour avant merge) | ✅ true |
+| `strict` (branche à jour avant merge) | ❌ false (désactivé — voir §Historique) |
 | `required_approving_review_count` | 0 (pas encore activé — voir §Roadmap) |
 | `dismiss_stale_reviews` | true |
 | `allow_force_pushes` | false |
@@ -36,7 +36,7 @@
 
 ## Checks requis (bloquants sur toute PR → main)
 
-Vérifié via l'API branche protection le **2026-09-09** : 4 contexts requis seulement.
+Vérifié via l'API branche protection le **2026-11-26** : **6 contexts requis**.
 
 | Check | Workflow émetteur (PR) | Depuis |
 |---|---|---|
@@ -44,9 +44,19 @@ Vérifié via l'API branche protection le **2026-09-09** : 4 contexts requis seu
 | `Module Structure Validator` | `architecture-check.yml` | #5584 |
 | `Frontend — ESLint + TypeScript` | `architecture-check.yml` | Phase 1 |
 | `actionlint (+ shellcheck)` | `actionlint.yml` | #2131 |
+| `Hygiene Guards (env, migrations, pays)` | `architecture-check.yml` | 2026-11-26 |
+| `Statut de distribution cohérent` | `mobile-distribution-status-guard.yml` | 2026-11-26 |
+
+> **Deux checks ajoutés le 2026-11-26, et pourquoi.** `Hygiene Guards` échouait à
+> chaque push sur `main` **sans être requis** : `main` cassait donc en silence
+> (dérive `ARCHITECTURE_STATUS.md`). `Statut de distribution cohérent` garde la
+> table `mobile-distribution-status.ts` contre une déclaration périmée. Les deux
+> tournent sur **toutes** les PR vers `main` (aucun filtre `paths:`) : un check
+> requis absent d'une PR resterait indéfiniment en « Expected » et bloquerait la
+> fusion sans qu'aucun job ne tourne.
 
 > **Note — `Ratio fix/feat (cible ≤ 2.5)`** (`fix-feat-ratio-guard.yml`, créé 2026-08-26) : signal fort
-> mais **non requis au merge** — il ne fait pas partie des 4 contexts requis ci-dessus et n'a jamais
+> mais **non requis au merge** — il ne fait pas partie des 6 contexts requis ci-dessus et n'a jamais
 > été ajouté aux required status checks (voir §Règles du garde ratio fix/feat).
 
 > **Backend Coverage — PAS requis au merge, exigé à la release.** `Backend Coverage
@@ -120,6 +130,7 @@ Il mesure et affiche le ratio sans bloquer les PRs.
 
 | Date | Changement | PR/Issue |
 |---|---|---|
+| 2026-11-26 | `Hygiene Guards (env, migrations, pays)` et `Statut de distribution cohérent` ajoutés aux checks requis ; `strict` passé à `false` (alignement sur l'état réel) | #2011 |
 | 2026-08-26 | `enforce_admins=true` activé ; garde `Ratio fix/feat` créée en **signal fort non requis** (jamais ajoutée aux required checks) | Audit post-sprint |
 | 2026-08-26 | `merge-quota-guard.yml` créé (#5634) — quota journalier signal fort | #5634 |
 | Phase 2 | 5 checks initiaux (Coverage, PHPStan, Modules, Frontend, Actionlint) | — |
@@ -146,5 +157,5 @@ Il mesure et affiche le ratio sans bloquer les PRs.
 - OWASP ZAP Baseline (non bloquant, flag `-I`)
 - Ratio fix/feat (`fix-feat-ratio-guard.yml`) — signal fort, non requis
 
-> Les portes ci-dessus s'ajoutent aux 4 required checks ; seuls les 4 required
+> Les portes ci-dessus s'ajoutent aux 6 required checks ; seuls les 6 required
 > checks bloquent effectivement le merge (protection réelle, cf. garde #2011).

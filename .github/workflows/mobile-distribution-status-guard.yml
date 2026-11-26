@@ -11,14 +11,16 @@ name: Mobile Distribution Status Guard
 # Sans elle, la déclaration redeviendrait un mensonge au premier changement
 # d'état — exactement le défaut que #8628 corrige.
 
+# Ce job est un check REQUIS de la protection de `main`
+# (`.github/BRANCH_PROTECTION_REQUIRED.md`, contexte
+# « Statut de distribution cohérent »). Il ne doit donc JAMAIS porter de
+# filtre `paths:` : un check requis ABSENT d'une PR reste indéfiniment en
+# « Expected » et bloque la fusion sans qu'aucun job ne tourne. Le job
+# s'exécute sur toutes les PR vers `main` ; il coûte un checkout + un appel
+# d'API (~10 s).
 on:
   pull_request:
     branches: [main]
-    paths:
-      - 'front/web/src/lib/mobile-distribution-status.ts'
-      - 'front/web/src/lib/software-catalog.ts'
-      - 'dev-hub/tools/check-mobile-distribution-status.py'
-      - '.github/workflows/mobile-distribution-status-guard.yml'
   schedule:
     # Vérification quotidienne : un canal peut changer d'état sans qu'aucune
     # PR ne touche ces fichiers (échec de distribution sur `main`).

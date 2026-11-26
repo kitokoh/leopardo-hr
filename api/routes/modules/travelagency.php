@@ -429,8 +429,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         // dans ce même groupe (ici, puis plus bas) : Laravel ne conserve que la
         // dernière déclaration, la première implémentation était inatteignable.
         // Déclaration canonique unique conservée dans le bloc « webhooks
-        // sortants » plus haut ; seul le `DELETE` (absent de ce bloc) reste ici.
-        Route::delete('/webhook-subscriptions/{travelWebhookSubscription}', [TravelWebhookSubscriptionController::class, 'destroy']);
+        // sortants » plus haut (#8396), ou figure aussi desormais le `DELETE`.
+        // Le redeclarer ici creait une SECONDE declaration de
+        // `DELETE /travel/webhook-subscriptions/{...}` dans le MEME groupe,
+        // ce que `RouteCollisionGuardTest` refuse.
         Route::get('/cancellation-policies/{travelCancellationPolicy}', [TravelCancellationPolicyController::class, 'show']);
         // #7445 — ce second bloc redéclarait les routes de fidélité, dont
         // `/loyalty/redeem` vers une méthode exigeant un paramètre de route
@@ -485,8 +487,10 @@ Route::middleware(['throttle:api', 'auth:sanctum', 'token.refresh', 'tenant', 't
         Route::post('/quizzes/{travelQuiz}/publish', [TravelQuizController::class, 'publish']);
         Route::delete('/quiz-questions/{travelQuizQuestion}', [TravelQuizController::class, 'destroyQuestion']);
         Route::get('/quizzes/{travelQuiz}/results', [TravelQuizController::class, 'results']);
-        Route::put('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'update']);
-        Route::delete('/tourist-sites/{travelTouristSite}', [TravelTouristSiteController::class, 'destroy']);
+        // #9098 (suite) — `PUT`/`DELETE /tourist-sites/{...}` etaient declares ici
+        // ET dans le bloc « reseau & contenu » plus haut (l. 375-376) : seconde
+        // declaration inatteignable, rejetee par `RouteCollisionGuardTest`.
+        // Declaration canonique unique conservee plus haut.
 
         // ── Alias /travel/community/* rétro-compatibles pour la suite Feature (#8127) ──
         Route::prefix('community')->group(function (): void {
