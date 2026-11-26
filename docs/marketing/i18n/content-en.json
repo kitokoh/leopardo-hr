@@ -11,7 +11,7 @@
       "beats.vo",
       "beats.text"
     ],
-    "updated_at": "2026-11-26T13:55:00Z"
+    "updated_at": "2026-11-26T19:40:00Z"
   },
   "categories": {
     "presentation-solution": {
@@ -897,6 +897,64 @@
         }
       ],
       "audience": "Fuel station managers, fuel distribution networks - TikTok, Reels, Shorts"
+    },
+    "VID-31": {
+      "title": "Health: the record, the appointment, the invoice (9:16 TikTok)",
+      "objective": "Decline the Health vertical in native vertical format: the patient record, the appointment and the care invoice, without a long product demonstration. Points to the 16:9 film VID-09 for the full version.",
+      "hook": "The patient's record always arrives after the patient.",
+      "cta": "Full film (16:9) in bio - activate the HealthManager pack, with no pack fee.",
+      "audience": "Private clinics, care centres, group practices - TikTok, Reels, Shorts",
+      "beats": [
+        {
+          "vo": "The patient's record always arrives after the patient.",
+          "text": "The record arrives last."
+        },
+        {
+          "vo": "The front desk notes the time. The carer notes the care. Billing rebuilds it all from memory.",
+          "text": "3 places. 1 patient."
+        },
+        {
+          "vo": "Leopardo opens a single patient record, shared between the front desk, the care team and billing.",
+          "text": "One patient record"
+        },
+        {
+          "vo": "The appointment is rescheduled without calling the patient three times. The invoice follows the care.",
+          "text": "Appointments & invoice"
+        },
+        {
+          "vo": "Health: from the corridor to the invoice. The full film is in bio.",
+          "text": "Full film in bio"
+        }
+      ]
+    },
+    "VID-32": {
+      "title": "Ride-hailing: the trip, the nearest driver, the margin (9:16 TikTok)",
+      "objective": "Decline the ride-hailing vertical in native vertical format: the booking, the nearest-driver dispatch and the trip tracking, without a long product demonstration. Points to the 16:9 film VID-12 for the full version.",
+      "hook": "The customer calls. You look for who is closest. By hand.",
+      "cta": "Full film (16:9) in bio - activate the ride-hailing pack, with no pack fee.",
+      "audience": "Ride-hailing and taxi fleets, local mobility platforms - TikTok, Reels, Shorts",
+      "beats": [
+        {
+          "vo": "The customer calls. You look for who is closest. By hand.",
+          "text": "Dispatch by hand."
+        },
+        {
+          "vo": "Three calls for one trip. And the driver next door is still waiting.",
+          "text": "One trip, three calls."
+        },
+        {
+          "vo": "Leopardo takes the booking and dispatches to the nearest driver, computed by the geospatial core.",
+          "text": "Nearest-driver dispatch"
+        },
+        {
+          "vo": "The fare applies per trip, and tracking stays visible to the end.",
+          "text": "Fare & tracking"
+        },
+        {
+          "vo": "Ride-hailing: from the call to the trip. The full film is in bio.",
+          "text": "Full film in bio"
+        }
+      ]
     }
   }
 }

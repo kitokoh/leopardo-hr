@@ -17,7 +17,9 @@ name: Mobile Distribution Status Guard
 # filtre `paths:` : un check requis ABSENT d'une PR reste indéfiniment en
 # « Expected » et bloque la fusion sans qu'aucun job ne tourne. Le job
 # s'exécute sur toutes les PR vers `main` ; il coûte un checkout + un appel
-# d'API (~10 s).
+# d'API (~10 s). Constaté le 2026-11-26 : la PR #9972 (espace marketing,
+# aucun fichier `front/`) était bloquée par ce seul check, alors que les
+# 5 autres étaient verts.
 on:
   pull_request:
     branches: [main]
