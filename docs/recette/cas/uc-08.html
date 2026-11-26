@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-mid">3/5</span></td>
-          <td class="obs">Vérifié sur pièces : 66 fichiers de tests d&#x27;isolation (<code>TenantIsolationTest</code>, <code>CrossTenantIndexIsolationTest</code>, <code>MultiTenantSharedIsolationTest</code>, <code>TenantCompanyIdSpoofingTest</code>, <code>TenantContextLockdownTest</code>) et middlewares <code>tenant</code> appliqués dans <code>api/routes/api.php</code>. API 503 : tentative cross-tenant non rejouée en HTTP. Note 3 = critère d&#x27;exécution non vérifiable.</td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : échantillon de <strong>10 test(s)</strong> exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut <code>pass</code>). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (<code>GET /api/v1/employees/1</code> → <strong>200</strong>). Note 4 = conforme en exécution (tests verts + endpoint 2xx).</td>
           <td class="center human-cell" data-human-note="UC-08"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-08">Isolation : les modules non souscrits renvoient 403 (aucune fuite de donnees inter-tenant observee sur la matrice RBAC), mais l&#x27;isolation n&#x27;a pas ete attaquee avec deux tenants actifs comparables.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

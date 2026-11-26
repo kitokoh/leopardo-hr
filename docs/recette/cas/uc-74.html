@@ -75,7 +75,7 @@
       <tbody>
         <tr>
           <td class="center"><span class="note note-mid">3/5</span></td>
-          <td class="obs">Vérifié sur pièces : <code>api/routes/modules/sso.php</code> et <code>integrations.php</code> ; tests <code>SSOControllerTest</code>, <code>SSOOidcFlowTest</code>, <code>OidcIdTokenValidatorHardeningTest</code>, <code>SsoCallbackThrottleTest</code>, <code>SsoConfigureSsrfGuardTest</code>, <code>GoogleSsoTwoFactorSchemaTest</code>. API 503 : flux SSO non rejoué. Note 3 = critère d&#x27;exécution non vérifiable.</td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : aucun test n&#x27;a pu être exécuté pour ce cas (statut <code>no-tests</code>). Aucun endpoint HTTP n&#x27;est déclaré pour ce cas dans <code>_endpoints.json</code> : la vérification repose sur les tests et l&#x27;inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-74"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-74">GET /sso/providers -&gt; 200. Le flux SSO SAML/OIDC complet exige un IdP externe.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

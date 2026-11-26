@@ -75,7 +75,7 @@
       <tbody>
         <tr>
           <td class="center"><span class="note note-mid">3/5</span></td>
-          <td class="obs">Vérifié sur pièces : <code>GET/POST /announcements</code> déclarés dans <code>api/routes/api.php</code> (lignes 887-890) et module <code>api/app/Modules/Communication/</code> ; tests <code>AnnouncementControllerTest</code>, <code>CommunicationServiceTest</code>, <code>CommunicationAnalyticsControllerTest</code>. API 503 : annonce non publiée. Note 3 = critère d&#x27;exécution non vérifiable.</td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : aucun test n&#x27;a pu être exécuté pour ce cas (statut <code>no-tests</code>). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (<code>GET /api/v1/announcements</code> → <strong>200</strong>). Note 3 = fonctionne partiellement ou critère non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-35"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-35">GET /communication/analytics -&gt; 200.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

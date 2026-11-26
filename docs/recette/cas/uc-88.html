@@ -75,7 +75,7 @@
       <tbody>
         <tr>
           <td class="center"><span class="note note-mid">3/5</span></td>
-          <td class="obs">Vérifié sur pièces : <code>GET/POST /cost-estimates</code>, <code>GET /customs/checklist</code> déclarés dans <code>api/routes/modules/trade.php</code> (lignes 105-109) ; profil vitrine via <code>trade_public.php</code> ; tests <code>Trade/*</code>. API 503 : estimation non calculée. Note 3 = critère d&#x27;exécution non vérifiable.</td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : aucun test n&#x27;a pu être exécuté pour ce cas (statut <code>no-tests</code>). Sondes HTTP : 3 endpoint(s) appelé(s), 0 en 2xx (<code>GET /api/v1/trade/cost-estimates</code> → <strong>403</strong>, <code>GET /api/v1/trade/customs/checklist</code> → <strong>403</strong>, <code>GET /api/v1/trade/profile</code> → <strong>403</strong>). <strong>Écart constaté</strong> : Les 3 endpoints trade renvoient <strong>403</strong> avec le persona principal : la verticale Trade n&#x27;est pas activée sur le tenant de démo (feature gate), donc le parcours n&#x27;a pas pu être rejoué. Note 3 = fonctionne partiellement ou critère non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-88"><span class="note-badge">0/5</span></td>
           <td class="human-cell" data-human-obs="UC-88">Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*).<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

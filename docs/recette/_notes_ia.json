@@ -1,358 +1,358 @@
 {
  "UC-01": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `POST /api/v1/auth/login` et `GET /api/v1/auth/me` déclarés dans `api/routes/api.php` ; 59 fichiers de tests d'authentification présents (`tests/Feature/Auth/*`, `AuthLoginTest`, `AuthMeLogoutTest`). Vérification réseau réelle : l'espace client web `gestionemployer-backend.vercel.app` répond **402** (déploiement suspendu) et l'API `gestionemployerbackend.onrender.com/api/v1/health` répond **503** — le parcours navigateur (redirection, F5, déconnexion) n'a donc pas pu être rejoué. Note 3 = critère d'exécution non vérifiable, exécution runtime non vérifiable."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /login` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-02": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `POST /attendance/check-in`, `POST /attendance/check-out`, `GET /attendance/today` déclarés dans `api/routes/modules/rh.php` (lignes 137-139) ; 77 fichiers de tests pointage/kiosque présents (`tests/Feature/Attendance/*`, `KioskMultiEventPunchTest`, `AttendanceServiceTest`). API live en **503** : le cycle entrée/sortie n'a pas été rejoué en HTTP. Note 3 = critère d'exécution non vérifiable."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 4 endpoint(s) appelé(s), 1 en 2xx (`POST /api/v1/attendance/check-in` → **403**, `GET /api/v1/attendance/today` → **200**, `POST /api/v1/attendance/check-out` → **403**, `POST /api/v1/auth/login` → **422**). Endpoints en 401/403 : accès refusé pour le persona utilisé (RBAC ou feature gate). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-03": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : la borne `front/zkteco-kiosk/` existe (dont `desktop-bridge/`) et les routes kiosque sont déclarées dans `api/routes/modules/tracking.php` ; 77 fichiers de tests pointage/kiosque (`KioskMultiEventPunchTest`, `KioskRosterExtractionTest`, `KioskSyncSkippedEventsTest`, `WebKioskSessionGateTest`). Le rendu visuel de la borne et le formulaire de secours matricule n'ont pas pu être observés (API 503, pas de navigateur sur la borne). Note 3 = critère visuel non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **21 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-04": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET/POST /absences`, `POST /absences/{absence}/approve`, `POST /absences/{absence}/reject` déclarés dans `api/routes/modules/absence.php` (lignes 21-31) ; 36 fichiers de tests congés (`tests/Feature/Leave/*`, `LeaveWorkflowIntegrationTest`, `ApprovalControllerTest`). API live 503 : cycle demande→approbation non rejoué. Note 3 = critère d'exécution non vérifiable."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/absences` → **200**, `GET /api/v1/absences/1/approve` → **405**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-05": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET /me/pay-slips`, `GET /me/pay-slips/{paySlip}`, `GET /me/pay-slips/{paySlip}/pdf` déclarés dans `api/routes/modules/payroll_engine.php` (lignes 39-43) ; 143 fichiers de tests paie (`PaySlipControllerTest`, `PaySlipPdfLocaleTest`, `PayrollCalculatorUnitTest`). Le cloisonnement self-service est couvert par `SensitiveDataAccessAuditTest`. API 503 : téléchargement non rejoué. Note 3 = critère d'exécution non vérifiable."
+  "note_ia": "2",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **27 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 3 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/me/pay-slips` → **200**, `GET /api/v1/me/pay-slips/1` → **404**, `GET /api/v1/me/pay-slips/1/pdf` → **404**). Note 2 = défaillance fonctionnelle sur un critère majeur."
  },
  "UC-06": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : routes de préparation de paie dans `api/routes/modules/payroll_engine.php` ; 143 fichiers de tests paie dont `PayrollRunControllerTest`, `PayrollCycleIntegrationTest`, `PayrollCyclePreviewTest`, `PayrollCountryRulesTemporalVersioningTest`. API 503 : run de paie non exécuté. Note 3 = critère d'exécution non vérifiable."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **27 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/salary-structures` → **200**, `POST /api/v1/payroll/simulate` → **422**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-07": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET/POST /employees`, `GET/PATCH /employees/{employee}` déclarés dans `api/routes/modules/hr_app.php` (lignes 39-42) ; 93 fichiers de tests RH (`EmployeeCreatePersistsPasswordHashTest`, `EmployeesRbacTest`, `EmployeeDepartureTest`, `EmployeeDocumentTest`). **Écart constaté** : l'étape 3 documente `PUT /api/v1/employees/{id}` alors que la route déclarée est `PATCH /employees/{employee}` — le `PUT` n'existe pas (l'issue #9149 a documenté un 500 sur ce verbe). Note 3 = contournement nécessaire (verbe à corriger dans le cas de test)."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **16 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 3 endpoint(s) appelé(s), 2 en 2xx (`GET /api/v1/employees` → **200**, `GET /api/v1/employees/1` → **200**, `GET /api/v1/employees/1/archive` → **405**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-08": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : 66 fichiers de tests d'isolation (`TenantIsolationTest`, `CrossTenantIndexIsolationTest`, `MultiTenantSharedIsolationTest`, `TenantCompanyIdSpoofingTest`, `TenantContextLockdownTest`) et middlewares `tenant` appliqués dans `api/routes/api.php`. API 503 : tentative cross-tenant non rejouée en HTTP. Note 3 = critère d'exécution non vérifiable."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **10 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/employees/1` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-09": {
-  "note_ia": "4",
-  "obs_ia": "Vérifié réellement : les 4 catalogues web `front/web/src/lib/i18n/locales/{fr,en,tr,ar}.json` ont **7863 clés chacun, 0 clé manquante** par rapport au français (parité mesurée par script) ; le RTL est câblé dans `front/web/src/app/layout.tsx` (`resolveSsrDir` → `'rtl'` pour `ar`, ligne 174-175) et `front/web/src/components/locale-sync.tsx` ; les 4 catalogues mobiles `app_{fr,en,tr,ar}.arb` existent dans `leopardo_core/lib/l10n`. Le rendu visuel RTL n'a pas été observé (web 402). Note 4 = conforme sur pièces + parité mesurée."
+  "note_ia": "3",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-10": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : module `api/app/Modules/EdgeSync/` (Application, Console, Domain, Infrastructure, Interfaces, routes) et 77 fichiers de tests pointage/kiosque/edge (`KioskSyncSkippedEventsTest`, `EdgeSilentNodeDetectionTest`, `RestaurantOfflineSyncTest`). Le mode dégradé (coupure réseau réelle, rejeu) n'a pas pu être provoqué : API 503. Note 3 = critère de résilience non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **21 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-11": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/crm.php` (86 routes CRM) et module `api/app/Modules/CRM/` (Application, Console, Domain, Infrastructure, Interfaces, Policies) ; 43 fichiers de tests CRM (`CrmFeatureGateTest`, `CrmMigrationsTest`, `CrmPlatformIsolationTest`, `CrmActivitiesTasksTest`). API 503 : CRUD non rejoué. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-12": {
   "note_ia": "3",
-  "obs_ia": "Vérifié réellement : la vitrine publique `https://kitokoh.github.io/leopardo-hr/` répond **200** ; les routes publiques d'acquisition sont déclarées dans `api/routes/api.php` (`POST /marketing/leads`, `POST /funnel/events`) et `api/routes/modules/market_public.php` ; 40 fichiers de tests marketing/growth (`GrowthModuleTest`, `GrowthPartnerTenantIsolationTest`, `PlatformMarketingLeadsReadApiTest`). Le POST de demande d'essai n'a pas été rejoué (API 503). Note 3 = critère d'exécution non vérifiable : la vitrine répond 200 mais le parcours du cas (POST de demande d'essai / publication) n'a pas été rejoué, API 503."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-13": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié réellement : `GET /health` et `GET /health/live` déclarés dans `api/routes/api.php` (lignes 117-124) ; l'appel réel à `https://gestionemployerbackend.onrender.com/api/v1/health` renvoie **503** (service Render endormi/suspendu) — c'est précisément le comportement que ce cas doit détecter. 82 fichiers de tests plateforme (`HealthEndpointTest`, `HealthLiveReadyTest`, `HealthReadyCriticalDepsTest`, `QueueObservabilityApiTest`). Note 3 = critère d'exécution non vérifiable : l'appel réel renvoie 503 (service Render suspendu), donc la conformité du cas n'est pas démontrée ; le code et les tests existent."
+  "note_ia": "2",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 7 endpoint(s) appelé(s), 4 en 2xx (`GET /docs` → **200**, `GET /health` → **404**, `GET /health/live` → **404**, `GET /health/ready` → **404**, `GET /api/v1/health` → **200**). Note 2 = défaillance fonctionnelle sur un critère majeur."
  },
  "UC-14": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : module `api/app/Modules/TravelAgency/` complet (Application, Console, Domain, Infrastructure, Interfaces, Policies) et `api/routes/modules/travelagency.php` (286 routes) ; 131 fichiers de tests liés aux verticales dont `Travel/*`. La boutique publique n'a pas été parcourue (API 503). Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/public/travel/shop/trips` → **401**, `POST /api/v1/public/travel/shop/bookings` → **401**). **Écart constaté** : `GET /api/v1/public/travel/shop/trips` renvoie **401** en exécution : la boutique publique exige une authentification, contrairement à ce que le cas suppose. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-15": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `POST /api/v1/auth/login` et `GET /api/v1/auth/me` déclarés dans `api/routes/api.php` ; le tableau de bord agrégé est servi par `api/routes/modules/dashboard.php` (`/dashboard/stats`, `/dashboard/activities`, `/dashboard/alerts`) et la page `front/web/src/app/(dashboard)/dashboard/page.tsx` existe ; 59 fichiers de tests d'authentification. Vérification réseau : web **402**, API **503** — le rendu du tableau de bord n'a pas été observé. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`GET /dashboard` → **401**). **Écart constaté** : `GET /dashboard` (page web) renvoie **401** : le rendu du tableau de bord n'a pas été observé ; seules les routes API `/dashboard/*` sont vérifiées. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-16": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET /company/team-roles` et `POST /employees/{employee}/assign-role` déclarés dans `api/routes/modules/dashboard.php` (lignes 70-71) ; hiérarchie couverte par `DepartmentHierarchyTest`, `OrgChartControllerTest`, `RoleAssignmentAuditTest` ; page `front/web/src/app/(dashboard)/employees/`. API 503 : CRUD non rejoué. Note 3 = critère d'exécution non vérifiable."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **16 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/departments` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-17": {
   "note_ia": "2",
-  "obs_ia": "**Écart constaté sur pièces** : l'étape 2 documente `POST /api/v1/role-assignments`, endpoint **absent** de `api/routes/**` (index de 2600 routes). L'attribution de rôle existe sous un autre chemin : `POST /employees/{employee}/assign-role` et `GET /company/team-roles` (`api/routes/modules/dashboard.php` lignes 70-71), et les invitations sous `GET/POST /invitations` (`api/routes/modules/rh.php` lignes 160-164). Tests présents : `RoleAssignmentAuditTest`, `EmployeeInvitationOnboardingTest`. Note 2 = défaillance sur un critère majeur (le chemin documenté n'existe pas)."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/invitations` → **200**, `GET /api/v1/role-assignments` → **404**). **Écart constaté** : `GET /api/v1/role-assignments` renvoie **404** en exécution : la route documentée n'existe pas. L'attribution de rôle passe par `POST /employees/{employee}/assign-role` et `GET /company/team-roles` (vérifiés 200). Note 2 = défaillance fonctionnelle sur un critère majeur."
  },
  "UC-18": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : les heures supplémentaires sont exposées par `GET /overtime` (`api/routes/modules/hr_extended.php` ligne 206) et le planning par `GET /planning`, `GET /planning/weekly-optimization`, `GET /planning/shift-rebalancing` (`api/routes/modules/planning.php` lignes 9-11) ; tests `PlanningControllerTest`, `PlanningOptimizationTest`, `ScheduleControllerTest`. **Écart** : l'étape 1 documente `GET /api/v1/planning` sans préciser le préfixe de groupe `planning` — le chemin réel est `/api/v1/planning/` (racine du groupe). Note 3 = contournement nécessaire (chemin à préciser)."
+  "note_ia": "2",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/planning` → **200**, `GET /api/v1/overtime` → **404**). **Écart constaté** : `GET /api/v1/overtime` renvoie **404** en exécution ; les heures supplémentaires sont sous `/hr/overtime`. `GET /api/v1/planning` répond 200. Note 2 = défaillance fonctionnelle sur un critère majeur."
  },
  "UC-19": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : génération PDF de bulletin via `GET /me/pay-slips/{paySlip}/pdf` et `GET /pay-slips` (`api/routes/modules/payroll_engine.php`) ; jobs et rendu couverts par `GeneratePaySlipPdfJobNotifyTest`, `PaySlipPdfLocaleTest`, `PdfBrandingTest`. Le PDF n'a pas été téléchargé (API 503). Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **27 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-20": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : console super-admin servie par `https://leo-admin.pages.dev` (**200** mesuré) et par le groupe `platform` de `api/routes/api.php` ; gestion des entreprises couverte par `PlatformCompanyProvisioningTest`, `PlatformCompanyEditTest`, `PlatformCompanyDeletionApiTest`, `PlatformCompanyFeatureApiTest`. Le parcours authentifié n'a pas été rejoué (pas de compte super-admin utilisable ici). Note 3 = critère d'exécution non vérifiable : la console répond 200 mais le parcours authentifié (provisioning, édition, suppression) n'a pas été rejoué faute de compte super-admin utilisable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-21": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `PlatformImpersonationControllerTest` et `AdminImpersonationEndpointsTest` couvrent l'impersonation encadrée ; routes dans le groupe `platform` de `api/routes/api.php` ; journalisation par `AuditLogGlobalTest`, `IdentityAccessControlAuditTest`. L'impersonation n'a pas été déclenchée (API 503). Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-22": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/billing.php` (39 routes) et module `api/app/Modules/Billing/` ; tests `BillingControllerTest`, `PlatformPlanApiTest`, `PlatformCompanySubscriptionApiTest`, `PlanSeederTrialDaysAlignmentTest`. API 503 : facturation non rejouée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-23": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : kill switch couvert par `FeatureKillSwitchTest`, `FeatureFlagTest`, `FeatureFlagControllerTest` ; nœuds Edge par `EdgeSilentNodeDetectionTest` et le module `api/app/Modules/EdgeSync/`. API 503 : bascule non déclenchée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-24": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/marketing.php` et `market_public.php` ; tests `GrowthModuleTest`, `PlatformMarketingLeadsReadApiTest`, `SocialDeclarationControllerTest` ; page `front/web/src/app/(dashboard)/(marketing)/`. API 503 : campagne non publiée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-25": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/recruitment_platform.php` et module `api/app/Modules/Recruitment/` ; tests `RecruitmentControllerTest`, `JobPostingLifecycleTest`, `PublicCareerControllerTest`, `CandidateHiringTest`. API 503 : offre non publiée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **16 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-26": {
   "note_ia": "3",
-  "obs_ia": "Vérifié réellement : le portail public `https://kitokoh.github.io/leopardo-hr/recette/` répond **200** et la page `cas/uc-15.html` **200** ; le module `api/app/Modules/Showcase/` et `api/routes/modules/showcase.php` existent ; tests `LeopardoPublic`, `Showcase/*`. Note 3 = critère d'exécution non vérifiable : la surface publique répond 200 mais le parcours du cas n'a pas été rejoué, API 503."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-27": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET /journals`, `POST /journals`, `PUT /journals/{journal}` déclarés dans `api/routes/modules/accounting.php` (lignes 131-164) ; 75 fichiers de tests comptables (`LedgerTest`, `AccountingActivationTest`, `AccountingAnalyticsGoldenJourneyTest`, `AccountingAuditRetentionTest`). API 503 : écriture non saisie. Note 3 = critère d'exécution non vérifiable."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/accounting/journals` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-28": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : export comptable via `GET /reports/vat-declaration` (`api/routes/modules/accounting.php` ligne 172) et `GET /export/*` (`api/routes/modules/dashboard.php` lignes 51-58) ; rapprochement couvert par `BankExportControllerTest`, `BankExportGeneratorTest`, `GenerateBankExportJobTest`, `CompanyBankingControllerTest`. API 503 : export non généré. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-29": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : le cycle de note de frais est exposé par `GET/POST /expense-claims`, `PUT /expense-claims/{id}/submit`, `POST /expense-claims/{id}/approve|reject` (`api/routes/modules/expense.php` lignes 15-28) ; tests `ExpenseClaimControllerTest`, `Expense/*`. **Écart** : l'étape 1 documente `POST /api/v1/expenses`, chemin **inexistant** — la ressource réelle est `/expense-claims`. Note 3 = contournement nécessaire (chemin à corriger)."
+  "note_ia": "2",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **32 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/expenses` → **404**). **Écart constaté** : `GET /api/v1/expenses` renvoie **404** en exécution : la ressource réelle est `/expense-claims`. Note 2 = défaillance fonctionnelle sur un critère majeur."
  },
  "UC-30": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : impact paie des notes de frais couvert par `ExpenseAccountingController` (`GET/POST /expense-claims/{id}/accounting-entries`, `api/routes/modules/expense.php` lignes 36-37) et par les tests paie (`PayrollAccountingExportTest`, `PayrollCycleIntegrationTest`). API 503 : remboursement non exécuté. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **27 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-31": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET /planning`, `GET /planning/weekly-optimization`, `GET /planning/shift-rebalancing` (`api/routes/modules/planning.php` lignes 9-11) ; tests `PlanningControllerTest`, `PlanningOptimizationTest`, `ScheduleControllerTest`. **Écart** : l'étape 1 documente `GET /api/v1/planning` alors que le groupe est monté sous le préfixe `planning` — le chemin racine réel est `/api/v1/planning/`. Note 3 = contournement nécessaire."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **30 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/planning` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-32": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET/POST /tasks` déclarés dans `api/routes/modules/rh.php` (lignes 357-358) ; tests `TaskControllerTest`, `CrmActivitiesTasksTest`, `CrmTaskTimelineTest`. API 503 : assignation non rejouée. Note 3 = critère d'exécution non vérifiable."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **30 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/tasks` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-33": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/recruitment_platform.php` et page carrières publique couverte par `PublicCareerControllerTest`, `JobPostingLifecycleTest` ; page `front/web/src/app/(dashboard)/recruitment/`. API 503 : offre non publiée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-34": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : module `api/app/Modules/Recruitment/` (9 contrôleurs) ; tests `RecruitmentControllerTest`, `CandidateHiringTest`, `CareerEventTest`. API 503 : pipeline non parcouru. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-35": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET/POST /announcements` déclarés dans `api/routes/api.php` (lignes 887-890) et module `api/app/Modules/Communication/` ; tests `AnnouncementControllerTest`, `CommunicationServiceTest`, `CommunicationAnalyticsControllerTest`. API 503 : annonce non publiée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/announcements` → **200**). Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-36": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET/PATCH /notification-preferences` déclarés dans `api/routes/api.php` (lignes 446-447) ; tests `NotificationPreferenceControllerTest`, `NotificationControllerTest`, `BackfillNotificationPreferencesCommandTest`, `DeviceTokenControllerTest`. API 503 : préférence non modifiée. Note 3 = critère d'exécution non vérifiable."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **11 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/notification-preferences` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-37": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `POST /trial/signup` déclaré dans `api/routes/api.php` (ligne 206) ; provisioning couvert par `TrialProvisioningDedupTest`, `TrialProvisioningStatusTest`, `SelfServiceTrialTest`, `TrialOnboardingAccessTest`, `TrialSolutionsActivationTest`. API 503 : essai non créé. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`POST /api/v1/trial/signup` → **422**). Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-38": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET/PATCH /onboarding-setup/state`, `GET /onboarding-setup/checklist`, `GET /onboarding-setup/progress` déclarés dans `api/routes/modules/billing.php` (lignes 31-40) ; tests `OnboardingStepControllerTest`, `OnboardingChecklistTest`, `OnboardingE2ETest`, `OnboardingQrControllerTest`. API 503 : reprise non rejouée. Note 3 = critère d'exécution non vérifiable."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **13 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/onboarding-setup/state` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-39": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/catalog.php` et `catalog_public.php` ; module `api/app/Modules/Catalog/` ; tests `Catalog/*`, `CrmMigrationsTest` non applicable — voir `tests/Feature/Catalog`. API 503 : CRUD non rejoué. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-40": {
-  "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET /search` déclaré dans `api/routes/modules/crm.php` (ligne 178) et `api/routes/modules/trade.php` (ligne 133) ; module `api/app/Modules/SearchIntelligence/` ; tests `SearchIntelligence/*`. Le respect des permissions est couvert par `SensitiveDataAccessAuditTest`. API 503 : recherche non exécutée. Note 3 = critère d'exécution non vérifiable."
+  "note_ia": "2",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **19 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/search` → **404**). **Écart constaté** : `GET /api/v1/search` renvoie **404** en exécution : la recherche est exposée sous `/crm/search` et `/trade/search`, pas à la racine. Note 2 = défaillance fonctionnelle sur un critère majeur."
  },
  "UC-41": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/pages.php` et `pages_public.php` ; module `api/app/Modules/Pages/` ; tests `Pages/*`, `TranslationCatalogApiTest` (SEO multilingue) ; 230 pages `page.tsx` côté web. API 503 : page non publiée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-42": {
   "note_ia": "3",
-  "obs_ia": "Vérifié réellement : le portail public répond **200** ; module `api/app/Modules/Showcase/` et `api/routes/modules/showcase.php` ; tests `Showcase/*`, `LeopardoPublic`. Note 3 = critère d'exécution non vérifiable : la surface publique répond 200 mais le parcours du cas n'a pas été rejoué, API 503."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-43": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/library.php` et `library_public.php` ; module `api/app/Modules/Library/` ; tests `Library/*`. API 503 : prêt non enregistré. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-44": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/cameras.php` ; module `api/app/Modules/Cameras/` ; tests `Cameras/*`. API 503 : flux non supervisé. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-45": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/cameras.php` ; module `api/app/Modules/Cameras/` ; tests `Cameras/*`. API 503 : incident non déclaré. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-46": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : module `api/app/Modules/Fleet/` et routes flotte dans `api/routes/modules/tracking.php` ; tests `FleetControllerTest`, `VehicleControllerTest`, `Fleet/*`. API 503 : affectation non rejouée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-47": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/fuel_station.php` (140 routes) ; module `api/app/Modules/FuelStation/` ; tests `Fuel/*`, `FuelStation/*`. API 503 : vente non enregistrée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-48": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/vtc.php` ; module `api/app/Modules/Vtc/` (Application, Console, Domain, Infrastructure, Interfaces, Policies) ; tests `Vtc/*`. API 503 : course non créée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-49": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/delivery.php` ; module `api/app/Modules/Delivery/` ; tests `Delivery/*`, `DeliveryReportController` couvert. API 503 : tournée non ouverte. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-50": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/restaurantmanager.php` (229 routes) ; modules `api/app/Modules/Restaurant/` et `RestaurantManager/` ; 88 fichiers de tests liés (`Restaurant/*`, `RestaurantMobileManagerApiTest`, `RestaurantOfflineSyncTest`). API 503 : POS non ouvert. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-51": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/restaurantmanager.php` ; module `RestaurantManager/` (Console, Policies) ; tests `RestaurantOfflineSyncTest`, `RestaurantSyncRoutesTest`, `RestaurantPrintBridgeController` couvert. API 503 : cycle de commande non rejoué. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-52": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/retail.php` ; module `api/app/Modules/Retail/` ; tests `Retail/*` ; pages `front/web/src/app/(dashboard)/commerce/pos/page.tsx`. API 503 : encaissement non rejoué. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-53": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/retail.php` et `catalog.php` ; modules `Retail/` et `Catalog/` ; tests `Retail/*`, `Catalog/*` ; page `commerce/stock/page.tsx`. API 503 : inventaire non rejoué. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-54": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/hospitality_manager.php` ; module `api/app/Modules/HospitalityManager/` (Console) ; tests `Hospitality/*`. API 503 : séjour non créé. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-55": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/pharmacy.php` ; module `api/app/Modules/Pharmacy/` ; tests `Pharmacy/*` ; page `front/web/src/app/(dashboard)/pharmacy/`. API 503 : vente non enregistrée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-56": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/health_manager.php` (63 routes) ; module `api/app/Modules/HealthManager/` ; 8 fichiers de tests rattachés (`tests/Feature/HealthManager/*`). La couverture automatisée est nettement plus faible que les autres verticales et le dossier patient (données de santé) n'a pas pu être exercé (API 503). Note 3 = critère de sécurité non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-57": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/edu_manager.php` (111 routes) ; module `api/app/Modules/EduManager/` (Console, Policies) ; tests `EduManager/*`, `TrainingControllerTest`. API 503 : classe non créée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-58": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/edu_manager.php` et `billing.php` ; modules `EduManager/` et `Billing/` ; tests `EduManager/*`, `BillingControllerTest`, `PlanSeederTrialDaysAlignmentTest`. API 503 : facture non émise. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-59": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/farm_os.php` (83 routes) ; module `api/app/Modules/FarmOs/` ; tests `Farm/*`. API 503 : parcelle non créée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-60": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/fundraising.php` ; module `api/app/Modules/Fundraising/` ; tests `Fundraising/*`, `MobileMoneyProviderAdaptersTest`. API 503 : don non enregistré. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-61": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/cabinet.php` ; module `api/app/Modules/Cabinet/` ; tests `Cabinet/*` ; isolation couverte par `TenantIsolationTest`. API 503 : portefeuille non parcouru. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-62": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/trade.php` (42 routes) ; module `api/app/Modules/Trade/` (Console) ; tests `Trade/*`. API 503 : devis non créé. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-63": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/branding.php` et `branding_public.php` ; module `api/app/Modules/Branding/` (Console) ; tests `Branding/*`, `PdfBrandingTest`, `CompanyBrandingControllerTest`. API 503 : enseigne non publiée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-64": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/billing.php` ; module `api/app/Modules/Billing/` ; tests `BillingControllerTest`, `PlatformPlanApiTest`, `PlanSeederTrialDaysAlignmentTest`, `TrialProvisioningStatusTest`. API 503 : abonnement non souscrit. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-65": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/paiements.php` et webhooks `POST /webhooks/stripe`, `POST /webhooks/chargily` (`api/routes/api.php` lignes 313-314) ; tests `PaymentWebhookControllerTest`, `PaymentWebhookFailClosedTest`, `OutboundWebhookSignatureUnificationTest`, `WebhookDeadLetterTest`, `WebhookRetryAndDeactivationTest`. API 503 : webhook non rejoué. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-66": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : module `api/app/Modules/EdgeSync/` (Application, Console, Domain, Infrastructure, Interfaces, routes) ; tests `EdgeSync/*`, `RestaurantOfflineSyncTest`, `KioskSyncSkippedEventsTest`, `WriteIdempotencyTest`. API 503 : rejeu non provoqué. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-67": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/geo.php` et `tracking.php` ; module `api/app/Modules/Geo/` (Console, Policies) ; tests `Geo/*`, `AttendanceGeofenceServiceTest`, `AttendanceGeofenceServiceTest` (Unit). API 503 : preuve de présence non produite. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-68": {
   "note_ia": "3",
-  "obs_ia": "Vérifié réellement : `api/openapi.yaml` existe (3,09 Mo, **1983 chemins** déclarés) ; tests `OpenApiDocsTest`, `ApiErrorContractTest`, `FrontendApiContractTest`, `RouteControllerMethodContractTest`, `WebhookRoutesUniquenessTest`. Le contrat n'a pas été servi en ligne (`/docs` → **503**). Note 3 = critère d'exécution non vérifiable : le fichier `api/openapi.yaml` est mesuré (1983 chemins) mais le contrat n'est pas servi en ligne (`/docs` → 503)."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-69": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : **13** dossiers d'applications Flutter dans `front/mobile_apps/` (dont `leopardo_core` partagé) ; workflows `.github/workflows/mobile-distribute.yml` et `mobile-distribute-main.yml` ; tests `Contracts/MobilePayloadContractTest`, `MobileMoneyProviderAdaptersTest`. Aucun build APK n'a été produit ici (pas de SDK Android dans cet environnement). Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-70": {
   "note_ia": "2",
-  "obs_ia": "**Écart constaté sur pièces** : le scaffolding desktop existe (`front/mobile_apps/*/windows`, `*/macos` pour 6 apps) et le workflow `.github/workflows/desktop-ci.yml` est présent, mais `docs/desktop/README.md` indique explicitement « chaîne de build/distribution : ❌ aucune » pour 5 apps sur 7, et **aucun test automatisé** n'est rattaché au desktop (0 fichier). La mise à jour applicative (auto-update) n'est pas implémentée. Note 2 = défaillance sur un critère majeur (distribution et mise à jour absentes)."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. **Écart constaté** : Aucun test desktop exécutable (0 fichier) et `docs/desktop/README.md` indique « chaîne de build/distribution : aucune » pour 5 apps sur 7. Note 2 = défaillance fonctionnelle sur un critère majeur."
  },
  "UC-71": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/trade_public.php`, `catalog_public.php`, `market_public.php` (fiches publiques sans auth) ; app `front/mobile_apps/leopardo_public/` ; **un seul** test rattaché (`PublicCareerControllerTest`, qui ne couvre pas la fiche commerce). La fiche commerce publique n'a pas été ouverte (API 503). Note 3 = critère non vérifiable et couverture de test insuffisante."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-72": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : provisioning couvert par `PlatformCompanyProvisioningTest`, `PlatformCompanyRequestProvisioningTest`, `TrialProvisioningDedupTest`, `TrialProvisioningStatusTest` ; diagnostic par `PlatformCompanyHealthApiTest`, `HealthReadyCriticalDepsTest`, `LaunchReadinessControllerTest`. API 503 : provisioning non déclenché. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-73": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : 66 fichiers de tests d'isolation (`TenantIsolationTest`, `TenantCompanyIdSpoofingTest`, `TenantContextLockdownTest`, `CrossTenantIndexIsolationTest`, `MultiTenantSharedIsolationTest`) ; middleware `tenant` dans `api/routes/api.php`. API 503 : tentative cross-tenant non rejouée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-74": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/sso.php` et `integrations.php` ; tests `SSOControllerTest`, `SSOOidcFlowTest`, `OidcIdTokenValidatorHardeningTest`, `SsoCallbackThrottleTest`, `SsoConfigureSsrfGuardTest`, `GoogleSsoTwoFactorSchemaTest`. API 503 : flux SSO non rejoué. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-75": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `docs/RGPD_REGISTRE_TRAITEMENTS.md` présent ; tests `GdprAnonymizeEmployeeTest`, `PrivacyControllerTest`, `PiiFieldRegistryTest`, `SensitiveDataEncryptorTest`, `SensitiveDataAccessAuditTest`, `PurgeAuditLogsCommandTest`. API 503 : demande d'accès non exercée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-76": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : module `api/app/Modules/HR/` et `api/routes/modules/hr_extended.php` ; tests `Evaluations/*`, `HrReportControllerTest`, `ProfileFunctionalReadinessTest`. API 503 : évaluation non créée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-77": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : documents employé couverts par `EmployeeDocumentTest`, `ContractController` (`GET /contracts/expiring`, `api/routes/modules/hr_extended.php` ligne 93) et `EmployeeDocumentTest` ; coffre-fort et échéances côté HR. API 503 : document non déposé. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-78": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : validations multi-niveaux couvertes par `ApprovalControllerTest`, `LeaveWorkflowIntegrationTest`, `PlanningControllerTest`, `ExpenseClaimControllerTest` (approve/reject) ; routes dans `absence.php`, `expense.php`, `planning.php`. API 503 : workflow non déclenché. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-79": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET /dashboard/stats`, `/dashboard/activities`, `/dashboard/alerts` (`api/routes/api.php` lignes 953-956) ; tests `DashboardControllerTest`, `PlatformMetricsOverviewApiTest`, `WeeklyManagerDigestTest`. API 503 : tableau de bord non chargé. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-80": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `PlatformSupportTicketControllerTest`, `SupportTicketEmailNotificationTest`, `PlatformImpersonationControllerTest`, `AdminImpersonationEndpointsTest` ; routes dans le groupe `platform` de `api/routes/api.php` ; page `front/web/src/app/(dashboard)/support/`. API 503 : ticket non créé. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-81": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/billing.php` ; tests `PlatformMetricsOverviewApiTest`, `BillingControllerTest`, `PlatformCompanySubscriptionApiTest`, `GrowthPartnerTenantIsolationTest`. API 503 : métriques non lues. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-82": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : module `api/app/Modules/EdgeSync/` et `Platform/` ; tests `FeatureKillSwitchTest`, `FeatureFlagTest`, `EdgeSilentNodeDetectionTest`, `QueueObservabilityApiTest`. API 503 : kill switch non actionné. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-83": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/marketing.php` ; module `api/app/Modules/Marketing/` ; tests `GrowthModuleTest`, `SocialDeclarationControllerTest`, `PublishScheduledSocialPostsCommandTest`, `PublishScheduledPostJobTest`. API 503 : publication non déclenchée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-84": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `POST /employees` (`api/routes/modules/hr_app.php` ligne 40) et `GET/PATCH /onboarding-setup/*` (`api/routes/modules/billing.php`) ; tests `EmployeeInvitationOnboardingTest`, `OnboardingE2ETest`, `OnboardingChecklistTest`, `EmployeeCreatePersistsPasswordHashTest`. API 503 : onboarding non rejoué. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-85": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/marketing.php` ; module `api/app/Modules/Marketing/` ; tests `GrowthModuleTest`, `SocialDeclarationControllerTest`, `PublishScheduledSocialPostsCommandTest`. API 503 : promotion non publiée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-86": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/marketing.php` et `market_public.php` ; tests `GrowthModuleTest`, `SocialDeclarationControllerTest`, `PlatformMarketingLeadsReadApiTest` ; vitrine publique joignable (**200**). API 503 : publication assistée non déclenchée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-87": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `api/routes/modules/trade.php` (42 routes) ; module `api/app/Modules/Trade/` ; tests `Trade/*`. API 503 : RFQ non créé. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-88": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET/POST /cost-estimates`, `GET /customs/checklist` déclarés dans `api/routes/modules/trade.php` (lignes 105-109) ; profil vitrine via `trade_public.php` ; tests `Trade/*`. API 503 : estimation non calculée. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 3 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/trade/cost-estimates` → **403**, `GET /api/v1/trade/customs/checklist` → **403**, `GET /api/v1/trade/profile` → **403**). **Écart constaté** : Les 3 endpoints trade renvoient **403** avec le persona principal : la verticale Trade n'est pas activée sur le tenant de démo (feature gate), donc le parcours n'a pas pu être rejoué. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-89": {
   "note_ia": "3",
-  "obs_ia": "Vérifié sur pièces : `GET /catalog`, `GET/POST /connections`, `PATCH /connections/{id}/status`, `DELETE /connections/{id}` déclarés dans `api/routes/modules/connectors.php` (lignes 26-42) ; module `api/app/Modules/Connectors/` ; tests `Connectors/*`, `ConnectorSchemaValidatorTest`, `OutboundWebhookSignatureUnificationTest`. API 503 : connexion non établie. Note 3 = critère d'exécution non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/connectors/catalog` → **200**). Note 3 = fonctionne partiellement ou critère non vérifiable."
  }
 }

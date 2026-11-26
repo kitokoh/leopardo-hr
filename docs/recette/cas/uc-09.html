@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">4/5</span></td>
-          <td class="obs">Vérifié réellement : les 4 catalogues web <code>front/web/src/lib/i18n/locales/{fr,en,tr,ar}.json</code> ont <strong>7863 clés chacun, 0 clé manquante</strong> par rapport au français (parité mesurée par script) ; le RTL est câblé dans <code>front/web/src/app/layout.tsx</code> (<code>resolveSsrDir</code> → <code>&#x27;rtl&#x27;</code> pour <code>ar</code>, ligne 174-175) et <code>front/web/src/components/locale-sync.tsx</code> ; les 4 catalogues mobiles <code>app_{fr,en,tr,ar}.arb</code> existent dans <code>leopardo_core/lib/l10n</code>. Le rendu visuel RTL n&#x27;a pas été observé (web 402). Note 4 = conforme sur pièces + parité mesurée.</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : échantillon de <strong>17 test(s)</strong> exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut <code>pass</code>). Aucun endpoint HTTP n&#x27;est déclaré pour ce cas dans <code>_endpoints.json</code> : la vérification repose sur les tests et l&#x27;inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-09"><span class="note-badge">0/5</span></td>
           <td class="human-cell" data-human-obs="UC-09">Non execute dans ce run : aucun cas i18n/RTL n&#x27;a ete pilote (necessite une verification navigateur sur les 4 locales).<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>
