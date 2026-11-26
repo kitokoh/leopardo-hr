@@ -558,6 +558,7 @@
             <file>tests/Feature/Communication/CommunicationReplyTest.php</file>
         </testsuite>
         <testsuite name="Connectors">
+            <file>tests/Feature/Connectors/ConnectorAiModelsTest.php</file>
             <file>tests/Feature/Connectors/ConnectorSchemaValidatorTest.php</file>
             <file>tests/Feature/Connectors/PlatformConnectorApiTest.php</file>
             <file>tests/Feature/Connectors/TenantConnectorApiTest.php</file>
@@ -1571,7 +1572,7 @@
           et detruit le marqueur `__mvp_fixture_ready`.
 
           FeatureMvpFixture : 242 fichiers.
-          FeatureRest       : 1121 fichiers.
+          FeatureRest       : 1122 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
             <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
@@ -2051,6 +2052,7 @@
             <file>tests/Feature/Communication/CommunicationModuleGateTest.php</file>
             <file>tests/Feature/Communication/CommunicationReplyTest.php</file>
             <file>tests/Feature/CompanyOnboardingIntegrationTest.php</file>
+            <file>tests/Feature/Connectors/ConnectorAiModelsTest.php</file>
             <file>tests/Feature/Connectors/ConnectorSchemaValidatorTest.php</file>
             <file>tests/Feature/Connectors/PlatformConnectorApiTest.php</file>
             <file>tests/Feature/Connectors/TenantConnectorApiTest.php</file>
