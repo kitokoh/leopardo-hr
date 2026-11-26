@@ -107,6 +107,10 @@ on:
       - "api/app/Console/Commands/TenantRlsStatusCommand.php"
       - "api/database/migrations/tenant/**"
       - "dev-hub/tools/check-rls-coverage-parity.py"
+      # --- env-example-parity-guard (audit architecture 2026-11) ---
+      - "api/.env.example"
+      - "api/config/**"
+      - "dev-hub/tools/check-env-example-parity.py"
       # --- le workflow lui-même ---
       - ".github/workflows/guards-fast.yml"
   push:
@@ -144,6 +148,9 @@ on:
       - "api/app/Console/Commands/TenantRlsStatusCommand.php"
       - "api/database/migrations/tenant/**"
       - "dev-hub/tools/check-rls-coverage-parity.py"
+      - "api/.env.example"
+      - "api/config/**"
+      - "dev-hub/tools/check-env-example-parity.py"
       - ".github/workflows/guards-fast.yml"
   workflow_dispatch:
     inputs:
@@ -193,6 +200,7 @@ jobs:
       config_keys: ${{ steps.filter.outputs.config_keys }}
       env_hygiene: ${{ steps.filter.outputs.env_hygiene }}
       rls_parity: ${{ steps.filter.outputs.rls_parity }}
+      env_parity: ${{ steps.filter.outputs.env_parity }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -294,6 +302,11 @@ jobs:
               - "api/app/Console/Commands/TenantRlsStatusCommand.php"
               - "api/database/migrations/tenant/**"
               - "dev-hub/tools/check-rls-coverage-parity.py"
+              - ".github/workflows/guards-fast.yml"
+            env_parity:
+              - "api/.env.example"
+              - "api/config/**"
+              - "dev-hub/tools/check-env-example-parity.py"
               - ".github/workflows/guards-fast.yml"
 
   # ---------------------------------------------------------------------------
@@ -678,3 +691,44 @@ jobs:
       - name: Comparer EXPECTED_TABLES aux migrations RLS
         shell: bash
         run: python3 dev-hub/tools/check-rls-coverage-parity.py --verbose
+
+  # ---------------------------------------------------------------------------
+  # 14/14 — .env.example et api/config/ décrivent le même contrat (audit 2026-11)
+  #
+  # `.env.example` est le contrat d'exploitation ; `api/config/*.php` est la
+  # réalité. Rien ne les obligeait à rester d'accord : 44 variables documentées
+  # n'étaient lues par aucun fichier config/.
+  #
+  # Les cas parlants :
+  #   - RATE_LIMIT_PLAN_STARTER/PROFESSIONAL/BUSINESS/TRIAL/PRO_PER_MINUTE —
+  #     PlanCode ne connaît que free/pilot/operations/enterprise : cinq
+  #     variables documentaient des plans QUI N'EXISTENT PAS ;
+  #   - CORS_ALLOWED_ORIGINS — le code lit CORS_EXTRA_ORIGIN ;
+  #   - RESTAURANT_STOCK_INSUFFICIENT_POLICY — la config lit block_on_insufficient ;
+  #   - CATALOG_CURRENCIES / CATALOG_UNITS — CatalogPricePolicy lit
+  #     config('catalog.currencies'), clé qui n'existait dans aucun fichier.
+  #
+  # Ce n'est pas une faille, c'est une promesse non tenue : régler la variable
+  # ne change rien et personne ne le sait. Le même mécanisme appliqué à
+  # DISABLE_DEMO_SEEDING était un défaut critique (commit fix(security)).
+  # ---------------------------------------------------------------------------
+  env-example-parity:
+    name: .env.example ↔ api/config/ cohérents
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.env_parity == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Auto-test de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-env-example-parity.py --self-test
+      - name: Comparer .env.example aux env() de api/config/
+        shell: bash
+        run: python3 dev-hub/tools/check-env-example-parity.py --verbose

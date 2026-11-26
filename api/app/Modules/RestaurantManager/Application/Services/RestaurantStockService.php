@@ -22,11 +22,21 @@ use Illuminate\Support\Facades\Log;
  * les confirmations concurrentes sont sérialisées par le verrou de ligne).
  *
  * Politique de stock insuffisant configurable
- * (`config('restaurantmanager.stock.insufficient_policy')`) :
- *   - 'block' (défaut) : la confirmation est refusée (422), le stock n'est
+ * (`config('restaurantmanager.stock.block_on_insufficient')`) :
+ *   - true  (défaut) : la confirmation est refusée (422), le stock n'est
  *     JAMAIS négatif ;
- *   - 'warn'           : la confirmation passe, le stock est plafonné à 0 et
+ *   - false          : la confirmation passe, le stock est plafonné à 0 et
  *     la consommation excédentaire est tracée dans le mouvement.
+ *
+ * ⚠️ DÉPRÉCIÉ (audit architecture 2026-11-26) : cette classe n'est
+ * enregistrée dans aucun provider et n'est appelée nulle part. Le chemin
+ * vivant est `StockDecrementer` (injecté par `RestaurantManagerServiceProvider`,
+ * utilisé par `TransitionOrderAction` et `RestaurantPublicOrderService`).
+ * Elle lisait `restaurantmanager.stock.insufficient_policy`, une clé qui
+ * n'existe dans aucun fichier `config/` — donc toujours `null`, donc toujours
+ * la valeur par défaut, quoi que l'opérateur configure. La clé est alignée
+ * sur la vraie (`block_on_insufficient`) pour qu'une réactivation éventuelle
+ * ne soit pas silencieusement inerte. Voir issue #9982.
  *
  * Chaque consommation est journalisée dans `restaurant_inventory_movements`
  * (reason_code `sale`, référence commande) pour la traçabilité et le COGS.
