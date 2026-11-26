@@ -97,6 +97,12 @@ on:
       # --- config-duplicate-keys-guard (audit architecture 2026-11) ---
       - "api/config/**"
       - "dev-hub/tools/check-config-duplicate-keys.py"
+      # --- no-env-outside-config-guard (audit architecture 2026-11) ---
+      - "api/app/**"
+      - "api/database/**"
+      - "api/routes/**"
+      - "api/bootstrap/**"
+      - "dev-hub/tools/check-no-env-in-seeders.py"
       # --- le workflow lui-même ---
       - ".github/workflows/guards-fast.yml"
   push:
@@ -128,6 +134,9 @@ on:
       - "front/admin-dashboard/**"
       - "api/config/**"
       - "dev-hub/tools/check-config-duplicate-keys.py"
+      - "api/app/**"
+      - "api/database/**"
+      - "dev-hub/tools/check-no-env-in-seeders.py"
       - ".github/workflows/guards-fast.yml"
   workflow_dispatch:
     inputs:
@@ -175,6 +184,7 @@ jobs:
       web_tokens: ${{ steps.filter.outputs.web_tokens }}
       front_scripts: ${{ steps.filter.outputs.front_scripts }}
       config_keys: ${{ steps.filter.outputs.config_keys }}
+      env_hygiene: ${{ steps.filter.outputs.env_hygiene }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -264,6 +274,13 @@ jobs:
             config_keys:
               - "api/config/**"
               - "dev-hub/tools/check-config-duplicate-keys.py"
+              - ".github/workflows/guards-fast.yml"
+            env_hygiene:
+              - "api/app/**"
+              - "api/database/**"
+              - "api/routes/**"
+              - "api/bootstrap/**"
+              - "dev-hub/tools/check-no-env-in-seeders.py"
               - ".github/workflows/guards-fast.yml"
 
   # ---------------------------------------------------------------------------
@@ -570,3 +587,41 @@ jobs:
       - name: Vérifier api/config/*.php
         shell: bash
         run: python3 dev-hub/tools/check-config-duplicate-keys.py --verbose
+
+  # ---------------------------------------------------------------------------
+  # 12/12 — Aucun `env()` hors de api/config/ (audit architecture 2026-11)
+  #
+  # `docker-entrypoint.sh` exécute `config:cache` (ligne 35) AVANT `db:seed`
+  # (ligne 430). Après `config:cache`, Laravel ne charge plus `.env` : `env()`
+  # ne renvoie plus que ce que le SAPI a exposé dans `$_SERVER`. Le dépôt le
+  # documente lui-même (EdgeSyncDaemonCommand:46, HealthProbeService:94).
+  #
+  # Or les gardes qui empêchent le seeding de démonstration en production
+  # lisaient `env()` directement, et `DISABLE_DEMO_SEEDING` / `DEPLOY_TIER`
+  # n'existaient dans aucun fichier `config/` : 11 appels, dont les verrous
+  # anti-démo de `DemoCompanyOnceSeeder`, `DemoCompanySeeder`, `CrmPilotSeeder`,
+  # `GuardsPilotSeeding` et le mot de passe de `SuperAdminSeeder`.
+  #
+  # Une garde de sécurité dont la valeur dépend de `variables_order` n'est pas
+  # une garde. Toute décision se lit par `config()`.
+  # ---------------------------------------------------------------------------
+  no-env-outside-config:
+    name: Aucun env() hors de api/config/
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.env_hygiene == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Auto-test de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-no-env-in-seeders.py --self-test
+      - name: Vérifier app/, database/, routes/, bootstrap/
+        shell: bash
+        run: python3 dev-hub/tools/check-no-env-in-seeders.py --verbose

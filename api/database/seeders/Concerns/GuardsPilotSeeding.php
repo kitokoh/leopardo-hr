@@ -24,7 +24,12 @@ trait GuardsPilotSeeding
         // #7648 : fail-closed sur le TIER prod (DEPLOY_TIER=prod, #7647) —
         // même un APP_ENV permissif ne doit jamais autoriser un seed pilote
         // sur le tier de production. ALLOW_PILOT_SEEDING ne lève PAS ce refus.
-        if (env('DEPLOY_TIER') === 'prod') {
+        //
+        // Audit architecture 2026-11-26 : lu par `config()` et non `env()`.
+        // `docker-entrypoint.sh` exécute `config:cache` AVANT `db:seed` ;
+        // après cela `env()` ne renvoie plus que ce que le SAPI expose, donc
+        // une garde en `env()` pouvait être silencieusement inopérante.
+        if (config('deployment.tier') === 'prod') {
             throw new \RuntimeException(
                 "Seed pilote '{$feature}' interdit sur le tier de production (DEPLOY_TIER=prod, #7648) — jamais de données pilote en production."
             );
@@ -34,7 +39,7 @@ trait GuardsPilotSeeding
             return;
         }
 
-        if ((bool) env('ALLOW_PILOT_SEEDING', false)) {
+        if ((bool) config('deployment.pilot.allow_seeding', false)) {
             return;
         }
 

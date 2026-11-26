@@ -55,7 +55,7 @@ class CrmPilotSeeder extends Seeder
             return;
         }
 
-        $disabled = filter_var(env('DISABLE_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN);
+        $disabled = (bool) config('deployment.demo.disabled', false);
 
         if ($disabled) {
             $this->command?->warn('CrmPilotSeeder skipped (DISABLE_DEMO_SEEDING=true).');

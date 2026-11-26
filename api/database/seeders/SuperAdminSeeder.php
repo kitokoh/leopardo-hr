@@ -19,8 +19,8 @@ class SuperAdminSeeder extends Seeder
     {
         DB::statement('SET search_path TO public');
 
-        $email = env('SUPER_ADMIN_EMAIL', 'admin@leopardo-rh.com');
-        $passwordFromEnv = env('SUPER_ADMIN_PASSWORD');
+        $email = config('deployment.super_admin.email', 'admin@leopardo-rh.com');
+        $passwordFromEnv = config('deployment.super_admin.password');
 
         // #7402 — en mode démo, le mot de passe seedé DOIT être celui que
         // `GET /api/v1/demo-users` annonce (`config('demo.password')`, défaut
@@ -37,7 +37,11 @@ class SuperAdminSeeder extends Seeder
             ?: ($demoMode && is_string($demoPassword)
                 ? $demoPassword
                 : 'CHANGER_EN_PROD_'.bin2hex(random_bytes(8)));
-        $forceReset = filter_var(env('FORCE_SUPER_ADMIN_PASSWORD_RESET', false), FILTER_VALIDATE_BOOLEAN);
+        // Audit architecture 2026-11-26 : `config()` et non `env()` —
+        // `docker-entrypoint.sh` exécute `config:cache` avant `db:seed`, après
+        // quoi `env()` ne renvoie plus que ce que le SAPI expose. Une garde
+        // de sécurité lue par `env()` n'était donc pas fiable.
+        $forceReset = (bool) config('deployment.super_admin.force_password_reset', false);
 
         $existing = DB::table('super_admins')->where('email', $email)->first();
 
