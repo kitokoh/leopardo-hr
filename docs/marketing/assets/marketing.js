@@ -28,3 +28,24 @@
   [q, fCat, fFmt, fSta].forEach(function(el){ if(el) el.addEventListener('input', apply); });
   apply();
 })();
+
+/* Indicateur de defilement des tableaux.
+   Un tableau plus large que son conteneur cache des colonnes : sans indice,
+   l'utilisateur croit que la donnee s'arrete la. On marque donc chaque
+   conteneur qui defile vraiment, et on remesure au redimensionnement (le
+   passage tablette -> paysage change la largeur disponible). */
+(function(){
+  function mark(){
+    var wraps = document.querySelectorAll('.table-wrap');
+    for(var i=0;i<wraps.length;i++){
+      var w = wraps[i];
+      var t = w.querySelector('table');
+      if(!t) continue;
+      if(t.scrollWidth > w.clientWidth + 1){ w.classList.add('is-scrollable'); }
+      else { w.classList.remove('is-scrollable'); }
+    }
+  }
+  mark();
+  window.addEventListener('resize', mark);
+  window.addEventListener('orientationchange', mark);
+})();

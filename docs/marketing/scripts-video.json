@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "updated": "2026-11-26",
   "owner": "Marketing / QA",
   "note": "Source de verite des scripts video de promotion. Editable directement : le portail est regenere par build_marketing.py. Chaque script porte un identifiant stable (VID-nn) : ne jamais le reutiliser pour un autre sujet.",
@@ -1415,6 +1415,112 @@
         "verticale",
         "social"
       ]
+    },
+    {
+      "id": "VID-29",
+      "title": "Ecole : la note, l'absence, l'appel des parents (9:16 TikTok)",
+      "category": "formats-courts",
+      "format": "9:16",
+      "duration": "35 s",
+      "audience": "Directeurs d'ecoles privees, groupes scolaires, responsables administratifs - TikTok, Reels, Shorts",
+      "objective": "Decliner la verticale Ecole en format vertical natif : la note, l'absence et l'appel des parents, sans demonstration produit longue. Renvoi vers le film 16:9 VID-10 pour la version complete.",
+      "hook": "La note est sur un tableur. L'absence sur un cahier. Et le parent, lui, appelle l'accueil.",
+      "beats": [
+        {
+          "t": "0:00-0:05",
+          "vo": "La note est sur un tableur. L'absence sur un cahier. Et le parent, lui, appelle l'accueil.",
+          "shot": "Plan serre : un cahier d'appel ouvert sur une note manuscrite, un telephone qui sonne a cote. Lumiere de salle des profs.",
+          "text": "3 sources. 0 vue d'ensemble."
+        },
+        {
+          "t": "0:05-0:12",
+          "vo": "Trois personnes ressaisissent la meme information. Et personne ne sait laquelle est juste.",
+          "shot": "Cut rapide : ecran de tableur, page de cahier, main qui decroche. Puis retour sur le cahier.",
+          "text": "Qui a la bonne version ?"
+        },
+        {
+          "t": "0:12-0:20",
+          "vo": "Leopardo tient les etablissements et les classes dans un seul referentiel.",
+          "shot": "Capture verticale : arborescence etablissement > classe > eleves, avec les effectifs.",
+          "text": "Etablissements & classes"
+        },
+        {
+          "t": "0:20-0:28",
+          "vo": "Les notes se saisissent par classe et se consolident sans recopie.",
+          "shot": "Capture verticale : grille de notes d'une classe, puis vue consolidee qui se remplit seule.",
+          "text": "Notes consolidees"
+        },
+        {
+          "t": "0:28-0:35",
+          "vo": "Ecole : de la salle de classe au bulletin. Le film complet est en bio.",
+          "shot": "Retour sur le cahier referme, logo Leopardo, CTA en bas de cadre.",
+          "text": "Film complet en bio"
+        }
+      ],
+      "cta": "Film complet (16:9) en bio - activer le pack EduManager, sans frais de pack.",
+      "music": "Leger, optimiste, percussions claires. Aucun effet de tension scolaire.",
+      "notes": "Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-10 : reutiliser les rushes de salle des profs et les captures d'ecran, ne pas re-tourner. Ne jamais montrer de note d'eleve reelle ni de nom d'eleve : utiliser des donnees de demonstration et flouter tout nom propre. Ne pas suggerer une conformite aux obligations scolaires locales que le produit ne certifie pas.",
+      "tags": [
+        "9:16",
+        "tiktok",
+        "ecole",
+        "education",
+        "verticale",
+        "social"
+      ]
+    },
+    {
+      "id": "VID-30",
+      "title": "Station-service : la nuit, le poste, la marge (9:16 TikTok)",
+      "category": "formats-courts",
+      "format": "9:16",
+      "duration": "35 s",
+      "audience": "Gerants de stations-service, reseaux de distribution carburant - TikTok, Reels, Shorts",
+      "objective": "Decliner la verticale Station-service en format vertical natif : la nuit, le poste et la marge, sans demonstration produit longue. Renvoi vers le film 16:9 VID-11 pour la version complete.",
+      "hook": "Une station ne ferme jamais. Votre gestion, si.",
+      "beats": [
+        {
+          "t": "0:00-0:05",
+          "vo": "Une station ne ferme jamais. Votre gestion, si.",
+          "shot": "Plan serre nocturne : une pompe eclairee, un gerant seul dans la boutique, halo de lumiere blanche.",
+          "text": "24 h sur 24."
+        },
+        {
+          "t": "0:05-0:12",
+          "vo": "Le releve de nuit se fait sur un carnet. Le lendemain, personne ne sait a quelle journee le rattacher.",
+          "shot": "Cut rapide : carnet de releve, ecran de caisse, tampon de date. Puis retour sur la pompe.",
+          "text": "Quelle journee ?"
+        },
+        {
+          "t": "0:12-0:20",
+          "vo": "Leopardo suit les postes et les volumes, et rattache chaque ecriture a la bonne journee.",
+          "shot": "Capture verticale : liste des postes avec volumes, puis ecriture rattachee a une date.",
+          "text": "Postes & volumes"
+        },
+        {
+          "t": "0:20-0:28",
+          "vo": "Les equipes en decalage pointent sur le kiosque, meme quand le reseau tombe.",
+          "shot": "Capture verticale : kiosque de pointage, bandeau hors-ligne visible, validation d'un pointage.",
+          "text": "Kiosque hors-ligne"
+        },
+        {
+          "t": "0:28-0:35",
+          "vo": "Station-service : du litre a la paie de nuit. Le film complet est en bio.",
+          "shot": "Retour sur la pompe de nuit, logo Leopardo, CTA en bas de cadre.",
+          "text": "Film complet en bio"
+        }
+      ],
+      "cta": "Film complet (16:9) en bio - activer le pack FuelStation, sans frais de pack.",
+      "music": "Basse continue, ambiance nocturne, aucun effet de sirene.",
+      "notes": "Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-11 : reutiliser les rushes de station de nuit et les captures d'ecran, ne pas re-tourner. Ne jamais afficher de prix de carburant : ils varient par pays et par jour. Verticale pilote terrain (BC-15 FUEL) : ne pas presenter le pack comme disponible partout.",
+      "tags": [
+        "9:16",
+        "tiktok",
+        "carburant",
+        "station",
+        "verticale",
+        "social"
+      ]
     }
   ],
   "calendrier": {
@@ -1492,7 +1598,9 @@
           "VID-23",
           "VID-26",
           "VID-27",
-          "VID-28"
+          "VID-28",
+          "VID-29",
+          "VID-30"
         ],
         "rationale": "Les hooks 9:16 se calibrent sur les performances des vagues precedentes. Le temoignage client exige un client d'accord pour etre filme : a planifier en dernier."
       }

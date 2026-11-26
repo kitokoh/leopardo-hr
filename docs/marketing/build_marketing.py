@@ -1035,11 +1035,24 @@ body.loc-ar .status-steps .step{padding:5px 6px 5px 13px}
   .topbar-inner{height:auto;padding:10px 0;flex-direction:column;align-items:flex-start}
   .mainnav{width:100%}
   .langswitch{align-self:flex-start}
-  /* Sur mobile, un tableau ne se comprime pas : il defile dans son conteneur.
-     Sans cela les colonnes Titre/Categorie s'ecrasent en 5 lignes et la
-     lecture devient penible (constate au test 390 px du 2026-11-26). */
-  .data-table{min-width:760px}
-  .table-wrap{-webkit-overflow-scrolling:touch}
+  /* Tablette (768-820 px) : le tableau doit tenir dans son conteneur. Un
+     min-width:760px force ici laissait 71 a 91 px de colonnes hors ecran sans
+     aucun indice de defilement (mesure du 2026-11-26 a 768 px : conteneur
+     669 px, tableau 760 px, colonne TEXTE coupee). On laisse donc le tableau
+     se comprimer et le texte passer a la ligne ; le defilement horizontal
+     n'est retabli qu'en dessous de 560 px, ou il est inevitable. */
+  .data-table{min-width:0}
+  .data-table th,.data-table td{padding:9px 8px;font-size:13px}
+  .table-wrap{-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+  .table-wrap::-webkit-scrollbar{height:8px}
+  .table-wrap::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
+  /* Indicateur de defilement : ajoute par le JS quand le tableau depasse
+     reellement son conteneur, pour qu'une colonne hors ecran ne soit jamais
+     silencieuse. */
+  .table-wrap.is-scrollable{position:relative}
+  .table-wrap.is-scrollable::after{content:"\2194";position:absolute;top:6px;right:8px;
+    font-size:12px;color:var(--muted);background:var(--surface);padding:0 4px;
+    border-radius:4px;pointer-events:none}
   /* Calendrier : sur mobile, les colonnes secondaires sont masquees pour que
      # / ID / Titre / Statut tiennent sans defilement horizontal. Mesure du
      2026-11-26 a 390 px : tableau 760 px dans un conteneur de 288 px, la
@@ -1052,6 +1065,13 @@ body.loc-ar .status-steps .step{padding:5px 6px 5px 13px}
   .vague .data-table th, .vague .data-table td{padding-left:8px;padding-right:8px;font-size:12.5px}
   .vague-head{flex-wrap:wrap}
   .vague-head .hist-count-badge{margin-left:0}
+}
+/* Sous 560 px, un tableau a 4 colonnes ne peut plus se comprimer lisiblement :
+   on retablit le defilement horizontal dans le conteneur (jamais sur la page),
+   avec l'indicateur ajoute par le JS. Constat du test 390 px du 2026-11-26. */
+@media (max-width:560px){
+  .data-table{min-width:760px}
+  .vague .data-table{min-width:0}
 }
 @media print{
   .topbar,.footer,.toolbar,.uc-nav,.langswitch{display:none}
@@ -1089,6 +1109,27 @@ JS = """
   }
   [q, fCat, fFmt, fSta].forEach(function(el){ if(el) el.addEventListener('input', apply); });
   apply();
+})();
+
+/* Indicateur de defilement des tableaux.
+   Un tableau plus large que son conteneur cache des colonnes : sans indice,
+   l'utilisateur croit que la donnee s'arrete la. On marque donc chaque
+   conteneur qui defile vraiment, et on remesure au redimensionnement (le
+   passage tablette -> paysage change la largeur disponible). */
+(function(){
+  function mark(){
+    var wraps = document.querySelectorAll('.table-wrap');
+    for(var i=0;i<wraps.length;i++){
+      var w = wraps[i];
+      var t = w.querySelector('table');
+      if(!t) continue;
+      if(t.scrollWidth > w.clientWidth + 1){ w.classList.add('is-scrollable'); }
+      else { w.classList.remove('is-scrollable'); }
+    }
+  }
+  mark();
+  window.addEventListener('resize', mark);
+  window.addEventListener('orientationchange', mark);
 })();
 """
 

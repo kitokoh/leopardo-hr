@@ -839,6 +839,64 @@
         }
       ],
       "audience": "Otelciler, rezidans ve uzun süreli kiralama yöneticileri — TikTok, Reels, Shorts"
+    },
+    "VID-29": {
+      "title": "Okul: not, devamsizlik, velinin telefonu (9:16 TikTok)",
+      "objective": "Okul dikeyini yerel dikey formatta turetmek: not, devamsizlik ve velinin telefonu, uzun urun gosterimi olmadan. Tam surum icin 16:9 VID-10 filmine yonlendirir.",
+      "hook": "Not tabloda. Devamsizlik defterde. Veli ise resepsiyonu ariyor.",
+      "cta": "Tam film (16:9) bio'da - EduManager paketini etkinlestirin, paket ucreti yok.",
+      "beats": [
+        {
+          "vo": "Not tabloda. Devamsizlik defterde. Veli ise resepsiyonu ariyor.",
+          "text": "3 kaynak. 0 butun."
+        },
+        {
+          "vo": "Uc kisi ayni bilgiyi yeniden giriyor. Ve kimse hangisinin dogru oldugunu bilmiyor.",
+          "text": "Hangisi dogru?"
+        },
+        {
+          "vo": "Leopardo okullari ve siniflari tek bir referansta tutar.",
+          "text": "Okullar & siniflar"
+        },
+        {
+          "vo": "Notlar sinif bazinda girilir ve yeniden yazmadan birlestirilir.",
+          "text": "Birlestirilmis notlar"
+        },
+        {
+          "vo": "Okul: siniftan karneye. Tam film bio'da.",
+          "text": "Tam film bio'da"
+        }
+      ],
+      "audience": "Ozel okul mudurleri, okul gruplari, idari sorumlular - TikTok, Reels, Shorts"
+    },
+    "VID-30": {
+      "title": "Akaryakit istasyonu: gece, pompa, marj (9:16 TikTok)",
+      "objective": "Akaryakit istasyonu dikeyini yerel dikey formatta turetmek: gece, pompa ve marj, uzun urun gosterimi olmadan. Tam surum icin 16:9 VID-11 filmine yonlendirir.",
+      "hook": "Istasyon hic kapanmaz. Sizin yonetiniz kapanir.",
+      "cta": "Tam film (16:9) bio'da - FuelStation paketini etkinlestirin, paket ucreti yok.",
+      "beats": [
+        {
+          "vo": "Istasyon hic kapanmaz. Sizin yonetiniz kapanir.",
+          "text": "24 saat."
+        },
+        {
+          "vo": "Gece sayimi deftere yazilir. Ertesi gun kimse hangi gune ait oldugunu bilmez.",
+          "text": "Hangi gun?"
+        },
+        {
+          "vo": "Leopardo pompalari ve hacimleri izler, her kaydi dogru gune baglar.",
+          "text": "Pompalar & hacimler"
+        },
+        {
+          "vo": "Vardiyali ekipler ag kesilse bile kiosktan giris yapar.",
+          "text": "Cevrimdisi kiosk"
+        },
+        {
+          "vo": "Akaryakit istasyonu: litreden gece bordrosuna. Tam film bio'da.",
+          "text": "Tam film bio'da"
+        }
+      ],
+      "audience": "Akaryakit istasyonu yoneticileri, akaryakit dagitim aglari - TikTok, Reels, Shorts"
     }
   }
 }
