@@ -232,14 +232,34 @@ class _VtcJourneyScreenState extends ConsumerState<VtcJourneyScreen> {
       padding: const EdgeInsets.all(16),
       children: [
         JourneyNotice(text: strings.t('vtcOperatorsNotice')),
-        if (_loadError != null)
+        if (_loading)
+          // `_loading` couvre le PREMIER chargement ET le rechargement. Tester
+          // `directory == null` seul ne montrerait rien au retry, puisque la
+          // liste précédente reste en mémoire : l'utilisateur croirait que le
+          // bouton n'a pas répondu.
+          const Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: CircularProgressIndicator(),
+            ),
+          )
+        else if (_loadError != null)
           JourneyErrorView(
             strings: strings,
             error: _loadError!,
             onRetry: _loadOperators,
           )
         else if (directory == null)
-          const Center(child: CircularProgressIndicator())
+          JourneyMessageView(
+            icon: Icons.info_outline,
+            title: strings.t('journeyDirectoryEmptyTitle'),
+            body: strings.t('journeyDirectoryEmptyBody'),
+            action: OutlinedButton.icon(
+              onPressed: _loadOperators,
+              icon: const Icon(Icons.refresh, size: 18),
+              label: Text(strings.t('stateRetry')),
+            ),
+          )
         else if (!directory.available)
           JourneyMessageView(
             icon: Icons.cloud_off_outlined,
