@@ -178,7 +178,12 @@ class HrAppRoutesTest extends TestCase
                 'date_of_birth' => Carbon::now()->subYears(30)->toDateString(),
                 'contract_type' => 'cdi',
                 'contract_start' => '2026-01-01',
-                'salary_type' => 'monthly',
+                // `monthly` n'existe pas dans l'enum PostgreSQL
+                // `employees.salary_type` (CHECK : fixed|hourly|daily,
+                // migration 2026_04_01_000101) ; `HrController` le rejette
+                // desormais en 422 au lieu de laisser passer un 500
+                // (#eval-2026-11-23). Le test etait faux, pas le code.
+                'salary_type' => 'fixed',
                 'salary_base' => 50000,
             ]);
 
@@ -198,7 +203,7 @@ class HrAppRoutesTest extends TestCase
                 'date_of_birth' => Carbon::now()->subYears(35)->toDateString(),
                 'contract_type' => 'cdi',
                 'contract_start' => '2026-01-01',
-                'salary_type' => 'monthly',
+                'salary_type' => 'fixed',
                 'role' => 'manager',         // should be stripped
                 'manager_role' => 'comptable',       // should be stripped
             ]);
