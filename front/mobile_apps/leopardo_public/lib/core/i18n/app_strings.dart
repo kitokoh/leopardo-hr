@@ -342,6 +342,20 @@ class AppStrings {
       'travelKeepCodeNotice':
           'Conservez la référence et le code de validation : ils sont nécessaires pour suivre ou annuler la réservation.',
 
+      'travelPaymentTitle': 'Paiement en ligne',
+      'travelPaymentMethod': 'Moyen de paiement',
+      'travelPayment_momo': 'Mobile money',
+      'travelPayment_card': 'Carte bancaire',
+      'travelPayment_pvit': 'PVit',
+      'travelPaymentNotice':
+          'Le paiement est initié auprès de l’agence. Vous recevrez la confirmation de l’opérateur sur votre téléphone.',
+      'travelPayNow': 'Payer maintenant',
+      'travelPaymentInitiated': 'Paiement initié',
+      'travelPaymentReference': 'Référence du paiement',
+      'travelPaymentProviderReference': 'Référence opérateur',
+      'travelPaymentPendingNotice':
+          'Le paiement est en attente de confirmation. Conservez la référence du paiement : elle permet de le retrouver.',
+
       // ── Verticale Emploi (careers) — #9944 ──
       'careersDirectoryNotice':
           'Les offres viennent des entreprises qui publient sur la plateforme. Certaines offres sont agrégées de partenaires : la candidature se fait alors chez eux.',
@@ -669,6 +683,20 @@ class AppStrings {
       'travelKeepCodeNotice':
           'Keep the reference and validation code: they are required to track or cancel the booking.',
 
+      'travelPaymentTitle': 'Online payment',
+      'travelPaymentMethod': 'Payment method',
+      'travelPayment_momo': 'Mobile money',
+      'travelPayment_card': 'Bank card',
+      'travelPayment_pvit': 'PVit',
+      'travelPaymentNotice':
+          'Payment is initiated with the agency. You will receive the operator confirmation on your phone.',
+      'travelPayNow': 'Pay now',
+      'travelPaymentInitiated': 'Payment initiated',
+      'travelPaymentReference': 'Payment reference',
+      'travelPaymentProviderReference': 'Operator reference',
+      'travelPaymentPendingNotice':
+          'The payment is awaiting confirmation. Keep the payment reference: it is how you find it again.',
+
       // ── Careers vertical — #9944 ──
       'careersDirectoryNotice':
           'Jobs come from companies publishing on the platform. Some offers are aggregated from partners: you then apply on their site.',
@@ -980,6 +1008,20 @@ class AppStrings {
       'travelExpiresAt': 'أكّد قبل',
       'travelKeepCodeNotice':
           'احتفظ بالمرجع ورمز التحقق: يلزمك لتتبع الحجز أو إلغائه.',
+
+      'travelPaymentTitle': 'الدفع عبر الإنترنت',
+      'travelPaymentMethod': 'طريقة الدفع',
+      'travelPayment_momo': 'المحفظة الإلكترونية',
+      'travelPayment_card': 'بطاقة بنكية',
+      'travelPayment_pvit': 'PVit',
+      'travelPaymentNotice':
+          'يتم بدء الدفع لدى الوكالة. ستتلقى تأكيد المشغّل على هاتفك.',
+      'travelPayNow': 'ادفع الآن',
+      'travelPaymentInitiated': 'تم بدء الدفع',
+      'travelPaymentReference': 'مرجع الدفع',
+      'travelPaymentProviderReference': 'مرجع المشغّل',
+      'travelPaymentPendingNotice':
+          'الدفع في انتظار التأكيد. احتفظ بمرجع الدفع للعثور عليه لاحقًا.',
 
       // ── قطاع التوظيف (careers) — #9944 ──
       'careersDirectoryNotice':
@@ -1302,6 +1344,20 @@ class AppStrings {
       'travelExpiresAt': 'Şu tarihe kadar onayla',
       'travelKeepCodeNotice':
           'Referansı ve doğrulama kodunu saklayın: takip veya iptal için gereklidir.',
+
+      'travelPaymentTitle': 'Çevrimiçi ödeme',
+      'travelPaymentMethod': 'Ödeme yöntemi',
+      'travelPayment_momo': 'Mobil ödeme',
+      'travelPayment_card': 'Banka kartı',
+      'travelPayment_pvit': 'PVit',
+      'travelPaymentNotice':
+          'Ödeme acente nezdinde başlatılır. Operatör onayını telefonunuza alacaksınız.',
+      'travelPayNow': 'Şimdi öde',
+      'travelPaymentInitiated': 'Ödeme başlatıldı',
+      'travelPaymentReference': 'Ödeme referansı',
+      'travelPaymentProviderReference': 'Operatör referansı',
+      'travelPaymentPendingNotice':
+          'Ödeme onay bekliyor. Ödeme referansını saklayın: onu bulmanın yolu budur.',
 
       // ── İşe alım dikeyi (careers) — #9944 ──
       'careersDirectoryNotice':

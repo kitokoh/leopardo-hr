@@ -301,6 +301,74 @@ class TravelPassengerDraft {
 /// Nombre maximal de passagers par réservation (règle serveur `max:20`).
 const int travelMaxPassengers = 20;
 
+/// Moyens de paiement proposés au voyageur en ligne — #9947.
+///
+/// ## Pourquoi `cash` n'est pas ici
+///
+/// Le serveur accepte `cash` (`in:cash,pvit,momo,card`), mais il n'a de sens
+/// qu'au guichet, où un agent encaisse physiquement. L'exposer dans l'app
+/// laisserait croire à un paiement réglé alors qu'aucune transaction n'aurait
+/// eu lieu. La vitrine web fait le même choix
+/// (`ONLINE_PAYMENT_PROVIDERS` dans `booking-gateway.ts`).
+enum TravelPaymentProvider {
+  momo('momo'),
+  card('card'),
+  pvit('pvit');
+
+  const TravelPaymentProvider(this.wire);
+
+  /// Valeur envoyée à l'API (`provider_code`).
+  final String wire;
+
+  static TravelPaymentProvider? tryParse(Object? raw) {
+    if (raw is! String) return null;
+    for (final value in TravelPaymentProvider.values) {
+      if (value.wire == raw) return value;
+    }
+    return null;
+  }
+}
+
+/// Paiement initié côté serveur (`POST …/payments/initiate`).
+///
+/// ## Ce que ce modèle refuse d'inventer
+///
+/// - Une réponse sans `reference` n'est pas un paiement : elle est rejetée au
+///   parsing, pas affichée avec une référence vide qui ferait croire à une
+///   transaction engagée.
+/// - `provider_reference` reste `null` quand le fournisseur ne l'a pas encore
+///   rendue (paiement mobile en attente de confirmation) : ce n'est pas une
+///   erreur, c'est un état.
+class TravelPaymentInitiation {
+  const TravelPaymentInitiation({
+    required this.reference,
+    required this.status,
+    this.providerReference,
+  });
+
+  /// Référence interne du paiement (celle à conserver).
+  final String reference;
+
+  /// Statut renvoyé par le serveur (`pending`, `paid`, …).
+  final String status;
+
+  /// Référence chez le fournisseur (opérateur mobile money, PSP carte).
+  final String? providerReference;
+
+  static TravelPaymentInitiation? tryParse(Object? raw) {
+    if (raw is! Map) return null;
+
+    final reference = _str(raw['reference']);
+    if (reference == null) return null;
+
+    return TravelPaymentInitiation(
+      reference: reference,
+      status: _str(raw['status']) ?? 'pending',
+      providerReference: _str(raw['provider_reference']),
+    );
+  }
+}
+
 /// Réservation créée (`TravelBookingResource` + `agency`).
 class TravelBookingConfirmation {
   const TravelBookingConfirmation({

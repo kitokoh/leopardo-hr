@@ -219,4 +219,76 @@ void main() {
       expect(status!.reference, 'BK-9');
     });
   });
+
+  // ── Paiement en ligne (#9947) ──
+  group('paiement en ligne', () {
+    test('le corps respecte le contrat initiatePayment', () {
+      final payload = TravelGateway.buildPaymentPayload(
+        bookingReference: ' BK-123 ',
+        provider: TravelPaymentProvider.momo,
+        idempotencyKey: ' key-1 ',
+      );
+
+      expect(payload, {
+        'booking_reference': 'BK-123',
+        'provider_code': 'momo',
+        'idempotency_key': 'key-1',
+      });
+    });
+
+    test('cash n’est pas proposé au voyageur', () {
+      // Le serveur accepte `cash`, l'app non : il n'a de sens qu'au guichet.
+      expect(
+        TravelPaymentProvider.values.map((p) => p.wire),
+        isNot(contains('cash')),
+      );
+      expect(TravelPaymentProvider.tryParse('cash'), isNull);
+    });
+
+    test('une référence vide ou trop longue est refusée avant l’envoi', () {
+      expect(
+        () => TravelGateway.buildPaymentPayload(
+          bookingReference: '   ',
+          provider: TravelPaymentProvider.card,
+          idempotencyKey: 'k',
+        ),
+        throwsArgumentError,
+      );
+      expect(
+        () => TravelGateway.buildPaymentPayload(
+          bookingReference: 'X' * 41,
+          provider: TravelPaymentProvider.card,
+          idempotencyKey: 'k',
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('une clé d’idempotence vide est refusée', () {
+      expect(
+        () => TravelGateway.buildPaymentPayload(
+          bookingReference: 'BK-1',
+          provider: TravelPaymentProvider.pvit,
+          idempotencyKey: '  ',
+        ),
+        throwsArgumentError,
+      );
+    });
+
+    test('une réponse sans référence n’est pas un paiement', () {
+      expect(TravelPaymentInitiation.tryParse({'status': 'pending'}), isNull);
+      expect(TravelPaymentInitiation.tryParse(null), isNull);
+    });
+
+    test('la référence opérateur absente reste nulle, pas vide', () {
+      final payment = TravelPaymentInitiation.tryParse({
+        'reference': 'PAY-1',
+        'status': 'pending',
+      });
+
+      expect(payment, isNotNull);
+      expect(payment!.reference, 'PAY-1');
+      expect(payment.providerReference, isNull);
+    });
+  });
 }
