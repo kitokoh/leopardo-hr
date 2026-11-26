@@ -201,6 +201,61 @@ class AppStrings {
       'journeyCustomer': 'Vos coordonnées',
       'journeyCustomerName': 'Nom complet',
       'journeyCustomerPhone': 'Téléphone',
+
+      // ── Annuaires de verticales (#9948) ──
+      'journeyDirectoryTitle': 'Annuaire',
+      'journeyDirectoryNotice':
+          'Les établissements affichés publient volontairement sur la plateforme. Un établissement non publié n’apparaît pas ici.',
+      'journeyDirectorySearch': 'Rechercher',
+      'journeyDirectorySearchHint': 'Nom, enseigne (optionnel)',
+      'journeyDirectoryCity': 'Ville',
+      'journeyDirectoryCityHint': 'Ville (optionnel)',
+      'journeyDirectorySearchAction': 'Rechercher',
+      'journeyDirectoryCategory': 'Catégorie',
+      'journeyDirectoryRating': 'Note',
+      'journeyDirectoryDistance': 'Distance',
+      'journeyDirectoryEmptyTitle': 'Aucun établissement publié',
+      'journeyDirectoryEmptyBody':
+          'Aucun établissement de cette catégorie n’a encore activé sa publication.',
+      'journeyDirectoryUnavailableTitle': 'Service momentanément indisponible',
+      'journeyDirectoryUnavailableBody':
+          'L’annuaire n’a pas répondu. Ce n’est pas une absence d’établissement : réessayez.',
+      'journeyDirectoryUnknownTitle': 'Verticale inconnue',
+      'journeyDirectoryUnknownBody':
+          'Cette catégorie n’existe pas dans cette version de l’application.',
+      'journeyContactAction': 'Contacter',
+      'journeyBlockerContactGeneric':
+          'La prise de contact n’est pas encore disponible pour cette catégorie.',
+      'journeyStatusLabel': 'Statut',
+      // ── Verticale Mobilité (#9948) ──
+      'vtcOperatorsNotice':
+          'Ces opérateurs acceptent des courses réservées en ligne. La course se demande sans compte et se suit par référence.',
+      'vtcEmptyTitle': 'Aucun opérateur disponible',
+      'vtcEmptyBody':
+          'Aucun opérateur de mobilité n’a encore activé sa publication.',
+      'vtcCoordinatesNotice':
+          'Le devis exige des coordonnées précises : sans elles, la distance et le prix seraient faux. Format attendu : latitude,longitude.',
+      'vtcCoordinatesHint': 'ex. 33.5731,-7.5898',
+      'vtcPickup': 'Point de départ',
+      'vtcPickupAddress': 'Adresse de départ',
+      'vtcDropoff': 'Point d’arrivée',
+      'vtcDropoffAddress': 'Adresse d’arrivée',
+      'vtcAddressHint': 'Adresse lisible (optionnel)',
+      'vtcEstimate': 'Obtenir un devis',
+      'vtcEstimatedPrice': 'Prix estimé',
+      'vtcDistance': 'Distance',
+      'vtcPriceToConfirm': 'Prix à confirmer par l’opérateur',
+      'vtcRequestRide': 'Demander la course',
+      'vtcRideRequested': 'Course demandée',
+      'vtcTrackingCode': 'Code de suivi',
+      'vtcTrackingCodeNotice':
+          'Conservez ce code : il n’est affiché qu’une fois.',
+      'vtcTrackingCodeMissing':
+          'Le code n’est pas réaffiché sur une demande déjà envoyée. Utilisez la référence et le code reçus.',
+      'vtcInvalidPickup': 'Point de départ invalide (format latitude,longitude)',
+      'vtcInvalidDropoff': 'Point d’arrivée invalide (format latitude,longitude)',
+      'vtcMissingName': 'Le nom du passager est requis',
+      'vtcMissingPhone': 'Le téléphone du passager est requis',
       'journeyCustomerEmail': 'E-mail (optionnel)',
       'journeyDelivery': 'Livraison',
       'journeyDeliveryAddress': 'Adresse',
@@ -545,6 +600,59 @@ class AppStrings {
       'journeyCustomer': 'Your details',
       'journeyCustomerName': 'Full name',
       'journeyCustomerPhone': 'Phone',
+
+      // ── Vertical directories (#9948) ──
+      'journeyDirectoryTitle': 'Directory',
+      'journeyDirectoryNotice':
+          'Listed businesses voluntarily publish on the platform. An unpublished business does not appear here.',
+      'journeyDirectorySearch': 'Search',
+      'journeyDirectorySearchHint': 'Name, brand (optional)',
+      'journeyDirectoryCity': 'City',
+      'journeyDirectoryCityHint': 'City (optional)',
+      'journeyDirectorySearchAction': 'Search',
+      'journeyDirectoryCategory': 'Category',
+      'journeyDirectoryRating': 'Rating',
+      'journeyDirectoryDistance': 'Distance',
+      'journeyDirectoryEmptyTitle': 'No published business',
+      'journeyDirectoryEmptyBody':
+          'No business in this category has enabled publishing yet.',
+      'journeyDirectoryUnavailableTitle': 'Service temporarily unavailable',
+      'journeyDirectoryUnavailableBody':
+          'The directory did not respond. This is not an absence of business: please retry.',
+      'journeyDirectoryUnknownTitle': 'Unknown vertical',
+      'journeyDirectoryUnknownBody':
+          'This category does not exist in this version of the application.',
+      'journeyContactAction': 'Contact',
+      'journeyBlockerContactGeneric':
+          'Contact is not available yet for this category.',
+      'journeyStatusLabel': 'Status',
+      // ── Mobility vertical (#9948) ──
+      'vtcOperatorsNotice':
+          'These operators accept rides booked online. A ride is requested without an account and tracked by reference.',
+      'vtcEmptyTitle': 'No operator available',
+      'vtcEmptyBody': 'No mobility operator has enabled publishing yet.',
+      'vtcCoordinatesNotice':
+          'A quote needs precise coordinates: without them the distance and price would be wrong. Expected format: latitude,longitude.',
+      'vtcCoordinatesHint': 'e.g. 33.5731,-7.5898',
+      'vtcPickup': 'Pickup point',
+      'vtcPickupAddress': 'Pickup address',
+      'vtcDropoff': 'Drop-off point',
+      'vtcDropoffAddress': 'Drop-off address',
+      'vtcAddressHint': 'Readable address (optional)',
+      'vtcEstimate': 'Get a quote',
+      'vtcEstimatedPrice': 'Estimated price',
+      'vtcDistance': 'Distance',
+      'vtcPriceToConfirm': 'Price to be confirmed by the operator',
+      'vtcRequestRide': 'Request the ride',
+      'vtcRideRequested': 'Ride requested',
+      'vtcTrackingCode': 'Tracking code',
+      'vtcTrackingCodeNotice': 'Keep this code: it is shown only once.',
+      'vtcTrackingCodeMissing':
+          'The code is not shown again for an already submitted request. Use the reference and code you received.',
+      'vtcInvalidPickup': 'Invalid pickup point (latitude,longitude format)',
+      'vtcInvalidDropoff': 'Invalid drop-off point (latitude,longitude format)',
+      'vtcMissingName': 'Passenger name is required',
+      'vtcMissingPhone': 'Passenger phone is required',
       'journeyCustomerEmail': 'Email (optional)',
       'journeyDelivery': 'Delivery',
       'journeyDeliveryAddress': 'Address',
@@ -881,6 +989,57 @@ class AppStrings {
       'journeyCustomer': 'بياناتك',
       'journeyCustomerName': 'الاسم الكامل',
       'journeyCustomerPhone': 'الهاتف',
+
+      // ── أدلة القطاعات (#9948) ──
+      'journeyDirectoryTitle': 'الدليل',
+      'journeyDirectoryNotice':
+          'المنشآت المعروضة تنشر طوعًا على المنصة. المنشأة غير المنشورة لا تظهر هنا.',
+      'journeyDirectorySearch': 'بحث',
+      'journeyDirectorySearchHint': 'الاسم أو العلامة (اختياري)',
+      'journeyDirectoryCity': 'المدينة',
+      'journeyDirectoryCityHint': 'المدينة (اختياري)',
+      'journeyDirectorySearchAction': 'بحث',
+      'journeyDirectoryCategory': 'الفئة',
+      'journeyDirectoryRating': 'التقييم',
+      'journeyDirectoryDistance': 'المسافة',
+      'journeyDirectoryEmptyTitle': 'لا توجد منشأة منشورة',
+      'journeyDirectoryEmptyBody':
+          'لم تُفعّل أي منشأة في هذه الفئة النشر بعد.',
+      'journeyDirectoryUnavailableTitle': 'الخدمة غير متاحة مؤقتًا',
+      'journeyDirectoryUnavailableBody':
+          'لم يستجب الدليل. هذا ليس غيابًا للمنشآت: أعد المحاولة.',
+      'journeyDirectoryUnknownTitle': 'قطاع غير معروف',
+      'journeyDirectoryUnknownBody': 'هذه الفئة غير موجودة في هذا الإصدار من التطبيق.',
+      'journeyContactAction': 'تواصل',
+      'journeyBlockerContactGeneric': 'التواصل غير متاح بعد لهذه الفئة.',
+      'journeyStatusLabel': 'الحالة',
+      // ── قطاع النقل (#9948) ──
+      'vtcOperatorsNotice':
+          'هؤلاء المشغّلون يقبلون رحلات تُحجز عبر الإنترنت. تُطلب الرحلة دون حساب وتُتبع بالمرجع.',
+      'vtcEmptyTitle': 'لا يوجد مشغّل متاح',
+      'vtcEmptyBody': 'لم يُفعّل أي مشغّل نقل النشر بعد.',
+      'vtcCoordinatesNotice':
+          'يتطلب العرض إحداثيات دقيقة: بدونها ستكون المسافة والسعر خاطئين. الصيغة المطلوبة: خط العرض،خط الطول.',
+      'vtcCoordinatesHint': 'مثال 33.5731,-7.5898',
+      'vtcPickup': 'نقطة الانطلاق',
+      'vtcPickupAddress': 'عنوان الانطلاق',
+      'vtcDropoff': 'نقطة الوصول',
+      'vtcDropoffAddress': 'عنوان الوصول',
+      'vtcAddressHint': 'عنوان مقروء (اختياري)',
+      'vtcEstimate': 'احصل على عرض سعر',
+      'vtcEstimatedPrice': 'السعر التقديري',
+      'vtcDistance': 'المسافة',
+      'vtcPriceToConfirm': 'السعر يؤكده المشغّل',
+      'vtcRequestRide': 'اطلب الرحلة',
+      'vtcRideRequested': 'تم طلب الرحلة',
+      'vtcTrackingCode': 'رمز التتبع',
+      'vtcTrackingCodeNotice': 'احتفظ بهذا الرمز: يظهر مرة واحدة فقط.',
+      'vtcTrackingCodeMissing':
+          'لا يُعاد إظهار الرمز لطلب أُرسل مسبقًا. استخدم المرجع والرمز الذين تلقيتهما.',
+      'vtcInvalidPickup': 'نقطة انطلاق غير صالحة (صيغة خط العرض،خط الطول)',
+      'vtcInvalidDropoff': 'نقطة وصول غير صالحة (صيغة خط العرض،خط الطول)',
+      'vtcMissingName': 'اسم المسافر مطلوب',
+      'vtcMissingPhone': 'هاتف المسافر مطلوب',
       'journeyCustomerEmail': 'البريد الإلكتروني (اختياري)',
       'journeyDelivery': 'التوصيل',
       'journeyDeliveryAddress': 'العنوان',
@@ -1208,6 +1367,59 @@ class AppStrings {
       'journeyCustomer': 'Bilgileriniz',
       'journeyCustomerName': 'Ad soyad',
       'journeyCustomerPhone': 'Telefon',
+
+      // ── Dikey dizinler (#9948) ──
+      'journeyDirectoryTitle': 'Dizin',
+      'journeyDirectoryNotice':
+          'Listelenen işletmeler platformda gönüllü olarak yayın yapar. Yayınlanmayan işletme burada görünmez.',
+      'journeyDirectorySearch': 'Ara',
+      'journeyDirectorySearchHint': 'Ad, marka (isteğe bağlı)',
+      'journeyDirectoryCity': 'Şehir',
+      'journeyDirectoryCityHint': 'Şehir (isteğe bağlı)',
+      'journeyDirectorySearchAction': 'Ara',
+      'journeyDirectoryCategory': 'Kategori',
+      'journeyDirectoryRating': 'Puan',
+      'journeyDirectoryDistance': 'Mesafe',
+      'journeyDirectoryEmptyTitle': 'Yayınlanmış işletme yok',
+      'journeyDirectoryEmptyBody':
+          'Bu kategoride henüz yayını etkinleştiren işletme yok.',
+      'journeyDirectoryUnavailableTitle': 'Hizmet geçici olarak kullanılamıyor',
+      'journeyDirectoryUnavailableBody':
+          'Dizin yanıt vermedi. Bu bir işletme yokluğu değildir: tekrar deneyin.',
+      'journeyDirectoryUnknownTitle': 'Bilinmeyen dikey',
+      'journeyDirectoryUnknownBody':
+          'Bu kategori uygulamanın bu sürümünde yok.',
+      'journeyContactAction': 'İletişim',
+      'journeyBlockerContactGeneric':
+          'İletişim bu kategori için henüz kullanılamıyor.',
+      'journeyStatusLabel': 'Durum',
+      // ── Mobilite dikeyi (#9948) ──
+      'vtcOperatorsNotice':
+          'Bu operatörler çevrimiçi rezerve edilen yolculukları kabul eder. Yolculuk hesapsız istenir ve referansla izlenir.',
+      'vtcEmptyTitle': 'Kullanılabilir operatör yok',
+      'vtcEmptyBody': 'Henüz yayınını etkinleştiren mobilite operatörü yok.',
+      'vtcCoordinatesNotice':
+          'Teklif kesin koordinat gerektirir: onlar olmadan mesafe ve fiyat yanlış olur. Beklenen biçim: enlem,boylam.',
+      'vtcCoordinatesHint': 'örn. 33.5731,-7.5898',
+      'vtcPickup': 'Kalkış noktası',
+      'vtcPickupAddress': 'Kalkış adresi',
+      'vtcDropoff': 'Varış noktası',
+      'vtcDropoffAddress': 'Varış adresi',
+      'vtcAddressHint': 'Okunabilir adres (isteğe bağlı)',
+      'vtcEstimate': 'Teklif al',
+      'vtcEstimatedPrice': 'Tahmini fiyat',
+      'vtcDistance': 'Mesafe',
+      'vtcPriceToConfirm': 'Fiyatı operatör onaylayacak',
+      'vtcRequestRide': 'Yolculuk iste',
+      'vtcRideRequested': 'Yolculuk istendi',
+      'vtcTrackingCode': 'Takip kodu',
+      'vtcTrackingCodeNotice': 'Bu kodu saklayın: yalnızca bir kez gösterilir.',
+      'vtcTrackingCodeMissing':
+          'Kod, zaten gönderilmiş bir talep için yeniden gösterilmez. Aldığınız referansı ve kodu kullanın.',
+      'vtcInvalidPickup': 'Geçersiz kalkış noktası (enlem,boylam biçimi)',
+      'vtcInvalidDropoff': 'Geçersiz varış noktası (enlem,boylam biçimi)',
+      'vtcMissingName': 'Yolcu adı gerekli',
+      'vtcMissingPhone': 'Yolcu telefonu gerekli',
       'journeyCustomerEmail': 'E-posta (isteğe bağlı)',
       'journeyDelivery': 'Teslimat',
       'journeyDeliveryAddress': 'Adres',

@@ -13,6 +13,8 @@ import '../../features/journeys/screens/stay_reservation_screen.dart';
 import '../../features/journeys/screens/travel_journey_screen.dart';
 import '../../features/journeys/screens/careers_journey_screen.dart';
 import '../../features/journeys/screens/pharmacy_journey_screen.dart';
+import '../../features/journeys/screens/vertical_directory_screen.dart';
+import '../../features/journeys/screens/vtc_journey_screen.dart';
 import '../../features/tabs/secondary_tabs.dart';
 
 /// Coque à 4 onglets.
@@ -195,6 +197,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => PharmacyJourneyScreen(
           initialSlug: state.uri.queryParameters['slug'],
         ),
+      ),
+      // Verticales d'annuaire (#9948) : restaurant, retail, hospitality et
+      // trade partagent le même contrat de lecture
+      // (`GET /public/discover?type=…`) et donc le même écran. Le code de
+      // verticale est validé par le registre — un code inconnu affiche un
+      // message, jamais une liste vide trompeuse.
+      GoRoute(
+        path: '/journey/directory/:vertical',
+        builder: (context, state) => VerticalDirectoryScreen(
+          verticalCode: state.pathParameters['vertical'] ?? '',
+        ),
+      ),
+      // Verticale Mobilité (#9948) : parcours autonome (annuaire opérateurs →
+      // devis → course → suivi), donc la route ne porte pas de slug.
+      GoRoute(
+        path: '/journey/vtc',
+        builder: (context, state) => const VtcJourneyScreen(),
       ),
 
       // Toute route inconnue : 404 présenté comme une information (voir
