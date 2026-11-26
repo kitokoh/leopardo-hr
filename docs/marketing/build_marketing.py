@@ -24,7 +24,9 @@ Usage :
 from __future__ import annotations
 
 import argparse
+import csv
 import html
+import io
 import json
 import shutil
 from pathlib import Path
@@ -62,6 +64,7 @@ SCRIPT_BY_ID = {s["id"]: s for s in SCRIPTS}
 # Le generateur ne l'ecrit JAMAIS : il le lit et le rend.
 
 STATUS_FILENAME = "statuts-tournage.json"
+CSV_FILENAME = "calendrier-tournage.csv"
 
 
 def load_statuts() -> dict:
@@ -519,6 +522,19 @@ def page_calendrier() -> str:
 
   <div class="stats stats-light">{stat_cards}</div>
 
+  <div class="panel export-panel">
+    <h3>Export pour l'equipe production</h3>
+    <p>Le calendrier complet (une ligne par script, dans l'ordre de tournage) est disponible en
+      CSV : separateur point-virgule, encodage UTF-8 avec BOM, ouvrable directement dans Excel
+      et LibreOffice sans manipulation d'import.</p>
+    <p class="export-actions">
+      <a class="btn-export" href="{CSV_FILENAME}" download="{CSV_FILENAME}">
+        Telecharger le calendrier (CSV)
+      </a>
+      <span class="muted small">{n} lignes &middot; {CSV_FILENAME}</span>
+    </p>
+  </div>
+
   <div class="panel">
     <h3>Regle d'ordonnancement</h3>
     <p>{esc(cal.get('note', ''))}</p>
@@ -526,6 +542,54 @@ def page_calendrier() -> str:
 
   {''.join(blocks)}
 """, "Ordre de production des videos de promotion, vague par vague.")
+
+
+def build_calendrier_csv() -> str:
+    """Calendrier de tournage au format CSV pour l'equipe production.
+
+    Une ligne par script, dans l'ordre reel de production (vague puis position
+    dans la vague). Separateur point-virgule et BOM UTF-8 : c'est ce qu'Excel
+    attend en locale francaise, ou la virgule est le separateur decimal.
+    """
+    cal = META.get("calendrier") or {}
+    vagues = cal.get("vagues") or []
+
+    buf = io.StringIO()
+    w = csv.writer(buf, delimiter=";", quoting=csv.QUOTE_MINIMAL, lineterminator="\r\n")
+    w.writerow([
+        "ordre", "vague", "vague_nom", "id", "titre", "categorie", "format",
+        "duree", "statut", "statut_libelle", "audience", "objectif", "cta",
+        "date_modification", "auteur",
+    ])
+
+    n = 0
+    for v in vagues:
+        for sid in v.get("scripts", []):
+            s = SCRIPT_BY_ID.get(sid)
+            if not s:
+                continue
+            n += 1
+            c = cat_of(s)
+            code = status_code(sid)
+            st = status_of(sid)
+            w.writerow([
+                n,
+                v.get("id", ""),
+                v.get("name", ""),
+                sid,
+                s.get("title", ""),
+                c.get("name", s.get("category", "")),
+                s.get("format", ""),
+                s.get("duration", ""),
+                code,
+                STATUS_DEFS.get(code, {}).get("label", code),
+                s.get("audience", ""),
+                s.get("objective", ""),
+                s.get("cta", ""),
+                st.get("date_modification", ""),
+                st.get("auteur", ""),
+            ])
+    return buf.getvalue()
 
 
 def page_recap() -> str:
@@ -709,6 +773,13 @@ main{padding:28px 20px 60px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;
   box-shadow:var(--shadow);margin-bottom:18px}
 .panel h3{margin:0 0 10px;font-size:16px}
+.export-panel{border-left:4px solid var(--brand)}
+.export-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:12px 0 0}
+.btn-export{display:inline-flex;align-items:center;gap:8px;background:var(--brand);color:#fff;
+  font-weight:700;font-size:14px;text-decoration:none;border-radius:10px;padding:11px 18px;
+  border:1px solid var(--brand);box-shadow:0 1px 2px rgba(15,23,42,.12)}
+.btn-export:hover{filter:brightness(1.08)}
+.btn-export::before{content:"\2b07";font-size:15px;line-height:1}
 .plain{margin:0;padding-left:18px}
 .plain li{margin:4px 0}
 .uc-head{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
@@ -834,6 +905,8 @@ def main() -> None:
     (out / "index.html").write_text(page_home(), encoding="utf-8")
     (out / "recap.html").write_text(page_recap(), encoding="utf-8")
     (out / "calendrier.html").write_text(page_calendrier(), encoding="utf-8")
+    # BOM UTF-8 : sans lui, Excel en locale francaise lit "Tourne" en mojibake.
+    (out / CSV_FILENAME).write_text("\ufeff" + build_calendrier_csv(), encoding="utf-8", newline="")
     (out / "categories" / "index.html").write_text(page_categories_index(), encoding="utf-8")
     for c in CATEGORIES:
         (out / "categories" / f"{c['slug']}.html").write_text(page_category(c["slug"]), encoding="utf-8")

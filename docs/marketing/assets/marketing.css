@@ -88,6 +88,13 @@ main{padding:28px 20px 60px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;
   box-shadow:var(--shadow);margin-bottom:18px}
 .panel h3{margin:0 0 10px;font-size:16px}
+.export-panel{border-left:4px solid var(--brand)}
+.export-actions{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:12px 0 0}
+.btn-export{display:inline-flex;align-items:center;gap:8px;background:var(--brand);color:#fff;
+  font-weight:700;font-size:14px;text-decoration:none;border-radius:10px;padding:11px 18px;
+  border:1px solid var(--brand);box-shadow:0 1px 2px rgba(15,23,42,.12)}
+.btn-export:hover{filter:brightness(1.08)}
+.btn-export::before{content:"b07";font-size:15px;line-height:1}
 .plain{margin:0;padding-left:18px}
 .plain li{margin:4px 0}
 .uc-head{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
