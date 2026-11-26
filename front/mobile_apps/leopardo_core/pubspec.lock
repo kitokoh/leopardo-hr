@@ -402,10 +402,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_blue_plus
-      sha256: "13e09b4a1bf017e73be75a085039edb9b245d113dba3b69f0e787fac8a346389"
+      sha256: "69a8c87c11fc792e8cf0f997d275484fbdb5143ac9f0ac4d424429700cb4e0ed"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.15"
+    version: "1.36.8"
   flutter_blue_plus_android:
     dependency: transitive
     description:
@@ -1025,10 +1025,10 @@ packages:
     dependency: "direct main"
     description:
       name: mobile_scanner
-      sha256: "175c62fc813c2bd762757359a2088f8cbdb72020cf85d4cd27fc4d3fe59be058"
+      sha256: "9d1ae480f28c1588dc6e6292ad35d2e0b7d7920c32cc61bf50a3281cd2ad6fde"
       url: "https://pub.dev"
     source: hosted
-    version: "7.5.0"
+    version: "7.4.4"
   native_toolchain_c:
     dependency: transitive
     description:
