@@ -33,7 +33,10 @@ class CareersGateway {
       '$base/$companySlug/jobs/$jobId';
 
   /// Annuaire des entreprises qui publient au moins une offre.
-  Future<List<CareerCompany>> companies({String? query, int perPage = 20}) async {
+  Future<List<CareerCompany>> companies({
+    String? query,
+    int perPage = 20,
+  }) async {
     final json = await _api.get(
       base,
       query: {
@@ -186,10 +189,9 @@ class CareersGateway {
       throw ArgumentError.value(trimmed, 'email', 'E-mail valide requis');
     }
 
-    final json = await _api.post(
-      '$base/$companySlug/applications/track',
-      {'email': trimmed},
-    );
+    final json = await _api.post('$base/$companySlug/applications/track', {
+      'email': trimmed,
+    });
 
     return CareerTrackingResult.tryParse(json);
   }

@@ -102,19 +102,16 @@ void main() {
 
   group('portail', () {
     test('les deux familles d’offres sont séparées', () {
-      final portal = CareerPortal.tryParse(
-        {
-          'data': [
-            {'id': 1, 'title': 'Interne', 'origin': 'company'},
-            {'id': 2, 'title': 'Externe', 'origin': 'external'},
-          ],
-          'meta': {
-            'company': {'slug': 'atlas', 'name': 'Atlas'},
-            'counts': {'company': 1, 'external': 1, 'total': 2},
-          },
+      final portal = CareerPortal.tryParse({
+        'data': [
+          {'id': 1, 'title': 'Interne', 'origin': 'company'},
+          {'id': 2, 'title': 'Externe', 'origin': 'external'},
+        ],
+        'meta': {
+          'company': {'slug': 'atlas', 'name': 'Atlas'},
+          'counts': {'company': 1, 'external': 1, 'total': 2},
         },
-        fallbackSlug: 'atlas',
-      );
+      }, fallbackSlug: 'atlas');
 
       expect(portal, isNotNull);
       expect(portal!.internalJobs, hasLength(1));
@@ -124,10 +121,9 @@ void main() {
     });
 
     test('sans meta.company, le slug sert de nom', () {
-      final portal = CareerPortal.tryParse(
-        {'data': <Object?>[]},
-        fallbackSlug: 'atlas',
-      );
+      final portal = CareerPortal.tryParse({
+        'data': <Object?>[],
+      }, fallbackSlug: 'atlas');
       expect(portal!.company.name, 'atlas');
     });
   });
@@ -141,16 +137,15 @@ void main() {
       String? coverLetter,
       String? resumeUrl,
       bool consent = true,
-    }) =>
-        CareerApplicationDraft(
-          firstName: firstName,
-          lastName: lastName,
-          email: email,
-          phone: phone,
-          coverLetter: coverLetter,
-          resumeUrl: resumeUrl,
-          consent: consent,
-        );
+    }) => CareerApplicationDraft(
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: phone,
+      coverLetter: coverLetter,
+      resumeUrl: resumeUrl,
+      consent: consent,
+    );
 
     test('le corps porte les clés exactes de PublicApplyRequest', () {
       final payload = CareersGateway.buildApplicationPayload(

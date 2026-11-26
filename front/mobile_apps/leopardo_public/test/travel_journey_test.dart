@@ -89,13 +89,13 @@ void main() {
 
   group('corps de réservation', () {
     List<TravelPassengerDraft> passengers({int count = 1}) => [
-          for (var i = 0; i < count; i++)
-            TravelPassengerDraft(
-              fullName: 'Passager ${i + 1}',
-              ageCategory: TravelAgeCategory.adult,
-              classId: 3,
-            ),
-        ];
+      for (var i = 0; i < count; i++)
+        TravelPassengerDraft(
+          fullName: 'Passager ${i + 1}',
+          ageCategory: TravelAgeCategory.adult,
+          classId: 3,
+        ),
+    ];
 
     test('le corps porte les clés exactes du contrat', () {
       final payload = TravelGateway.buildBookingPayload(
@@ -189,25 +189,22 @@ void main() {
 
   group('suivi de réservation', () {
     test('le statut lit le trajet et les billets imbriqués', () {
-      final status = TravelBookingStatus.tryParse(
-        {
-          'reference': 'BK-1',
-          'status': 'confirmed',
-          'payment_status': 'paid',
-          'passenger_count': 2,
-          'total_amount_minor': 24000,
-          'currency': 'MAD',
-          'trip': {
-            'code': 'TR-42',
-            'departure_date': '2026-12-01',
-            'departure_time': '08:30',
-          },
-          'tickets': [
-            {'id': 7, 'ticket_number': 'TK-7', 'status': 'issued'},
-          ],
+      final status = TravelBookingStatus.tryParse({
+        'reference': 'BK-1',
+        'status': 'confirmed',
+        'payment_status': 'paid',
+        'passenger_count': 2,
+        'total_amount_minor': 24000,
+        'currency': 'MAD',
+        'trip': {
+          'code': 'TR-42',
+          'departure_date': '2026-12-01',
+          'departure_time': '08:30',
         },
-        fallbackReference: 'BK-1',
-      );
+        'tickets': [
+          {'id': 7, 'ticket_number': 'TK-7', 'status': 'issued'},
+        ],
+      }, fallbackReference: 'BK-1');
 
       expect(status, isNotNull);
       expect(status!.tripCode, 'TR-42');
@@ -216,10 +213,9 @@ void main() {
     });
 
     test('une réponse sans référence retombe sur celle demandée', () {
-      final status = TravelBookingStatus.tryParse(
-        {'status': 'pending'},
-        fallbackReference: 'BK-9',
-      );
+      final status = TravelBookingStatus.tryParse({
+        'status': 'pending',
+      }, fallbackReference: 'BK-9');
       expect(status!.reference, 'BK-9');
     });
   });

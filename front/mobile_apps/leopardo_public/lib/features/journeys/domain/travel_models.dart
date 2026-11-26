@@ -82,10 +82,10 @@ class TravelTripPrice {
   /// Un nourrisson vaut **0** : il n'occupe pas de siège facturé. Ce n'est pas
   /// une absence de donnée mais une règle tarifaire — d'où le `0` explicite.
   int priceFor(TravelAgeCategory age) => switch (age) {
-        TravelAgeCategory.adult => adultPriceMinor,
-        TravelAgeCategory.child => childPriceMinor,
-        TravelAgeCategory.infant => 0,
-      };
+    TravelAgeCategory.adult => adultPriceMinor,
+    TravelAgeCategory.child => childPriceMinor,
+    TravelAgeCategory.infant => 0,
+  };
 
   static TravelTripPrice? tryParse(Object? raw) {
     if (raw is! Map) return null;
@@ -117,7 +117,10 @@ class TravelSeat {
     if (raw is! Map) return null;
     final number = _int(raw['seat_number']);
     if (number == null) return null;
-    return TravelSeat(number: number, status: _str(raw['status']) ?? 'unavailable');
+    return TravelSeat(
+      number: number,
+      status: _str(raw['status']) ?? 'unavailable',
+    );
   }
 }
 
@@ -171,6 +174,15 @@ class TravelTrip {
   /// n'invente pas non plus de disponibilité.
   bool get isBookable => availableSeats == null || availableSeats! > 0;
 
+  /// Peut-on réellement envoyer une réservation ?
+  ///
+  /// Il faut des places ET un tarif : `POST …/bookings` désigne la classe par
+  /// `class_id`, et un trajet sans tarif publié n'en a aucune. Proposer
+  /// « Réserver » dans ce cas enverrait `class_id: 0` et le serveur
+  /// refuserait — un bouton qui échoue systématiquement vaut moins qu'un
+  /// message qui explique pourquoi.
+  bool get canBook => isBookable && defaultPrice != null;
+
   /// Itinéraire lisible, ou `null` si l'un des deux bouts manque.
   String? get route {
     final from = origin?.name;
@@ -183,23 +195,23 @@ class TravelTrip {
   TravelTripPrice? get defaultPrice => prices.isEmpty ? null : prices.first;
 
   TravelTrip withSeats(List<TravelSeat> value) => TravelTrip(
-        id: id,
-        code: code,
-        departureDate: departureDate,
-        departureTime: departureTime,
-        arrivalDate: arrivalDate,
-        arrivalTime: arrivalTime,
-        meansOfTransport: meansOfTransport,
-        totalSeats: totalSeats,
-        availableSeats: availableSeats,
-        origin: origin,
-        destination: destination,
-        prices: prices,
-        priceFromMinor: priceFromMinor,
-        currency: currency,
-        agencyName: agencyName,
-        seats: value,
-      );
+    id: id,
+    code: code,
+    departureDate: departureDate,
+    departureTime: departureTime,
+    arrivalDate: arrivalDate,
+    arrivalTime: arrivalTime,
+    meansOfTransport: meansOfTransport,
+    totalSeats: totalSeats,
+    availableSeats: availableSeats,
+    origin: origin,
+    destination: destination,
+    prices: prices,
+    priceFromMinor: priceFromMinor,
+    currency: currency,
+    agencyName: agencyName,
+    seats: value,
+  );
 
   /// Parse un trajet ; `null` si l'item n'est pas réservable (pas d'`id`).
   static TravelTrip? tryParse(Object? raw) {
@@ -266,24 +278,23 @@ class TravelPassengerDraft {
   bool get isComplete => fullName.trim().isNotEmpty;
 
   Map<String, dynamic> toPayload() => {
-        'full_name': fullName.trim(),
-        'age_category': ageCategory.wire,
-        'class_id': classId,
-        if (seatNumber != null) 'seat_number': seatNumber,
-      };
+    'full_name': fullName.trim(),
+    'age_category': ageCategory.wire,
+    'class_id': classId,
+    if (seatNumber != null) 'seat_number': seatNumber,
+  };
 
   TravelPassengerDraft copyWith({
     String? fullName,
     TravelAgeCategory? ageCategory,
     int? classId,
     int? seatNumber,
-  }) =>
-      TravelPassengerDraft(
-        fullName: fullName ?? this.fullName,
-        ageCategory: ageCategory ?? this.ageCategory,
-        classId: classId ?? this.classId,
-        seatNumber: seatNumber ?? this.seatNumber,
-      );
+  }) => TravelPassengerDraft(
+    fullName: fullName ?? this.fullName,
+    ageCategory: ageCategory ?? this.ageCategory,
+    classId: classId ?? this.classId,
+    seatNumber: seatNumber ?? this.seatNumber,
+  );
 }
 
 /// Nombre maximal de passagers par réservation (règle serveur `max:20`).

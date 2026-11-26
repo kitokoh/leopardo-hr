@@ -5,7 +5,6 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 
 import '../../../core/i18n/app_strings.dart';
 import '../../../core/providers/app_providers.dart';
-import '../../discovery/data/public_discovery_repository.dart';
 import '../domain/journey_models.dart';
 import '../domain/travel_models.dart';
 import '../providers/journey_providers.dart';
@@ -125,7 +124,9 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
 
     try {
       final date = _date.text.trim();
-      final trips = await ref.read(travelGatewayProvider).searchTrips(
+      final trips = await ref
+          .read(travelGatewayProvider)
+          .searchTrips(
             originCityId: _cityId(_origin.text),
             destinationCityId: _cityId(_destination.text),
             date: date.isEmpty ? null : date,
@@ -190,6 +191,11 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
   }
 
   void _startPassengers() {
+    // Garde de dernier recours : l'écran n'affiche pas le bouton sans tarif,
+    // mais un appel direct (lien profond, futur bouton) ne doit pas produire
+    // une réservation à `class_id: 0`.
+    if (_selected?.defaultPrice == null) return;
+
     _idempotencyKey ??= newJourneyIdempotencyKey();
     setState(() {
       _step = _TravelStep.passengers;
@@ -206,7 +212,9 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
     });
 
     try {
-      final confirmation = await ref.read(travelGatewayProvider).book(
+      final confirmation = await ref
+          .read(travelGatewayProvider)
+          .book(
             tripId: _selected!.id,
             passengers: _passengers,
             idempotencyKey: _idempotencyKey ?? newJourneyIdempotencyKey(),
@@ -350,7 +358,9 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        JourneySectionTitle(text: trip.route ?? strings.t('travelRouteUnknown')),
+        JourneySectionTitle(
+          text: trip.route ?? strings.t('travelRouteUnknown'),
+        ),
         if (trip.departureDate != null)
           _KeyValue(
             label: strings.t('travelDeparture'),
@@ -389,6 +399,15 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
             color: AppColors.danger,
             icon: Icons.event_busy_outlined,
           )
+        else if (!trip.canBook)
+          // Des places, mais aucun tarif publié : la réservation n'a pas de
+          // classe à désigner. On le dit au lieu d'afficher un bouton qui
+          // échouerait à coup sûr.
+          JourneyNotice(
+            text: strings.t('travelNoFare'),
+            color: AppColors.warning,
+            icon: Icons.price_change_outlined,
+          )
         else
           FilledButton(
             onPressed: _startPassengers,
@@ -415,7 +434,8 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
       'total': formatMinorPrice(status.totalMinor, status.currency),
       if (status.tripCode != null) 'trip': status.tripCode!,
       if (status.departureDate != null)
-        'departure': '${status.departureDate} ${status.departureTime ?? ''}'.trim(),
+        'departure': '${status.departureDate} ${status.departureTime ?? ''}'
+            .trim(),
     };
 
     return JourneyStatusReport(
@@ -552,7 +572,10 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
         ),
         _KeyValue(
           label: strings.t('journeyTotal'),
-          value: formatMinorPrice(confirmation.totalMinor, confirmation.currency),
+          value: formatMinorPrice(
+            confirmation.totalMinor,
+            confirmation.currency,
+          ),
         ),
         _KeyValue(
           label: strings.t('journeyPaymentStatus'),

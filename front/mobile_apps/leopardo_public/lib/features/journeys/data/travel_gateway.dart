@@ -114,7 +114,11 @@ class TravelGateway {
     }
 
     if (passengers.isEmpty) {
-      throw ArgumentError.value(passengers, 'passengers', 'Au moins un passager');
+      throw ArgumentError.value(
+        passengers,
+        'passengers',
+        'Au moins un passager',
+      );
     }
 
     if (passengers.length > travelMaxPassengers) {
@@ -196,7 +200,8 @@ class TravelGateway {
     );
 
     // La ressource est rendue à la racine (`data` + `agency`), pas sous `data`.
-    final confirmation = TravelBookingConfirmation.tryParse(json) ??
+    final confirmation =
+        TravelBookingConfirmation.tryParse(json) ??
         TravelBookingConfirmation.tryParse(JourneyApi.dataOf(json));
 
     if (confirmation == null) {
@@ -217,10 +222,7 @@ class TravelGateway {
     required String reference,
     required String code,
   }) async {
-    final json = await _api.get(
-      bookingPath(reference),
-      query: {'code': code},
-    );
+    final json = await _api.get(bookingPath(reference), query: {'code': code});
 
     final status = TravelBookingStatus.tryParse(
       JourneyApi.dataOf(json),
@@ -242,10 +244,10 @@ class TravelGateway {
     required String code,
     required String reason,
   }) async {
-    final json = await _api.post(
-      '${bookingPath(reference)}/cancel',
-      {'code': code, 'reason': reason},
-    );
+    final json = await _api.post('${bookingPath(reference)}/cancel', {
+      'code': code,
+      'reason': reason,
+    });
 
     final status = TravelBookingStatus.tryParse(
       JourneyApi.dataOf(json),

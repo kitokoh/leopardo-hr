@@ -95,9 +95,9 @@ class JourneyVertical {
 
   /// Actions de fiche réellement servies par un écran natif.
   Set<String> get nativeActions => {
-        if (hasNativeOrder) 'order',
-        if (hasNativeBooking) 'booking',
-      };
+    if (hasNativeOrder) 'order',
+    if (hasNativeBooking) 'booking',
+  };
 
   /// Motif d'une capacité bloquée, ou `null` si elle ne l'est pas.
   String? blockerFor(String capability) {

@@ -128,7 +128,9 @@ class _PharmacyJourneyScreenState extends ConsumerState<PharmacyJourneyScreen> {
           onPressed: _loading ? null : _load,
           icon: const Icon(Icons.search, size: 18),
           label: Text(
-            _loading ? strings.t('stateLoading') : strings.t('pharmacySearchCta'),
+            _loading
+                ? strings.t('stateLoading')
+                : strings.t('pharmacySearchCta'),
           ),
         ),
         const SizedBox(height: 16),
@@ -211,7 +213,10 @@ class _PharmacyJourneyScreenState extends ConsumerState<PharmacyJourneyScreen> {
         if (pharmacy.city != null)
           _KeyValue(label: strings.t('pharmacyCity'), value: pharmacy.city!),
         if (pharmacy.country != null)
-          _KeyValue(label: strings.t('careersCompany'), value: pharmacy.country!),
+          _KeyValue(
+            label: strings.t('careersCompany'),
+            value: pharmacy.country!,
+          ),
         if (duty != null)
           _KeyValue(label: strings.t('pharmacyDuty'), value: duty),
         if (pharmacy.description != null) ...[

@@ -310,9 +310,7 @@ class _VerticalShortcuts extends StatelessWidget {
           for (final entry in visible)
             ActionChip(
               avatar: Icon(entry.icon, size: 16),
-              label: Text(
-                strings.t(journeyByCode(entry.code)!.labelKey),
-              ),
+              label: Text(strings.t(journeyByCode(entry.code)!.labelKey)),
               onPressed: () => context.push(entry.route),
             ),
         ],

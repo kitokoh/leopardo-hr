@@ -98,9 +98,7 @@ void main() {
     test('un annuaire peuplé n’est pas vide', () {
       const directory = PharmacyDirectory(
         available: true,
-        pharmacies: [
-          Pharmacy(slug: 'atlas', name: 'Pharmacie Atlas'),
-        ],
+        pharmacies: [Pharmacy(slug: 'atlas', name: 'Pharmacie Atlas')],
       );
 
       expect(directory.isEmpty, isFalse);

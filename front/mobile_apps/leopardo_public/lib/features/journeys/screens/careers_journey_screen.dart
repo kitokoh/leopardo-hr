@@ -6,7 +6,6 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/i18n/app_strings.dart';
 import '../../../core/providers/app_providers.dart';
-import '../../discovery/data/public_discovery_repository.dart';
 import '../data/careers_gateway.dart';
 import '../domain/careers_models.dart';
 import '../providers/journey_providers.dart';
@@ -382,7 +381,10 @@ class _CareersJourneyScreenState extends ConsumerState<CareersJourneyScreen> {
       children: [
         JourneySectionTitle(text: job.title),
         if (job.companyName != null)
-          _KeyValue(label: strings.t('careersCompany'), value: job.companyName!),
+          _KeyValue(
+            label: strings.t('careersCompany'),
+            value: job.companyName!,
+          ),
         if (job.departmentName != null)
           _KeyValue(
             label: strings.t('careersDepartment'),
@@ -401,15 +403,9 @@ class _CareersJourneyScreenState extends ConsumerState<CareersJourneyScreen> {
             value: job.remotePolicy!,
           ),
         if (job.salaryLabel != null)
-          _KeyValue(
-            label: strings.t('careersSalary'),
-            value: job.salaryLabel!,
-          ),
+          _KeyValue(label: strings.t('careersSalary'), value: job.salaryLabel!),
         if (job.closesAt != null)
-          _KeyValue(
-            label: strings.t('careersClosesAt'),
-            value: job.closesAt!,
-          ),
+          _KeyValue(label: strings.t('careersClosesAt'), value: job.closesAt!),
         if (job.skillsRequired.isNotEmpty)
           _KeyValue(
             label: strings.t('careersSkills'),
@@ -547,10 +543,7 @@ class _CareersJourneyScreenState extends ConsumerState<CareersJourneyScreen> {
           value: receipt.status,
         ),
         if (receipt.jobTitle != null)
-          _KeyValue(
-            label: strings.t('careersJob'),
-            value: receipt.jobTitle!,
-          ),
+          _KeyValue(label: strings.t('careersJob'), value: receipt.jobTitle!),
         if (receipt.appliedAt != null)
           _KeyValue(
             label: strings.t('careersAppliedAt'),
