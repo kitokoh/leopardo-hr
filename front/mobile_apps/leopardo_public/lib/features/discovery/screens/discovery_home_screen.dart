@@ -286,6 +286,31 @@ class _VerticalShortcuts extends StatelessWidget {
       route: '/journey/pharmacy',
       icon: Icons.local_pharmacy_outlined,
     ),
+    // #9948 — les verticales d'annuaire ont désormais un écran natif : sans
+    // ce raccourci elles seraient implémentées mais inatteignables, le défaut
+    // exact que le registre existe pour empêcher. La route paramétrée évite
+    // quatre entrées dupliquées dans la table de routage.
+    (
+      code: 'restaurant',
+      route: '/journey/directory/restaurant',
+      icon: Icons.restaurant_outlined,
+    ),
+    (
+      code: 'retail',
+      route: '/journey/directory/retail',
+      icon: Icons.storefront_outlined,
+    ),
+    (
+      code: 'hospitality',
+      route: '/journey/directory/hospitality',
+      icon: Icons.hotel_outlined,
+    ),
+    (
+      code: 'trade',
+      route: '/journey/directory/trade',
+      icon: Icons.business_center_outlined,
+    ),
+    (code: 'vtc', route: '/journey/vtc', icon: Icons.local_taxi_outlined),
   ];
 
   @override

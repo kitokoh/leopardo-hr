@@ -8,6 +8,7 @@ import '../data/stay_reservation_gateway.dart';
 import '../data/travel_gateway.dart';
 import '../data/careers_gateway.dart';
 import '../data/pharmacy_gateway.dart';
+import '../data/vertical_directory_gateway.dart';
 import '../../discovery/providers/discovery_providers.dart';
 
 /// Client HTTP des parcours — un seul par application, comme la découverte.
@@ -44,4 +45,16 @@ final careersGatewayProvider = Provider<CareersGateway>(
 /// dépôt évite d'ouvrir un second client HTTP pour la même route.
 final pharmacyGatewayProvider = Provider<PharmacyGateway>(
   (ref) => PharmacyGateway(ref.watch(publicDiscoveryRepositoryProvider)),
+);
+
+/// Annuaire d'une verticale grand public (#9948) — restaurant, retail,
+/// hospitality, trade et vtc partagent `GET /public/discover?type=…`.
+final verticalDirectoryGatewayProvider = Provider<VerticalDirectoryGateway>(
+  (ref) =>
+      VerticalDirectoryGateway(ref.watch(publicDiscoveryRepositoryProvider)),
+);
+
+/// Verticale Mobilité (vtc) — courses invitées.
+final vtcGatewayProvider = Provider<VtcGateway>(
+  (ref) => VtcGateway(ref.watch(journeyApiProvider)),
 );

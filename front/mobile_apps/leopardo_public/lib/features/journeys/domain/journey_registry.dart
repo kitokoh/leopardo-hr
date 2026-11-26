@@ -129,6 +129,8 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'restaurant',
     labelKey: 'journeyVerticalRestaurant',
     counterpartPath: '/restaurants',
+    // #9948 — annuaire et fiche natifs ajoutés (`VerticalDirectoryScreen`),
+    // en parité avec la vitrine web `/restaurants`.
     mode: JourneyMode.request,
     discoveryType: 'restaurant',
     contactTargetType: 'restaurant',
@@ -162,6 +164,8 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'trade',
     labelKey: 'journeyVerticalTrade',
     counterpartPath: '/entreprises',
+    // #9948 — annuaire et fiche natifs ajoutés (`VerticalDirectoryScreen`),
+    // en parité avec la vitrine web `/entreprises`.
     mode: JourneyMode.request,
     discoveryType: 'trade_company',
     contactTargetType: 'trade_company',
@@ -201,15 +205,14 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'vtc',
     labelKey: 'journeyVerticalVtc',
     counterpartPath: '/operateurs',
-    mode: JourneyMode.request,
+    // #9948 — le blocage `ride` est périmé. La vitrine web ne géocode pas
+    // davantage que l'app : elle demande des coordonnées « lat,lng »
+    // (`parsePoint` dans `RideRequestSurface.tsx`). L'app fait exactement
+    // pareil, puis appelle `estimate` et `rides`. Le parcours invité complet
+    // (annuaire → devis → course → suivi) est donc natif.
+    mode: JourneyMode.booking,
     discoveryType: 'vtc_operator',
     contactTargetType: 'vtc_operator',
-    blockers: [
-      // `POST /public/vtc/marketplace/rides` exige `pickup.lat/lng` ET
-      // `dropoff.lat/lng` : sans recherche d'adresse ni géocodage dans l'app,
-      // un devis serait géographiquement faux.
-      JourneyBlocker(capability: 'ride', reasonKey: 'journeyBlockerVtcRide'),
-    ],
   ),
   JourneyVertical(
     code: 'travel',

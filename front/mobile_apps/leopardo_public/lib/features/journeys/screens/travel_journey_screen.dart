@@ -37,7 +37,7 @@ class TravelJourneyScreen extends ConsumerStatefulWidget {
       _TravelJourneyScreenState();
 }
 
-enum _TravelStep { search, detail, passengers, confirmation }
+enum _TravelStep { search, detail, passengers, confirmation, payment }
 
 class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
   _TravelStep _step = _TravelStep.search;
@@ -64,6 +64,13 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
   Object? _submitError;
   TravelBookingConfirmation? _confirmation;
   String? _idempotencyKey;
+
+  // ── Paiement en ligne (#9947) ──
+  TravelPaymentProvider _paymentProvider = TravelPaymentProvider.momo;
+  bool _paying = false;
+  Object? _paymentError;
+  TravelPaymentInitiation? _payment;
+  String? _paymentIdempotencyKey;
 
   @override
   void initState() {
@@ -246,6 +253,7 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
         _TravelStep.detail => _detailView(strings),
         _TravelStep.passengers => _passengersView(strings),
         _TravelStep.confirmation => _confirmationView(strings),
+        _TravelStep.payment => _paymentView(strings),
       },
     );
   }
@@ -547,6 +555,144 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
     );
   }
 
+  /// Ouvre l'étape de paiement pour la réservation confirmée — #9947.
+  ///
+  /// La clé d'idempotence est créée ICI et conservée jusqu'au succès : un
+  /// double tap ou un retry réseau renvoie le même paiement, jamais un doublon.
+  void _startPayment() {
+    final confirmation = _confirmation;
+    if (confirmation == null) return;
+
+    _paymentIdempotencyKey ??= newJourneyIdempotencyKey();
+    setState(() {
+      _step = _TravelStep.payment;
+      _paymentError = null;
+    });
+  }
+
+  Future<void> _pay() async {
+    final confirmation = _confirmation;
+    if (confirmation == null) return;
+
+    setState(() {
+      _paying = true;
+      _paymentError = null;
+    });
+
+    try {
+      final payment = await ref.read(travelGatewayProvider).initiatePayment(
+            bookingReference: confirmation.reference,
+            provider: _paymentProvider,
+            idempotencyKey:
+                _paymentIdempotencyKey ?? newJourneyIdempotencyKey(),
+          );
+
+      if (!mounted) return;
+      setState(() {
+        _payment = payment;
+        _paying = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _paymentError = error;
+        _paying = false;
+      });
+    }
+  }
+
+  Widget _paymentView(AppStrings strings) {
+    final confirmation = _confirmation;
+    if (confirmation == null) {
+      return JourneyErrorView(strings: strings, error: _loadError ?? '');
+    }
+
+    final payment = _payment;
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        JourneySectionTitle(text: strings.t('travelPaymentTitle')),
+        _KeyValue(
+          label: strings.t('journeyConfirmationReference'),
+          value: confirmation.reference,
+        ),
+        _KeyValue(
+          label: strings.t('journeyTotal'),
+          value: formatMinorPrice(
+            confirmation.totalMinor,
+            confirmation.currency,
+          ),
+        ),
+        const Divider(height: 28),
+
+        // Paiement déjà initié : on montre la référence et le statut, et on
+        // n'affiche plus le sélecteur — relancer un second paiement sur la
+        // même réservation créerait une transaction concurrente.
+        if (payment != null) ...[
+          JourneyNotice(
+            text: strings.t('travelPaymentInitiated'),
+            color: AppColors.success,
+            icon: Icons.receipt_long_outlined,
+          ),
+          _KeyValue(
+            label: strings.t('travelPaymentReference'),
+            value: payment.reference,
+          ),
+          _KeyValue(
+            label: strings.t('journeyPaymentStatus'),
+            value: payment.status,
+          ),
+          if (payment.providerReference != null)
+            _KeyValue(
+              label: strings.t('travelPaymentProviderReference'),
+              value: payment.providerReference!,
+            ),
+          JourneyNotice(
+            text: strings.t('travelPaymentPendingNotice'),
+            color: AppColors.warning,
+          ),
+        ] else ...[
+          JourneySectionTitle(text: strings.t('travelPaymentMethod')),
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final provider in TravelPaymentProvider.values)
+                ChoiceChip(
+                  label: Text(strings.t('travelPayment_${provider.wire}')),
+                  selected: _paymentProvider == provider,
+                  onSelected: (_) =>
+                      setState(() => _paymentProvider = provider),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          JourneyNotice(text: strings.t('travelPaymentNotice')),
+          if (_paymentError != null)
+            JourneyErrorView(strings: strings, error: _paymentError!),
+          FilledButton.icon(
+            onPressed: _paying ? null : _pay,
+            icon: const Icon(Icons.lock_outline, size: 18),
+            label: Text(
+              _paying ? strings.t('stateLoading') : strings.t('travelPayNow'),
+            ),
+          ),
+        ],
+
+        const Divider(height: 32),
+        JourneyTrackingPanel(
+          strings: strings,
+          initialReference: confirmation.reference,
+          codeLabel: strings.t('travelValidationCode'),
+          onTrack: (reference, code) => ref
+              .read(travelGatewayProvider)
+              .track(reference: reference, code: code)
+              .then(_toJourneyReport),
+        ),
+      ],
+    );
+  }
+
   Widget _confirmationView(AppStrings strings) {
     final confirmation = _confirmation;
     if (confirmation == null) {
@@ -591,6 +737,17 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
           text: strings.t('travelKeepCodeNotice'),
           color: AppColors.warning,
         ),
+        const SizedBox(height: 8),
+        // #9947 — paiement en ligne. Le bouton n'apparaît que si la
+        // réservation attend encore un règlement : payer une réservation
+        // déjà réglée créerait une seconde transaction.
+        if (confirmation.paymentStatus == 'pending' ||
+            confirmation.paymentStatus == 'unpaid')
+          FilledButton.icon(
+            onPressed: _startPayment,
+            icon: const Icon(Icons.credit_card, size: 18),
+            label: Text(strings.t('travelPayNow')),
+          ),
         const Divider(height: 32),
         JourneyTrackingPanel(
           strings: strings,

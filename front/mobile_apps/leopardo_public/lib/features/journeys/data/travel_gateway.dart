@@ -260,4 +260,80 @@ class TravelGateway {
     }
     return status;
   }
+
+  /// Corps EXACT de `initiatePayment` (#9947).
+  ///
+  /// Le serveur valide `booking_reference` (max 40), `provider_code`
+  /// (`in:cash,pvit,momo,card`) et `idempotency_key` (max 255). Les contrôles
+  /// ici évitent d'envoyer une requête qu'on sait déjà invalide et rendent le
+  /// contrat testable sans réseau.
+  static Map<String, dynamic> buildPaymentPayload({
+    required String bookingReference,
+    required TravelPaymentProvider provider,
+    required String idempotencyKey,
+  }) {
+    final reference = bookingReference.trim();
+    if (reference.isEmpty || reference.length > 40) {
+      throw ArgumentError.value(
+        bookingReference,
+        'bookingReference',
+        'Référence 1..40 caractères',
+      );
+    }
+
+    final key = idempotencyKey.trim();
+    if (key.isEmpty || key.length > 255) {
+      throw ArgumentError.value(
+        idempotencyKey,
+        'idempotencyKey',
+        'Clé 1..255 caractères',
+      );
+    }
+
+    return {
+      'booking_reference': reference,
+      'provider_code': provider.wire,
+      'idempotency_key': key,
+    };
+  }
+
+  /// Initie le paiement en ligne d'une réservation — #9947.
+  ///
+  /// ## L'idempotence est portée par la clé, pas par le client
+  ///
+  /// `JourneyApi.post` ne rejoue jamais une mutation. Un retry réseau réel
+  /// passe donc par `idempotencyKey` : rejouer avec la même clé rend le MÊME
+  /// paiement (201 puis 200 côté serveur), jamais un doublon.
+  ///
+  /// ## Lève sur échec
+  ///
+  /// Un `null` silencieux laisserait croire à un paiement engagé alors
+  /// qu'aucune transaction n'existe.
+  Future<TravelPaymentInitiation> initiatePayment({
+    required String bookingReference,
+    required TravelPaymentProvider provider,
+    required String idempotencyKey,
+  }) async {
+    final json = await _api.post(
+      '$marketplace/payments/initiate',
+      buildPaymentPayload(
+        bookingReference: bookingReference,
+        provider: provider,
+        idempotencyKey: idempotencyKey,
+      ),
+    );
+
+    // La ressource est rendue sous `data` ; on tolère aussi la racine pour
+    // rester aligné sur `book()` qui gère les deux formes.
+    final payment = TravelPaymentInitiation.tryParse(JourneyApi.dataOf(json)) ??
+        TravelPaymentInitiation.tryParse(json);
+
+    if (payment == null) {
+      throw const PublicApiFailure(
+        PublicFailureKind.server,
+        message: 'Payment without reference',
+      );
+    }
+    return payment;
+  }
 }
