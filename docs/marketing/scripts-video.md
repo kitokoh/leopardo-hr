@@ -1,6 +1,6 @@
 # Scripts marketing — leopardo-hr
 
-_25 scripts video, 5 categories. Source de verite : `docs/marketing/scripts-video.json`._
+_26 scripts video, 5 categories. Source de verite : `docs/marketing/scripts-video.json`._
 
 ## Calendrier de tournage
 
@@ -82,6 +82,7 @@ Alimenter TikTok, Reels, Shorts et LinkedIn avec des formats verticaux.
 | 23 | VID-21 | 3 signes que votre entreprise a depasse Excel (hook 9:16) | A ecrire |
 | 24 | VID-22 | Temoignage client : avant / apres (9:16) | A ecrire |
 | 25 | VID-23 | Mise en route en moins de 30 minutes (9:16) | A ecrire |
+| 26 | VID-26 | Restaurant : le coup de feu, la marge du soir (9:16 TikTok) | A ecrire |
 
 **Pourquoi cet ordre :** Les hooks 9:16 se calibrent sur les performances des vagues precedentes. Le temoignage client exige un client d'accord pour etre filme : a planifier en dernier.
 
@@ -619,4 +620,25 @@ Vertical 9:16 : hooks, temoignages et onboarding, pour TikTok, Reels, Shorts et 
 **Son :** Montant, 120 BPM.
 
 **Notes :** La promesse « moins de 30 minutes » figure deja sur le site produit : ne pas la durcir. Filmer un vrai parcours, pas une maquette.
+
+### VID-26 — Restaurant : le coup de feu, la marge du soir (9:16 TikTok)
+
+- **Format :** 9:16 · **Duree :** 35 s · **Audience :** Restaurateurs, gerants de salle, chaines de restauration — TikTok, Reels, Shorts
+- **Statut de production :** A ecrire
+- **Objectif :** Decliner la verticale Restaurant en format vertical natif : montrer le coup de feu en salle et la marge du soir, sans demonstration produit longue. Renvoi vers le film 16:9 VID-05 pour la version complete.
+- **Hook :** « Le coup de feu est fini. Vous savez combien le service vous a rapporte ? »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:05 | Le coup de feu est fini. Vous savez combien le service vous a rapporte ? | Plan serre sur une salle qui se vide, chaises relevees, lumiere basse. Camera a l'epaule. | Le coup de feu est fini. |
+| 0:05-0:12 | Addition encaissees, pourboires, pourcentage offert, couverts annules : tout est la, mais dans trois endroits differents. | Cut rapide : ticket de caisse, carnet de salle, ecran de terminal de paiement. | 3 endroits. 0 vue d'ensemble. |
+| 0:12-0:20 | Leopardo tient la salle : commandes, encaissements, pourboires et remises sur la meme journee. | Capture verticale : ecran de service avec couverts, tickets et encaissements du soir. | Salle, encaissements, pourboires |
+| 0:20-0:28 | Et le soir, la marge reelle par service — pas le chiffre d'affaires, la marge. | Capture verticale : carte de marge par service, cout matiere et main d'oeuvre visibles. | La marge, pas le CA |
+| 0:28-0:35 | Restaurant : du service en salle a la marge du soir. Le film complet est en bio. | Retour sur la salle vide, logo Leopardo, CTA en bas de cadre. | Film complet en bio |
+
+**CTA :** Film complet (16:9) en bio — essai 14 jours, sans carte.
+
+**Son :** Beat sobre 100 BPM, ambiance restauration ; coupe nette sur le CTA.
+
+**Notes :** Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-05 : reutiliser les rushes de salle, ne pas re-tourner. Aucune donnee client reelle a l'ecran.
 

@@ -27,11 +27,24 @@
   <h1 class="page-title">Calendrier de tournage</h1>
   <p class="page-sub">Ordre de production des videos de promotion, vague par vague.</p>
   
-  <p class="lead">Les 25 scripts dans leur ordre reel de production, regroupes en vagues.
+  <p class="lead">Les 26 scripts dans leur ordre reel de production, regroupes en vagues.
     Une vague ne demarre pas avant que la precedente soit montee : chaque film maitre alimente
     ses derives. Le statut de chaque script est celui du fichier <code>statuts-tournage.json</code>.</p>
 
-  <div class="stats stats-light"><div class="stat stat-light" style="--accent:#64748b"><span class="stat-num">25</span><span class="stat-label">A ecrire</span></div><div class="stat stat-light" style="--accent:#b45309"><span class="stat-num">0</span><span class="stat-label">Tourne</span></div><div class="stat stat-light" style="--accent:#2563eb"><span class="stat-num">0</span><span class="stat-label">Monte</span></div><div class="stat stat-light" style="--accent:#0f766e"><span class="stat-num">0</span><span class="stat-label">Publie</span></div></div>
+  <div class="stats stats-light"><div class="stat stat-light" style="--accent:#64748b"><span class="stat-num">26</span><span class="stat-label">A ecrire</span></div><div class="stat stat-light" style="--accent:#b45309"><span class="stat-num">0</span><span class="stat-label">Tourne</span></div><div class="stat stat-light" style="--accent:#2563eb"><span class="stat-num">0</span><span class="stat-label">Monte</span></div><div class="stat stat-light" style="--accent:#0f766e"><span class="stat-num">0</span><span class="stat-label">Publie</span></div></div>
+
+  <div class="panel export-panel">
+    <h3>Export pour l'equipe production</h3>
+    <p>Le calendrier complet (une ligne par script, dans l'ordre de tournage) est disponible en
+      CSV : separateur point-virgule, encodage UTF-8 avec BOM, ouvrable directement dans Excel
+      et LibreOffice sans manipulation d'import.</p>
+    <p class="export-actions">
+      <a class="btn-export" href="calendrier-tournage.csv" download="calendrier-tournage.csv">
+        Telecharger le calendrier (CSV)
+      </a>
+      <span class="muted small">26 lignes &middot; calendrier-tournage.csv</span>
+    </p>
+  </div>
 
   <div class="panel">
     <h3>Regle d'ordonnancement</h3>
@@ -334,7 +347,7 @@
           <h3>Formats courts et social</h3>
           <p class="muted small">Alimenter TikTok, Reels, Shorts et LinkedIn avec des formats verticaux.</p>
         </div>
-        <span class="hist-count-badge">3</span>
+        <span class="hist-count-badge">4</span>
       </div>
       <div class="table-wrap">
         <table class="data-table">
@@ -366,6 +379,15 @@
               <td><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">📱 Formats courts &amp; social</span></td>
               <td class="center"><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">9:16</span></td>
               <td class="center nowrap">30 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>26</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-26.html">VID-26</a></td>
+              <td><a class="uc-link" href="scripts/vid-26.html">Restaurant : le coup de feu, la marge du soir (9:16 TikTok)</a></td>
+              <td><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">📱 Formats courts &amp; social</span></td>
+              <td class="center"><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">9:16</span></td>
+              <td class="center nowrap">35 s</td>
               <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
             </tr></tbody>
         </table>

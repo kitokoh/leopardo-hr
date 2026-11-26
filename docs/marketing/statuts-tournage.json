@@ -407,6 +407,21 @@
           "action": "creation"
         }
       ]
+    },
+    "VID-26": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage 5 plans, CTA, notes de production). Derive du film 16:9 VID-05 : reutilise les rushes de salle, aucun tournage dedie planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T10:30:00Z",
+      "historique": [
+        {
+          "date": "2026-11-26T10:30:00Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Creation du script VID-26 (Restaurant 9:16 TikTok) et de son entree de suivi.",
+          "action": "creation"
+        }
+      ]
     }
   }
 }

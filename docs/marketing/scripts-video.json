@@ -1259,6 +1259,58 @@
         "rfq",
         "logistique"
       ]
+    },
+    {
+      "id": "VID-26",
+      "title": "Restaurant : le coup de feu, la marge du soir (9:16 TikTok)",
+      "category": "formats-courts",
+      "format": "9:16",
+      "duration": "35 s",
+      "audience": "Restaurateurs, gerants de salle, chaines de restauration — TikTok, Reels, Shorts",
+      "objective": "Decliner la verticale Restaurant en format vertical natif : montrer le coup de feu en salle et la marge du soir, sans demonstration produit longue. Renvoi vers le film 16:9 VID-05 pour la version complete.",
+      "hook": "Le coup de feu est fini. Vous savez combien le service vous a rapporte ?",
+      "beats": [
+        {
+          "t": "0:00-0:05",
+          "vo": "Le coup de feu est fini. Vous savez combien le service vous a rapporte ?",
+          "shot": "Plan serre sur une salle qui se vide, chaises relevees, lumiere basse. Camera a l'epaule.",
+          "text": "Le coup de feu est fini."
+        },
+        {
+          "t": "0:05-0:12",
+          "vo": "Addition encaissees, pourboires, pourcentage offert, couverts annules : tout est la, mais dans trois endroits differents.",
+          "shot": "Cut rapide : ticket de caisse, carnet de salle, ecran de terminal de paiement.",
+          "text": "3 endroits. 0 vue d'ensemble."
+        },
+        {
+          "t": "0:12-0:20",
+          "vo": "Leopardo tient la salle : commandes, encaissements, pourboires et remises sur la meme journee.",
+          "shot": "Capture verticale : ecran de service avec couverts, tickets et encaissements du soir.",
+          "text": "Salle, encaissements, pourboires"
+        },
+        {
+          "t": "0:20-0:28",
+          "vo": "Et le soir, la marge reelle par service — pas le chiffre d'affaires, la marge.",
+          "shot": "Capture verticale : carte de marge par service, cout matiere et main d'oeuvre visibles.",
+          "text": "La marge, pas le CA"
+        },
+        {
+          "t": "0:28-0:35",
+          "vo": "Restaurant : du service en salle a la marge du soir. Le film complet est en bio.",
+          "shot": "Retour sur la salle vide, logo Leopardo, CTA en bas de cadre.",
+          "text": "Film complet en bio"
+        }
+      ],
+      "cta": "Film complet (16:9) en bio — essai 14 jours, sans carte.",
+      "music": "Beat sobre 100 BPM, ambiance restauration ; coupe nette sur le CTA.",
+      "notes": "Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-05 : reutiliser les rushes de salle, ne pas re-tourner. Aucune donnee client reelle a l'ecran.",
+      "tags": [
+        "9:16",
+        "tiktok",
+        "restaurant",
+        "verticale",
+        "social"
+      ]
     }
   ],
   "calendrier": {
@@ -1333,7 +1385,8 @@
         "scripts": [
           "VID-21",
           "VID-22",
-          "VID-23"
+          "VID-23",
+          "VID-26"
         ],
         "rationale": "Les hooks 9:16 se calibrent sur les performances des vagues precedentes. Le temoignage client exige un client d'accord pour etre filme : a planifier en dernier."
       }
