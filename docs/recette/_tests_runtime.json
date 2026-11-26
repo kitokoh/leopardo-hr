@@ -1,440 +1,485 @@
 {
- "UC-02": {
-  "files": 0,
-  "tests": 25,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
  "UC-01": {
-  "files": 0,
-  "tests": 18,
+  "files": 33,
+  "tests": 226,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
- "UC-03": {
-  "files": 0,
-  "tests": 21,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-04": {
-  "files": 0,
-  "tests": 17,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-05": {
-  "files": 0,
-  "tests": 27,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-06": {
-  "files": 0,
-  "tests": 27,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-08": {
-  "files": 0,
-  "tests": 10,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-10": {
-  "files": 0,
-  "tests": 21,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-07": {
-  "files": 0,
-  "tests": 16,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-09": {
-  "files": 0,
-  "tests": 17,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-11": {
-  "files": 0,
-  "tests": 25,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-12": {
-  "files": 0,
-  "tests": 22,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-14": {
-  "files": 0,
-  "tests": 17,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-13": {
-  "files": 0,
-  "tests": 28,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-16": {
-  "files": 0,
-  "tests": 16,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-18": {
-  "files": 0,
-  "tests": 25,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-15": {
-  "files": 0,
-  "tests": 18,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-20": {
-  "files": 0,
-  "tests": 28,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-17": {
-  "files": 0,
-  "tests": 18,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-22": {
-  "files": 0,
-  "tests": 28,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-19": {
-  "files": 0,
-  "tests": 27,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-24": {
-  "files": 0,
-  "tests": 22,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-21": {
-  "files": 0,
-  "tests": 28,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-26": {
-  "files": 3,
-  "tests": 22,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-23": {
-  "files": 3,
-  "tests": 28,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-28": {
-  "files": 0,
-  "tests": 22,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-25": {
-  "files": 0,
-  "tests": 16,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-30": {
-  "files": 0,
-  "tests": 27,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-27": {
-  "files": 0,
-  "tests": 22,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-32": {
-  "files": 0,
-  "tests": 30,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-29": {
-  "files": 0,
-  "tests": 32,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-34": {
-  "files": 3,
-  "tests": 0,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "bad-report",
-  "detail": []
- },
- "UC-31": {
-  "files": 0,
-  "tests": 30,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-36": {
-  "files": 0,
-  "tests": 11,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-38": {
-  "files": 0,
-  "tests": 13,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-40": {
-  "files": 0,
-  "tests": 19,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-33": {
-  "files": 3,
-  "tests": 36,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-37": {
-  "files": 3,
-  "tests": 10,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-41": {
-  "files": 3,
-  "tests": 25,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-35": {
-  "files": 3,
-  "tests": 48,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-43": {
-  "files": 3,
-  "tests": 31,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-39": {
-  "files": 3,
-  "tests": 37,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-45": {
-  "files": 3,
-  "tests": 22,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-42": {
-  "files": 3,
-  "tests": 26,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-47": {
-  "files": 3,
-  "tests": 15,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-49": {
-  "files": 3,
-  "tests": 18,
+ "UC-02": {
+  "files": 46,
+  "tests": 291,
   "failures": 1,
   "errors": 0,
   "skipped": 0,
   "status": "fail",
   "detail": [
    {
-    "test": "Tests\\Feature\\Delivery\\DeliveryAsyncTest::test_export_job_writes_deterministic_snapshot",
+    "test": "Tests.Feature.AttendanceMonthlyExportTest::Cross tenant employee is not leaked into csv",
     "kind": "failure"
    }
-  ]
+  ],
+  "source": "shards-junit"
  },
- "UC-51": {
-  "files": 3,
-  "tests": 26,
+ "UC-03": {
+  "files": 23,
+  "tests": 158,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 4,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-04": {
+  "files": 22,
+  "tests": 141,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
- "UC-53": {
-  "files": 3,
-  "tests": 37,
+ "UC-05": {
+  "files": 84,
+  "tests": 703,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-06": {
+  "files": 84,
+  "tests": 703,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-07": {
+  "files": 60,
+  "tests": 285,
+  "failures": 2,
+  "errors": 0,
+  "skipped": 0,
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh can add regular employee",
+    "kind": "failure"
+   },
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh cannot create employee with manager role",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
+ },
+ "UC-08": {
+  "files": 58,
+  "tests": 303,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 8,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-09": {
+  "files": 13,
+  "tests": 56,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-10": {
+  "files": 23,
+  "tests": 158,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 4,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-11": {
+  "files": 39,
+  "tests": 314,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-12": {
+  "files": 18,
+  "tests": 158,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-13": {
+  "files": 71,
+  "tests": 558,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-14": {
+  "files": 2,
+  "tests": 5,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-15": {
+  "files": 33,
+  "tests": 226,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-16": {
+  "files": 60,
+  "tests": 285,
+  "failures": 2,
+  "errors": 0,
+  "skipped": 0,
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh can add regular employee",
+    "kind": "failure"
+   },
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh cannot create employee with manager role",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
+ },
+ "UC-17": {
+  "files": 33,
+  "tests": 226,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-18": {
+  "files": 46,
+  "tests": 291,
+  "failures": 1,
+  "errors": 0,
+  "skipped": 0,
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.AttendanceMonthlyExportTest::Cross tenant employee is not leaked into csv",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
+ },
+ "UC-19": {
+  "files": 84,
+  "tests": 703,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-20": {
+  "files": 71,
+  "tests": 558,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-21": {
+  "files": 71,
+  "tests": 558,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-22": {
+  "files": 71,
+  "tests": 558,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-23": {
+  "files": 71,
+  "tests": 558,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-24": {
+  "files": 18,
+  "tests": 158,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-25": {
+  "files": 60,
+  "tests": 285,
+  "failures": 2,
+  "errors": 0,
+  "skipped": 0,
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh can add regular employee",
+    "kind": "failure"
+   },
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh cannot create employee with manager role",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
+ },
+ "UC-26": {
+  "files": 18,
+  "tests": 158,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-27": {
+  "files": 62,
+  "tests": 462,
+  "failures": 1,
+  "errors": 0,
+  "skipped": 0,
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.AttendanceMonthlyExportTest::Cross tenant employee is not leaked into csv",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
+ },
+ "UC-28": {
+  "files": 85,
+  "tests": 627,
+  "failures": 1,
+  "errors": 0,
+  "skipped": 0,
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.AttendanceMonthlyExportTest::Cross tenant employee is not leaked into csv",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
+ },
+ "UC-29": {
+  "files": 5,
+  "tests": 55,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-30": {
+  "files": 89,
+  "tests": 758,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-31": {
+  "files": 14,
+  "tests": 93,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-32": {
+  "files": 14,
+  "tests": 93,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-33": {
+  "files": 4,
+  "tests": 43,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-34": {
+  "files": 4,
+  "tests": 43,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-35": {
+  "files": 19,
+  "tests": 248,
+  "failures": 1,
+  "errors": 0,
+  "skipped": 0,
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.ConversationMessagesTest::Attachment is recorded with its disk",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
+ },
+ "UC-36": {
+  "files": 20,
+  "tests": 97,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-37": {
+  "files": 99,
+  "tests": 532,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 8,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-38": {
+  "files": 41,
+  "tests": 229,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-39": {
+  "files": 16,
+  "tests": 107,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-40": {
+  "files": 8,
+  "tests": 50,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-41": {
+  "files": 7,
+  "tests": 52,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-42": {
+  "files": 10,
+  "tests": 75,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-43": {
+  "files": 6,
+  "tests": 54,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-44": {
   "files": 3,
@@ -443,79 +488,118 @@
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
- "UC-55": {
-  "files": 3,
-  "tests": 25,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-57": {
+ "UC-45": {
   "files": 3,
   "tests": 22,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-46": {
-  "files": 3,
-  "tests": 27,
+  "files": 6,
+  "tests": 54,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
- "UC-59": {
-  "files": 3,
-  "tests": 32,
+ "UC-47": {
+  "files": 35,
+  "tests": 252,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-48": {
-  "files": 3,
-  "tests": 20,
+  "files": 14,
+  "tests": 101,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-49": {
+  "files": 27,
+  "tests": 155,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-50": {
-  "files": 3,
-  "tests": 26,
+  "files": 84,
+  "tests": 440,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-51": {
+  "files": 84,
+  "tests": 440,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-52": {
-  "files": 3,
-  "tests": 24,
+  "files": 13,
+  "tests": 118,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-53": {
+  "files": 29,
+  "tests": 225,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-54": {
-  "files": 3,
-  "tests": 21,
+  "files": 8,
+  "tests": 92,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-55": {
+  "files": 9,
+  "tests": 74,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-56": {
   "files": 1,
@@ -524,84 +608,148 @@
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
- "UC-61": {
-  "files": 3,
-  "tests": 22,
+ "UC-57": {
+  "files": 7,
+  "tests": 49,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-58": {
-  "files": 3,
-  "tests": 18,
+  "files": 21,
+  "tests": 134,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-59": {
+  "files": 10,
+  "tests": 105,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-60": {
-  "files": 3,
-  "tests": 25,
+  "files": 7,
+  "tests": 47,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
- "UC-62": {
-  "files": 3,
-  "tests": 19,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-64": {
-  "files": 3,
-  "tests": 18,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-66": {
-  "files": 3,
-  "tests": 17,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-63": {
-  "files": 3,
-  "tests": 0,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "bad-report",
-  "detail": []
- },
- "UC-68": {
-  "files": 3,
-  "tests": 163,
+ "UC-61": {
+  "files": 68,
+  "tests": 493,
   "failures": 1,
   "errors": 0,
   "skipped": 0,
   "status": "fail",
   "detail": [
    {
-    "test": "Tests\\Feature\\OpenApiDocsTest::test_docs_require_authentication_in_production",
+    "test": "Tests.Feature.AttendanceMonthlyExportTest::Cross tenant employee is not leaked into csv",
     "kind": "failure"
    }
-  ]
+  ],
+  "source": "shards-junit"
+ },
+ "UC-62": {
+  "files": 16,
+  "tests": 134,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-63": {
+  "files": 3,
+  "tests": 22,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-64": {
+  "files": 14,
+  "tests": 85,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-65": {
+  "files": 40,
+  "tests": 287,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-66": {
+  "files": 27,
+  "tests": 174,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 4,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-67": {
+  "files": 62,
+  "tests": 382,
+  "failures": 1,
+  "errors": 0,
+  "skipped": 0,
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.AttendanceMonthlyExportTest::Cross tenant employee is not leaked into csv",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
+ },
+ "UC-68": {
+  "files": 4,
+  "tests": 164,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-69": {
+  "files": 6,
+  "tests": 35,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-70": {
   "files": 0,
@@ -610,34 +758,8 @@
   "errors": 0,
   "skipped": 0,
   "status": "no-tests",
-  "detail": []
- },
- "UC-65": {
-  "files": 3,
-  "tests": 37,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-67": {
-  "files": 3,
-  "tests": 25,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-69": {
-  "files": 3,
-  "tests": 25,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-71": {
   "files": 1,
@@ -646,169 +768,215 @@
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-72": {
-  "files": 3,
-  "tests": 28,
+  "files": 112,
+  "tests": 787,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-73": {
-  "files": 3,
-  "tests": 10,
+  "files": 58,
+  "tests": 303,
   "failures": 0,
   "errors": 0,
-  "skipped": 0,
+  "skipped": 8,
   "status": "pass",
-  "detail": []
- },
- "UC-75": {
-  "files": 3,
-  "tests": 10,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-77": {
-  "files": 3,
-  "tests": 16,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-74": {
-  "files": 3,
-  "tests": 18,
+  "files": 33,
+  "tests": 226,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-75": {
+  "files": 129,
+  "tests": 861,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 8,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-76": {
-  "files": 3,
-  "tests": 16,
-  "failures": 0,
+  "files": 60,
+  "tests": 285,
+  "failures": 2,
   "errors": 0,
   "skipped": 0,
-  "status": "pass",
-  "detail": []
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh can add regular employee",
+    "kind": "failure"
+   },
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh cannot create employee with manager role",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
  },
- "UC-79": {
-  "files": 3,
-  "tests": 28,
-  "failures": 0,
+ "UC-77": {
+  "files": 60,
+  "tests": 285,
+  "failures": 2,
   "errors": 0,
   "skipped": 0,
-  "status": "pass",
-  "detail": []
- },
- "UC-81": {
-  "files": 3,
-  "tests": 18,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh can add regular employee",
+    "kind": "failure"
+   },
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh cannot create employee with manager role",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
  },
  "UC-78": {
-  "files": 3,
-  "tests": 17,
+  "files": 36,
+  "tests": 234,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-79": {
+  "files": 71,
+  "tests": 558,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-80": {
-  "files": 3,
-  "tests": 28,
+  "files": 71,
+  "tests": 558,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
- "UC-83": {
-  "files": 3,
-  "tests": 22,
+ "UC-81": {
+  "files": 14,
+  "tests": 85,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-82": {
-  "files": 3,
-  "tests": 24,
+  "files": 98,
+  "tests": 732,
   "failures": 0,
   "errors": 0,
-  "skipped": 0,
+  "skipped": 4,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
- "UC-85": {
-  "files": 3,
-  "tests": 22,
+ "UC-83": {
+  "files": 18,
+  "tests": 158,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
- },
- "UC-87": {
-  "files": 3,
-  "tests": 19,
-  "failures": 0,
-  "errors": 0,
-  "skipped": 0,
-  "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-84": {
-  "files": 3,
-  "tests": 16,
-  "failures": 0,
+  "files": 99,
+  "tests": 507,
+  "failures": 2,
   "errors": 0,
   "skipped": 0,
-  "status": "pass",
-  "detail": []
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh can add regular employee",
+    "kind": "failure"
+   },
+   {
+    "test": "Tests.Feature.HrAppRoutesTest::Rh cannot create employee with manager role",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
  },
- "UC-89": {
-  "files": 3,
-  "tests": 28,
+ "UC-85": {
+  "files": 18,
+  "tests": 158,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-86": {
-  "files": 3,
-  "tests": 22,
+  "files": 19,
+  "tests": 171,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-87": {
+  "files": 16,
+  "tests": 134,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-88": {
-  "files": 3,
-  "tests": 26,
+  "files": 17,
+  "tests": 147,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
+ },
+ "UC-89": {
+  "files": 28,
+  "tests": 157,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-90": {
   "files": 1,
@@ -817,7 +985,8 @@
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-91": {
   "files": 3,
@@ -826,7 +995,8 @@
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-92": {
   "files": 1,
@@ -835,16 +1005,23 @@
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-93": {
   "files": 2,
   "tests": 23,
-  "failures": 0,
+  "failures": 1,
   "errors": 0,
   "skipped": 0,
-  "status": "pass",
-  "detail": []
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests.Feature.AttendanceMonthlyExportTest::Cross tenant employee is not leaked into csv",
+    "kind": "failure"
+   }
+  ],
+  "source": "shards-junit"
  },
  "UC-94": {
   "files": 2,
@@ -853,16 +1030,18 @@
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-95": {
-  "files": 2,
-  "tests": 12,
+  "files": 0,
+  "tests": 0,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
-  "status": "pass",
-  "detail": []
+  "status": "no-tests",
+  "detail": [],
+  "source": "shards-junit"
  },
  "UC-96": {
   "files": 2,
@@ -871,6 +1050,7 @@
   "errors": 0,
   "skipped": 0,
   "status": "pass",
-  "detail": []
+  "detail": [],
+  "source": "shards-junit"
  }
 }

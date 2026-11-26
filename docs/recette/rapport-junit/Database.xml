@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/workspace/leopardo-hr/api/phpunit.xml" tests="22" assertions="73" errors="1" failures="0" skipped="0" time="4.452373">
+    <testsuite name="Database" tests="22" assertions="73" errors="1" failures="0" skipped="0" time="4.452373">
+      <testsuite name="Tests\Feature\Database\LeopardoMigrateFreshGuardTest" file="Leopardo Migrate Fresh Guard (Tests\Feature\Database\LeopardoMigrateFreshGuard)" tests="2" assertions="5" errors="0" failures="0" skipped="0" time="0.457402">
+        <testcase name="Fresh is hard refused in production" file="Leopardo Migrate Fresh Guard (Tests\Feature\Database\LeopardoMigrateFreshGuard)::Fresh is hard refused in production" class="Tests\Feature\Database\LeopardoMigrateFreshGuardTest" classname="Tests.Feature.Database.LeopardoMigrateFreshGuardTest" assertions="2" time="0.332154"/>
+        <testcase name="Fresh without force aborts without interactive confirmation" file="Leopardo Migrate Fresh Guard (Tests\Feature\Database\LeopardoMigrateFreshGuard)::Fresh without force aborts without interactive confirmation" class="Tests\Feature\Database\LeopardoMigrateFreshGuardTest" classname="Tests.Feature.Database.LeopardoMigrateFreshGuardTest" assertions="3" time="0.125248"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Database\LeopardoMigrateRunnerTest" file="Leopardo Migrate Runner (Tests\Feature\Database\LeopardoMigrateRunner)" tests="5" assertions="20" errors="0" failures="0" skipped="0" time="1.591521">
+        <testcase name="Runner is reentrant" file="Leopardo Migrate Runner (Tests\Feature\Database\LeopardoMigrateRunner)::Runner is reentrant" class="Tests\Feature\Database\LeopardoMigrateRunnerTest" classname="Tests.Feature.Database.LeopardoMigrateRunnerTest" assertions="2" time="0.255266"/>
+        <testcase name="Tenant tables land in shared tenants and public tables in public" file="Leopardo Migrate Runner (Tests\Feature\Database\LeopardoMigrateRunner)::Tenant tables land in shared tenants and public tables in public" class="Tests\Feature\Database\LeopardoMigrateRunnerTest" classname="Tests.Feature.Database.LeopardoMigrateRunnerTest" assertions="2" time="0.137420"/>
+        <testcase name="Migrate rollback migrate cycle on isolated migration" file="Leopardo Migrate Runner (Tests\Feature\Database\LeopardoMigrateRunner)::Migrate rollback migrate cycle on isolated migration" class="Tests\Feature\Database\LeopardoMigrateRunnerTest" classname="Tests.Feature.Database.LeopardoMigrateRunnerTest" assertions="7" time="0.259999"/>
+        <testcase name="Fresh cycle recreates schemas and rerun is stable" file="Leopardo Migrate Runner (Tests\Feature\Database\LeopardoMigrateRunner)::Fresh cycle recreates schemas and rerun is stable" class="Tests\Feature\Database\LeopardoMigrateRunnerTest" classname="Tests.Feature.Database.LeopardoMigrateRunnerTest" assertions="4" time="0.811232"/>
+        <testcase name="Schema is replayable from scratch users and onboarding" file="Leopardo Migrate Runner (Tests\Feature\Database\LeopardoMigrateRunner)::Schema is replayable from scratch users and onboarding" class="Tests\Feature\Database\LeopardoMigrateRunnerTest" classname="Tests.Feature.Database.LeopardoMigrateRunnerTest" assertions="5" time="0.127604"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Database\MigrationSchemaPlacementTest" file="Migration Schema Placement (Tests\Feature\Database\MigrationSchemaPlacement)" tests="7" assertions="15" errors="1" failures="0" skipped="0" time="1.185525">
+        <testcase name="Public holidays is created in public schema" file="Migration Schema Placement (Tests\Feature\Database\MigrationSchemaPlacement)::Public holidays is created in public schema" class="Tests\Feature\Database\MigrationSchemaPlacementTest" classname="Tests.Feature.Database.MigrationSchemaPlacementTest" assertions="1" time="0.178185"/>
+        <testcase name="Islamic calendar is created in public schema" file="Migration Schema Placement (Tests\Feature\Database\MigrationSchemaPlacement)::Islamic calendar is created in public schema" class="Tests\Feature\Database\MigrationSchemaPlacementTest" classname="Tests.Feature.Database.MigrationSchemaPlacementTest" assertions="1" time="0.137735"/>
+        <testcase name="Tax rate change log is created in tenant schema" file="Migration Schema Placement (Tests\Feature\Database\MigrationSchemaPlacement)::Tax rate change log is created in tenant schema" class="Tests\Feature\Database\MigrationSchemaPlacementTest" classname="Tests.Feature.Database.MigrationSchemaPlacementTest" assertions="1" time="0.168659"/>
+        <testcase name="Tax slabs and social contributions got validation columns" file="Migration Schema Placement (Tests\Feature\Database\MigrationSchemaPlacement)::Tax slabs and social contributions got validation columns" class="Tests\Feature\Database\MigrationSchemaPlacementTest" classname="Tests.Feature.Database.MigrationSchemaPlacementTest" assertions="6" time="0.154568"/>
+        <testcase name="Migration guards are idempotent when re run" file="Migration Schema Placement (Tests\Feature\Database\MigrationSchemaPlacement)::Migration guards are idempotent when re run" class="Tests\Feature\Database\MigrationSchemaPlacementTest" classname="Tests.Feature.Database.MigrationSchemaPlacementTest" assertions="4" time="0.214151"/>
+        <testcase name="Public holidays unique constraint is idempotent when re run" file="Migration Schema Placement (Tests\Feature\Database\MigrationSchemaPlacement)::Public holidays unique constraint is idempotent when re run" class="Tests\Feature\Database\MigrationSchemaPlacementTest" classname="Tests.Feature.Database.MigrationSchemaPlacementTest" assertions="2" time="0.128144"/>
+        <testcase name="Artisan migrate is idempotent" file="Migration Schema Placement (Tests\Feature\Database\MigrationSchemaPlacement)::Artisan migrate is idempotent" class="Tests\Feature\Database\MigrationSchemaPlacementTest" classname="Tests.Feature.Database.MigrationSchemaPlacementTest" assertions="0" time="0.204084">
+          <error type="Illuminate\Database\QueryException">Artisan migrate is idempotentIlluminate\Database\QueryException: SQLSTATE[25P02]: In failed sql transaction: 7 ERROR:  current transaction is aborted, commands ignored until end of transaction block (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: leopardo_shard_27, SQL: select exists (select 1 from pg_class c, pg_namespace n where n.nspname = current_schema() and c.relname = 'migrations' and c.relkind in ('r', 'p') and n.oid = c.relnamespace))
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:425
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:827
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:794
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:411
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:357
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:374
+at vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php:176
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/DatabaseMigrationRepository.php:185
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:758
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:164
+at vendor/laravel/framework/src/Illuminate/Support/helpers.php:329
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:164
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:140
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:110
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:671
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:109
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:88
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:36
+at vendor/laravel/framework/src/Illuminate/Container/Util.php:43
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:96
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:35
+at vendor/laravel/framework/src/Illuminate/Container/Container.php:799
+at vendor/laravel/framework/src/Illuminate/Console/Command.php:211
+at vendor/symfony/console/Command/Command.php:341
+at vendor/laravel/framework/src/Illuminate/Console/Command.php:180
+at vendor/symfony/console/Application.php:1104
+at vendor/symfony/console/Application.php:357
+at vendor/symfony/console/Application.php:196
+at vendor/laravel/framework/src/Illuminate/Console/Application.php:165
+at vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php:467
+at vendor/laravel/framework/src/Illuminate/Testing/PendingCommand.php:451
+at vendor/laravel/framework/src/Illuminate/Testing/PendingCommand.php:675
+Caused by
+PDOException: SQLSTATE[25P02]: In failed sql transaction: 7 ERROR:  current transaction is aborted, commands ignored until end of transaction block
+
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:838
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:794
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:573
+at vendor/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php:121
+at vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php:686
+at vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php:494
+at vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php:363
+at database/migrations/public/2026_05_02_000002_add_ordinary_role_and_nullable_company.php:34
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:517
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:442
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:451
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:253
+at vendor/laravel/framework/src/Illuminate/Console/View/Components/Task.php:41
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:814
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:253
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:211
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:138
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:116
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:671
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:109
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:88
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:36
+at vendor/laravel/framework/src/Illuminate/Container/Util.php:43
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:96
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:35
+at vendor/laravel/framework/src/Illuminate/Container/Container.php:799
+at vendor/laravel/framework/src/Illuminate/Console/Command.php:211
+at vendor/symfony/console/Command/Command.php:341
+at vendor/laravel/framework/src/Illuminate/Console/Command.php:180
+at vendor/symfony/console/Application.php:1104
+at vendor/symfony/console/Application.php:357
+at vendor/symfony/console/Application.php:196
+at vendor/laravel/framework/src/Illuminate/Console/Application.php:165
+at vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php:467
+at vendor/laravel/framework/src/Illuminate/Testing/PendingCommand.php:451
+at vendor/laravel/framework/src/Illuminate/Testing/PendingCommand.php:675
+at tests/Feature/Database/MigrationSchemaPlacementTest.php:149
+Caused by
+Illuminate\Database\QueryException: SQLSTATE[0A000]: Feature not supported: 7 ERROR:  cannot alter type of a column used in a policy definition
+DETAIL:  policy employees_tenant_isolation on table employees depends on column "company_id" (Connection: pgsql, Host: 127.0.0.1, Port: 5432, Database: leopardo_shard_27, SQL: alter table "employees" alter column "company_id" type uuid, alter column "company_id" drop not null, alter column "company_id" drop default, alter column "company_id" drop identity if exists)
+
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:584
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:827
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:794
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:573
+at vendor/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php:121
+at vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php:686
+at vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php:494
+at vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php:363
+at database/migrations/public/2026_05_02_000002_add_ordinary_role_and_nullable_company.php:34
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:517
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:442
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:451
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:253
+at vendor/laravel/framework/src/Illuminate/Console/View/Components/Task.php:41
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:814
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:253
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:211
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:138
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:116
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:671
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:109
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:88
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:36
+at vendor/laravel/framework/src/Illuminate/Container/Util.php:43
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:96
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:35
+at vendor/laravel/framework/src/Illuminate/Container/Container.php:799
+at vendor/laravel/framework/src/Illuminate/Console/Command.php:211
+at vendor/symfony/console/Command/Command.php:341
+at vendor/laravel/framework/src/Illuminate/Console/Command.php:180
+at vendor/symfony/console/Application.php:1104
+at vendor/symfony/console/Application.php:357
+at vendor/symfony/console/Application.php:196
+at vendor/laravel/framework/src/Illuminate/Console/Application.php:165
+at vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php:467
+at vendor/laravel/framework/src/Illuminate/Testing/PendingCommand.php:451
+at vendor/laravel/framework/src/Illuminate/Testing/PendingCommand.php:675
+at tests/Feature/Database/MigrationSchemaPlacementTest.php:149
+Caused by
+PDOException: SQLSTATE[0A000]: Feature not supported: 7 ERROR:  cannot alter type of a column used in a policy definition
+DETAIL:  policy employees_tenant_isolation on table employees depends on column "company_id"
+
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:584
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:827
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:794
+at vendor/laravel/framework/src/Illuminate/Database/Connection.php:573
+at vendor/laravel/framework/src/Illuminate/Database/Schema/Blueprint.php:121
+at vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php:686
+at vendor/laravel/framework/src/Illuminate/Database/Schema/Builder.php:494
+at vendor/laravel/framework/src/Illuminate/Support/Facades/Facade.php:363
+at database/migrations/public/2026_05_02_000002_add_ordinary_role_and_nullable_company.php:34
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:517
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:442
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:451
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:253
+at vendor/laravel/framework/src/Illuminate/Console/View/Components/Task.php:41
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:814
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:253
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:211
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:138
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:116
+at vendor/laravel/framework/src/Illuminate/Database/Migrations/Migrator.php:671
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:109
+at vendor/laravel/framework/src/Illuminate/Database/Console/Migrations/MigrateCommand.php:88
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:36
+at vendor/laravel/framework/src/Illuminate/Container/Util.php:43
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:96
+at vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php:35
+at vendor/laravel/framework/src/Illuminate/Container/Container.php:799
+at vendor/laravel/framework/src/Illuminate/Console/Command.php:211
+at vendor/symfony/console/Command/Command.php:341
+at vendor/laravel/framework/src/Illuminate/Console/Command.php:180
+at vendor/symfony/console/Application.php:1104
+at vendor/symfony/console/Application.php:357
+at vendor/symfony/console/Application.php:196
+at vendor/laravel/framework/src/Illuminate/Console/Application.php:165
+at vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php:467
+at vendor/laravel/framework/src/Illuminate/Testing/PendingCommand.php:451
+at vendor/laravel/framework/src/Illuminate/Testing/PendingCommand.php:675
+at tests/Feature/Database/MigrationSchemaPlacementTest.php:149</error>
+        </testcase>
+      </testsuite>
+      <testsuite name="Tests\Feature\Database\NotificationPreferencesUniqueMigrationTest" file="Notification Preferences Unique Migration (Tests\Feature\Database\NotificationPreferencesUniqueMigration)" tests="4" assertions="24" errors="0" failures="0" skipped="0" time="0.627374">
+        <testcase name="Migration deduplicates then adds unique constraint" file="Notification Preferences Unique Migration (Tests\Feature\Database\NotificationPreferencesUniqueMigration)::Migration deduplicates then adds unique constraint" class="Tests\Feature\Database\NotificationPreferencesUniqueMigrationTest" classname="Tests.Feature.Database.NotificationPreferencesUniqueMigrationTest" assertions="14" time="0.167497"/>
+        <testcase name="Migration is idempotent on retry" file="Notification Preferences Unique Migration (Tests\Feature\Database\NotificationPreferencesUniqueMigration)::Migration is idempotent on retry" class="Tests\Feature\Database\NotificationPreferencesUniqueMigrationTest" classname="Tests.Feature.Database.NotificationPreferencesUniqueMigrationTest" assertions="4" time="0.152571"/>
+        <testcase name="Unique constraint blocks new duplicates" file="Notification Preferences Unique Migration (Tests\Feature\Database\NotificationPreferencesUniqueMigration)::Unique constraint blocks new duplicates" class="Tests\Feature\Database\NotificationPreferencesUniqueMigrationTest" classname="Tests.Feature.Database.NotificationPreferencesUniqueMigrationTest" assertions="3" time="0.159122"/>
+        <testcase name="Down drops the constraint" file="Notification Preferences Unique Migration (Tests\Feature\Database\NotificationPreferencesUniqueMigration)::Down drops the constraint" class="Tests\Feature\Database\NotificationPreferencesUniqueMigrationTest" classname="Tests.Feature.Database.NotificationPreferencesUniqueMigrationTest" assertions="3" time="0.148183"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Database\RealMigrationsReplayTest" file="Real Migrations Replay (Tests\Feature\Database\RealMigrationsReplay)" tests="4" assertions="9" errors="0" failures="0" skipped="0" time="0.590550">
+        <testcase name="Every tenant migration on disk is recorded as run" file="Real Migrations Replay (Tests\Feature\Database\RealMigrationsReplay)::Every tenant migration on disk is recorded as run" class="Tests\Feature\Database\RealMigrationsReplayTest" classname="Tests.Feature.Database.RealMigrationsReplayTest" assertions="2" time="0.146669"/>
+        <testcase name="Tenant migration count matches disk" file="Real Migrations Replay (Tests\Feature\Database\RealMigrationsReplay)::Tenant migration count matches disk" class="Tests\Feature\Database\RealMigrationsReplayTest" classname="Tests.Feature.Database.RealMigrationsReplayTest" assertions="1" time="0.142498"/>
+        <testcase name="Migrations land in the expected schema" file="Real Migrations Replay (Tests\Feature\Database\RealMigrationsReplay)::Migrations land in the expected schema" class="Tests\Feature\Database\RealMigrationsReplayTest" classname="Tests.Feature.Database.RealMigrationsReplayTest" assertions="2" time="0.153550"/>
+        <testcase name="Sensitive table has columns from migrations" file="Real Migrations Replay (Tests\Feature\Database\RealMigrationsReplay)::Sensitive table has columns from migrations" class="Tests\Feature\Database\RealMigrationsReplayTest" classname="Tests.Feature.Database.RealMigrationsReplayTest" assertions="4" time="0.147834"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/workspace/leopardo-hr/api/phpunit.xml" tests="7" assertions="843" errors="0" failures="0" skipped="0" time="4.709958">
+    <testsuite name="Events" tests="7" assertions="843" errors="0" failures="0" skipped="0" time="4.709958">
+      <testsuite name="Tests\Feature\Events\EventCatalogueTest" file="/workspace/leopardo-hr/api/tests/Feature/Events/EventCatalogueTest.php" tests="7" assertions="843" errors="0" failures="0" skipped="0" time="4.709958">
+        <testcase name="test_catalogue_is_readable_and_has_events" file="/workspace/leopardo-hr/api/tests/Feature/Events/EventCatalogueTest.php" line="45" class="Tests\Feature\Events\EventCatalogueTest" classname="Tests.Feature.Events.EventCatalogueTest" assertions="4" time="0.715997"/>
+        <testcase name="test_every_event_class_has_a_catalogue_entry" file="/workspace/leopardo-hr/api/tests/Feature/Events/EventCatalogueTest.php" line="54" class="Tests\Feature\Events\EventCatalogueTest" classname="Tests.Feature.Events.EventCatalogueTest" assertions="99" time="2.301334"/>
+        <testcase name="test_every_entry_references_an_existing_class" file="/workspace/leopardo-hr/api/tests/Feature/Events/EventCatalogueTest.php" line="68" class="Tests\Feature\Events\EventCatalogueTest" classname="Tests.Feature.Events.EventCatalogueTest" assertions="50" time="0.298149"/>
+        <testcase name="test_versions_are_unique_and_semver" file="/workspace/leopardo-hr/api/tests/Feature/Events/EventCatalogueTest.php" line="83" class="Tests\Feature\Events\EventCatalogueTest" classname="Tests.Feature.Events.EventCatalogueTest" assertions="99" time="0.385536"/>
+        <testcase name="test_each_schema_is_a_valid_json_schema" file="/workspace/leopardo-hr/api/tests/Feature/Events/EventCatalogueTest.php" line="107" class="Tests\Feature\Events\EventCatalogueTest" classname="Tests.Feature.Events.EventCatalogueTest" assertions="491" time="0.309131"/>
+        <testcase name="test_each_sample_validates_against_its_schema" file="/workspace/leopardo-hr/api/tests/Feature/Events/EventCatalogueTest.php" line="128" class="Tests\Feature\Events\EventCatalogueTest" classname="Tests.Feature.Events.EventCatalogueTest" assertions="99" time="0.393771"/>
+        <testcase name="test_deprecated_entries_carry_removal_at" file="/workspace/leopardo-hr/api/tests/Feature/Events/EventCatalogueTest.php" line="146" class="Tests\Feature\Events\EventCatalogueTest" classname="Tests.Feature.Events.EventCatalogueTest" assertions="1" time="0.306041"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>
