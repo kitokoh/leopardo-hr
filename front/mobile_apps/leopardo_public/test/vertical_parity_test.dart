@@ -203,10 +203,17 @@ void main() {
       }
     });
 
-    test('le blocage `order` du restaurant reste justifié', () {
-      // `X-Restaurant-Shop-Token` est un jeton par tenant : l'exposer au grand
-      // public est une décision de sécurité serveur, pas un oubli mobile.
-      expect(journeyByCode('restaurant')!.blockerFor('order'), isNotNull);
+    test('le blocage `order` du restaurant est LEVÉ — le motif était périmé',
+        () {
+      // Le blocage décrivait RESTO-805 (#6226), la boutique à jeton par tenant
+      // `X-Restaurant-Shop-Token`. Depuis RESTO-902 (#7747) une surface
+      // publique PAR SLUG existe et ne demande aucun jeton :
+      //   POST /public/restaurants/{slug}/orders
+      // C'est celle que consomme la vitrine web `/restaurants/{slug}`. Le
+      // parcours natif est donc complet, et le blocage n'a plus lieu d'être.
+      final restaurant = journeyByCode('restaurant')!;
+      expect(restaurant.blockerFor('order'), isNull);
+      expect(restaurant.mode, JourneyMode.order);
     });
 
     test('le blocage `quote` du trade reste justifié', () {

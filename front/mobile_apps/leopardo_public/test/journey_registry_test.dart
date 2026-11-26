@@ -130,8 +130,11 @@ void main() {
       final retail = journeyByCode('retail')!;
       expect(retail.blockerFor('order'), isNull);
 
+      // #9959 — le blocage `order` du restaurant est levé : la surface
+      // publique par slug (RESTO-902) ne demande aucun jeton, contrairement à
+      // la boutique RESTO-805 qui motivait l'ancien blocage.
       final restaurant = journeyByCode('restaurant')!;
-      expect(restaurant.blockerFor('order'), 'journeyBlockerRestaurantOrder');
+      expect(restaurant.blockerFor('order'), isNull);
     });
   });
 

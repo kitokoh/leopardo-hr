@@ -419,6 +419,30 @@ class AppStrings {
           'Le suivi automatique s\'est arrêté sans confirmation. Le paiement peut encore aboutir : vérifiez plus tard.',
       'travelPaymentWatchRetry': 'Vérifier à nouveau',
 
+      // ── Verticale Restaurant — commande par slug (#9959) ──
+      'restaurantOrderTitle': 'Commander',
+      'restaurantOrderAction': 'Commander en ligne',
+      'restaurantNotPublished':
+          'Cet établissement n\'est pas publié sur la plateforme. Il n\'est donc pas commandable ici.',
+      'restaurantNoMenu':
+          'Cet établissement est publié mais n\'a encore rien mis en ligne. Revenez plus tard.',
+      'restaurantCart': 'Panier',
+      'restaurantGoToCart': 'Voir le panier',
+      'restaurantBackToMenu': 'Retour au menu',
+      'restaurantPriceOnRequest': 'Prix confirmé par l\'établissement',
+      'restaurantTotalOnRequest':
+          'Le total sera confirmé par l\'établissement : certains articles n\'ont pas de prix publié.',
+      'restaurantOrderType': 'Type de commande',
+      'restaurantOrderType_pickup': 'À emporter',
+      'restaurantOrderType_delivery': 'Livraison',
+      'restaurantOrderNote': 'Note pour l\'établissement',
+      'restaurantSubmitOrder': 'Envoyer la commande',
+      'restaurantKeepSecretNotice':
+          'Conservez le code de suivi : il n\'est affiché qu\'une fois et permet de retrouver la commande.',
+      'restaurantReplayNotice':
+          'Cette commande existait déjà : le code de suivi est celui obtenu à la première création.',
+      'restaurantTrackingSecret': 'Code de suivi',
+
       // ── Verticale Emploi (careers) — #9944 ──
       'careersDirectoryNotice':
           'Les offres viennent des entreprises qui publient sur la plateforme. Certaines offres sont agrégées de partenaires : la candidature se fait alors chez eux.',
@@ -819,6 +843,30 @@ class AppStrings {
           'Automatic tracking stopped without confirmation. The payment may still go through: check again later.',
       'travelPaymentWatchRetry': 'Check again',
 
+      // ── Restaurant vertical — order by slug (#9959) ──
+      'restaurantOrderTitle': 'Order',
+      'restaurantOrderAction': 'Order online',
+      'restaurantNotPublished':
+          'This establishment is not published on the platform, so it cannot be ordered from here.',
+      'restaurantNoMenu':
+          'This establishment is published but has not put anything online yet. Check back later.',
+      'restaurantCart': 'Cart',
+      'restaurantGoToCart': 'View cart',
+      'restaurantBackToMenu': 'Back to menu',
+      'restaurantPriceOnRequest': 'Price confirmed by the establishment',
+      'restaurantTotalOnRequest':
+          'The total will be confirmed by the establishment: some items have no published price.',
+      'restaurantOrderType': 'Order type',
+      'restaurantOrderType_pickup': 'Takeaway',
+      'restaurantOrderType_delivery': 'Delivery',
+      'restaurantOrderNote': 'Note for the establishment',
+      'restaurantSubmitOrder': 'Send the order',
+      'restaurantKeepSecretNotice':
+          'Keep the tracking code: it is shown only once and is how you find the order again.',
+      'restaurantReplayNotice':
+          'This order already existed: the tracking code is the one from the first creation.',
+      'restaurantTrackingSecret': 'Tracking code',
+
       // ── Careers vertical — #9944 ──
       'careersDirectoryNotice':
           'Jobs come from companies publishing on the platform. Some offers are aggregated from partners: you then apply on their site.',
@@ -1195,12 +1243,35 @@ class AppStrings {
       'travelPaymentProviderReference': 'مرجع المشغّل',
       'travelPaymentPendingNotice':
           'الدفع في انتظار التأكيد. احتفظ بمرجع الدفع للعثور عليه لاحقًا.',
-      'travelPaymentWatching':
-          'جارٍ متابعة الدفع… تتحدّث الحالة تلقائيًا.',
+      'travelPaymentWatching': 'جارٍ متابعة الدفع… تتحدّث الحالة تلقائيًا.',
       'travelPaymentSettled': 'تم تأكيد الدفع.',
       'travelPaymentWatchStopped':
           'توقّفت المتابعة التلقائية دون تأكيد. قد يكتمل الدفع: تحقّق لاحقًا.',
       'travelPaymentWatchRetry': 'تحقّق مرة أخرى',
+
+      // ── قطاع المطاعم — الطلب بالمعرّف (#9959) ──
+      'restaurantOrderTitle': 'اطلب',
+      'restaurantOrderAction': 'اطلب عبر الإنترنت',
+      'restaurantNotPublished':
+          'هذا المطعم غير منشور على المنصة، لذلك لا يمكن الطلب منه هنا.',
+      'restaurantNoMenu':
+          'هذا المطعم منشور لكنه لم ينشر أي منتج بعد. عُد لاحقًا.',
+      'restaurantCart': 'السلة',
+      'restaurantGoToCart': 'عرض السلة',
+      'restaurantBackToMenu': 'العودة إلى القائمة',
+      'restaurantPriceOnRequest': 'السعر يؤكده المطعم',
+      'restaurantTotalOnRequest':
+          'سيؤكد المطعم المجموع: بعض المنتجات ليس لها سعر منشور.',
+      'restaurantOrderType': 'نوع الطلب',
+      'restaurantOrderType_pickup': 'للتحضير',
+      'restaurantOrderType_delivery': 'توصيل',
+      'restaurantOrderNote': 'ملاحظة للمطعم',
+      'restaurantSubmitOrder': 'إرسال الطلب',
+      'restaurantKeepSecretNotice':
+          'احتفظ برمز التتبع: يُعرض مرة واحدة فقط وهو وسيلة العثور على الطلب.',
+      'restaurantReplayNotice':
+          'هذا الطلب موجود مسبقًا: رمز التتبع هو نفسه من الإنشاء الأول.',
+      'restaurantTrackingSecret': 'رمز التتبع',
 
       // ── قطاع التوظيف (careers) — #9944 ──
       'careersDirectoryNotice':
@@ -1595,7 +1666,31 @@ class AppStrings {
       'travelPaymentSettled': 'Ödeme onaylandı.',
       'travelPaymentWatchStopped':
           'Otomatik izleme onay olmadan durdu. Ödeme yine de tamamlanabilir: daha sonra kontrol edin.',
-      'travelPaymentWatchRetry': 'Yeniden kontrol et'
+      'travelPaymentWatchRetry': 'Yeniden kontrol et',
+
+      // ── Restoran dikeyi — slug ile sipariş (#9959) ──
+      'restaurantOrderTitle': 'Sipariş ver',
+      'restaurantOrderAction': 'Çevrimiçi sipariş ver',
+      'restaurantNotPublished':
+          'Bu işletme platformda yayınlanmamış, buradan sipariş verilemez.',
+      'restaurantNoMenu':
+          'Bu işletme yayınlanmış ancak henüz bir ürün koymamış. Daha sonra tekrar bakın.',
+      'restaurantCart': 'Sepet',
+      'restaurantGoToCart': 'Sepeti gör',
+      'restaurantBackToMenu': 'Menüye dön',
+      'restaurantPriceOnRequest': 'Fiyatı işletme onaylar',
+      'restaurantTotalOnRequest':
+          'Toplamı işletme onaylayacak: bazı ürünlerin yayınlanmış fiyatı yok.',
+      'restaurantOrderType': 'Sipariş türü',
+      'restaurantOrderType_pickup': 'Gel al',
+      'restaurantOrderType_delivery': 'Teslimat',
+      'restaurantOrderNote': 'İşletmeye not',
+      'restaurantSubmitOrder': 'Siparişi gönder',
+      'restaurantKeepSecretNotice':
+          'Takip kodunu saklayın: yalnızca bir kez gösterilir ve siparişi bulmanın yolu budur.',
+      'restaurantReplayNotice':
+          'Bu sipariş zaten vardı: takip kodu ilk oluşturmadaki koddur.',
+      'restaurantTrackingSecret': 'Takip kodu',
 
       // ── İşe alım dikeyi (careers) — #9944 ──
       'careersDirectoryNotice':

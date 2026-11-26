@@ -4,6 +4,7 @@ import 'package:leopardo_core/core/providers/base_providers.dart';
 import '../data/contact_request_gateway.dart';
 import '../data/journey_http.dart';
 import '../data/retail_order_gateway.dart';
+import '../data/restaurant_order_gateway.dart';
 import '../data/stay_reservation_gateway.dart';
 import '../data/travel_gateway.dart';
 import '../data/careers_gateway.dart';
@@ -57,4 +58,13 @@ final verticalDirectoryGatewayProvider = Provider<VerticalDirectoryGateway>(
 /// Verticale Mobilité (vtc) — courses invitées.
 final vtcGatewayProvider = Provider<VtcGateway>(
   (ref) => VtcGateway(ref.watch(journeyApiProvider)),
+);
+
+/// Verticale Restaurant — commande publique par slug (#9959).
+///
+/// Elle ne passe PAS par l'agrégateur de découverte : le menu et la commande
+/// sont servis par la surface dédiée `/public/restaurants/{slug}` (RESTO-902),
+/// qui ne demande aucun jeton.
+final restaurantOrderGatewayProvider = Provider<RestaurantOrderGateway>(
+  (ref) => RestaurantOrderGateway(ref.watch(journeyApiProvider)),
 );

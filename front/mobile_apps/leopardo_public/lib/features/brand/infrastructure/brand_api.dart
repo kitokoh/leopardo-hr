@@ -40,7 +40,8 @@ enum BrandLoadOutcome {
 class BrandLoadResult {
   const BrandLoadResult(this.outcome, {this.brand});
 
-  const BrandLoadResult.found(Brand brand) : this(BrandLoadOutcome.found, brand: brand);
+  const BrandLoadResult.found(Brand brand)
+      : this(BrandLoadOutcome.found, brand: brand);
 
   final BrandLoadOutcome outcome;
   final Brand? brand;

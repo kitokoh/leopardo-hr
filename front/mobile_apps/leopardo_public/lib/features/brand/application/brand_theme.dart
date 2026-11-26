@@ -53,7 +53,10 @@ ThemeData brandTheme(Brand brand, {ThemeData? base}) {
 
   // Aucune couleur exploitable : on rend le thème de base inchangé plutôt
   // qu'un thème à moitié appliqué.
-  if (primary == null || accent == null || surface == null || onPrimary == null) {
+  if (primary == null ||
+      accent == null ||
+      surface == null ||
+      onPrimary == null) {
     return fallback;
   }
 
@@ -78,4 +81,6 @@ ThemeData brandTheme(Brand brand, {ThemeData? base}) {
 
 /// Le sens d'écriture Flutter d'une marque.
 TextDirection textDirectionOf(Brand brand) =>
-    brand.direction == TextDirectionality.rtl ? TextDirection.rtl : TextDirection.ltr;
+    brand.direction == TextDirectionality.rtl
+        ? TextDirection.rtl
+        : TextDirection.ltr;

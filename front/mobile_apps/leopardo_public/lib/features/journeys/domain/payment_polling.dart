@@ -96,7 +96,9 @@ class PaymentPollPlan {
     required String? status,
     required bool hasError,
   }) {
-    if (isTerminalPaymentStatus(status)) return PaymentPollDecision.stopTerminal;
+    if (isTerminalPaymentStatus(status)) {
+      return PaymentPollDecision.stopTerminal;
+    }
     if (hasError) return PaymentPollDecision.stopError;
     if (attempt >= maxAttempts) return PaymentPollDecision.stopExhausted;
     return PaymentPollDecision.poll;
