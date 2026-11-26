@@ -47,7 +47,7 @@
   <section class="panel">
     <h3>Description / préconditions</h3>
     <p>Vérifier l&#x27;invitation d&#x27;un collaborateur et l&#x27;attribution d&#x27;un rôle dans les limites autorisées.</p>
-    <p class="muted"><strong>Prérequis :</strong> Compte Manager RH ; endpoints <code>/api/v1/invitations</code>, <code>/api/v1/company/team-roles</code>, <code>/api/v1/employees/{employee}/assign-role</code>.</p>
+    <p class="muted"><strong>Prérequis :</strong> Compte Manager RH ; endpoints <code>/api/v1/invitations</code>, <code>/api/v1/role-assignments</code>.</p>
   </section>
   <section class="panel">
     <h3>Résultat attendu</h3>
@@ -57,7 +57,7 @@
 
 <section class="panel">
   <h3>Étapes de test</h3>
-  <ol class="steps"><li>Inviter un nouvel utilisateur par email.</li><li>Vérifier la réception de l&#x27;invitation et l&#x27;activation du compte.</li><li>Attribuer un rôle (ex. manager de département) via <code>POST /api/v1/employees/{employee}/assign-role</code>.</li><li>Tenter d&#x27;attribuer un rôle supérieur au sien et vérifier le refus.</li><li>Vérifier la trace d&#x27;audit de l&#x27;attribution.</li></ol>
+  <ol class="steps"><li>Inviter un nouvel utilisateur par email.</li><li>Vérifier la réception de l&#x27;invitation et l&#x27;activation du compte.</li><li>Attribuer un rôle (ex. manager de département).</li><li>Tenter d&#x27;attribuer un rôle supérieur au sien et vérifier le refus.</li><li>Vérifier la trace d&#x27;audit de l&#x27;attribution.</li></ol>
 </section>
 
 <section class="panel">

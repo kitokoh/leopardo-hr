@@ -47,7 +47,7 @@
   <section class="panel">
     <h3>Description / préconditions</h3>
     <p>Vérifier l&#x27;activation d&#x27;un pack sectoriel et son parcours public de réservation.</p>
-    <p class="muted"><strong>Prérequis :</strong> Tenant avec la solution TravelAgency activée ; endpoints <code>/api/v1/public/travel/marketplace/*</code>.</p>
+    <p class="muted"><strong>Prérequis :</strong> Tenant avec la solution TravelAgency activée ; endpoints <code>/api/v1/public/travel/shop/*</code>.</p>
   </section>
   <section class="panel">
     <h3>Résultat attendu</h3>
@@ -57,7 +57,7 @@
 
 <section class="panel">
   <h3>Étapes de test</h3>
-  <ol class="steps"><li>Appeler <code>GET /api/v1/public/travel/marketplace/trips</code> et vérifier la liste.</li><li>Ouvrir le détail d&#x27;un trajet.</li><li>Créer une réservation (<code>POST /api/v1/public/travel/marketplace/bookings</code>).</li><li>Suivre la réservation via sa référence.</li><li>Annuler la réservation et vérifier le statut.</li><li>Vérifier qu&#x27;un tenant non activé renvoie une erreur explicite (fail-closed).</li></ol>
+  <ol class="steps"><li>Appeler <code>GET /api/v1/public/travel/shop/trips</code> et vérifier la liste.</li><li>Ouvrir le détail d&#x27;un trajet.</li><li>Créer une réservation (<code>POST /api/v1/public/travel/shop/bookings</code>).</li><li>Suivre la réservation via sa référence.</li><li>Annuler la réservation et vérifier le statut.</li><li>Vérifier qu&#x27;un tenant non activé renvoie une erreur explicite (fail-closed).</li></ol>
 </section>
 
 <section class="panel">

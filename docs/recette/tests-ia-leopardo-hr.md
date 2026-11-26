@@ -424,12 +424,12 @@ Prérequis : Accès réseau à l'API de production.
 
 **Description / préconditions**  
 Vérifier l'activation d'un pack sectoriel et son parcours public de réservation.  
-Prérequis : Tenant avec la solution TravelAgency activée ; endpoints `/api/v1/public/travel/marketplace/*`.
+Prérequis : Tenant avec la solution TravelAgency activée ; endpoints `/api/v1/public/travel/shop/*`.
 
 **Étapes de test**
-1. Appeler `GET /api/v1/public/travel/marketplace/trips` et vérifier la liste.
+1. Appeler `GET /api/v1/public/travel/shop/trips` et vérifier la liste.
 2. Ouvrir le détail d'un trajet.
-3. Créer une réservation (`POST /api/v1/public/travel/marketplace/bookings`).
+3. Créer une réservation (`POST /api/v1/public/travel/shop/bookings`).
 4. Suivre la réservation via sa référence.
 5. Annuler la réservation et vérifier le statut.
 6. Vérifier qu'un tenant non activé renvoie une erreur explicite (fail-closed).
@@ -515,12 +515,12 @@ Création et affectation fonctionnent ; l'organigramme reflète les changements 
 
 **Description / préconditions**  
 Vérifier l'invitation d'un collaborateur et l'attribution d'un rôle dans les limites autorisées.  
-Prérequis : Compte Manager RH ; endpoints `/api/v1/invitations`, `/api/v1/company/team-roles`, `/api/v1/employees/{employee}/assign-role`.
+Prérequis : Compte Manager RH ; endpoints `/api/v1/invitations`, `/api/v1/role-assignments`.
 
 **Étapes de test**
 1. Inviter un nouvel utilisateur par email.
 2. Vérifier la réception de l'invitation et l'activation du compte.
-3. Attribuer un rôle (ex. manager de département) via `POST /api/v1/employees/{employee}/assign-role`.
+3. Attribuer un rôle (ex. manager de département).
 4. Tenter d'attribuer un rôle supérieur au sien et vérifier le refus.
 5. Vérifier la trace d'audit de l'attribution.
 
@@ -545,7 +545,7 @@ L'invitation aboutit, le rôle est attribué dans les limites du délégable, l'
 
 **Description / préconditions**  
 Vérifier la consultation du planning et la validation des heures supplémentaires.  
-Prérequis : Compte manager ; endpoints `/api/v1/planning`, `/api/v1/reports/overtime`.
+Prérequis : Compte manager ; endpoints `/api/v1/planning`, `/api/v1/overtime`.
 
 **Étapes de test**
 1. Consulter le planning de la semaine.
@@ -875,7 +875,7 @@ L'export est complet et réimportable, le rapprochement identifie correctement l
 
 **Description / préconditions**  
 Vérifier le cycle d'une note de frais : soumission avec justificatif, validation manager, rejet motivé.  
-Prérequis : Compte employé + compte manager ; endpoints `/api/v1/expense-claims`.
+Prérequis : Compte employé + compte manager ; endpoints `/api/v1/expenses`.
 
 **Étapes de test**
 1. Créer une note de frais avec un justificatif joint.
@@ -1205,7 +1205,7 @@ Le catalogue est cohérent, l'historique de prix est conservé, la désactivatio
 
 **Description / préconditions**  
 Vérifier que la recherche transverse ne renvoie que ce que l'utilisateur a le droit de voir.  
-Prérequis : Deux comptes de rôles différents ; endpoints `/api/v1/crm/search`.
+Prérequis : Deux comptes de rôles différents ; endpoints `/api/v1/search`.
 
 **Étapes de test**
 1. Lancer une recherche sur un terme présent dans plusieurs modules.
