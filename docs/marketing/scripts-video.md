@@ -1,6 +1,89 @@
 # Scripts marketing — leopardo-hr
 
-_23 scripts video, 5 categories. Source de verite : `docs/marketing/scripts-video.json`._
+_25 scripts video, 5 categories. Source de verite : `docs/marketing/scripts-video.json`._
+
+## Calendrier de tournage
+
+Ordre de production des videos. Une vague se tourne dans l'ordre de ses etapes ; une vague ne demarre pas avant que la precedente soit montee. Les derives (cuts, formats courts) se tournent pendant le montage de leur film source, avec les memes rushes.
+
+### V1 — Film pilier et derives publicitaires
+
+Poser le message maitre et en extraire les formats payants. Tout le reste en depend.
+
+| # | ID | Titre | Statut |
+|---|---|---|---|
+| 1 | VID-01 | Leopardo, le Business OS des entreprises de terrain (film pilier) | A ecrire |
+| 2 | VID-02 | Leopardo en 30 secondes (cut publicitaire) | A ecrire |
+| 3 | VID-03 | Bumper 15 secondes (pre-roll non skippable) | A ecrire |
+| 4 | VID-04 | Comment Leopardo remplace Excel, WhatsApp et le papier (explainer 3 min) | A ecrire |
+
+**Pourquoi cet ordre :** Le film de 90 s fixe le vocabulaire, les plans et la musique. Les cuts 30 s et 15 s se montent a partir des memes rushes ; l'explainer 3 min reutilise les captures d'ecran du pilier.
+
+### V2 — Verticales a plus forte demande
+
+Couvrir les packs metier deja les plus demandes, pour alimenter les pages pack du site.
+
+| # | ID | Titre | Statut |
+|---|---|---|---|
+| 5 | VID-05 | Restaurant : du service en salle a la marge du soir | A ecrire |
+| 6 | VID-06 | Agence de voyage : vendre, reserver, embarquer | A ecrire |
+| 7 | VID-07 | Pharmacie : le lot, l'ordonnance, la tracabilite | A ecrire |
+| 8 | VID-08 | Hotellerie : etablissements, inventaire, baux et loyers | A ecrire |
+
+**Pourquoi cet ordre :** Restaurant, voyage, pharmacie et hotellerie partagent le meme decor de terrain : un seul plan de tournage couvre quatre films.
+
+### V3 — Verticales restantes
+
+Completer la grille des packs metier, y compris les deux verticales ajoutees en v2.
+
+| # | ID | Titre | Statut |
+|---|---|---|---|
+| 9 | VID-09 | Sante : patients, rendez-vous, hospitalisations, facturation des soins | A ecrire |
+| 10 | VID-10 | Ecole : etablissements, classes, notes | A ecrire |
+| 11 | VID-11 | Station-service : le litre, le poste, la marge | A ecrire |
+| 12 | VID-12 | VTC : reserver, dispatcher au plus proche, suivre | A ecrire |
+| 13 | VID-24 | Farm OS : la parcelle, le troupeau, la recolte, la marge | A ecrire |
+| 14 | VID-25 | International Trade OS : du RFQ au cout rendu | A ecrire |
+
+**Pourquoi cet ordre :** Sante, ecole, station-service et VTC ferment la grille historique. Farm OS et International Trade OS arrivent ici : leurs captures d'ecran demandent un environnement de demonstration dedie (parcellaire, RFQ) qui n'existe pas encore sur le site public.
+
+### V4 — Profils utilisateurs
+
+Parler a la personne, pas au secteur : un film par role.
+
+| # | ID | Titre | Statut |
+|---|---|---|---|
+| 15 | VID-13 | Employe : ma journee dans Leopardo | A ecrire |
+| 16 | VID-14 | Manager : piloter sans attendre le rapport du vendredi | A ecrire |
+| 17 | VID-15 | RH : le referentiel qui alimente tout le reste | A ecrire |
+| 18 | VID-16 | Comptable : de la variable de paie au bulletin | A ecrire |
+
+**Pourquoi cet ordre :** Ces films se tournent apres les verticales : ils reutilisent les memes interfaces, mais du point de vue d'un role. Tourner avant obligerait a re-tourner apres les changements d'ecran.
+
+### V5 — Films produit
+
+Expliquer les quatre capacites qui font la difference face a un tableur.
+
+| # | ID | Titre | Statut |
+|---|---|---|---|
+| 19 | VID-17 | Paie multi-pays : 21 pays de regles en pilote | A ecrire |
+| 20 | VID-18 | Pointage, kiosque et mode hors-ligne | A ecrire |
+| 21 | VID-19 | Comptabilite : journaux, grand livre, balance, FEC | A ecrire |
+| 22 | VID-20 | Assistant IA et vitrine publique : etre trouve, puis repondre | A ecrire |
+
+**Pourquoi cet ordre :** Paie multi-pays, pointage hors-ligne, comptabilite et assistant IA demandent des captures validees par l'equipe produit : a tourner une fois les ecrans figes.
+
+### V6 — Formats courts et social
+
+Alimenter TikTok, Reels, Shorts et LinkedIn avec des formats verticaux.
+
+| # | ID | Titre | Statut |
+|---|---|---|---|
+| 23 | VID-21 | 3 signes que votre entreprise a depasse Excel (hook 9:16) | A ecrire |
+| 24 | VID-22 | Temoignage client : avant / apres (9:16) | A ecrire |
+| 25 | VID-23 | Mise en route en moins de 30 minutes (9:16) | A ecrire |
+
+**Pourquoi cet ordre :** Les hooks 9:16 se calibrent sur les performances des vagues precedentes. Le temoignage client exige un client d'accord pour etre filme : a planifier en dernier.
 
 ## 🎬 Presentation de la solution
 
@@ -9,6 +92,7 @@ Films de marque : presenter Leopardo au grand public, du film pilier de 90 s aux
 ### VID-01 — Leopardo, le Business OS des entreprises de terrain (film pilier)
 
 - **Format :** 16:9 · **Duree :** 90 s · **Audience :** Grand public, dirigeants de PME de terrain
+- **Statut de production :** A ecrire
 - **Objectif :** Faire comprendre en 90 secondes ce que Leopardo remplace et pour qui il est fait. Film maitre dont derivent les cuts 30 s et 15 s.
 - **Hook :** « Trois outils que toute entreprise de terrain utilise encore : un carnet de pointage, un tableur de paie, un groupe WhatsApp. »
 
@@ -31,6 +115,7 @@ Films de marque : presenter Leopardo au grand public, du film pilier de 90 s aux
 ### VID-02 — Leopardo en 30 secondes (cut publicitaire)
 
 - **Format :** 16:9 · **Duree :** 30 s · **Audience :** Prospection froide, pre-roll YouTube, LinkedIn
+- **Statut de production :** A ecrire
 - **Objectif :** Version publicitaire du film pilier : un seul message, un seul CTA. Aucun plan nouveau, uniquement du montage dans VID-01.
 - **Hook :** « Votre paie tient sur un tableur. Vos pointages sur du papier. Ca peut s'arreter aujourd'hui. »
 
@@ -50,6 +135,7 @@ Films de marque : presenter Leopardo au grand public, du film pilier de 90 s aux
 ### VID-03 — Bumper 15 secondes (pre-roll non skippable)
 
 - **Format :** 16:9 · **Duree :** 15 s · **Audience :** Pre-roll YouTube non skippable, display video
+- **Statut de production :** A ecrire
 - **Objectif :** Un seul mot retenu : le nom. Format contraint, aucune explication produit.
 - **Hook :** « Une question, une reponse, un nom. »
 
@@ -68,6 +154,7 @@ Films de marque : presenter Leopardo au grand public, du film pilier de 90 s aux
 ### VID-04 — Comment Leopardo remplace Excel, WhatsApp et le papier (explainer 3 min)
 
 - **Format :** 16:9 · **Duree :** 3 min · **Audience :** Dirigeants en evaluation, page produit, demo asynchrone
+- **Statut de production :** A ecrire
 - **Objectif :** Repondre aux objections avant l'appel commercial : migration, securite, multi-pays, prix. Format capture d'ecran commentee.
 - **Hook :** « On ne vous demande pas de changer votre facon de travailler. On vous demande d'arreter de la documenter trois fois. »
 
@@ -93,6 +180,7 @@ Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hot
 ### VID-05 — Restaurant : du service en salle a la marge du soir
 
 - **Format :** 16:9 · **Duree :** 60 s · **Audience :** Restaurateurs, gerants de plusieurs etablissements
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le pack RestaurantManager : POS et caisse, commandes, reservations, stock et COGS, livraison, fidelite.
 - **Hook :** « A 23 h, vous ne savez pas combien vous avez gagne. Le pack Restaurant, si. »
 
@@ -113,6 +201,7 @@ Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hot
 ### VID-06 — Agence de voyage : vendre, reserver, embarquer
 
 - **Format :** 16:9 · **Duree :** 60 s · **Audience :** Agences de voyage, tour-operateurs
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le pack Agence de voyage : boutique publique, trajets, reservations, suivi, check-in, annulation.
 - **Hook :** « Vos clients reservent sur WhatsApp. Vos dossiers vivent dans un cahier. Vos partenaires vous envoient des PDF. »
 
@@ -133,6 +222,7 @@ Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hot
 ### VID-07 — Pharmacie : le lot, l'ordonnance, la tracabilite
 
 - **Format :** 16:9 · **Duree :** 60 s · **Audience :** Pharmacies, groupements officinaux
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le pack PharmaManager : referentiel produits, stock par lots, achats, ventes comptoir, ordonnancier.
 - **Hook :** « En pharmacie, une erreur de lot n'est pas une erreur de stock. C'est un probleme de sante publique. »
 
@@ -153,6 +243,7 @@ Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hot
 ### VID-08 — Hotellerie : etablissements, inventaire, baux et loyers
 
 - **Format :** 16:9 · **Duree :** 60 s · **Audience :** Hoteliers, gestionnaires de residences et de locations
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le pack HospitalityManager : etablissements, inventaire, reservations, baux et loyers.
 - **Hook :** « Un hotel, des residences, des locations longue duree : trois metiers, un seul inventaire. »
 
@@ -173,6 +264,7 @@ Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hot
 ### VID-09 — Sante : patients, rendez-vous, hospitalisations, facturation des soins
 
 - **Format :** 16:9 · **Duree :** 60 s · **Audience :** Cliniques privees, hopitaux, centres de soins
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le pack HealthManager : patients, rendez-vous, hospitalisations, facturation des soins.
 - **Hook :** « Le dossier patient est souvent le seul endroit ou l'information arrive en dernier. »
 
@@ -193,6 +285,7 @@ Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hot
 ### VID-10 — Ecole : etablissements, classes, notes
 
 - **Format :** 16:9 · **Duree :** 45 s · **Audience :** Ecoles privees, groupes scolaires
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le pack EduManager : etablissements, classes, notes, et le lien avec les equipes.
 - **Hook :** « Les notes arrivent sur un tableur. Les absences sur un cahier. Les parents appellent l'accueil. »
 
@@ -212,6 +305,7 @@ Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hot
 ### VID-11 — Station-service : le litre, le poste, la marge
 
 - **Format :** 16:9 · **Duree :** 45 s · **Audience :** Reseaux de stations-service, gerants independants
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le pack FuelStation : suivi des postes, des volumes et des ecritures, avec les equipes en decalage.
 - **Hook :** « Une station ne ferme jamais. Votre gestion, si. »
 
@@ -231,6 +325,7 @@ Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hot
 ### VID-12 — VTC : reserver, dispatcher au plus proche, suivre
 
 - **Format :** 16:9 · **Duree :** 45 s · **Audience :** Flottes VTC et taxi, plateformes locales
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le pack VTC : reservation de courses, dispatch au plus proche chauffeur via le core geospatial, tarification et suivi.
 - **Hook :** « Le client appelle. Vous cherchez qui est le plus proche. A la main. »
 
@@ -247,6 +342,48 @@ Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hot
 
 **Notes :** Le pack VTC requiert le core geospatial `geo` (PostGIS). Ne pas promettre de dispatch temps reel si l'environnement de demo ne l'a pas active.
 
+### VID-24 — Farm OS : la parcelle, le troupeau, la recolte, la marge
+
+- **Format :** 16:9 · **Duree :** 60 s · **Audience :** Agriculteurs, eleveurs, exploitations et cooperatives agricoles
+- **Statut de production :** A ecrire
+- **Objectif :** Montrer le pack Farm OS (BC-37) : parcelles et cultures, calendrier des travaux, intrants et stock, materiel, cheptel, recoltes et tracabilite, achats et ventes, couts et rentabilite.
+- **Hook :** « Vous savez ce que vous avez seme. Savez-vous ce que la parcelle a rapporte ? »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:08 | Vous savez ce que vous avez seme. Vous savez rarement ce que chaque parcelle a reellement rapporte. | Plan large d'une parcelle a l'aube, puis main qui tient un carnet de travaux. | Semer, c'est facile. Compter, non. |
+| 0:08-0:22 | Farm OS tient le parcellaire : chaque parcelle, sa culture, sa superficie declaree, son cycle cultural. | Capture carte des parcelles, puis fiche parcelle avec cycle cultural. | Parcelles & cycles culturaux |
+| 0:22-0:36 | Le calendrier des travaux se remplit depuis le champ, meme sans reseau. Chaque saisie porte un identifiant unique : rien n'est compte deux fois. | Telephone en mode hors-ligne, saisie d'une intervention, badge de synchronisation qui passe au vert. | Travaux saisis au champ, hors-ligne |
+| 0:36-0:50 | Intrants et stock, materiel, cheptel, recoltes et tracabilite : une recolte cree un seul lot de stock, et chaque sortie est un mouvement type. | Capture stock d'intrants, puis fiche cheptel, puis lot de recolte cree. | Stock, cheptel, recoltes |
+| 0:50-1:00 | Achats, ventes, couts et rentabilite se calculent sur les memes donnees. Le pack Farm OS est offert : vous payez la plateforme, pas le secteur. | Capture couts et rentabilite par parcelle, puis CTA et logo. | Couts & rentabilite - pack offert |
+
+**CTA :** Activer le pack Farm OS depuis le site produit, sans frais de pack.
+
+**Son :** Cordes basses et percussions organiques, 95 BPM, respiration lente.
+
+**Notes :** Chiffres verifies dans le depot au 2026-11-26 : 84 routes (api/routes/modules/farm_os.php), 73 chemins OpenAPI /farm/, 31 tables tenant (7 migrations), 13 capacites activables, 16 activites agricoles. Ne pas afficher de rendement ni de marge chiffree : le produit ne les invente pas (ADR-FARM-0003, honnetete des donnees). Afficher des libelles, jamais des valeurs.
+
+### VID-25 — International Trade OS : du RFQ au cout rendu
+
+- **Format :** 16:9 · **Duree :** 60 s · **Audience :** Importateurs, exportateurs, grossistes B2B, transitaires
+- **Statut de production :** A ecrire
+- **Objectif :** Montrer le pack International Trade OS (BC-36) : sourcing et contreparties, RFQ multi-fournisseurs, offres, commandes, transport, cout rendu et aide documentaire.
+- **Hook :** « Votre marge ne se perd pas a la vente. Elle se perd entre le devis et le conteneur. »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:08 | Votre marge ne se perd pas au moment de la vente. Elle se perd entre le devis et le conteneur. | Bureau d'importateur : devis imprime, ecran de suivi de conteneur, facture. | Le devis dit oui. Le conteneur dit non. |
+| 0:08-0:22 | Trade OS tient vos contreparties et votre catalogue produits, cote achat comme cote vente. Une meme entreprise peut importer et exporter : aucun enfermement dans un role. | Capture contreparties, puis catalogue produits avec directions achat et vente. | Achat et vente, sans role fige |
+| 0:22-0:36 | Vous lancez une demande de prix a plusieurs fournisseurs, vous comparez les offres, puis vous transformez la meilleure en commande. | Capture RFQ multi-fournisseurs, tableau comparatif des offres, bouton de conversion en commande. | RFQ multi-fournisseurs |
+| 0:36-0:50 | Transport, documents et couts se rattachent a la commande. Le cout rendu se calcule sur des donnees reelles, pas sur une estimation de couloir. | Capture transport et documents, puis ecran cout rendu. | Cout rendu, pas estimation |
+| 0:50-1:00 | L'aide documentaire prepare vos pieces. Elle ne remplace ni le transitaire ni la douane : elle vous fait arriver prepare. | Capture checklist documentaire, puis CTA et logo. | Prepare, pas dedouane |
+
+**CTA :** Activer le pack International Trade OS depuis le site produit, sans frais de pack.
+
+**Son :** Percussions seches et nappe synthetique, 105 BPM, tension commerciale.
+
+**Notes :** Chiffres verifies dans le depot au 2026-11-26 : 54 routes (api/routes/modules/trade.php), 29 chemins OpenAPI /trade/, 19 tables tenant (14 migrations). Garde anti-surpromesse (public-promises-guard.yml) : dire « aide a la preparation documentaire » et « estimation indicative », jamais « dedouanement automatique », « taux officiels » ni « fournisseurs verifies ». L'IA ne fixe ni taux ni prix.
+
 ## 👥 Profils utilisateurs
 
 Un film par role : ce que chaque personne fait concretement dans Leopardo, en 45 secondes.
@@ -254,6 +391,7 @@ Un film par role : ce que chaque personne fait concretement dans Leopardo, en 45
 ### VID-13 — Employe : ma journee dans Leopardo
 
 - **Format :** 16:9 · **Duree :** 45 s · **Audience :** Collaborateurs, candidats, onboarding interne
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le self-service employe : pointer, demander un conge, consulter un bulletin. Aucune formation necessaire.
 - **Hook :** « Trois choses que vous faites deja. En trente secondes, sans appeler les RH. »
 
@@ -273,6 +411,7 @@ Un film par role : ce que chaque personne fait concretement dans Leopardo, en 45
 ### VID-14 — Manager : piloter sans attendre le rapport du vendredi
 
 - **Format :** 16:9 · **Duree :** 45 s · **Audience :** Managers operationnels, directeurs d'exploitation
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le tableau de bord manager : equipes, presence, validations, CRM.
 - **Hook :** « Le rapport du vendredi decrit une semaine deja finie. »
 
@@ -292,6 +431,7 @@ Un film par role : ce que chaque personne fait concretement dans Leopardo, en 45
 ### VID-15 — RH : le referentiel qui alimente tout le reste
 
 - **Format :** 16:9 · **Duree :** 45 s · **Audience :** Responsables RH, DRH de PME multi-sites
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le role RH : referentiel employes, contrats, absences, roles, recrutement.
 - **Hook :** « Si le referentiel employe est faux, la paie est fausse. Tout le reste suit. »
 
@@ -311,6 +451,7 @@ Un film par role : ce que chaque personne fait concretement dans Leopardo, en 45
 ### VID-16 — Comptable : de la variable de paie au bulletin
 
 - **Format :** 16:9 · **Duree :** 45 s · **Audience :** Comptables, cabinets, responsables paie
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le parcours comptable : structures salariales, simulation, bulletins, conformite pays.
 - **Hook :** « Le mois de paie ne devrait pas commencer par un export de tableur. »
 
@@ -334,6 +475,7 @@ Films produit : paie multi-pays, pointage et kiosque hors-ligne, comptabilite, a
 ### VID-17 — Paie multi-pays : 21 pays de regles en pilote
 
 - **Format :** 16:9 · **Duree :** 60 s · **Audience :** Groupes multi-pays, DRH, DAF
+- **Statut de production :** A ecrire
 - **Objectif :** Expliquer la paie multi-pays : regles par pays, structures, simulation, bulletins, audit.
 - **Hook :** « Un groupe, cinq pays, cinq facons de calculer un bulletin. »
 
@@ -354,6 +496,7 @@ Films produit : paie multi-pays, pointage et kiosque hors-ligne, comptabilite, a
 ### VID-18 — Pointage, kiosque et mode hors-ligne
 
 - **Format :** 16:9 · **Duree :** 60 s · **Audience :** Directeurs d'exploitation, responsables de site
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer les trois chemins de pointage (mobile, kiosque biometrique, mode secours) et la resynchronisation Edge.
 - **Hook :** « Le reseau tombe. Les equipes pointent quand meme. »
 
@@ -374,6 +517,7 @@ Films produit : paie multi-pays, pointage et kiosque hors-ligne, comptabilite, a
 ### VID-19 — Comptabilite : journaux, grand livre, balance, FEC
 
 - **Format :** 16:9 · **Duree :** 45 s · **Audience :** DAF, experts-comptables, cabinets partenaires
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer le module comptabilite : journaux, grand livre, balance, FEC, lettrage.
 - **Hook :** « La comptabilite n'a pas besoin d'un nouvel outil. Elle a besoin des memes donnees que la paie. »
 
@@ -393,6 +537,7 @@ Films produit : paie multi-pays, pointage et kiosque hors-ligne, comptabilite, a
 ### VID-20 — Assistant IA et vitrine publique : etre trouve, puis repondre
 
 - **Format :** 16:9 · **Duree :** 60 s · **Audience :** Dirigeants, responsables marketing
+- **Statut de production :** A ecrire
 - **Objectif :** Montrer la vitrine publique en 1 clic et l'assistant IA (avec la minimisation RGPD et l'audit).
 - **Hook :** « Un client vous cherche. Il trouve une page vide. Il appelle un concurrent. »
 
@@ -417,6 +562,7 @@ Vertical 9:16 : hooks, temoignages et onboarding, pour TikTok, Reels, Shorts et 
 ### VID-21 — 3 signes que votre entreprise a depasse Excel (hook 9:16)
 
 - **Format :** 9:16 · **Duree :** 20 s · **Audience :** TikTok, Reels, Shorts, LinkedIn video
+- **Statut de production :** A ecrire
 - **Objectif :** Hook de decouverte : trois signaux reconnaissables, un seul CTA. Aucune demonstration produit.
 - **Hook :** « Trois signes que votre entreprise a depasse Excel sans le savoir. »
 
@@ -436,6 +582,7 @@ Vertical 9:16 : hooks, temoignages et onboarding, pour TikTok, Reels, Shorts et 
 ### VID-22 — Temoignage client : avant / apres (9:16)
 
 - **Format :** 9:16 · **Duree :** 30 s · **Audience :** Social, page temoignages, argumentaire commercial
+- **Statut de production :** A ecrire
 - **Objectif :** Structure de temoignage reutilisable : avant, declencheur, apres, conseil. A tourner avec un client reel.
 - **Hook :** « Avant, je passais le vendredi a recoller des tableurs. »
 
@@ -455,6 +602,7 @@ Vertical 9:16 : hooks, temoignages et onboarding, pour TikTok, Reels, Shorts et 
 ### VID-23 — Mise en route en moins de 30 minutes (9:16)
 
 - **Format :** 9:16 · **Duree :** 30 s · **Audience :** Prospects en essai, onboarding
+- **Statut de production :** A ecrire
 - **Objectif :** Reduire la peur de la migration : montrer les quatre etapes reelles de mise en route.
 - **Hook :** « Vous pensez que migrer prend trois mois. Voici les quatre etapes reelles. »
 

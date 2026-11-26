@@ -100,6 +100,10 @@ jobs:
             echo "::error::index.html manquant dans l'artefact /marketing/"; exit 1; }
           test -f _site/marketing/scripts-video.json || {
             echo "::error::scripts-video.json manquant dans l'artefact /marketing/"; exit 1; }
+          test -f _site/marketing/statuts-tournage.json || {
+            echo "::error::statuts-tournage.json manquant dans l'artefact /marketing/"; exit 1; }
+          test -f _site/marketing/calendrier.html || {
+            echo "::error::calendrier.html manquant dans l'artefact /marketing/"; exit 1; }
           python3 - <<'PY'
           import json, sys, pathlib
           d = json.load(open('_site/marketing/scripts-video.json'))
@@ -125,8 +129,36 @@ jobs:
                     if not pathlib.Path(f"_site/marketing/scripts/{s['id'].lower()}.html").exists()]
           if absent:
               print(f"::error::fiche HTML manquante pour {', '.join(absent)}"); sys.exit(1)
+          # Suivi de production : une entree par script, statut connu, historique liste.
+          st = json.load(open('_site/marketing/statuts-tournage.json'))
+          entries = st.get('statuts') or {}
+          codes = {x.get('code') for x in (st.get('_meta', {}).get('statuts') or [])}
+          if not codes:
+              print("::error::statuts-tournage.json : _meta.statuts vide"); sys.exit(1)
+          missing_st = [s['id'] for s in scripts if s['id'] not in entries]
+          if missing_st:
+              print(f"::error::statuts-tournage.json : entree manquante pour {', '.join(missing_st)}")
+              sys.exit(1)
+          bad_st = [k for k, v in entries.items()
+                    if v.get('statut') not in codes or not isinstance(v.get('historique'), list)]
+          if bad_st:
+              print(f"::error::statuts-tournage.json : statut inconnu ou historique invalide pour {', '.join(bad_st)}")
+              sys.exit(1)
+          # Calendrier : chaque vague reference des scripts existants, et tous sont planifies.
+          cal = d.get('calendrier') or {}
+          vagues = cal.get('vagues') or []
+          if not vagues:
+              print("::error::scripts-video.json : 'calendrier.vagues' absent ou vide"); sys.exit(1)
+          planned = [x for v in vagues for x in (v.get('scripts') or [])]
+          unknown = [x for x in planned if x not in set(ids)]
+          if unknown:
+              print(f"::error::calendrier : script inconnu {', '.join(unknown)}"); sys.exit(1)
+          unplanned = [i for i in ids if i not in set(planned)]
+          if unplanned:
+              print(f"::error::calendrier : script non planifie {', '.join(unplanned)}"); sys.exit(1)
           print(f"scripts-video.json valide : {len(scripts)} scripts, {len(cats)} categories, "
-                f"{len(scripts)} fiches HTML publiees.")
+                f"{len(scripts)} fiches HTML publiees, {len(vagues)} vagues de tournage, "
+                f"{len(entries)} statuts de production.")
           PY
 
       - name: Upload artifact

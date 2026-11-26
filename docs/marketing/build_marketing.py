@@ -54,6 +54,50 @@ META = DATA["meta"]
 CAT_BY_SLUG = {c["slug"]: c for c in CATEGORIES}
 SCRIPT_BY_ID = {s["id"]: s for s in SCRIPTS}
 
+# ---------------------------------------------------------------------------
+# SUIVI DE PRODUCTION (statuts-tournage.json)
+# ---------------------------------------------------------------------------
+# Fichier jumeau de `docs/recette/notes-humaines.json` : une entree par script,
+# un statut, une observation, un auteur, une date, un historique horodate.
+# Le generateur ne l'ecrit JAMAIS : il le lit et le rend.
+
+STATUS_FILENAME = "statuts-tournage.json"
+
+
+def load_statuts() -> dict:
+    p = HERE / STATUS_FILENAME
+    if not p.exists():
+        return {"_meta": {"statuts": []}, "statuts": {}}
+    return json.loads(p.read_text(encoding="utf-8"))
+
+
+STATUS_DOC = load_statuts()
+STATUS_DEFS = {s["code"]: s for s in (STATUS_DOC.get("_meta", {}).get("statuts") or [])}
+STATUS_ORDER = [s["code"] for s in (STATUS_DOC.get("_meta", {}).get("statuts") or [])]
+
+
+def status_of(sid: str) -> dict:
+    return (STATUS_DOC.get("statuts") or {}).get(sid) or {}
+
+
+def status_code(sid: str) -> str:
+    return status_of(sid).get("statut") or "a_ecrire"
+
+
+def status_badge(sid: str) -> str:
+    code = status_code(sid)
+    d = STATUS_DEFS.get(code, {"label": code, "color": "#64748b"})
+    return (f'<span class="badge status-badge" style="background:{d["color"]}1a;color:{d["color"]};'
+            f'border-color:{d["color"]}33">{esc(d["label"])}</span>')
+
+
+def status_counts() -> dict:
+    out = {c: 0 for c in STATUS_ORDER}
+    for s in SCRIPTS:
+        c = status_code(s["id"])
+        out[c] = out.get(c, 0) + 1
+    return out
+
 
 def vid_slug(vid: str) -> str:
     return vid.lower().replace("_", "-")
@@ -105,6 +149,7 @@ def layout(title: str, depth: int, body: str, subtitle: str = "") -> str:
     <nav class="mainnav">
       <a href="{p}index.html">Accueil</a>
       <a href="{p}categories/index.html">Categories</a>
+      <a href="{p}calendrier.html">Calendrier de tournage</a>
       <a href="{p}recap.html">Recapitulatif</a>
       <a href="{p}scripts-video.md">Markdown</a>
       <a href="{p}../recette/index.html">Portail recette</a>
@@ -166,12 +211,13 @@ def page_home() -> str:
     for s in SCRIPTS:
         c = cat_of(s)
         rows.append(f"""
-        <tr data-cat="{esc(s['category'])}" data-format="{esc(s['format'])}">
+        <tr data-cat="{esc(s['category'])}" data-format="{esc(s['format'])}" data-status="{esc(status_code(s['id']))}">
           <td class="nowrap"><a class="uc-link" href="scripts/{vid_slug(s['id'])}.html">{esc(s['id'])}</a></td>
           <td><a class="uc-link" href="scripts/{vid_slug(s['id'])}.html">{esc(s['title'])}</a></td>
           <td>{cat_badge(s)}</td>
           <td class="center">{fmt_badge(s['format'])}</td>
           <td class="center nowrap">{esc(s['duration'])}</td>
+          <td class="center nowrap">{status_badge(s['id'])}</td>
           <td>{esc(s['audience'])}</td>
         </tr>""")
 
@@ -210,12 +256,16 @@ def page_home() -> str:
         <option value="16:9">16:9</option>
         <option value="9:16">9:16</option>
       </select>
+      <select class="select" id="f-status">
+        <option value="">Tous les statuts</option>
+        {''.join(f'<option value="{esc(c)}">{esc(STATUS_DEFS.get(c, {}).get("label", c))}</option>' for c in STATUS_ORDER)}
+      </select>
     </div>
     <div class="table-wrap">
       <table class="data-table" id="tbl">
         <thead><tr>
           <th>ID</th><th>Titre</th><th>Categorie</th><th class="center">Format</th>
-          <th class="center">Duree</th><th>Audience</th>
+          <th class="center">Duree</th><th class="center">Statut</th><th>Audience</th>
         </tr></thead>
         <tbody>{''.join(rows)}</tbody>
       </table>
@@ -346,8 +396,136 @@ def page_script(s: dict) -> str:
     <div class="chips">{tags}</div>
   </div>
 
+  {status_panel(s)}
+
   <div class="uc-nav">{''.join(nav)}</div>
 """)
+
+
+def status_panel(s: dict) -> str:
+    """Panneau de suivi de production d'un script (statut + historique)."""
+    sid = s["id"]
+    st = status_of(sid)
+    code = status_code(sid)
+    d = STATUS_DEFS.get(code, {"label": code, "color": "#64748b", "desc": ""})
+
+    # Frise des 4 statuts : etapes franchies / restantes.
+    try:
+        cur = STATUS_ORDER.index(code)
+    except ValueError:
+        cur = 0
+    steps = []
+    for i, c in enumerate(STATUS_ORDER):
+        sd = STATUS_DEFS.get(c, {"label": c, "color": "#64748b"})
+        done = i <= cur
+        steps.append(
+            f'<li class="step{" step-done" if done else ""}" style="--step:{sd["color"]}">'
+            f'<span class="step-dot">{i + 1}</span>'
+            f'<span class="step-label">{esc(sd["label"])}</span></li>')
+
+    hist = st.get("historique") or []
+    hrows = []
+    for h in reversed(hist):
+        hd = STATUS_DEFS.get(h.get("statut", ""), {"label": h.get("statut", ""), "color": "#64748b"})
+        hrows.append(f"""
+        <tr>
+          <td class="nowrap">{esc(h.get('date', ''))}</td>
+          <td class="nowrap"><span class="badge" style="background:{hd['color']}1a;color:{hd['color']};border-color:{hd['color']}33">{esc(hd['label'])}</span></td>
+          <td>{esc(h.get('auteur', ''))}</td>
+          <td>{esc(h.get('observation', ''))}</td>
+          <td class="nowrap">{esc(h.get('action', ''))}</td>
+        </tr>""")
+    hist_block = ("""
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr><th>Date</th><th>Statut</th><th>Auteur</th><th>Observation</th><th>Action</th></tr></thead>
+        <tbody>""" + "".join(hrows) + """</tbody>
+      </table>
+    </div>""") if hrows else '<p class="muted">Aucun historique enregistre.</p>'
+
+    return f"""
+  <div class="panel status-panel" style="--accent:{d['color']}">
+    <h3>Suivi de production {status_badge(sid)}</h3>
+    <p class="muted small">{esc(d.get('desc', ''))}</p>
+    <ol class="status-steps">{''.join(steps)}</ol>
+    <p><strong>Observation :</strong> {esc(st.get('observation', 'Aucune observation.'))}</p>
+    <p class="muted small">Derniere modification : {esc(st.get('date_modification', 'n/a'))}
+      par {esc(st.get('auteur', 'n/a'))}.</p>
+    <details class="hist-details">
+      <summary>Historique ({len(hist)} entree{'s' if len(hist) > 1 else ''})</summary>
+      {hist_block}
+    </details>
+    <p class="muted small">Source : <code>{STATUS_FILENAME}</code> — modifiable directement sur GitHub,
+      le site est regenere au prochain deploiement.</p>
+  </div>"""
+
+
+def page_calendrier() -> str:
+    """Calendrier de tournage : les scripts dans l'ordre reel de production."""
+    cal = META.get("calendrier") or {}
+    vagues = cal.get("vagues") or []
+    counts = status_counts()
+
+    blocks = []
+    n = 0
+    for v in vagues:
+        items = []
+        for sid in v.get("scripts", []):
+            s = SCRIPT_BY_ID.get(sid)
+            if not s:
+                continue
+            n += 1
+            c = cat_of(s)
+            items.append(f"""
+            <tr data-status="{esc(status_code(sid))}">
+              <td class="center nowrap"><strong>{n}</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/{vid_slug(sid)}.html">{esc(sid)}</a></td>
+              <td><a class="uc-link" href="scripts/{vid_slug(sid)}.html">{esc(s['title'])}</a></td>
+              <td>{cat_badge(s)}</td>
+              <td class="center">{fmt_badge(s['format'])}</td>
+              <td class="center nowrap">{esc(s['duration'])}</td>
+              <td class="center nowrap">{status_badge(sid)}</td>
+            </tr>""")
+        blocks.append(f"""
+    <section class="panel vague" style="border-left:4px solid var(--brand)">
+      <div class="vague-head">
+        <span class="vague-id">{esc(v['id'])}</span>
+        <div>
+          <h3>{esc(v['name'])}</h3>
+          <p class="muted small">{esc(v.get('goal', ''))}</p>
+        </div>
+        <span class="hist-count-badge">{len(v.get('scripts', []))}</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
+            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <tbody>{''.join(items)}</tbody>
+        </table>
+      </div>
+      <p class="muted small"><strong>Pourquoi cet ordre :</strong> {esc(v.get('rationale', ''))}</p>
+    </section>""")
+
+    stat_cards = "".join(
+        f'<div class="stat stat-light" style="--accent:{STATUS_DEFS.get(c, {}).get("color", "#64748b")}">'
+        f'<span class="stat-num">{counts.get(c, 0)}</span>'
+        f'<span class="stat-label">{esc(STATUS_DEFS.get(c, {}).get("label", c))}</span></div>'
+        for c in STATUS_ORDER)
+
+    return layout("Calendrier de tournage", 0, f"""
+  <p class="lead">Les {n} scripts dans leur ordre reel de production, regroupes en vagues.
+    Une vague ne demarre pas avant que la precedente soit montee : chaque film maitre alimente
+    ses derives. Le statut de chaque script est celui du fichier <code>{STATUS_FILENAME}</code>.</p>
+
+  <div class="stats stats-light">{stat_cards}</div>
+
+  <div class="panel">
+    <h3>Regle d'ordonnancement</h3>
+    <p>{esc(cal.get('note', ''))}</p>
+  </div>
+
+  {''.join(blocks)}
+""", "Ordre de production des videos de promotion, vague par vague.")
 
 
 def page_recap() -> str:
@@ -355,12 +533,13 @@ def page_recap() -> str:
     for s in SCRIPTS:
         c = cat_of(s)
         rows.append(f"""
-        <tr data-cat="{esc(s['category'])}" data-format="{esc(s['format'])}">
+        <tr data-cat="{esc(s['category'])}" data-format="{esc(s['format'])}" data-status="{esc(status_code(s['id']))}">
           <td class="nowrap"><a class="uc-link" href="scripts/{vid_slug(s['id'])}.html">{esc(s['id'])}</a></td>
           <td><a class="uc-link" href="scripts/{vid_slug(s['id'])}.html">{esc(s['title'])}</a></td>
           <td>{esc(c['name'])}</td>
           <td class="center">{esc(s['format'])}</td>
           <td class="center nowrap">{esc(s['duration'])}</td>
+          <td class="center nowrap">{status_badge(s['id'])}</td>
           <td>{esc(s['audience'])}</td>
           <td>{esc(s['cta'])}</td>
         </tr>""")
@@ -378,11 +557,15 @@ def page_recap() -> str:
       <option value="16:9">16:9</option>
       <option value="9:16">9:16</option>
     </select>
+    <select class="select" id="f-status">
+      <option value="">Tous les statuts</option>
+      {''.join(f'<option value="{esc(c)}">{esc(STATUS_DEFS.get(c, {}).get("label", c))}</option>' for c in STATUS_ORDER)}
+    </select>
   </div>
   <div class="table-wrap">
     <table class="data-table" id="tbl">
       <thead><tr><th>ID</th><th>Titre</th><th>Categorie</th><th class="center">Format</th>
-        <th class="center">Duree</th><th>Audience</th><th>CTA</th></tr></thead>
+        <th class="center">Duree</th><th class="center">Statut</th><th>Audience</th><th>CTA</th></tr></thead>
       <tbody>{''.join(rows)}</tbody>
     </table>
   </div>
@@ -394,6 +577,24 @@ def build_markdown() -> str:
     lines = ["# Scripts marketing — leopardo-hr", "",
              f"_{len(SCRIPTS)} scripts video, {len(CATEGORIES)} categories. "
              f"Source de verite : `{GITHUB_DATA_PATH}`._", ""]
+
+    # Calendrier de tournage en tete : c'est l'ordre de production.
+    cal = META.get("calendrier") or {}
+    if cal.get("vagues"):
+        lines += ["## Calendrier de tournage", "", cal.get("note", ""), ""]
+        n = 0
+        for v in cal["vagues"]:
+            lines += [f"### {v['id']} — {v['name']}", "", v.get("goal", ""), "",
+                      "| # | ID | Titre | Statut |", "|---|---|---|---|"]
+            for sid in v.get("scripts", []):
+                s = SCRIPT_BY_ID.get(sid)
+                if not s:
+                    continue
+                n += 1
+                lbl = STATUS_DEFS.get(status_code(sid), {}).get("label", status_code(sid))
+                lines.append(f"| {n} | {sid} | {s['title']} | {lbl} |")
+            lines += ["", f"**Pourquoi cet ordre :** {v.get('rationale', '')}", ""]
+
     for c in CATEGORIES:
         items = [s for s in SCRIPTS if s["category"] == c["slug"]]
         lines += [f"## {c['icon']} {c['name']}", "", c["desc"], ""]
@@ -401,6 +602,8 @@ def build_markdown() -> str:
             lines += [f"### {s['id']} — {s['title']}", "",
                       f"- **Format :** {s['format']} · **Duree :** {s['duration']} · "
                       f"**Audience :** {s['audience']}",
+                      f"- **Statut de production :** "
+                      f"{STATUS_DEFS.get(status_code(s['id']), {}).get('label', status_code(s['id']))}",
                       f"- **Objectif :** {s['objective']}",
                       f"- **Hook :** « {s['hook']} »", "",
                       "| Temps | Voix off | Plan | Texte a l'ecran |", "|---|---|---|---|"]
@@ -516,6 +719,32 @@ main{padding:28px 20px 60px}
 .ontext{display:inline-block;background:#0f172a;color:#fff;border-radius:6px;padding:2px 8px;font-size:12.5px}
 .hist-count-badge{display:inline-block;min-width:24px;padding:1px 8px;border-radius:999px;
   background:#0d9488;color:#fff;font-size:12.5px;font-weight:700;vertical-align:middle}
+/* --- suivi de production --- */
+.status-panel{border-left:4px solid var(--accent,var(--brand))}
+.status-badge{white-space:nowrap}
+.status-steps{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:12px 0 16px;padding:0}
+.status-steps .step{display:flex;align-items:center;gap:7px;background:#f8fafc;border:1px solid var(--line);
+  border-radius:999px;padding:5px 13px 5px 6px;font-size:12.5px;color:var(--muted)}
+.status-steps .step-done{background:color-mix(in srgb,var(--step) 12%,#fff);
+  border-color:color-mix(in srgb,var(--step) 35%,#fff);color:var(--step);font-weight:600}
+.step-dot{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;
+  background:#e2e8f0;color:#64748b;font-size:11px;font-weight:700}
+.step-done .step-dot{background:var(--step);color:#fff}
+.hist-details{margin-top:10px}
+.hist-details summary{cursor:pointer;font-size:13.5px;font-weight:600;color:var(--brand);padding:6px 0}
+.hist-details .table-wrap{margin-top:8px}
+/* --- calendrier --- */
+.stats-light{margin:0 0 22px}
+.stat-light{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent,var(--brand));
+  border-radius:12px;padding:12px 18px;min-width:110px;box-shadow:var(--shadow)}
+.stat-light .stat-num{color:var(--ink)}
+.stat-light .stat-label{color:var(--muted)}
+.vague{margin-bottom:20px}
+.vague-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
+.vague-head h3{margin:0 0 2px}
+.vague-id{display:grid;place-items:center;min-width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--brand),#0ea5a4);color:#fff;font-weight:800;font-size:15px}
+.vague-head .hist-count-badge{margin-left:auto}
 .small{font-size:12px}
 .uc-nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .btn-back{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:10px;
@@ -530,6 +759,13 @@ main{padding:28px 20px 60px}
   .page-title{font-size:24px}
   .topbar-inner{height:auto;padding:10px 0;flex-direction:column;align-items:flex-start}
   .mainnav{width:100%}
+  /* Sur mobile, un tableau ne se comprime pas : il defile dans son conteneur.
+     Sans cela les colonnes Titre/Categorie s'ecrasent en 5 lignes et la
+     lecture devient penible (constate au test 390 px du 2026-11-26). */
+  .data-table{min-width:760px}
+  .table-wrap{-webkit-overflow-scrolling:touch}
+  .vague-head{flex-wrap:wrap}
+  .vague-head .hist-count-badge{margin-left:0}
 }
 @media print{
   .topbar,.footer,.toolbar,.uc-nav{display:none}
@@ -543,6 +779,7 @@ JS = """
   var q = document.getElementById('q');
   var fCat = document.getElementById('f-cat');
   var fFmt = document.getElementById('f-format');
+  var fSta = document.getElementById('f-status');
   var tbl = document.getElementById('tbl');
   var empty = document.getElementById('empty');
   if(!tbl) return;
@@ -551,18 +788,20 @@ JS = """
     var term = (q && q.value || '').toLowerCase().trim();
     var cat = fCat && fCat.value || '';
     var fmt = fFmt && fFmt.value || '';
+    var sta = fSta && fSta.value || '';
     var shown = 0;
     rows.forEach(function(tr){
       var ok = true;
       if(cat && tr.getAttribute('data-cat') !== cat) ok = false;
       if(fmt && tr.getAttribute('data-format') !== fmt) ok = false;
+      if(sta && tr.getAttribute('data-status') !== sta) ok = false;
       if(term && tr.textContent.toLowerCase().indexOf(term) === -1) ok = false;
       tr.hidden = !ok;
       if(ok) shown++;
     });
     if(empty) empty.hidden = shown !== 0;
   }
-  [q, fCat, fFmt].forEach(function(el){ if(el) el.addEventListener('input', apply); });
+  [q, fCat, fFmt, fSta].forEach(function(el){ if(el) el.addEventListener('input', apply); });
   apply();
 })();
 """
@@ -584,6 +823,7 @@ def main() -> None:
 
     (out / "index.html").write_text(page_home(), encoding="utf-8")
     (out / "recap.html").write_text(page_recap(), encoding="utf-8")
+    (out / "calendrier.html").write_text(page_calendrier(), encoding="utf-8")
     (out / "categories" / "index.html").write_text(page_categories_index(), encoding="utf-8")
     for c in CATEGORIES:
         (out / "categories" / f"{c['slug']}.html").write_text(page_category(c["slug"]), encoding="utf-8")
@@ -597,8 +837,11 @@ def main() -> None:
     dest_data = out / DATA_FILENAME
     if dest_data.resolve() != (HERE / DATA_FILENAME).resolve():
         shutil.copyfile(HERE / DATA_FILENAME, dest_data)
+    dest_status = out / STATUS_FILENAME
+    if dest_status.resolve() != (HERE / STATUS_FILENAME).resolve() and (HERE / STATUS_FILENAME).exists():
+        shutil.copyfile(HERE / STATUS_FILENAME, dest_status)
 
-    n_pages = 3 + len(CATEGORIES) + len(SCRIPTS)
+    n_pages = 4 + len(CATEGORIES) + len(SCRIPTS)
     print(f"Espace scripts marketing genere dans {out} — {n_pages} pages HTML, "
           f"{len(SCRIPTS)} scripts, {len(CATEGORIES)} categories.")
 

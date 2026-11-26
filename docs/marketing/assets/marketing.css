@@ -98,6 +98,32 @@ main{padding:28px 20px 60px}
 .ontext{display:inline-block;background:#0f172a;color:#fff;border-radius:6px;padding:2px 8px;font-size:12.5px}
 .hist-count-badge{display:inline-block;min-width:24px;padding:1px 8px;border-radius:999px;
   background:#0d9488;color:#fff;font-size:12.5px;font-weight:700;vertical-align:middle}
+/* --- suivi de production --- */
+.status-panel{border-left:4px solid var(--accent,var(--brand))}
+.status-badge{white-space:nowrap}
+.status-steps{display:flex;flex-wrap:wrap;gap:8px;list-style:none;margin:12px 0 16px;padding:0}
+.status-steps .step{display:flex;align-items:center;gap:7px;background:#f8fafc;border:1px solid var(--line);
+  border-radius:999px;padding:5px 13px 5px 6px;font-size:12.5px;color:var(--muted)}
+.status-steps .step-done{background:color-mix(in srgb,var(--step) 12%,#fff);
+  border-color:color-mix(in srgb,var(--step) 35%,#fff);color:var(--step);font-weight:600}
+.step-dot{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;
+  background:#e2e8f0;color:#64748b;font-size:11px;font-weight:700}
+.step-done .step-dot{background:var(--step);color:#fff}
+.hist-details{margin-top:10px}
+.hist-details summary{cursor:pointer;font-size:13.5px;font-weight:600;color:var(--brand);padding:6px 0}
+.hist-details .table-wrap{margin-top:8px}
+/* --- calendrier --- */
+.stats-light{margin:0 0 22px}
+.stat-light{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent,var(--brand));
+  border-radius:12px;padding:12px 18px;min-width:110px;box-shadow:var(--shadow)}
+.stat-light .stat-num{color:var(--ink)}
+.stat-light .stat-label{color:var(--muted)}
+.vague{margin-bottom:20px}
+.vague-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px}
+.vague-head h3{margin:0 0 2px}
+.vague-id{display:grid;place-items:center;min-width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--brand),#0ea5a4);color:#fff;font-weight:800;font-size:15px}
+.vague-head .hist-count-badge{margin-left:auto}
 .small{font-size:12px}
 .uc-nav{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .btn-back{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:10px;
@@ -112,6 +138,13 @@ main{padding:28px 20px 60px}
   .page-title{font-size:24px}
   .topbar-inner{height:auto;padding:10px 0;flex-direction:column;align-items:flex-start}
   .mainnav{width:100%}
+  /* Sur mobile, un tableau ne se comprime pas : il defile dans son conteneur.
+     Sans cela les colonnes Titre/Categorie s'ecrasent en 5 lignes et la
+     lecture devient penible (constate au test 390 px du 2026-11-26). */
+  .data-table{min-width:760px}
+  .table-wrap{-webkit-overflow-scrolling:touch}
+  .vague-head{flex-wrap:wrap}
+  .vague-head .hist-count-badge{margin-left:0}
 }
 @media print{
   .topbar,.footer,.toolbar,.uc-nav{display:none}

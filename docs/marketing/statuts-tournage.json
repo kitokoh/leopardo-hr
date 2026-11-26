@@ -1,0 +1,412 @@
+{
+  "_meta": {
+    "description": "Suivi de production des scripts video de l'espace marketing leopardo-hr. Modifiable directement sur GitHub : le site est regenere par build_marketing.py. Chaque script conserve un historique horodate de ses changements de statut.",
+    "schema_version": 1,
+    "repo": "Kitokoh/leopardo-hr",
+    "path": "docs/marketing/statuts-tournage.json",
+    "statuts": [
+      {
+        "code": "a_ecrire",
+        "label": "A ecrire",
+        "color": "#64748b",
+        "desc": "Sujet identifie, script non redige."
+      },
+      {
+        "code": "tourne",
+        "label": "Tourne",
+        "color": "#b45309",
+        "desc": "Rushes tournes, montage non commence."
+      },
+      {
+        "code": "monte",
+        "label": "Monte",
+        "color": "#2563eb",
+        "desc": "Montage termine, video non publiee."
+      },
+      {
+        "code": "publie",
+        "label": "Publie",
+        "color": "#0f766e",
+        "desc": "Video publiee sur au moins un canal."
+      }
+    ],
+    "updated_at": "2026-11-26T06:36:41Z"
+  },
+  "statuts": {
+    "VID-01": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-02": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-03": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-04": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-05": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-06": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-07": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-08": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-09": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-10": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-11": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-12": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-13": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-14": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-15": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-16": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-17": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-18": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-19": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-20": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-21": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-22": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-23": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-24": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    },
+    "VID-25": {
+      "statut": "a_ecrire",
+      "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+      "auteur": "QA Agent (Teamily)",
+      "date_modification": "2026-11-26T06:36:41Z",
+      "historique": [
+        {
+          "date": "2026-11-26T06:36:41Z",
+          "auteur": "QA Agent (Teamily)",
+          "statut": "a_ecrire",
+          "observation": "Initialisation du suivi de production.",
+          "action": "creation"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calendrier de tournage — Scripts marketing Leopardo</title>
+<link rel="stylesheet" href="assets/marketing.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="index.html">
+      <span class="brand-mark">L</span>
+      <span class="brand-text">Scripts marketing <small>leopardo-hr</small></span>
+    </a>
+    <nav class="mainnav">
+      <a href="index.html">Accueil</a>
+      <a href="categories/index.html">Categories</a>
+      <a href="calendrier.html">Calendrier de tournage</a>
+      <a href="recap.html">Recapitulatif</a>
+      <a href="scripts-video.md">Markdown</a>
+      <a href="../recette/index.html">Portail recette</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1 class="page-title">Calendrier de tournage</h1>
+  <p class="page-sub">Ordre de production des videos de promotion, vague par vague.</p>
+  
+  <p class="lead">Les 25 scripts dans leur ordre reel de production, regroupes en vagues.
+    Une vague ne demarre pas avant que la precedente soit montee : chaque film maitre alimente
+    ses derives. Le statut de chaque script est celui du fichier <code>statuts-tournage.json</code>.</p>
+
+  <div class="stats stats-light"><div class="stat stat-light" style="--accent:#64748b"><span class="stat-num">25</span><span class="stat-label">A ecrire</span></div><div class="stat stat-light" style="--accent:#b45309"><span class="stat-num">0</span><span class="stat-label">Tourne</span></div><div class="stat stat-light" style="--accent:#2563eb"><span class="stat-num">0</span><span class="stat-label">Monte</span></div><div class="stat stat-light" style="--accent:#0f766e"><span class="stat-num">0</span><span class="stat-label">Publie</span></div></div>
+
+  <div class="panel">
+    <h3>Regle d'ordonnancement</h3>
+    <p>Ordre de production des videos. Une vague se tourne dans l&#x27;ordre de ses etapes ; une vague ne demarre pas avant que la precedente soit montee. Les derives (cuts, formats courts) se tournent pendant le montage de leur film source, avec les memes rushes.</p>
+  </div>
+
+  
+    <section class="panel vague" style="border-left:4px solid var(--brand)">
+      <div class="vague-head">
+        <span class="vague-id">V1</span>
+        <div>
+          <h3>Film pilier et derives publicitaires</h3>
+          <p class="muted small">Poser le message maitre et en extraire les formats payants. Tout le reste en depend.</p>
+        </div>
+        <span class="hist-count-badge">4</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
+            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <tbody>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>1</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-01.html">VID-01</a></td>
+              <td><a class="uc-link" href="scripts/vid-01.html">Leopardo, le Business OS des entreprises de terrain (film pilier)</a></td>
+              <td><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">🎬 Presentation de la solution</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">90 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>2</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-02.html">VID-02</a></td>
+              <td><a class="uc-link" href="scripts/vid-02.html">Leopardo en 30 secondes (cut publicitaire)</a></td>
+              <td><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">🎬 Presentation de la solution</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">30 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>3</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-03.html">VID-03</a></td>
+              <td><a class="uc-link" href="scripts/vid-03.html">Bumper 15 secondes (pre-roll non skippable)</a></td>
+              <td><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">🎬 Presentation de la solution</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">15 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>4</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-04.html">VID-04</a></td>
+              <td><a class="uc-link" href="scripts/vid-04.html">Comment Leopardo remplace Excel, WhatsApp et le papier (explainer 3 min)</a></td>
+              <td><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">🎬 Presentation de la solution</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">3 min</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr></tbody>
+        </table>
+      </div>
+      <p class="muted small"><strong>Pourquoi cet ordre :</strong> Le film de 90 s fixe le vocabulaire, les plans et la musique. Les cuts 30 s et 15 s se montent a partir des memes rushes ; l&#x27;explainer 3 min reutilise les captures d&#x27;ecran du pilier.</p>
+    </section>
+    <section class="panel vague" style="border-left:4px solid var(--brand)">
+      <div class="vague-head">
+        <span class="vague-id">V2</span>
+        <div>
+          <h3>Verticales a plus forte demande</h3>
+          <p class="muted small">Couvrir les packs metier deja les plus demandes, pour alimenter les pages pack du site.</p>
+        </div>
+        <span class="hist-count-badge">4</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
+            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <tbody>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>5</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-05.html">VID-05</a></td>
+              <td><a class="uc-link" href="scripts/vid-05.html">Restaurant : du service en salle a la marge du soir</a></td>
+              <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">🏭 Verticales</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">60 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>6</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-06.html">VID-06</a></td>
+              <td><a class="uc-link" href="scripts/vid-06.html">Agence de voyage : vendre, reserver, embarquer</a></td>
+              <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">🏭 Verticales</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">60 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>7</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-07.html">VID-07</a></td>
+              <td><a class="uc-link" href="scripts/vid-07.html">Pharmacie : le lot, l&#x27;ordonnance, la tracabilite</a></td>
+              <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">🏭 Verticales</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">60 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>8</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-08.html">VID-08</a></td>
+              <td><a class="uc-link" href="scripts/vid-08.html">Hotellerie : etablissements, inventaire, baux et loyers</a></td>
+              <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">🏭 Verticales</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">60 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr></tbody>
+        </table>
+      </div>
+      <p class="muted small"><strong>Pourquoi cet ordre :</strong> Restaurant, voyage, pharmacie et hotellerie partagent le meme decor de terrain : un seul plan de tournage couvre quatre films.</p>
+    </section>
+    <section class="panel vague" style="border-left:4px solid var(--brand)">
+      <div class="vague-head">
+        <span class="vague-id">V3</span>
+        <div>
+          <h3>Verticales restantes</h3>
+          <p class="muted small">Completer la grille des packs metier, y compris les deux verticales ajoutees en v2.</p>
+        </div>
+        <span class="hist-count-badge">6</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
+            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <tbody>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>9</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-09.html">VID-09</a></td>
+              <td><a class="uc-link" href="scripts/vid-09.html">Sante : patients, rendez-vous, hospitalisations, facturation des soins</a></td>
+              <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">🏭 Verticales</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">60 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>10</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-10.html">VID-10</a></td>
+              <td><a class="uc-link" href="scripts/vid-10.html">Ecole : etablissements, classes, notes</a></td>
+              <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">🏭 Verticales</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">45 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>11</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-11.html">VID-11</a></td>
+              <td><a class="uc-link" href="scripts/vid-11.html">Station-service : le litre, le poste, la marge</a></td>
+              <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">🏭 Verticales</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">45 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>12</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-12.html">VID-12</a></td>
+              <td><a class="uc-link" href="scripts/vid-12.html">VTC : reserver, dispatcher au plus proche, suivre</a></td>
+              <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">🏭 Verticales</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">45 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>13</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-24.html">VID-24</a></td>
+              <td><a class="uc-link" href="scripts/vid-24.html">Farm OS : la parcelle, le troupeau, la recolte, la marge</a></td>
+              <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">🏭 Verticales</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">60 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>14</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-25.html">VID-25</a></td>
+              <td><a class="uc-link" href="scripts/vid-25.html">International Trade OS : du RFQ au cout rendu</a></td>
+              <td><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">🏭 Verticales</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">60 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr></tbody>
+        </table>
+      </div>
+      <p class="muted small"><strong>Pourquoi cet ordre :</strong> Sante, ecole, station-service et VTC ferment la grille historique. Farm OS et International Trade OS arrivent ici : leurs captures d&#x27;ecran demandent un environnement de demonstration dedie (parcellaire, RFQ) qui n&#x27;existe pas encore sur le site public.</p>
+    </section>
+    <section class="panel vague" style="border-left:4px solid var(--brand)">
+      <div class="vague-head">
+        <span class="vague-id">V4</span>
+        <div>
+          <h3>Profils utilisateurs</h3>
+          <p class="muted small">Parler a la personne, pas au secteur : un film par role.</p>
+        </div>
+        <span class="hist-count-badge">4</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
+            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <tbody>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>15</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-13.html">VID-13</a></td>
+              <td><a class="uc-link" href="scripts/vid-13.html">Employe : ma journee dans Leopardo</a></td>
+              <td><span class="badge" style="background:#2563eb1a;color:#2563eb;border-color:#2563eb33">👥 Profils utilisateurs</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">45 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>16</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-14.html">VID-14</a></td>
+              <td><a class="uc-link" href="scripts/vid-14.html">Manager : piloter sans attendre le rapport du vendredi</a></td>
+              <td><span class="badge" style="background:#2563eb1a;color:#2563eb;border-color:#2563eb33">👥 Profils utilisateurs</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">45 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>17</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-15.html">VID-15</a></td>
+              <td><a class="uc-link" href="scripts/vid-15.html">RH : le referentiel qui alimente tout le reste</a></td>
+              <td><span class="badge" style="background:#2563eb1a;color:#2563eb;border-color:#2563eb33">👥 Profils utilisateurs</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">45 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>18</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-16.html">VID-16</a></td>
+              <td><a class="uc-link" href="scripts/vid-16.html">Comptable : de la variable de paie au bulletin</a></td>
+              <td><span class="badge" style="background:#2563eb1a;color:#2563eb;border-color:#2563eb33">👥 Profils utilisateurs</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">45 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr></tbody>
+        </table>
+      </div>
+      <p class="muted small"><strong>Pourquoi cet ordre :</strong> Ces films se tournent apres les verticales : ils reutilisent les memes interfaces, mais du point de vue d&#x27;un role. Tourner avant obligerait a re-tourner apres les changements d&#x27;ecran.</p>
+    </section>
+    <section class="panel vague" style="border-left:4px solid var(--brand)">
+      <div class="vague-head">
+        <span class="vague-id">V5</span>
+        <div>
+          <h3>Films produit</h3>
+          <p class="muted small">Expliquer les quatre capacites qui font la difference face a un tableur.</p>
+        </div>
+        <span class="hist-count-badge">4</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
+            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <tbody>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>19</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-17.html">VID-17</a></td>
+              <td><a class="uc-link" href="scripts/vid-17.html">Paie multi-pays : 21 pays de regles en pilote</a></td>
+              <td><span class="badge" style="background:#b453091a;color:#b45309;border-color:#b4530933">⚙️ Fonctionnalites</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">60 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>20</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-18.html">VID-18</a></td>
+              <td><a class="uc-link" href="scripts/vid-18.html">Pointage, kiosque et mode hors-ligne</a></td>
+              <td><span class="badge" style="background:#b453091a;color:#b45309;border-color:#b4530933">⚙️ Fonctionnalites</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">60 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>21</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-19.html">VID-19</a></td>
+              <td><a class="uc-link" href="scripts/vid-19.html">Comptabilite : journaux, grand livre, balance, FEC</a></td>
+              <td><span class="badge" style="background:#b453091a;color:#b45309;border-color:#b4530933">⚙️ Fonctionnalites</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">45 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>22</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-20.html">VID-20</a></td>
+              <td><a class="uc-link" href="scripts/vid-20.html">Assistant IA et vitrine publique : etre trouve, puis repondre</a></td>
+              <td><span class="badge" style="background:#b453091a;color:#b45309;border-color:#b4530933">⚙️ Fonctionnalites</span></td>
+              <td class="center"><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span></td>
+              <td class="center nowrap">60 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr></tbody>
+        </table>
+      </div>
+      <p class="muted small"><strong>Pourquoi cet ordre :</strong> Paie multi-pays, pointage hors-ligne, comptabilite et assistant IA demandent des captures validees par l&#x27;equipe produit : a tourner une fois les ecrans figes.</p>
+    </section>
+    <section class="panel vague" style="border-left:4px solid var(--brand)">
+      <div class="vague-head">
+        <span class="vague-id">V6</span>
+        <div>
+          <h3>Formats courts et social</h3>
+          <p class="muted small">Alimenter TikTok, Reels, Shorts et LinkedIn avec des formats verticaux.</p>
+        </div>
+        <span class="hist-count-badge">3</span>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
+            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <tbody>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>23</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-21.html">VID-21</a></td>
+              <td><a class="uc-link" href="scripts/vid-21.html">3 signes que votre entreprise a depasse Excel (hook 9:16)</a></td>
+              <td><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">📱 Formats courts &amp; social</span></td>
+              <td class="center"><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">9:16</span></td>
+              <td class="center nowrap">20 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>24</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-22.html">VID-22</a></td>
+              <td><a class="uc-link" href="scripts/vid-22.html">Temoignage client : avant / apres (9:16)</a></td>
+              <td><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">📱 Formats courts &amp; social</span></td>
+              <td class="center"><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">9:16</span></td>
+              <td class="center nowrap">30 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>25</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-23.html">VID-23</a></td>
+              <td><a class="uc-link" href="scripts/vid-23.html">Mise en route en moins de 30 minutes (9:16)</a></td>
+              <td><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">📱 Formats courts &amp; social</span></td>
+              <td class="center"><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">9:16</span></td>
+              <td class="center nowrap">30 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr></tbody>
+        </table>
+      </div>
+      <p class="muted small"><strong>Pourquoi cet ordre :</strong> Les hooks 9:16 se calibrent sur les performances des vagues precedentes. Le temoignage client exige un client d&#x27;accord pour etre filme : a planifier en dernier.</p>
+    </section>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p>Espace <strong>Scripts marketing</strong> de <strong>leopardo-hr</strong> — depot
+      <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
+      Source de verite : <a href="https://github.com/Kitokoh/leopardo-hr/blob/main/docs/marketing/scripts-video.json">docs/marketing/scripts-video.json</a>.
+      Chaque script porte un identifiant stable (VID-nn) : ne jamais le reutiliser pour un autre sujet.</p>
+  </div>
+</footer>
+<script src="assets/marketing.js"></script>
+</body>
+</html>
