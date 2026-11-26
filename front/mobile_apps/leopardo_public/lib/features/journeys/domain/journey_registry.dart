@@ -129,20 +129,18 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'restaurant',
     labelKey: 'journeyVerticalRestaurant',
     counterpartPath: '/restaurants',
-    // #9948 — annuaire et fiche natifs ajoutés (`VerticalDirectoryScreen`),
-    // en parité avec la vitrine web `/restaurants`.
-    mode: JourneyMode.request,
+    // #9959 — le blocage `order` est PÉRIMÉ. Il décrivait RESTO-805 (#6226),
+    // la boutique à jeton `X-Restaurant-Shop-Token`. Depuis RESTO-902 (#7747)
+    // une surface publique PAR SLUG existe et ne demande aucun jeton :
+    //   GET  /public/restaurants/{slug}            → profil + menu
+    //   POST /public/restaurants/{slug}/orders     → commande
+    //   GET  /public/restaurants/{slug}/orders/{ref}?secret= → suivi
+    //   POST /public/restaurants/{slug}/orders/{ref}/pay     → paiement
+    // C'est exactement ce que consomme la vitrine web `/restaurants/{slug}`
+    // (`RestaurantOrderPanel.tsx`). Le parcours natif est donc complet.
+    mode: JourneyMode.order,
     discoveryType: 'restaurant',
     contactTargetType: 'restaurant',
-    blockers: [
-      // La boutique publique existe (`/public/restaurant/shop/*`) mais exige
-      // `X-Restaurant-Shop-Token`, un jeton par tenant émis au back-office :
-      // l'exposer au grand public est une décision de sécurité serveur.
-      JourneyBlocker(
-        capability: 'order',
-        reasonKey: 'journeyBlockerRestaurantOrder',
-      ),
-    ],
   ),
   JourneyVertical(
     code: 'retail',
