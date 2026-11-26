@@ -7,6 +7,8 @@ import '../data/retail_order_gateway.dart';
 import '../data/stay_reservation_gateway.dart';
 import '../data/travel_gateway.dart';
 import '../data/careers_gateway.dart';
+import '../data/pharmacy_gateway.dart';
+import '../../discovery/providers/discovery_providers.dart';
 
 /// Client HTTP des parcours — un seul par application, comme la découverte.
 final journeyApiProvider = Provider<JourneyApi>(
@@ -33,4 +35,13 @@ final travelGatewayProvider = Provider<TravelGateway>(
 /// Verticale Emploi (careers) — portails carrière publics.
 final careersGatewayProvider = Provider<CareersGateway>(
   (ref) => CareersGateway(ref.watch(journeyApiProvider)),
+);
+
+/// Verticale Pharmacie (pharmacy) — annuaire des officines publiées.
+///
+/// Elle passe par l'agrégateur de découverte (même dépôt que l'accueil) :
+/// il n'existe pas de route de lecture unitaire par slug, et réutiliser le
+/// dépôt évite d'ouvrir un second client HTTP pour la même route.
+final pharmacyGatewayProvider = Provider<PharmacyGateway>(
+  (ref) => PharmacyGateway(ref.watch(publicDiscoveryRepositoryProvider)),
 );

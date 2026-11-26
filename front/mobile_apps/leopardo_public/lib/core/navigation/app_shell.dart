@@ -12,6 +12,7 @@ import '../../features/journeys/screens/retail_order_screen.dart';
 import '../../features/journeys/screens/stay_reservation_screen.dart';
 import '../../features/journeys/screens/travel_journey_screen.dart';
 import '../../features/journeys/screens/careers_journey_screen.dart';
+import '../../features/journeys/screens/pharmacy_journey_screen.dart';
 import '../../features/tabs/secondary_tabs.dart';
 
 /// Coque à 4 onglets.
@@ -185,6 +186,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/journey/careers',
         builder: (context, state) => CareersJourneyScreen(
           initialCompanySlug: state.uri.queryParameters['company'],
+        ),
+      ),
+      // Verticale Pharmacie (#9945) : annuaire en lecture seule. `slug` en
+      // query ouvre directement une fiche.
+      GoRoute(
+        path: '/journey/pharmacy',
+        builder: (context, state) => PharmacyJourneyScreen(
+          initialSlug: state.uri.queryParameters['slug'],
         ),
       ),
 

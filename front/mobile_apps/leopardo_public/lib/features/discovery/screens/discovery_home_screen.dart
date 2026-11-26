@@ -281,13 +281,22 @@ class _VerticalShortcuts extends StatelessWidget {
   static const List<({String code, String route, IconData icon})> _entries = [
     (code: 'travel', route: '/journey/travel', icon: Icons.directions_bus),
     (code: 'careers', route: '/journey/careers', icon: Icons.work_outline),
+    (
+      code: 'pharmacy',
+      route: '/journey/pharmacy',
+      icon: Icons.local_pharmacy_outlined,
+    ),
   ];
 
   @override
   Widget build(BuildContext context) {
+    // Critère : la verticale a une porte d'entrée native, c'est-à-dire
+    // qu'aucun blocage `entry` ne la ferme. On ne teste PAS `mode != blocked` :
+    // la pharmacie reste `blocked` pour le CONTACT tout en étant consultable,
+    // et la masquer ici la rendrait inatteignable alors qu'elle fonctionne.
     final visible = [
       for (final entry in _entries)
-        if (journeyByCode(entry.code)?.mode != JourneyMode.blocked) entry,
+        if (journeyByCode(entry.code)?.blockerFor('entry') == null) entry,
     ];
 
     if (visible.isEmpty) return const SizedBox.shrink();

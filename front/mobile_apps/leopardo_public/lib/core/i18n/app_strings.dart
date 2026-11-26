@@ -394,6 +394,24 @@ class AppStrings {
           'Aucune candidature n’est associée à cette adresse pour cette entreprise.',
       'careersRetention': 'Durée de conservation',
       'careersDays': 'jours',
+
+      // ── Verticale Pharmacie (pharmacy) — #9945 ──
+      'pharmacyDirectoryNotice':
+          'Seules les officines ayant activé leur publication apparaissent ici. Aucune vente en ligne de médicaments n’est proposée.',
+      'pharmacySearch': 'Rechercher une officine',
+      'pharmacySearchHint': 'Nom ou description',
+      'pharmacyCity': 'Ville',
+      'pharmacySearchCta': 'Rechercher',
+      'pharmacyEmptyTitle': 'Aucune officine publiée',
+      'pharmacyEmptyBody':
+          'Aucune pharmacie n’a encore activé sa publication. Ce n’est pas une panne : l’annuaire se remplira dès qu’une officine s’inscrira.',
+      'pharmacyDuty': 'Garde',
+      'pharmacyOnDuty': 'De garde',
+      'pharmacyRegularHours': 'Horaires normaux',
+      'pharmacyServices': 'Services',
+      'pharmacyContactUnavailable':
+          'La prise de contact depuis l’app n’est pas encore disponible pour les pharmacies. Appelez l’officine directement.',
+      'pharmacyBackToDirectory': 'Retour à l’annuaire',
     },
 
     // ───────────────────────────── EN ─────────────────────────────
@@ -701,6 +719,24 @@ class AppStrings {
           'No application is linked to this address for this company.',
       'careersRetention': 'Retention period',
       'careersDays': 'days',
+
+      // ── Pharmacy vertical — #9945 ──
+      'pharmacyDirectoryNotice':
+          'Only pharmacies that enabled publication appear here. No online medicine sales are offered.',
+      'pharmacySearch': 'Search a pharmacy',
+      'pharmacySearchHint': 'Name or description',
+      'pharmacyCity': 'City',
+      'pharmacySearchCta': 'Search',
+      'pharmacyEmptyTitle': 'No published pharmacy',
+      'pharmacyEmptyBody':
+          'No pharmacy has enabled publication yet. This is not a failure: the directory fills up as soon as one signs up.',
+      'pharmacyDuty': 'On duty',
+      'pharmacyOnDuty': 'On duty',
+      'pharmacyRegularHours': 'Regular hours',
+      'pharmacyServices': 'Services',
+      'pharmacyContactUnavailable':
+          'Contacting pharmacies from the app is not available yet. Call the pharmacy directly.',
+      'pharmacyBackToDirectory': 'Back to the directory',
     },
 
     // ───────────────────────────── AR (RTL) ─────────────────────────────
@@ -995,6 +1031,24 @@ class AppStrings {
           'لا يوجد ترشيح مرتبط بهذا العنوان لهذه الشركة.',
       'careersRetention': 'مدة الاحتفاظ',
       'careersDays': 'يومًا',
+
+      // ── قطاع الصيدلة (pharmacy) — #9945 ──
+      'pharmacyDirectoryNotice':
+          'تظهر هنا فقط الصيدليات التي فعّلت النشر. لا يُعرض بيع الأدوية عبر الإنترنت.',
+      'pharmacySearch': 'ابحث عن صيدلية',
+      'pharmacySearchHint': 'الاسم أو الوصف',
+      'pharmacyCity': 'المدينة',
+      'pharmacySearchCta': 'بحث',
+      'pharmacyEmptyTitle': 'لا صيدلية منشورة',
+      'pharmacyEmptyBody':
+          'لم تفعّل أي صيدلية النشر بعد. هذا ليس عطلًا: يمتلئ الدليل بمجرد تسجيل صيدلية.',
+      'pharmacyDuty': 'المداومة',
+      'pharmacyOnDuty': 'في المداومة',
+      'pharmacyRegularHours': 'التوقيت العادي',
+      'pharmacyServices': 'الخدمات',
+      'pharmacyContactUnavailable':
+          'التواصل مع الصيدليات من التطبيق غير متاح بعد. اتصل بالصيدلية مباشرة.',
+      'pharmacyBackToDirectory': 'العودة إلى الدليل',
     },
 
     // ───────────────────────────── TR ─────────────────────────────
@@ -1301,6 +1355,24 @@ class AppStrings {
           'Bu şirket için bu adrese bağlı başvuru yok.',
       'careersRetention': 'Saklama süresi',
       'careersDays': 'gün',
+
+      // ── Eczane dikeyi (pharmacy) — #9945 ──
+      'pharmacyDirectoryNotice':
+          'Burada yalnızca yayını etkinleştiren eczaneler görünür. Çevrimiçi ilaç satışı sunulmaz.',
+      'pharmacySearch': 'Eczane ara',
+      'pharmacySearchHint': 'Ad veya açıklama',
+      'pharmacyCity': 'Şehir',
+      'pharmacySearchCta': 'Ara',
+      'pharmacyEmptyTitle': 'Yayınlanmış eczane yok',
+      'pharmacyEmptyBody':
+          'Henüz hiçbir eczane yayını etkinleştirmedi. Bu bir arıza değil: bir eczane kaydolduğunda dizin dolar.',
+      'pharmacyDuty': 'Nöbet',
+      'pharmacyOnDuty': 'Nöbette',
+      'pharmacyRegularHours': 'Normal saatler',
+      'pharmacyServices': 'Hizmetler',
+      'pharmacyContactUnavailable':
+          'Eczanelerle uygulamadan iletişim henüz kullanılamıyor. Eczaneyi doğrudan arayın.',
+      'pharmacyBackToDirectory': 'Dizine dön',
     },
   };
 }
