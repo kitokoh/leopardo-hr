@@ -583,7 +583,8 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
       final payment = await ref.read(travelGatewayProvider).initiatePayment(
             bookingReference: confirmation.reference,
             provider: _paymentProvider,
-            idempotencyKey: _paymentIdempotencyKey ?? newJourneyIdempotencyKey(),
+            idempotencyKey:
+                _paymentIdempotencyKey ?? newJourneyIdempotencyKey(),
           );
 
       if (!mounted) return;
@@ -673,9 +674,7 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
             onPressed: _paying ? null : _pay,
             icon: const Icon(Icons.lock_outline, size: 18),
             label: Text(
-              _paying
-                  ? strings.t('stateLoading')
-                  : strings.t('travelPayNow'),
+              _paying ? strings.t('stateLoading') : strings.t('travelPayNow'),
             ),
           ),
         ],

@@ -262,8 +262,8 @@ class VtcGateway {
       ),
     );
 
-    final ride = GuestRide.tryParse(JourneyApi.dataOf(json)) ??
-        GuestRide.tryParse(json);
+    final ride =
+        GuestRide.tryParse(JourneyApi.dataOf(json)) ?? GuestRide.tryParse(json);
     if (ride == null) {
       throw const PublicApiFailure(
         PublicFailureKind.server,
@@ -287,8 +287,8 @@ class VtcGateway {
       query: {'code': code},
     );
 
-    final ride = GuestRide.tryParse(JourneyApi.dataOf(json)) ??
-        GuestRide.tryParse(json);
+    final ride =
+        GuestRide.tryParse(JourneyApi.dataOf(json)) ?? GuestRide.tryParse(json);
     if (ride == null) {
       throw const PublicApiFailure(
         PublicFailureKind.notFound,

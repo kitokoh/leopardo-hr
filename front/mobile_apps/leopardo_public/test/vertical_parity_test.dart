@@ -177,7 +177,13 @@ void main() {
   // ── Registre ──
   group('registre des verticales', () {
     test('les 5 verticales restantes ont une entrée', () {
-      for (final code in ['restaurant', 'retail', 'hospitality', 'trade', 'vtc']) {
+      for (final code in [
+        'restaurant',
+        'retail',
+        'hospitality',
+        'trade',
+        'vtc'
+      ]) {
         expect(journeyByCode(code), isNotNull, reason: 'verticale $code');
       }
     });

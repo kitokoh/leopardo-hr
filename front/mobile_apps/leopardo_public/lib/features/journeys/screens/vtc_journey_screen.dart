@@ -85,9 +85,10 @@ class _VtcJourneyScreenState extends ConsumerState<VtcJourneyScreen> {
     });
 
     try {
-      final directory = await ref.read(verticalDirectoryGatewayProvider).directory(
-            type: 'vtc_operator',
-          );
+      final directory =
+          await ref.read(verticalDirectoryGatewayProvider).directory(
+                type: 'vtc_operator',
+              );
       if (!mounted) return;
       setState(() {
         _operators = directory;
@@ -329,9 +330,7 @@ class _VtcJourneyScreenState extends ConsumerState<VtcJourneyScreen> {
           onPressed: _estimating ? null : _estimateRide,
           icon: const Icon(Icons.calculate_outlined, size: 18),
           label: Text(
-            _estimating
-                ? strings.t('stateLoading')
-                : strings.t('vtcEstimate'),
+            _estimating ? strings.t('stateLoading') : strings.t('vtcEstimate'),
           ),
         ),
         if (_estimateError != null)

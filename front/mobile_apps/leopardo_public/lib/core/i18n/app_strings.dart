@@ -252,8 +252,10 @@ class AppStrings {
           'Conservez ce code : il n’est affiché qu’une fois.',
       'vtcTrackingCodeMissing':
           'Le code n’est pas réaffiché sur une demande déjà envoyée. Utilisez la référence et le code reçus.',
-      'vtcInvalidPickup': 'Point de départ invalide (format latitude,longitude)',
-      'vtcInvalidDropoff': 'Point d’arrivée invalide (format latitude,longitude)',
+      'vtcInvalidPickup':
+          'Point de départ invalide (format latitude,longitude)',
+      'vtcInvalidDropoff':
+          'Point d’arrivée invalide (format latitude,longitude)',
       'vtcMissingName': 'Le nom du passager est requis',
       'vtcMissingPhone': 'Le téléphone du passager est requis',
       'journeyCustomerEmail': 'E-mail (optionnel)',
@@ -1003,13 +1005,13 @@ class AppStrings {
       'journeyDirectoryRating': 'التقييم',
       'journeyDirectoryDistance': 'المسافة',
       'journeyDirectoryEmptyTitle': 'لا توجد منشأة منشورة',
-      'journeyDirectoryEmptyBody':
-          'لم تُفعّل أي منشأة في هذه الفئة النشر بعد.',
+      'journeyDirectoryEmptyBody': 'لم تُفعّل أي منشأة في هذه الفئة النشر بعد.',
       'journeyDirectoryUnavailableTitle': 'الخدمة غير متاحة مؤقتًا',
       'journeyDirectoryUnavailableBody':
           'لم يستجب الدليل. هذا ليس غيابًا للمنشآت: أعد المحاولة.',
       'journeyDirectoryUnknownTitle': 'قطاع غير معروف',
-      'journeyDirectoryUnknownBody': 'هذه الفئة غير موجودة في هذا الإصدار من التطبيق.',
+      'journeyDirectoryUnknownBody':
+          'هذه الفئة غير موجودة في هذا الإصدار من التطبيق.',
       'journeyContactAction': 'تواصل',
       'journeyBlockerContactGeneric': 'التواصل غير متاح بعد لهذه الفئة.',
       'journeyStatusLabel': 'الحالة',

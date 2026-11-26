@@ -78,11 +78,12 @@ class _VerticalDirectoryScreenState
     });
 
     try {
-      final directory = await ref.read(verticalDirectoryGatewayProvider).directory(
-            type: type,
-            query: _query.text,
-            city: _city.text,
-          );
+      final directory =
+          await ref.read(verticalDirectoryGatewayProvider).directory(
+                type: type,
+                query: _query.text,
+                city: _city.text,
+              );
       if (!mounted) return;
       setState(() {
         _directory = directory;
@@ -144,7 +145,9 @@ class _VerticalDirectoryScreenState
           onPressed: _loading ? null : _load,
           icon: const Icon(Icons.search, size: 18),
           label: Text(
-            _loading ? strings.t('stateLoading') : strings.t('journeyDirectorySearchAction'),
+            _loading
+                ? strings.t('stateLoading')
+                : strings.t('journeyDirectorySearchAction'),
           ),
         ),
         const SizedBox(height: 16),
@@ -171,8 +174,7 @@ class _VerticalDirectoryScreenState
             body: strings.t('journeyDirectoryEmptyBody'),
           )
         else
-          for (final entry in directory.entries)
-            _entryCard(strings, entry),
+          for (final entry in directory.entries) _entryCard(strings, entry),
       ],
     );
   }

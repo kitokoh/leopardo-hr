@@ -50,7 +50,8 @@ final pharmacyGatewayProvider = Provider<PharmacyGateway>(
 /// Annuaire d'une verticale grand public (#9948) — restaurant, retail,
 /// hospitality, trade et vtc partagent `GET /public/discover?type=…`.
 final verticalDirectoryGatewayProvider = Provider<VerticalDirectoryGateway>(
-  (ref) => VerticalDirectoryGateway(ref.watch(publicDiscoveryRepositoryProvider)),
+  (ref) =>
+      VerticalDirectoryGateway(ref.watch(publicDiscoveryRepositoryProvider)),
 );
 
 /// Verticale Mobilité (vtc) — courses invitées.
