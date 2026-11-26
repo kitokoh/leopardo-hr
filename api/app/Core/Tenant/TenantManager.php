@@ -126,6 +126,24 @@ final class TenantManager
             return;
         }
 
+        // #EVAL — ne JAMAIS relancer une requete sur une transaction deja
+        // avortee. Quand une violation d'unicite (ou toute erreur SQL) a fait
+        // passer la transaction en etat `aborted`, PostgreSQL rejette toute
+        // commande suivante avec `25P02 current transaction is aborted` — et
+        // c'est CE message qui remontait au client a la place du 422 attendu,
+        // parce que `restoreCompanyContext()` s'execute dans le `finally` du
+        // middleware, donc APRES l'erreur. Le `set_config` echouait alors et
+        // masquait la vraie reponse.
+        //
+        // On saute la synchronisation dans ce cas : la transaction va etre
+        // annulee de toute facon, et la variable de session sera repositionnee
+        // par la prochaine requete (chaque requete HTTP repasse par
+        // `TenantMiddleware`). Ne rien faire est donc sur, alors qu'echouer
+        // ici transforme une erreur de saisie en 500.
+        if ($this->transactionIsAborted()) {
+            return;
+        }
+
         if ($company === null) {
             DB::statement("SELECT set_config('app.current_company_id', '', false)");
 
@@ -133,6 +151,33 @@ final class TenantManager
         }
 
         DB::statement("SELECT set_config('app.current_company_id', ?, false)", [(string) $company->id]);
+    }
+
+    /**
+     * La transaction courante est-elle deja avortee ?
+     *
+     * PostgreSQL expose cet etat via `pg_stat_activity`/`PQtransactionStatus`,
+     * mais PDO ne le remonte pas directement. On sonde donc avec une requete
+     * triviale : si elle leve `25P02`, la transaction est perdue. Le sondage
+     * lui-meme est sans effet de bord (un `SELECT 1` dans une transaction
+     * saine ne change rien) et n'est fait que sur PostgreSQL.
+     */
+    private function transactionIsAborted(): bool
+    {
+        if (! $this->isPostgres()) {
+            return false;
+        }
+
+        try {
+            DB::select('SELECT 1');
+
+            return false;
+        } catch (QueryException $e) {
+            // 25P02 = in_failed_sql_transaction. Tout autre code (connexion
+            // perdue, etc.) n'est pas notre propos : on laisse l'appelant
+            // echouer comme avant plutot que d'avaler silencieusement.
+            return str_contains($e->getMessage(), '25P02');
+        }
     }
 
     /**
