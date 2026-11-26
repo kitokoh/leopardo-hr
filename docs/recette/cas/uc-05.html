@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-bad">2/5</span></td>
-          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : échantillon de <strong>27 test(s)</strong> exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut <code>pass</code>). Sondes HTTP : 3 endpoint(s) appelé(s), 1 en 2xx (<code>GET /api/v1/me/pay-slips</code> → <strong>200</strong>, <code>GET /api/v1/me/pay-slips/1</code> → <strong>404</strong>, <code>GET /api/v1/me/pay-slips/1/pdf</code> → <strong>404</strong>). Note 2 = défaillance fonctionnelle sur un critère majeur.</td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : échantillon de <strong>27 test(s)</strong> exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut <code>pass</code>). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (<code>GET /api/v1/me/pay-slips</code> → <strong>200</strong>, <code>GET /api/v1/me/pay-slips/999999</code> → <strong>404</strong>). Note 4 = conforme en exécution (tests verts + endpoint 2xx).</td>
           <td class="center human-cell" data-human-note="UC-05"><span class="note-badge">2/5</span></td>
           <td class="human-cell" data-human-obs="UC-05">DEFECT : GET /payrolls en persona employe (self-service bulletin) -&gt; 403 FORBIDDEN. L&#x27;employe ne peut pas lire ses propres bulletins alors que l&#x27;API repond 200 pour GET /attendance et /absences du meme compte.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

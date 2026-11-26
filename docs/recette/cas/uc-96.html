@@ -74,7 +74,7 @@
       <tbody>
         <tr>
           <td class="center"><span class="note note-mid">3/5</span></td>
-          <td class="obs">Vérifié sur pièces : <code>GET /auth/2fa/status</code>, <code>POST /auth/2fa/enroll|confirm|verify|disable</code> déclarés dans <code>api/routes/api.php</code> (lignes 144, 432-435) ; middleware <code>platform.mfa</code> appliqué au groupe <code>platform</code> ; tests <code>PlatformWebAuth2faTest</code>, <code>PlatformWebAuthSecurityTest</code>, <code>SsoTwoFactorGuardTest</code>, <code>GoogleSsoTwoFactorSchemaTest</code>. API 503 : enrôlement non rejoué. Note 3 = critère d&#x27;exécution non vérifiable (API 503).</td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : échantillon de <strong>22 test(s)</strong> exécuté(s) sur 2 fichier(s) — 0 échec(s)/erreur(s) (statut <code>pass</code>). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (<code>GET /api/v1/auth/2fa/status</code> → <strong>200</strong>). <strong>Écart constaté</strong> : <code>GET /api/v1/auth/2fa/status</code> répond <strong>200</strong> et 22 tests 2FA/MFA passent. L&#x27;enrôlement complet (enroll → confirm → verify) n&#x27;a pas été rejoué, faute de secret TOTP généré côté testeur. Note 3 = fonctionne partiellement ou critère non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-96"><span class="muted">—</span></td>
           <td class="human-cell" data-human-obs="UC-96"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
         </tr>

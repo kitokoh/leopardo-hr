@@ -16,8 +16,8 @@
   "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/absences` → **200**, `GET /api/v1/absences/1/approve` → **405**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-05": {
-  "note_ia": "2",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **27 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 3 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/me/pay-slips` → **200**, `GET /api/v1/me/pay-slips/1` → **404**, `GET /api/v1/me/pay-slips/1/pdf` → **404**). Note 2 = défaillance fonctionnelle sur un critère majeur."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **27 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/me/pay-slips` → **200**, `GET /api/v1/me/pay-slips/999999` → **404**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-06": {
   "note_ia": "4",
@@ -48,12 +48,12 @@
   "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-13": {
-  "note_ia": "2",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 7 endpoint(s) appelé(s), 4 en 2xx (`GET /docs` → **200**, `GET /health` → **404**, `GET /health/live` → **404**, `GET /health/ready` → **404**, `GET /api/v1/health` → **200**). Note 2 = défaillance fonctionnelle sur un critère majeur."
+  "note_ia": "5",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 4 endpoint(s) appelé(s), 4 en 2xx (`GET /api/v1/health` → **200**, `GET /api/v1/health/live` → **200**, `GET /api/v1/health/ready` → **200**, `GET /docs` → **200**). Note 5 = tous les critères mesurés en exécution."
  },
  "UC-14": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/public/travel/shop/trips` → **401**, `POST /api/v1/public/travel/shop/bookings` → **401**). **Écart constaté** : `GET /api/v1/public/travel/shop/trips` renvoie **401** en exécution : la boutique publique exige une authentification, contrairement à ce que le cas suppose. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/public/travel/marketplace/trips` → **200**). **Écart constaté** : `GET /api/v1/public/travel/marketplace/trips` répond **200** sans authentification : la boutique publique est bien ouverte. Le parcours réservation → suivi → annulation n'a pas été rejoué en écriture. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-15": {
   "note_ia": "3",
@@ -64,12 +64,12 @@
   "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **16 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/departments` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-17": {
-  "note_ia": "2",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/invitations` → **200**, `GET /api/v1/role-assignments` → **404**). **Écart constaté** : `GET /api/v1/role-assignments` renvoie **404** en exécution : la route documentée n'existe pas. L'attribution de rôle passe par `POST /employees/{employee}/assign-role` et `GET /company/team-roles` (vérifiés 200). Note 2 = défaillance fonctionnelle sur un critère majeur."
+  "note_ia": "3",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/invitations` → **200**, `GET /api/v1/company/team-roles` → **403**). **Écart constaté** : `GET /api/v1/company/team-roles` répond **403** avec le persona Manager RH : la route existe mais le périmètre RBAC ne lui ouvre pas la lecture des rôles d'équipe. `GET /api/v1/invitations` répond **200**. L'attribution passe par `POST /employees/{employee}/assign-role` (route présente au routeur, non rejouée en écriture). Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-18": {
-  "note_ia": "2",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/planning` → **200**, `GET /api/v1/overtime` → **404**). **Écart constaté** : `GET /api/v1/overtime` renvoie **404** en exécution ; les heures supplémentaires sont sous `/hr/overtime`. `GET /api/v1/planning` répond 200. Note 2 = défaillance fonctionnelle sur un critère majeur."
+  "note_ia": "3",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 2 en 2xx (`GET /api/v1/planning` → **200**, `GET /api/v1/reports/overtime` → **200**). **Écart constaté** : `GET /api/v1/planning` et `GET /api/v1/reports/overtime` répondent **200** : les deux routes existent et sont lisibles. La validation/rejet d'une demande d'heures supplémentaires n'a pas été rejouée en écriture. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-19": {
   "note_ia": "3",
@@ -89,7 +89,7 @@
  },
  "UC-23": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-24": {
   "note_ia": "3",
@@ -101,7 +101,7 @@
  },
  "UC-26": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-27": {
   "note_ia": "4",
@@ -112,8 +112,8 @@
   "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-29": {
-  "note_ia": "2",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **32 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/expenses` → **404**). **Écart constaté** : `GET /api/v1/expenses` renvoie **404** en exécution : la ressource réelle est `/expense-claims`. Note 2 = défaillance fonctionnelle sur un critère majeur."
+  "note_ia": "3",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **32 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/expense-claims` → **200**). **Écart constaté** : `GET /api/v1/expense-claims` répond **200** : la ressource existe et est lisible. Le cycle soumission → approbation → rejet n'a pas été rejoué en écriture. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-30": {
   "note_ia": "3",
@@ -129,15 +129,15 @@
  },
  "UC-33": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **36 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-34": {
   "note_ia": "3",
   "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-35": {
-  "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/announcements` → **200**). Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **48 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/announcements` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
  },
  "UC-36": {
   "note_ia": "4",
@@ -145,7 +145,7 @@
  },
  "UC-37": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`POST /api/v1/trial/signup` → **422**). Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **10 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`POST /api/v1/trial/signup` → **422**). Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-38": {
   "note_ia": "4",
@@ -153,127 +153,127 @@
  },
  "UC-39": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **37 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-40": {
-  "note_ia": "2",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **19 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/search` → **404**). **Écart constaté** : `GET /api/v1/search` renvoie **404** en exécution : la recherche est exposée sous `/crm/search` et `/trade/search`, pas à la racine. Note 2 = défaillance fonctionnelle sur un critère majeur."
+  "note_ia": "3",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **19 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/crm/search` → **422**). **Écart constaté** : `GET /api/v1/crm/search` répond **422** : la route existe et valide ses paramètres, mais la recherche transverse n'a pas été rejouée avec un terme exploitable, donc le filtrage par permissions n'a pas été observé. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-41": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-42": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **26 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-43": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **31 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-44": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-45": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-46": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **27 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-47": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **15 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-48": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **20 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-49": {
-  "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "note_ia": "2",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 3 fichier(s) — 1 échec(s)/erreur(s) (statut `fail`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 2 = défaillance fonctionnelle sur un critère majeur."
  },
  "UC-50": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **26 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-51": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **26 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-52": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **24 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-53": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **37 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-54": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **21 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-55": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-56": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **26 test(s)** exécuté(s) sur 1 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-57": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-58": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-59": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **32 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-60": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-61": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-62": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **19 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-63": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-64": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-65": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **37 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-66": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-67": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-68": {
-  "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "note_ia": "2",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **163 test(s)** exécuté(s) sur 3 fichier(s) — 1 échec(s)/erreur(s) (statut `fail`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 2 = défaillance fonctionnelle sur un critère majeur."
  },
  "UC-69": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-70": {
   "note_ia": "2",
@@ -281,78 +281,106 @@
  },
  "UC-71": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **13 test(s)** exécuté(s) sur 1 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-72": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-73": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **10 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-74": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-75": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **10 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-76": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **16 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-77": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **16 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-78": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-79": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-80": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-81": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-82": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **24 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-83": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-84": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **16 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-85": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-86": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-87": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **19 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-88": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 3 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/trade/cost-estimates` → **403**, `GET /api/v1/trade/customs/checklist` → **403**, `GET /api/v1/trade/profile` → **403**). **Écart constaté** : Les 3 endpoints trade renvoient **403** avec le persona principal : la verticale Trade n'est pas activée sur le tenant de démo (feature gate), donc le parcours n'a pas pu être rejoué. Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **26 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 3 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/trade/cost-estimates` → **403**, `GET /api/v1/trade/customs/checklist` → **403**, `GET /api/v1/trade/profile` → **403**). **Écart constaté** : Les 3 endpoints trade renvoient **403** avec le persona principal : la verticale Trade n'est pas activée sur le tenant de démo (feature gate), donc le parcours n'a pas pu être rejoué. Note 3 = fonctionne partiellement ou critère non vérifiable."
  },
  "UC-89": {
+  "note_ia": "4",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/connectors/catalog` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx)."
+ },
+ "UC-90": {
   "note_ia": "3",
-  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/connectors/catalog` → **200**). Note 3 = fonctionne partiellement ou critère non vérifiable."
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **6 test(s)** exécuté(s) sur 1 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/ai/chat/history` → **403**, `GET /api/v1/ai/tools` → **403**). **Écart constaté** : `GET /api/v1/ai/chat/history` et `GET /api/v1/ai/tools` renvoient **403** avec le persona Manager Principal : la verticale IA n'est pas ouverte à ce rôle sur le tenant de démo. Les 26 routes de `api/routes/ai.php` existent et 6 tests de proposition d'action passent, mais le chat n'a pas pu être rejoué. Note 3 = fonctionne partiellement ou critère non vérifiable."
+ },
+ "UC-91": {
+  "note_ia": "3",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **15 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 3 endpoint(s) appelé(s), 2 en 2xx (`GET /api/v1/contracts` → **200**, `GET /api/v1/contracts/templates` → **422**, `GET /api/v1/contracts/expiring` → **200**). **Écart constaté** : `GET /api/v1/contracts` et `GET /api/v1/contracts/expiring` répondent **200** ; `GET /api/v1/contracts/templates` répond **422** (paramètre pays obligatoire). La signature d'un contrat n'a pas été rejouée en écriture. Note 3 = fonctionne partiellement ou critère non vérifiable."
+ },
+ "UC-92": {
+  "note_ia": "3",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **5 test(s)** exécuté(s) sur 1 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/audit-logs` → **200**, `GET /api/v1/audit-logs/export` → **422**). **Écart constaté** : `GET /api/v1/audit-logs` répond **200** ; `GET /api/v1/audit-logs/export` répond **422** (paramètre de format obligatoire). L'export n'a pas été rejoué avec un format valide. Note 3 = fonctionne partiellement ou critère non vérifiable."
+ },
+ "UC-93": {
+  "note_ia": "3",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **23 test(s)** exécuté(s) sur 2 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 2 en 2xx (`GET /api/v1/export/employees` → **200**, `GET /api/v1/export/pay-slips` → **200**). **Écart constaté** : `GET /api/v1/export/employees` et `GET /api/v1/export/pay-slips` répondent **200** : les exports sont produits. Le contenu des fichiers n'a pas été ouvert ni comparé au nombre de lignes attendu. Note 3 = fonctionne partiellement ou critère non vérifiable."
+ },
+ "UC-94": {
+  "note_ia": "2",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **4 test(s)** exécuté(s) sur 2 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/partners` → **404**). **Écart constaté** : `GET /api/v1/partners` renvoie **404** en exécution : la route documentée n'existe pas sous ce chemin. Les tests de candidature partenaire passent (4 tests), mais le parcours HTTP documenté n'est pas exposé à cette adresse. Note 2 = défaillance fonctionnelle sur un critère majeur."
+ },
+ "UC-95": {
+  "note_ia": "3",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **12 test(s)** exécuté(s) sur 2 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 2 en 2xx (`GET /api/v1/training/courses` → **200**, `GET /api/v1/training/sessions` → **200**). **Écart constaté** : `GET /api/v1/training/courses` et `GET /api/v1/training/sessions` répondent **200** et 12 tests d'inscription/créneau passent. L'inscription d'un apprenant n'a pas été rejouée en écriture. Note 3 = fonctionne partiellement ou critère non vérifiable."
+ },
+ "UC-96": {
+  "note_ia": "3",
+  "obs_ia": "**Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 2 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/auth/2fa/status` → **200**). **Écart constaté** : `GET /api/v1/auth/2fa/status` répond **200** et 22 tests 2FA/MFA passent. L'enrôlement complet (enroll → confirm → verify) n'a pas été rejoué, faute de secret TOTP généré côté testeur. Note 3 = fonctionne partiellement ou critère non vérifiable."
  }
 }

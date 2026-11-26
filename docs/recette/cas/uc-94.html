@@ -73,8 +73,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-mid">3/5</span></td>
-          <td class="obs">Vérifié sur pièces : <code>GET /partners</code>, <code>PATCH /partners/{partner}/rate</code>, <code>PATCH /partners/{partner}/application</code> déclarés dans <code>api/routes/modules/billing.php</code> (lignes 150-152) ; tests <code>GrowthModuleTest</code>, <code>GrowthPartnerTenantIsolationTest</code>, <code>PlatformCompanySubscriptionApiTest</code>. API 503 : candidature non soumise. Note 3 = critère d&#x27;exécution non vérifiable (API 503).</td>
+          <td class="center"><span class="note note-bad">2/5</span></td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : échantillon de <strong>4 test(s)</strong> exécuté(s) sur 2 fichier(s) — 0 échec(s)/erreur(s) (statut <code>pass</code>). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (<code>GET /api/v1/partners</code> → <strong>404</strong>). <strong>Écart constaté</strong> : <code>GET /api/v1/partners</code> renvoie <strong>404</strong> en exécution : la route documentée n&#x27;existe pas sous ce chemin. Les tests de candidature partenaire passent (4 tests), mais le parcours HTTP documenté n&#x27;est pas exposé à cette adresse. Note 2 = défaillance fonctionnelle sur un critère majeur.</td>
           <td class="center human-cell" data-human-note="UC-94"><span class="muted">—</span></td>
           <td class="human-cell" data-human-obs="UC-94"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
         </tr>

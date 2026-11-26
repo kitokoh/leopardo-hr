@@ -207,21 +207,21 @@
   "detail": []
  },
  "UC-26": {
-  "files": 0,
-  "tests": 0,
+  "files": 3,
+  "tests": 22,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
-  "status": "bad-report",
+  "status": "pass",
   "detail": []
  },
  "UC-23": {
-  "files": 0,
-  "tests": 0,
+  "files": 3,
+  "tests": 28,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
-  "status": "bad-report",
+  "status": "pass",
   "detail": []
  },
  "UC-28": {
@@ -279,7 +279,7 @@
   "detail": []
  },
  "UC-34": {
-  "files": 0,
+  "files": 3,
   "tests": 0,
   "failures": 0,
   "errors": 0,
@@ -324,12 +324,553 @@
   "detail": []
  },
  "UC-33": {
-  "files": 0,
+  "files": 3,
+  "tests": 36,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-37": {
+  "files": 3,
+  "tests": 10,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-41": {
+  "files": 3,
+  "tests": 25,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-35": {
+  "files": 3,
+  "tests": 48,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-43": {
+  "files": 3,
+  "tests": 31,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-39": {
+  "files": 3,
+  "tests": 37,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-45": {
+  "files": 3,
+  "tests": 22,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-42": {
+  "files": 3,
+  "tests": 26,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-47": {
+  "files": 3,
+  "tests": 15,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-49": {
+  "files": 3,
+  "tests": 18,
+  "failures": 1,
+  "errors": 0,
+  "skipped": 0,
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests\\Feature\\Delivery\\DeliveryAsyncTest::test_export_job_writes_deterministic_snapshot",
+    "kind": "failure"
+   }
+  ]
+ },
+ "UC-51": {
+  "files": 3,
+  "tests": 26,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-53": {
+  "files": 3,
+  "tests": 37,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-44": {
+  "files": 3,
+  "tests": 22,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-55": {
+  "files": 3,
+  "tests": 25,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-57": {
+  "files": 3,
+  "tests": 22,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-46": {
+  "files": 3,
+  "tests": 27,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-59": {
+  "files": 3,
+  "tests": 32,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-48": {
+  "files": 3,
+  "tests": 20,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-50": {
+  "files": 3,
+  "tests": 26,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-52": {
+  "files": 3,
+  "tests": 24,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-54": {
+  "files": 3,
+  "tests": 21,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-56": {
+  "files": 1,
+  "tests": 26,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-61": {
+  "files": 3,
+  "tests": 22,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-58": {
+  "files": 3,
+  "tests": 18,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-60": {
+  "files": 3,
+  "tests": 25,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-62": {
+  "files": 3,
+  "tests": 19,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-64": {
+  "files": 3,
+  "tests": 18,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-66": {
+  "files": 3,
+  "tests": 17,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-63": {
+  "files": 3,
   "tests": 0,
   "failures": 0,
   "errors": 0,
   "skipped": 0,
   "status": "bad-report",
+  "detail": []
+ },
+ "UC-68": {
+  "files": 3,
+  "tests": 163,
+  "failures": 1,
+  "errors": 0,
+  "skipped": 0,
+  "status": "fail",
+  "detail": [
+   {
+    "test": "Tests\\Feature\\OpenApiDocsTest::test_docs_require_authentication_in_production",
+    "kind": "failure"
+   }
+  ]
+ },
+ "UC-70": {
+  "files": 0,
+  "tests": 0,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "no-tests",
+  "detail": []
+ },
+ "UC-65": {
+  "files": 3,
+  "tests": 37,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-67": {
+  "files": 3,
+  "tests": 25,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-69": {
+  "files": 3,
+  "tests": 25,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-71": {
+  "files": 1,
+  "tests": 13,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-72": {
+  "files": 3,
+  "tests": 28,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-73": {
+  "files": 3,
+  "tests": 10,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-75": {
+  "files": 3,
+  "tests": 10,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-77": {
+  "files": 3,
+  "tests": 16,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-74": {
+  "files": 3,
+  "tests": 18,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-76": {
+  "files": 3,
+  "tests": 16,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-79": {
+  "files": 3,
+  "tests": 28,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-81": {
+  "files": 3,
+  "tests": 18,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-78": {
+  "files": 3,
+  "tests": 17,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-80": {
+  "files": 3,
+  "tests": 28,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-83": {
+  "files": 3,
+  "tests": 22,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-82": {
+  "files": 3,
+  "tests": 24,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-85": {
+  "files": 3,
+  "tests": 22,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-87": {
+  "files": 3,
+  "tests": 19,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-84": {
+  "files": 3,
+  "tests": 16,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-89": {
+  "files": 3,
+  "tests": 28,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-86": {
+  "files": 3,
+  "tests": 22,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-88": {
+  "files": 3,
+  "tests": 26,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-90": {
+  "files": 1,
+  "tests": 6,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-91": {
+  "files": 3,
+  "tests": 15,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-92": {
+  "files": 1,
+  "tests": 5,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-93": {
+  "files": 2,
+  "tests": 23,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-94": {
+  "files": 2,
+  "tests": 4,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-95": {
+  "files": 2,
+  "tests": 12,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
+  "detail": []
+ },
+ "UC-96": {
+  "files": 2,
+  "tests": 22,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "status": "pass",
   "detail": []
  }
 }

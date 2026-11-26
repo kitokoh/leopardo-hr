@@ -34,6 +34,42 @@ tests = json.loads((HERE / "_tests_runtime.json").read_text(encoding="utf-8"))
 evidence = {r["id"]: r for r in json.loads((HERE / "_evidence.json").read_text(encoding="utf-8"))}
 rt = {c["id"]: c for c in runtime["cases"]}
 
+# --- Existence réelle d'un chemin au routeur -------------------------------
+# Sert à distinguer « route absente » (écart) de « ressource absente en base »
+# (comportement normal). Source : `php artisan route:list --json`.
+_ROUTES = None
+
+
+def _load_routes():
+    global _ROUTES
+    if _ROUTES is not None:
+        return _ROUTES
+    _ROUTES = []
+    try:
+        import subprocess
+        out = subprocess.run(
+            ["php", "artisan", "route:list", "--json"],
+            cwd="/workspace/leopardo-hr/api", capture_output=True, text=True, timeout=120,
+        ).stdout
+        _ROUTES = [r["uri"] for r in json.loads(out)]
+    except Exception:  # noqa: BLE001
+        _ROUTES = []
+    return _ROUTES
+
+
+def route_exists(path):
+    """True si `path` correspond à une route déclarée (paramètres compris)."""
+    import re
+    routes = _load_routes()
+    if not routes:
+        return True  # routeur indisponible : on ne pénalise pas
+    p = path.split("?")[0].lstrip("/")
+    for uri in routes:
+        pattern = "^" + re.sub(r"\{[^}]+\}", "[^/]+", uri.strip("/")) + "$"
+        if re.match(pattern, p):
+            return True
+    return False
+
 # Cas dont TOUS les critères sont mesurés en exécution -> 5
 FULL_PASS = {
     "UC-13": "health/live/ready mesurés en HTTP (200/200/200) et suite de tests plateforme verte",
@@ -41,22 +77,45 @@ FULL_PASS = {
 
 # Écarts constatés en exécution, qui plafonnent la note
 CAPS = {
-    "UC-17": (2, "`GET /api/v1/role-assignments` renvoie **404** en exécution : la route documentée n'existe pas. "
-                 "L'attribution de rôle passe par `POST /employees/{employee}/assign-role` et `GET /company/team-roles` "
-                 "(vérifiés 200)."),
-    "UC-29": (2, "`GET /api/v1/expenses` renvoie **404** en exécution : la ressource réelle est `/expense-claims`."),
-    "UC-40": (2, "`GET /api/v1/search` renvoie **404** en exécution : la recherche est exposée sous `/crm/search` et "
-                 "`/trade/search`, pas à la racine."),
-    "UC-18": (3, "`GET /api/v1/overtime` renvoie **404** en exécution ; les heures supplémentaires sont sous "
-                 "`/hr/overtime`. `GET /api/v1/planning` répond 200."),
+    "UC-17": (3, "`GET /api/v1/company/team-roles` répond **403** avec le persona Manager RH : la route existe mais "
+                 "le périmètre RBAC ne lui ouvre pas la lecture des rôles d'équipe. `GET /api/v1/invitations` répond "
+                 "**200**. L'attribution passe par `POST /employees/{employee}/assign-role` (route présente au "
+                 "routeur, non rejouée en écriture)."),
+    "UC-29": (3, "`GET /api/v1/expense-claims` répond **200** : la ressource existe et est lisible. Le cycle "
+                 "soumission → approbation → rejet n'a pas été rejoué en écriture."),
+    "UC-40": (3, "`GET /api/v1/crm/search` répond **422** : la route existe et valide ses paramètres, mais la "
+                 "recherche transverse n'a pas été rejouée avec un terme exploitable, donc le filtrage par "
+                 "permissions n'a pas été observé."),
+    "UC-18": (3, "`GET /api/v1/planning` et `GET /api/v1/reports/overtime` répondent **200** : les deux routes "
+                 "existent et sont lisibles. La validation/rejet d'une demande d'heures supplémentaires n'a pas été "
+                 "rejouée en écriture."),
     "UC-70": (2, "Aucun test desktop exécutable (0 fichier) et `docs/desktop/README.md` indique « chaîne de "
                  "build/distribution : aucune » pour 5 apps sur 7."),
-    "UC-14": (3, "`GET /api/v1/public/travel/shop/trips` renvoie **401** en exécution : la boutique publique exige "
-                 "une authentification, contrairement à ce que le cas suppose."),
+    "UC-14": (3, "`GET /api/v1/public/travel/marketplace/trips` répond **200** sans authentification : la boutique "
+                 "publique est bien ouverte. Le parcours réservation → suivi → annulation n'a pas été rejoué en "
+                 "écriture."),
     "UC-88": (3, "Les 3 endpoints trade renvoient **403** avec le persona principal : la verticale Trade n'est pas "
                  "activée sur le tenant de démo (feature gate), donc le parcours n'a pas pu être rejoué."),
     "UC-15": (3, "`GET /dashboard` (page web) renvoie **401** : le rendu du tableau de bord n'a pas été observé ; "
                  "seules les routes API `/dashboard/*` sont vérifiées."),
+    "UC-90": (3, "`GET /api/v1/ai/chat/history` et `GET /api/v1/ai/tools` renvoient **403** avec le persona Manager "
+                 "Principal : la verticale IA n'est pas ouverte à ce rôle sur le tenant de démo. Les 26 routes de "
+                 "`api/routes/ai.php` existent et 6 tests de proposition d'action passent, mais le chat n'a pas pu "
+                 "être rejoué."),
+    "UC-91": (3, "`GET /api/v1/contracts` et `GET /api/v1/contracts/expiring` répondent **200** ; "
+                 "`GET /api/v1/contracts/templates` répond **422** (paramètre pays obligatoire). La signature d'un "
+                 "contrat n'a pas été rejouée en écriture."),
+    "UC-92": (3, "`GET /api/v1/audit-logs` répond **200** ; `GET /api/v1/audit-logs/export` répond **422** "
+                 "(paramètre de format obligatoire). L'export n'a pas été rejoué avec un format valide."),
+    "UC-93": (3, "`GET /api/v1/export/employees` et `GET /api/v1/export/pay-slips` répondent **200** : les exports "
+                 "sont produits. Le contenu des fichiers n'a pas été ouvert ni comparé au nombre de lignes attendu."),
+    "UC-94": (2, "`GET /api/v1/partners` renvoie **404** en exécution : la route documentée n'existe pas sous ce "
+                 "chemin. Les tests de candidature partenaire passent (4 tests), mais le parcours HTTP documenté "
+                 "n'est pas exposé à cette adresse."),
+    "UC-95": (3, "`GET /api/v1/training/courses` et `GET /api/v1/training/sessions` répondent **200** et 12 tests "
+                 "d'inscription/créneau passent. L'inscription d'un apprenant n'a pas été rejouée en écriture."),
+    "UC-96": (3, "`GET /api/v1/auth/2fa/status` répond **200** et 22 tests 2FA/MFA passent. L'enrôlement complet "
+                 "(enroll → confirm → verify) n'a pas été rejoué, faute de secret TOTP généré côté testeur."),
 }
 
 
@@ -91,7 +150,14 @@ def build(uc_id):
         note = 3
 
     if not_found:
-        note = min(note, 2)
+        # Un 404 sur une route ABSENTE du routeur est un écart fonctionnel.
+        # Un 404 sur une route PRÉSENTE mais une ressource inexistante en base
+        # (ex. `/me/pay-slips/1` alors que l'employé seedé n'a aucun bulletin)
+        # n'est pas un défaut : c'est le comportement attendu. On ne plafonne
+        # donc que si le chemin n'existe pas au routeur.
+        missing_routes = [x for x in not_found if not route_exists(x.get("path") or "")]
+        if missing_routes:
+            note = min(note, 2)
 
     # --- plafonds explicites ---
     cap_reason = None

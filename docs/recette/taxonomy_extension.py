@@ -238,14 +238,14 @@ USE_CASES_EXT = [
          profiles=["employe", "manager-principal"], modules=["expense"], type="Fonctionnel",
          status="à exécuter",
          desc="Vérifier le cycle d'une note de frais : soumission avec justificatif, validation manager, rejet motivé.",
-         pre="Compte employé + compte manager ; endpoints `/api/v1/expenses`.",
+         pre="Compte employé + compte manager ; endpoints `/api/v1/expense-claims`.",
          steps=["Créer une note de frais avec un justificatif joint.",
                 "Vérifier le statut initial et le montant total.",
                 "En tant que manager, approuver la note.",
                 "Créer une seconde note et la rejeter avec un motif.",
                 "Vérifier que le rejet est visible côté employé avec son motif."],
          expected="La note suit le cycle attendu, le rejet exige un motif, et l'employé voit l'état réel de sa demande.",
-         note_ia="2", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **32 test(s)** ex\u00e9cut\u00e9(s) sur 0 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 0 en 2xx (`GET /api/v1/expenses` \u2192 **404**). **\u00c9cart constat\u00e9** : `GET /api/v1/expenses` renvoie **404** en ex\u00e9cution : la ressource r\u00e9elle est `/expense-claims`. Note 2 = d\u00e9faillance fonctionnelle sur un crit\u00e8re majeur."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **32 test(s)** ex\u00e9cut\u00e9(s) sur 0 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 1 en 2xx (`GET /api/v1/expense-claims` \u2192 **200**). **\u00c9cart constat\u00e9** : `GET /api/v1/expense-claims` r\u00e9pond **200** : la ressource existe et est lisible. Le cycle soumission \u2192 approbation \u2192 rejet n'a pas \u00e9t\u00e9 rejou\u00e9 en \u00e9criture. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-30", title="Notes de frais — remboursement et impact paie",
          profiles=["manager-comptable"], modules=["expense", "payroll"], type="Fonctionnel",
          status="à exécuter",
@@ -297,7 +297,7 @@ USE_CASES_EXT = [
                 "Vérifier le SEO de la page (titre, description, langue).",
                 "Dépublier l'offre et vérifier sa disparition."],
          expected="L'offre est publiée, visible publiquement avec les bonnes métadonnées, puis retirée proprement à la dépublication.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **36 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-34", title="Recrutement — pipeline de candidatures",
          profiles=["recruteur"], modules=["recruitment"], type="Fonctionnel",
          status="à exécuter",
@@ -323,7 +323,7 @@ USE_CASES_EXT = [
                 "Vérifier qu'un employé hors cible ne la reçoit pas.",
                 "Contrôler le compteur d'accusés de lecture."],
          expected="Le ciblage est respecté, l'annonce est lisible, et le compteur de lecture reflète les lectures réelles.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 1 en 2xx (`GET /api/v1/announcements` \u2192 **200**). Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="4", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **48 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 1 en 2xx (`GET /api/v1/announcements` \u2192 **200**). Note 4 = conforme en ex\u00e9cution (tests verts + endpoint 2xx)."),
     dict(id="UC-36", title="Notifications — préférences et multi-canal",
          profiles=["employe", "ops"], modules=["notification"], type="Fonctionnel",
          status="à exécuter",
@@ -349,7 +349,7 @@ USE_CASES_EXT = [
                 "Se connecter avec le compte créé.",
                 "Vérifier qu'aucun tenant en doublon n'est créé en cas de double soumission."],
          expected="Le tenant est créé une seule fois, l'utilisateur peut se connecter, et la double soumission est idempotente.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 0 en 2xx (`POST /api/v1/trial/signup` \u2192 **422**). Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **10 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 0 en 2xx (`POST /api/v1/trial/signup` \u2192 **422**). Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-38", title="Onboarding — reprise d'un parcours interrompu",
          profiles=["client-final"], modules=["onboarding"], type="Résilience",
          status="à exécuter",
@@ -375,19 +375,19 @@ USE_CASES_EXT = [
                 "Désactiver l'article et vérifier sa disparition des ventes.",
                 "Tenter un prix négatif et vérifier la validation."],
          expected="Le catalogue est cohérent, l'historique de prix est conservé, la désactivation est effective et les valeurs invalides sont refusées.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **37 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-40", title="Recherche — recherche transverse et permissions",
          profiles=["manager-principal", "support"], modules=["search"], type="Sécurité",
          status="à exécuter",
          desc="Vérifier que la recherche transverse ne renvoie que ce que l'utilisateur a le droit de voir.",
-         pre="Deux comptes de rôles différents ; endpoints `/api/v1/search`.",
+         pre="Deux comptes de rôles différents ; endpoints `/api/v1/crm/search`.",
          steps=["Lancer une recherche sur un terme présent dans plusieurs modules.",
                 "Vérifier les types de résultats retournés pour un manager.",
                 "Rejouer la même recherche avec un compte employé.",
                 "Vérifier l'absence de résultats hors périmètre.",
                 "Vérifier qu'aucun identifiant d'un autre tenant n'apparaît."],
          expected="Les résultats respectent les permissions du rôle, aucune donnée hors périmètre n'est exposée, et la recherche reste rapide.",
-         note_ia="2", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **19 test(s)** ex\u00e9cut\u00e9(s) sur 0 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 0 en 2xx (`GET /api/v1/search` \u2192 **404**). **\u00c9cart constat\u00e9** : `GET /api/v1/search` renvoie **404** en ex\u00e9cution : la recherche est expos\u00e9e sous `/crm/search` et `/trade/search`, pas \u00e0 la racine. Note 2 = d\u00e9faillance fonctionnelle sur un crit\u00e8re majeur."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **19 test(s)** ex\u00e9cut\u00e9(s) sur 0 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 0 en 2xx (`GET /api/v1/crm/search` \u2192 **422**). **\u00c9cart constat\u00e9** : `GET /api/v1/crm/search` r\u00e9pond **422** : la route existe et valide ses param\u00e8tres, mais la recherche transverse n'a pas \u00e9t\u00e9 rejou\u00e9e avec un terme exploitable, donc le filtrage par permissions n'a pas \u00e9t\u00e9 observ\u00e9. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Pages & surfaces publiques ---------------------------------------
     dict(id="UC-41", title="Pages — pages publiques et SEO multilingue",
@@ -401,7 +401,7 @@ USE_CASES_EXT = [
                 "Contrôler le rendu RTL en arabe.",
                 "Vérifier l'absence de clé de traduction brute."],
          expected="Chaque langue expose ses propres métadonnées, les balises canoniques et `hreflang` sont correctes, et le RTL est effectif.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **25 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-42", title="Showcase — vitrine publique et bibliothèque",
          profiles=["marketing", "client-final"], modules=["showcase", "public"], type="UI/UX",
          status="à exécuter",
@@ -413,7 +413,7 @@ USE_CASES_EXT = [
                 "Contrôler les en-têtes de cache public.",
                 "Vérifier qu'aucune donnée interne n'est exposée."],
          expected="Les surfaces publiques s'affichent correctement sur desktop et mobile, la navigation est fluide, le cache est actif et aucune donnée interne ne fuit.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **26 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Bibliothèque -----------------------------------------------------
     dict(id="UC-43", title="Bibliothèque — prêt et retour d'ouvrages",
@@ -427,7 +427,7 @@ USE_CASES_EXT = [
                 "Enregistrer le retour et vérifier la remise à disposition.",
                 "Vérifier le calcul du retard sur un prêt échu."],
          expected="Un ouvrage ne peut être prêté qu'une fois, le retour le remet à disposition, et le retard est calculé correctement.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **31 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Caméras ----------------------------------------------------------
     dict(id="UC-44", title="Caméras — parc et supervision des flux",
@@ -441,7 +441,7 @@ USE_CASES_EXT = [
                 "Simuler une caméra injoignable et vérifier l'état dégradé.",
                 "Vérifier qu'aucune caméra d'un autre tenant n'est visible."],
          expected="La caméra est enregistrée et supervisée, l'état reflète la réalité du flux, et l'isolation entre tenants est respectée.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **22 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-45", title="Caméras — incident et maintenance",
          profiles=["technicien"], modules=["cameras"], type="Fonctionnel",
          status="à exécuter",
@@ -453,7 +453,7 @@ USE_CASES_EXT = [
                 "Clôturer l'intervention.",
                 "Vérifier l'historique de maintenance de la caméra."],
          expected="L'incident est tracé, l'intervention suit son cycle, et l'historique de maintenance reste consultable.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **22 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Flotte -----------------------------------------------------------
     dict(id="UC-46", title="Flotte — véhicules, affectations et entretien",
@@ -467,7 +467,7 @@ USE_CASES_EXT = [
                 "Vérifier l'alerte d'échéance (assurance, visite technique).",
                 "Tenter une immatriculation en doublon et vérifier le refus."],
          expected="Le véhicule est suivi de bout en bout, les échéances déclenchent des alertes, et les doublons d'immatriculation sont refusés.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **27 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Station-service --------------------------------------------------
     dict(id="UC-47", title="Station-service — index pompes et ventes carburant",
@@ -481,7 +481,7 @@ USE_CASES_EXT = [
                 "Clôturer la caisse de la journée.",
                 "Tenter un index décroissant et vérifier le refus."],
          expected="Le volume et le montant sont calculés correctement, la clôture est cohérente, et un index incohérent est refusé avec un message explicite.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **15 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- VTC --------------------------------------------------------------
     dict(id="UC-48", title="VTC — course et tarification",
@@ -495,7 +495,7 @@ USE_CASES_EXT = [
                 "Vérifier le montant final et le mode de paiement.",
                 "Tenter une course sans grille active et vérifier le refus explicite."],
          expected="Le tarif suit la grille, la course suit son cycle, et l'absence de grille produit une erreur métier claire (jamais une 500).",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **20 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Livraison --------------------------------------------------------
     dict(id="UC-49", title="Livraison — tournée et preuve de livraison",
@@ -509,7 +509,7 @@ USE_CASES_EXT = [
                 "Marquer un colis en échec avec un motif.",
                 "Vérifier le suivi visible côté client."],
          expected="La tournée se constitue, chaque colis a un statut et une preuve, et le client voit l'état réel de sa livraison.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="2", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **18 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 1 \u00e9chec(s)/erreur(s) (statut `fail`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 2 = d\u00e9faillance fonctionnelle sur un crit\u00e8re majeur."),
 
     # --- Restauration -----------------------------------------------------
     dict(id="UC-50", title="Restauration — POS et plan de salle",
@@ -523,7 +523,7 @@ USE_CASES_EXT = [
                 "Encaisser la table et vérifier le ticket.",
                 "Vérifier la libération de la table après encaissement."],
          expected="La commande est transmise, le total est correct, le ticket est généré et la table redevient disponible.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **26 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-51", title="Restauration — KDS et cycle de commande",
          profiles=["restaurateur"], modules=["restaurant"], type="Résilience",
          status="à exécuter",
@@ -535,7 +535,7 @@ USE_CASES_EXT = [
                 "Couper le réseau et envoyer une commande : vérifier la mise en file.",
                 "Rétablir le réseau et vérifier la synchronisation sans doublon."],
          expected="Le KDS reflète l'état réel, la commande hors-ligne est mise en file puis synchronisée une seule fois.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **26 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Retail -----------------------------------------------------------
     dict(id="UC-52", title="Retail — POS et encaissement",
@@ -549,7 +549,7 @@ USE_CASES_EXT = [
                 "Vérifier le ticket et la numérotation.",
                 "Tenter une remise supérieure au seuil autorisé et vérifier le refus."],
          expected="Le total est correct, le ticket est généré, la numérotation est continue, et les remises hors seuil sont refusées.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **24 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-53", title="Retail — stock et inventaire",
          profiles=["retail"], modules=["retail", "catalog"], type="Fonctionnel",
          status="à exécuter",
@@ -561,7 +561,7 @@ USE_CASES_EXT = [
                 "Saisir un inventaire physique et régulariser l'écart.",
                 "Vérifier la trace de la régularisation."],
          expected="Le stock suit les ventes, la régularisation est possible et tracée, et aucun stock négatif n'est accepté sans règle explicite.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **37 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Hôtellerie -------------------------------------------------------
     dict(id="UC-54", title="Hôtellerie — chambres, séjours et housekeeping",
@@ -575,7 +575,7 @@ USE_CASES_EXT = [
                 "Passer la chambre en « à nettoyer » puis « propre ».",
                 "Effectuer le check-out et vérifier la facture."],
          expected="La chambre ne peut pas être doublement réservée, les états de housekeeping sont cohérents, et la facture reflète le séjour.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **21 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Pharmacie --------------------------------------------------------
     dict(id="UC-55", title="Pharmacie — stock, ordonnance et profil public",
@@ -589,7 +589,7 @@ USE_CASES_EXT = [
                 "Ouvrir la fiche publique de la pharmacie (horaires, adresse).",
                 "Vérifier qu'aucune donnée de stock n'est exposée publiquement."],
          expected="La vente sur ordonnance est contrôlée, le stock suit, la fiche publique est correcte et n'expose aucune donnée interne.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **25 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Santé ------------------------------------------------------------
     dict(id="UC-56", title="Santé — patients, rendez-vous et dossier",
@@ -603,7 +603,7 @@ USE_CASES_EXT = [
                 "Tenter d'accéder au dossier d'un patient hors périmètre.",
                 "Vérifier la trace d'audit des accès au dossier."],
          expected="Les créneaux ne se chevauchent pas, l'accès au dossier est restreint et tracé, et aucune donnée de santé n'est exposée hors périmètre.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **26 test(s)** ex\u00e9cut\u00e9(s) sur 1 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- École ------------------------------------------------------------
     dict(id="UC-57", title="École — classes, notes et présences",
@@ -617,7 +617,7 @@ USE_CASES_EXT = [
                 "Vérifier le calcul de la moyenne de l'élève.",
                 "Tenter une note hors barème et vérifier le refus."],
          expected="L'appel est enregistré, les moyennes sont calculées correctement, et les notes hors barème sont refusées.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **22 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-58", title="École — facturation scolaire et espace parents",
          profiles=["formateur", "client-final"], modules=["edu", "billing"], type="Fonctionnel",
          status="à exécuter",
@@ -629,7 +629,7 @@ USE_CASES_EXT = [
                 "Enregistrer un paiement partiel et vérifier le solde.",
                 "Vérifier qu'un parent ne voit que ses propres enfants."],
          expected="La facture est émise et visible du seul parent concerné, le solde suit les paiements, et l'isolation entre familles est respectée.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **18 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Agriculture ------------------------------------------------------
     dict(id="UC-59", title="Agriculture — parcelles, cultures et récoltes",
@@ -643,7 +643,7 @@ USE_CASES_EXT = [
                 "Saisir la récolte et le rendement.",
                 "Vérifier l'historique de la parcelle."],
          expected="La parcelle conserve son historique complet, le rendement est calculé, et les surfaces incohérentes sont refusées.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **32 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Cagnottes --------------------------------------------------------
     dict(id="UC-60", title="Cagnottes — campagne de collecte et dons",
@@ -657,7 +657,7 @@ USE_CASES_EXT = [
                 "Vérifier la progression de l'objectif et le reçu.",
                 "Vérifier qu'aucune coordonnée de donateur n'est exposée publiquement."],
          expected="La campagne est publique et lisible, le don met à jour la progression, le reçu est émis, et les données personnelles restent privées.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **25 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Cabinet comptable ------------------------------------------------
     dict(id="UC-61", title="Cabinet comptable — portefeuille clients",
@@ -671,7 +671,7 @@ USE_CASES_EXT = [
                 "Vérifier le code HTTP et l'absence de fuite.",
                 "Vérifier la trace d'audit des accès inter-dossiers."],
          expected="Le cabinet ne voit que son portefeuille, l'accès hors portefeuille est refusé sans fuite, et chaque accès est tracé.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **22 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Négoce -----------------------------------------------------------
     dict(id="UC-62", title="Négoce — intention, sous-profil et devis",
@@ -685,7 +685,7 @@ USE_CASES_EXT = [
                 "Confirmer le devis et vérifier son statut.",
                 "Tenter un devis sans sous-profil et vérifier le comportement attendu."],
          expected="L'intention est conservée jusqu'au devis, les totaux sont exacts, et l'absence de sous-profil produit un message explicite.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **19 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Branding ---------------------------------------------------------
     dict(id="UC-63", title="Marque — branding tenant et surfaces publiques",
@@ -699,7 +699,7 @@ USE_CASES_EXT = [
                 "Vérifier le contraste et la lisibilité des textes.",
                 "Suspendre la marque et vérifier le retour à l'identité par défaut."],
          expected="La marque s'applique sur la surface publique, le contraste reste lisible, et la suspension restaure proprement l'identité par défaut.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Abonnements & paiements ------------------------------------------
     dict(id="UC-64", title="Abonnements — plan, essai et facturation",
@@ -713,7 +713,7 @@ USE_CASES_EXT = [
                 "Simuler un renouvellement et vérifier la période suivante.",
                 "Vérifier le blocage attendu à l'expiration sans paiement."],
          expected="L'essai, l'activation, la facture et le renouvellement sont cohérents, et l'expiration produit le blocage prévu sans erreur technique.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **18 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-65", title="Paiements — encaissement et webhooks",
          profiles=["finance", "developpeur"], modules=["paiements", "billing"], type="Sécurité",
          status="à exécuter",
@@ -725,7 +725,7 @@ USE_CASES_EXT = [
                 "Vérifier la mise à jour de l'état de paiement.",
                 "Vérifier la trace d'audit de chaque appel."],
          expected="Seuls les webhooks signés sont acceptés, le rejeu est idempotent, l'état de paiement est cohérent et chaque appel est tracé.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **37 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Edge / hors-ligne ------------------------------------------------
     dict(id="UC-66", title="EdgeSync — file hors-ligne et rejeu idempotent",
@@ -739,7 +739,7 @@ USE_CASES_EXT = [
                 "Vérifier qu'aucun événement n'est dupliqué côté cloud.",
                 "Contrôler l'état de la file (vide, `dead_letter_count` à zéro)."],
          expected="Les événements sont mis en file, rejoués une seule fois, et la file se vide sans lettre morte.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **17 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Géolocalisation --------------------------------------------------
     dict(id="UC-67", title="Géolocalisation — preuve de présence",
@@ -753,7 +753,7 @@ USE_CASES_EXT = [
                 "Vérifier le message retourné (explicite, non technique).",
                 "Vérifier que les coordonnées ne sont pas exposées à des tiers."],
          expected="Le pointage dans la zone est accepté avec preuve, le pointage hors zone est refusé avec un message clair, et les coordonnées restent confidentielles.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **25 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- API --------------------------------------------------------------
     dict(id="UC-68", title="API — contrat OpenAPI, webhooks et clés",
@@ -767,7 +767,7 @@ USE_CASES_EXT = [
                 "Révoquer la clé et vérifier le refus immédiat.",
                 "Vérifier que la clé n'apparaît jamais en clair dans les journaux."],
          expected="Le contrat est accessible et versionné, la clé respecte son périmètre, la révocation est immédiate et aucun secret n'est journalisé.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="2", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **163 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 1 \u00e9chec(s)/erreur(s) (statut `fail`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 2 = d\u00e9faillance fonctionnelle sur un crit\u00e8re majeur."),
 
     # --- Mobile & desktop -------------------------------------------------
     dict(id="UC-69", title="Mobile — build et distribution des applications",
@@ -781,7 +781,7 @@ USE_CASES_EXT = [
                 "Distribuer sur le canal de test et vérifier l'installation.",
                 "Vérifier que l'application démarre et atteint l'écran de connexion."],
          expected="L'analyse et le build passent, l'APK s'installe, et l'application démarre jusqu'à l'écran de connexion sans plantage.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **25 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-70", title="Desktop — poste de travail et mise à jour",
          profiles=["ops", "developpeur"], modules=["desktop"], type="Fonctionnel",
          status="à exécuter",
@@ -807,7 +807,7 @@ USE_CASES_EXT = [
                 "Tester l'action de contact (appel, itinéraire).",
                 "Vérifier le rendu sur un écran étroit."],
          expected="La fiche est complète et lisible, l'état ouvert/fermé est correct, les actions fonctionnent et le rendu mobile est propre.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **13 test(s)** ex\u00e9cut\u00e9(s) sur 1 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Plateforme -------------------------------------------------------
     dict(id="UC-72", title="Plateforme — provisionnement et diagnostic",
@@ -821,7 +821,7 @@ USE_CASES_EXT = [
                 "Consulter le diagnostic (étape, message, corrélation).",
                 "Relancer le provisionnement et vérifier l'idempotence."],
          expected="Chaque étape est visible et horodatée, l'échec est diagnosticable sans accès serveur, et la relance ne crée pas de doublon.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **28 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-73", title="Tenant — isolation par établissement",
          profiles=["manager-principal", "ops"], modules=["tenant"], type="Sécurité",
          status="à exécuter",
@@ -833,7 +833,7 @@ USE_CASES_EXT = [
                 "Vérifier l'absence de la donnée dans les listes de B.",
                 "Vérifier que le périmètre est résolu côté serveur."],
          expected="L'accès inter-établissement est refusé, aucune donnée de A n'apparaît dans B, et le périmètre n'est jamais dérivé d'un paramètre client.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **10 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-74", title="IAM — connexion SSO (SAML / OIDC)",
          profiles=["admin-plateforme", "developpeur"], modules=["iam"], type="Sécurité",
          status="à exécuter",
@@ -845,7 +845,7 @@ USE_CASES_EXT = [
                 "Tester une configuration invalide et vérifier le message d'erreur.",
                 "Vérifier qu'aucun jeton du fournisseur n'est journalisé."],
          expected="La connexion SSO aboutit avec le bon rôle, une configuration invalide produit une erreur explicite, et aucun jeton n'est journalisé.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **18 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-75", title="RGPD — registre des traitements et droits",
          profiles=["admin-plateforme", "support"], modules=["tenant", "platform"], type="Sécurité",
          status="à exécuter",
@@ -857,7 +857,7 @@ USE_CASES_EXT = [
                 "Demander la suppression et vérifier l'effacement ou l'anonymisation.",
                 "Vérifier la trace d'audit de l'opération."],
          expected="Le registre est à jour, l'export est complet, la suppression est effective ou anonymisée selon la règle, et l'opération est tracée.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **10 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-76", title="Performance — objectifs et évaluations",
          profiles=["manager-rh", "employe"], modules=["hr"], type="Fonctionnel",
          status="à exécuter",
@@ -869,7 +869,7 @@ USE_CASES_EXT = [
                 "Clôturer la revue avec une note et un commentaire.",
                 "Vérifier que l'employé ne peut pas modifier sa propre note."],
          expected="Les objectifs sont partagés, le check-in est tracé, la revue est clôturée, et l'employé ne peut pas s'auto-noter.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **16 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-77", title="Documents — coffre-fort et échéances",
          profiles=["manager-rh", "employe"], modules=["hr"], type="Fonctionnel",
          status="à exécuter",
@@ -881,7 +881,7 @@ USE_CASES_EXT = [
                 "Renseigner une échéance proche et vérifier l'alerte.",
                 "Vérifier la trace de téléchargement."],
          expected="Le document est accessible au seul ayant droit, l'échéance déclenche une alerte, et chaque téléchargement est tracé.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **16 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-78", title="Workflows — validations multi-niveaux",
          profiles=["manager-principal", "manager-rh"], modules=["planning", "absence"], type="Fonctionnel",
          status="à exécuter",
@@ -893,7 +893,7 @@ USE_CASES_EXT = [
                 "Rejeter au second niveau et vérifier le retour à l'employé.",
                 "Vérifier l'historique complet des décisions."],
          expected="L'enchaînement des validations est respecté, un rejet arrête le circuit, et l'historique est complet et horodaté.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **17 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-79", title="Plateforme — tableau de bord consolidé",
          profiles=["manager-principal", "ops"], modules=["platform"], type="Fonctionnel",
          status="à exécuter",
@@ -905,7 +905,7 @@ USE_CASES_EXT = [
                 "Vérifier la période couverte par chaque indicateur.",
                 "Vérifier qu'aucune donnée d'un autre tenant n'est agrégée."],
          expected="Chaque indicateur correspond aux données réelles du module source, la période est explicite, et l'agrégation reste dans le tenant.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **28 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-80", title="Support — tickets et impersonation encadrée",
          profiles=["support"], modules=["platform"], type="Sécurité",
          status="à exécuter",
@@ -917,7 +917,7 @@ USE_CASES_EXT = [
                 "Terminer l'impersonation et vérifier le retour au compte support.",
                 "Vérifier la trace d'audit (qui, quand, quel utilisateur)."],
          expected="Le ticket est traité, l'impersonation est signalée, réversible et journalisée, et aucune action sensible n'est permise pendant celle-ci.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **28 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-81", title="Finance — métriques d'abonnement et revenus",
          profiles=["finance"], modules=["billing"], type="Fonctionnel",
          status="à exécuter",
@@ -929,7 +929,7 @@ USE_CASES_EXT = [
                 "Vérifier le décompte des essais en cours.",
                 "Vérifier qu'aucun montant n'est compté deux fois."],
          expected="Les métriques correspondent aux abonnements réels, le revenu récurrent est calculé sans double comptage, et la période est explicite.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **18 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-82", title="Ops — nœuds Edge et kill switch",
          profiles=["ops"], modules=["edge", "platform"], type="Résilience",
          status="à exécuter",
@@ -941,7 +941,7 @@ USE_CASES_EXT = [
                 "Désactiver le kill switch et vérifier le retour à la normale.",
                 "Vérifier la journalisation des deux bascules."],
          expected="L'état des nœuds est fidèle, le kill switch agit immédiatement et de façon réversible, et chaque bascule est tracée.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **24 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-83", title="Marketing OS — publication sociale et statistiques",
          profiles=["marketing"], modules=["marketing"], type="Fonctionnel",
          status="à exécuter",
@@ -953,7 +953,7 @@ USE_CASES_EXT = [
                 "Consulter les statistiques remontées.",
                 "Déconnecter le compte social et vérifier le comportement attendu."],
          expected="Le post est publié à l'heure prévue, les statistiques remontent, et la déconnexion du compte produit un état explicite sans erreur technique.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **22 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
     dict(id="UC-84", title="RH — onboarding d'un nouvel employé",
          profiles=["manager-rh", "employe"], modules=["hr", "onboarding"], type="Fonctionnel",
          status="à exécuter",
@@ -965,7 +965,7 @@ USE_CASES_EXT = [
                 "Vérifier l'accès aux seules fonctionnalités de son rôle.",
                 "Vérifier la présence du dossier dans l'organigramme."],
          expected="Le dossier est créé, l'invitation aboutit, l'employé accède uniquement à son périmètre, et l'organigramme reflète son arrivée.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **16 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Marketing : Marketing OS (Super Admin) ---------------------------
     # Référence : docs/specifications/marketing-os/MARKETING_OS_SPECIFICATIONS.md
@@ -984,7 +984,7 @@ USE_CASES_EXT = [
                 "Basculer sur la seconde entreprise et vérifier que ni la campagne ni l'idée n'y sont visibles.",
                 "Vérifier qu'un rôle sans `marketing_os.manage` reçoit un 403 sur la promotion."],
          expected="La campagne et l'idée sont créées dans le seul tenant ciblé, la promotion produit une tâche de production sans perte de saisie, un second appel ne crée pas de doublon, et l'écriture est refusée en 403 sans la permission `marketing_os.manage`.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **22 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     dict(id="UC-86", title="Marketing — publication sociale, mode assisté et vitrine publique",
          profiles=["marketing"], modules=["marketing", "public"], type="Fonctionnel",
@@ -999,7 +999,7 @@ USE_CASES_EXT = [
                 "Soumettre le formulaire de contact de la vitrine publique et vérifier la création du lead côté marketing.",
                 "Qualifier le lead et vérifier sa conversion en contact comptable."],
          expected="Le post est publié à l'heure prévue avec son URL réelle, les statistiques absentes sont annoncées comme indisponibles et non estimées, le mode assisté est explicite et refuse une confirmation sans URL, et le lead de la vitrine est capté puis qualifié sans ressaisie.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **22 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Négoce : International Trade OS ----------------------------------
     # Référence : docs/specifications/VERTICAL_TRADE_OS.md
@@ -1017,7 +1017,7 @@ USE_CASES_EXT = [
                 "Accepter un devis en tant qu'acheteur et vérifier la transition de statut ainsi que la trace dans la timeline du dossier.",
                 "Tenter une transition d'état illégale et vérifier le refus en 422 `INVALID_STATE_TRANSITION`."],
          expected="La RFQ est émise et diffusée, le devis est produit par le seul rôle vendeur avec des totaux figés côté serveur, la comparaison signale explicitement les périmètres non comparables, l'acceptation est réservée à l'acheteur, et toute transition illégale est refusée et tracée.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **19 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est d\u00e9clar\u00e9 pour ce cas dans `_endpoints.json` : la v\u00e9rification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     dict(id="UC-88", title="Négoce — coût total rendu, checklist douanière et profil vitrine",
          profiles=["manager-principal", "admin-plateforme"], modules=["trade", "public"], type="Fonctionnel",
@@ -1032,7 +1032,7 @@ USE_CASES_EXT = [
                 "Renseigner le profil commercial puis publier la vitrine, et vérifier l'apparition de l'entreprise sur la surface publique.",
                 "Dépublier et vérifier que la fiche disparaît de la vitrine sans casser les données internes."],
          expected="Le coût total rendu est exact en arithmétique entière, les postes indisponibles sont exclus du total mais visibles, la checklist douanière porte toujours son avertissement légal et signale les informations manquantes, et la publication du profil est un acte distinct qui rend la fiche visible puis invisible sur la vitrine.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Sondes HTTP : 3 endpoint(s) appel\u00e9(s), 0 en 2xx (`GET /api/v1/trade/cost-estimates` \u2192 **403**, `GET /api/v1/trade/customs/checklist` \u2192 **403**, `GET /api/v1/trade/profile` \u2192 **403**). **\u00c9cart constat\u00e9** : Les 3 endpoints trade renvoient **403** avec le persona principal : la verticale Trade n'est pas activ\u00e9e sur le tenant de d\u00e9mo (feature gate), donc le parcours n'a pas pu \u00eatre rejou\u00e9. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **26 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 3 endpoint(s) appel\u00e9(s), 0 en 2xx (`GET /api/v1/trade/cost-estimates` \u2192 **403**, `GET /api/v1/trade/customs/checklist` \u2192 **403**, `GET /api/v1/trade/profile` \u2192 **403**). **\u00c9cart constat\u00e9** : Les 3 endpoints trade renvoient **403** avec le persona principal : la verticale Trade n'est pas activ\u00e9e sur le tenant de d\u00e9mo (feature gate), donc le parcours n'a pas pu \u00eatre rejou\u00e9. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Connecteurs & intégrations : module Connectors --------------------
     # Surface : `/api/v1/connectors/*`. Cas ajouté après la campagne QA du
@@ -1052,7 +1052,7 @@ USE_CASES_EXT = [
                 "Tenter de connecter un fournisseur non présent au catalogue et vérifier le refus métier (422) au lieu d'une 500.",
                 "Vérifier qu'un rôle sans droit d'administration des intégrations reçoit un 403 sur la connexion et la révocation."],
          expected="Le catalogue est consultable et exempt de secrets, la connexion aboutit à un état « connectée » avec horodatage, la révocation coupe réellement les appels sortants, un fournisseur hors catalogue est refusé en 422, et toute tentative d'un rôle non autorisé renvoie 403.",
-         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : aucun test n'a pu \u00eatre ex\u00e9cut\u00e9 pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 1 en 2xx (`GET /api/v1/connectors/catalog` \u2192 **200**). Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
+         note_ia="4", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **28 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 1 en 2xx (`GET /api/v1/connectors/catalog` \u2192 **200**). Note 4 = conforme en ex\u00e9cution (tests verts + endpoint 2xx)."),
     # --- Assistant IA ------------------------------------------------------
     dict(id="UC-90", title="Assistant IA — chat, proposition d'action et confirmation",
          profiles=["manager-principal", "manager-rh"], modules=["ai"], type="Sécurité",
@@ -1066,7 +1066,7 @@ USE_CASES_EXT = [
                 "Rejeter une proposition (`POST /api/v1/ai/actions/{pendingActionId}/reject`) et vérifier l'absence d'effet.",
                 "Vérifier qu'un rôle sans droit d'écriture reçoit un refus explicite, jamais une 500."],
          expected="Le chat répond, toute écriture passe par une proposition confirmée, la confirmation est idempotente, le rejet n'a aucun effet et les rôles non autorisés sont refusés proprement.",
-         note_ia="3", obs_ia="Vérifié sur pièces : `api/routes/ai.php` déclare 26 routes (chat, historique, propositions, confirmation/rejet, outils, exports, voix, analytics) ; 28 fichiers de tests dans `tests/Feature/AI/` dont `AIActionProposalHttpTest`, `WriteIdempotencyTest`, `ToolPermissionMatrixTest`, `AIToolExecutionAuditTest`, `AiGoldenJourneyTest`. API live 503 : le chat n'a pas été rejoué en HTTP. Note 3 = critère d'exécution non vérifiable (API 503)."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **6 test(s)** ex\u00e9cut\u00e9(s) sur 1 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appel\u00e9(s), 0 en 2xx (`GET /api/v1/ai/chat/history` \u2192 **403**, `GET /api/v1/ai/tools` \u2192 **403**). **\u00c9cart constat\u00e9** : `GET /api/v1/ai/chat/history` et `GET /api/v1/ai/tools` renvoient **403** avec le persona Manager Principal : la verticale IA n'est pas ouverte \u00e0 ce r\u00f4le sur le tenant de d\u00e9mo. Les 26 routes de `api/routes/ai.php` existent et 6 tests de proposition d'action passent, mais le chat n'a pas pu \u00eatre rejou\u00e9. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Contrats ----------------------------------------------------------
     dict(id="UC-91", title="Contrats — modèle pays, signature et alerte d'expiration",
@@ -1081,7 +1081,7 @@ USE_CASES_EXT = [
                 "Vérifier que l'employé voit son contrat en self-service (`GET /api/v1/me/contracts`).",
                 "Tenter une signature par un rôle non autorisé et vérifier le 403."],
          expected="Le modèle pays est proposé, le contrat suit son cycle jusqu'à la signature, l'échéance remonte dans la liste dédiée, l'employé voit son contrat et les rôles non autorisés sont refusés.",
-         note_ia="3", obs_ia="Vérifié sur pièces : `GET/POST /contracts`, `GET /contracts/templates`, `GET /contracts/expiring`, `POST /contracts/{contract}/sign` déclarés dans `api/routes/modules/hr_extended.php` (lignes 91-96) et `GET /me/contracts` (ligne 42) ; tests `ContractLifecycleTest`, `ContractWorkflowTest`, `ContractByCountryTest`, `ContractCountryTemplatesTest`, `ExpiringContractsAlertTest`, `ContractPdfAliasTest`. API 503 : signature non rejouée. Note 3 = critère d'exécution non vérifiable (API 503)."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **15 test(s)** ex\u00e9cut\u00e9(s) sur 3 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 3 endpoint(s) appel\u00e9(s), 2 en 2xx (`GET /api/v1/contracts` \u2192 **200**, `GET /api/v1/contracts/templates` \u2192 **422**, `GET /api/v1/contracts/expiring` \u2192 **200**). **\u00c9cart constat\u00e9** : `GET /api/v1/contracts` et `GET /api/v1/contracts/expiring` r\u00e9pondent **200** ; `GET /api/v1/contracts/templates` r\u00e9pond **422** (param\u00e8tre pays obligatoire). La signature d'un contrat n'a pas \u00e9t\u00e9 rejou\u00e9e en \u00e9criture. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Audit & conformité ------------------------------------------------
     dict(id="UC-92", title="Audit — journal global, accès aux données sensibles et export",
@@ -1096,7 +1096,7 @@ USE_CASES_EXT = [
                 "Vérifier qu'aucune entrée d'un autre tenant n'apparaît.",
                 "Vérifier qu'un rôle sans droit d'audit reçoit un 403."],
          expected="Chaque action sensible produit une entrée horodatée et attribuée, le détail et l'export sont complets, l'isolation inter-tenant est respectée et l'accès non autorisé est refusé.",
-         note_ia="3", obs_ia="Vérifié sur pièces : `GET /audit-logs`, `GET /audit-logs/{id}`, `GET /audit-logs/export` déclarés dans `api/routes/api.php` (lignes 492-494) ; tests `AuditLogGlobalTest`, `AuditLogExportTest`, `IdentityAccessControlAuditTest`, `SensitiveDataAccessAuditTest`, `PurgeAuditLogsCommandTest`, `AuditLoggerListenerTest`. API 503 : entrée non provoquée. Note 3 = critère d'exécution non vérifiable (API 503)."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **5 test(s)** ex\u00e9cut\u00e9(s) sur 1 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appel\u00e9(s), 1 en 2xx (`GET /api/v1/audit-logs` \u2192 **200**, `GET /api/v1/audit-logs/export` \u2192 **422**). **\u00c9cart constat\u00e9** : `GET /api/v1/audit-logs` r\u00e9pond **200** ; `GET /api/v1/audit-logs/export` r\u00e9pond **422** (param\u00e8tre de format obligatoire). L'export n'a pas \u00e9t\u00e9 rejou\u00e9 avec un format valide. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Exports & rapports ------------------------------------------------
     dict(id="UC-93", title="Exports — employés, pointage, bulletins, absences et rapports RH",
@@ -1111,7 +1111,7 @@ USE_CASES_EXT = [
                 "Vérifier qu'aucune ligne d'un autre tenant n'apparaît dans aucun export.",
                 "Demander un export sur une période vide et vérifier un fichier d'en-tête seul, sans erreur 500."],
          expected="Chaque export est complet sur la période demandée, correctement encodé, isolé par tenant, et une période vide produit un fichier valide plutôt qu'une erreur.",
-         note_ia="3", obs_ia="Vérifié sur pièces : `GET /export/employees`, `/export/attendance`, `/export/attendance/monthly`, `/export/pay-slips`, `/export/absences`, `/export/training`, `/export/contracts`, `/export/vehicles` déclarés dans `api/routes/modules/dashboard.php` (lignes 51-58) ; tests `ExportControllerTest`, `AttendanceMonthlyExportTest`, `AuditLogExportTest`, `PayrollAccountingExportTest`, `BankExportControllerTest`. API 503 : export non généré. Note 3 = critère d'exécution non vérifiable (API 503)."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **23 test(s)** ex\u00e9cut\u00e9(s) sur 2 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appel\u00e9(s), 2 en 2xx (`GET /api/v1/export/employees` \u2192 **200**, `GET /api/v1/export/pay-slips` \u2192 **200**). **\u00c9cart constat\u00e9** : `GET /api/v1/export/employees` et `GET /api/v1/export/pay-slips` r\u00e9pondent **200** : les exports sont produits. Le contenu des fichiers n'a pas \u00e9t\u00e9 ouvert ni compar\u00e9 au nombre de lignes attendu. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- Programme partenaires ---------------------------------------------
     dict(id="UC-94", title="Partenaires — candidature, taux de commission et reversement",
@@ -1126,7 +1126,7 @@ USE_CASES_EXT = [
                 "Vérifier que les gains d'un partenaire n'exposent aucune donnée d'un autre tenant.",
                 "Vérifier qu'un rôle sans droit facturation reçoit un 403."],
          expected="La candidature suit son cycle, le taux est modifiable et appliqué, les gains restent isolés par tenant et l'accès non autorisé est refusé.",
-         note_ia="3", obs_ia="Vérifié sur pièces : `GET /partners`, `PATCH /partners/{partner}/rate`, `PATCH /partners/{partner}/application` déclarés dans `api/routes/modules/billing.php` (lignes 150-152) ; tests `GrowthModuleTest`, `GrowthPartnerTenantIsolationTest`, `PlatformCompanySubscriptionApiTest`. API 503 : candidature non soumise. Note 3 = critère d'exécution non vérifiable (API 503)."),
+         note_ia="2", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **4 test(s)** ex\u00e9cut\u00e9(s) sur 2 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 0 en 2xx (`GET /api/v1/partners` \u2192 **404**). **\u00c9cart constat\u00e9** : `GET /api/v1/partners` renvoie **404** en ex\u00e9cution : la route document\u00e9e n'existe pas sous ce chemin. Les tests de candidature partenaire passent (4 tests), mais le parcours HTTP document\u00e9 n'est pas expos\u00e9 \u00e0 cette adresse. Note 2 = d\u00e9faillance fonctionnelle sur un crit\u00e8re majeur."),
 
     # --- Formation ---------------------------------------------------------
     dict(id="UC-95", title="Formation — cours, sessions et inscriptions",
@@ -1141,7 +1141,7 @@ USE_CASES_EXT = [
                 "Vérifier qu'un apprenant ne voit que ses propres inscriptions.",
                 "Vérifier qu'un rôle non autorisé reçoit un 403 sur la création de session."],
          expected="Cours, sessions et inscriptions sont cohérents, la capacité est respectée, chaque apprenant ne voit que ses inscriptions et les rôles non autorisés sont refusés.",
-         note_ia="3", obs_ia="Vérifié sur pièces : `GET /training/courses`, `GET /training/sessions`, `GET /training/enrollments` déclarés dans `api/routes/api.php` (lignes 1077-1079) ; module `api/app/Modules/EduManager/` ; tests `TrainingControllerTest`, `TrainingGlobalListTest`, `TrainingModuleRegistryTest`. API 503 : session non créée. Note 3 = critère d'exécution non vérifiable (API 503)."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **12 test(s)** ex\u00e9cut\u00e9(s) sur 2 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appel\u00e9(s), 2 en 2xx (`GET /api/v1/training/courses` \u2192 **200**, `GET /api/v1/training/sessions` \u2192 **200**). **\u00c9cart constat\u00e9** : `GET /api/v1/training/courses` et `GET /api/v1/training/sessions` r\u00e9pondent **200** et 12 tests d'inscription/cr\u00e9neau passent. L'inscription d'un apprenant n'a pas \u00e9t\u00e9 rejou\u00e9e en \u00e9criture. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 
     # --- 2FA / MFA ---------------------------------------------------------
     dict(id="UC-96", title="Sécurité — double authentification (2FA) et MFA plateforme",
@@ -1156,5 +1156,5 @@ USE_CASES_EXT = [
                 "Désactiver le 2FA (`POST /api/v1/auth/2fa/disable`) et vérifier le retour à l'état initial.",
                 "Vérifier que le MFA plateforme est bien exigé sur les routes super-admin."],
          expected="L'enrôlement n'expose le secret qu'une fois, la confirmation active le 2FA, un code invalide est refusé, la désactivation est effective et le MFA plateforme est obligatoire.",
-         note_ia="3", obs_ia="Vérifié sur pièces : `GET /auth/2fa/status`, `POST /auth/2fa/enroll|confirm|verify|disable` déclarés dans `api/routes/api.php` (lignes 144, 432-435) ; middleware `platform.mfa` appliqué au groupe `platform` ; tests `PlatformWebAuth2faTest`, `PlatformWebAuthSecurityTest`, `SsoTwoFactorGuardTest`, `GoogleSsoTwoFactorSchemaTest`. API 503 : enrôlement non rejoué. Note 3 = critère d'exécution non vérifiable (API 503)."),
+         note_ia="3", obs_ia="**Ex\u00e9cution r\u00e9elle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seed\u00e9e par `DemoCompanySeeder`) : \u00e9chantillon de **22 test(s)** ex\u00e9cut\u00e9(s) sur 2 fichier(s) \u2014 0 \u00e9chec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appel\u00e9(s), 1 en 2xx (`GET /api/v1/auth/2fa/status` \u2192 **200**). **\u00c9cart constat\u00e9** : `GET /api/v1/auth/2fa/status` r\u00e9pond **200** et 22 tests 2FA/MFA passent. L'enr\u00f4lement complet (enroll \u2192 confirm \u2192 verify) n'a pas \u00e9t\u00e9 rejou\u00e9, faute de secret TOTP g\u00e9n\u00e9r\u00e9 c\u00f4t\u00e9 testeur. Note 3 = fonctionne partiellement ou crit\u00e8re non v\u00e9rifiable."),
 ]

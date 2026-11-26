@@ -47,7 +47,7 @@
   <section class="panel">
     <h3>Description / préconditions</h3>
     <p>Vérifier la consultation du planning et la validation des heures supplémentaires.</p>
-    <p class="muted"><strong>Prérequis :</strong> Compte manager ; endpoints <code>/api/v1/planning</code>, <code>/api/v1/overtime</code>.</p>
+    <p class="muted"><strong>Prérequis :</strong> Compte manager ; endpoints <code>/api/v1/planning</code>, <code>/api/v1/reports/overtime</code>.</p>
   </section>
   <section class="panel">
     <h3>Résultat attendu</h3>
@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-bad">2/5</span></td>
-          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : échantillon de <strong>25 test(s)</strong> exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut <code>pass</code>). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (<code>GET /api/v1/planning</code> → <strong>200</strong>, <code>GET /api/v1/overtime</code> → <strong>404</strong>). <strong>Écart constaté</strong> : <code>GET /api/v1/overtime</code> renvoie <strong>404</strong> en exécution ; les heures supplémentaires sont sous <code>/hr/overtime</code>. <code>GET /api/v1/planning</code> répond 200. Note 2 = défaillance fonctionnelle sur un critère majeur.</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : échantillon de <strong>25 test(s)</strong> exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut <code>pass</code>). Sondes HTTP : 2 endpoint(s) appelé(s), 2 en 2xx (<code>GET /api/v1/planning</code> → <strong>200</strong>, <code>GET /api/v1/reports/overtime</code> → <strong>200</strong>). <strong>Écart constaté</strong> : <code>GET /api/v1/planning</code> et <code>GET /api/v1/reports/overtime</code> répondent <strong>200</strong> : les deux routes existent et sont lisibles. La validation/rejet d&#x27;une demande d&#x27;heures supplémentaires n&#x27;a pas été rejouée en écriture. Note 3 = fonctionne partiellement ou critère non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-18"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-18">GET /attendance -&gt; 200 ; validation des heures supplementaires non rejouee.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

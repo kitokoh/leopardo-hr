@@ -5392,5 +5392,87 @@
    "tests/Unit/Services/InboundWebhookVerifierTest.php"
   ],
   "test_count": 34
+ },
+ {
+  "id": "UC-90",
+  "title": "Assistant IA — chat, proposition d'action et confirmation",
+  "modules": [],
+  "endpoints": [],
+  "declared": 0,
+  "found": 0,
+  "tests": [
+   "tests/Feature/AI/AIActionProposalHttpTest.php"
+  ]
+ },
+ {
+  "id": "UC-91",
+  "title": "Contrats — modèle pays, signature et alerte d'expiration",
+  "modules": [],
+  "endpoints": [],
+  "declared": 0,
+  "found": 0,
+  "tests": [
+   "tests/Feature/Contracts/ContractLifecycleTest.php",
+   "tests/Feature/Contracts/ContractTemplatesEndpointTest.php",
+   "tests/Feature/Contracts/ExpiringContractsAlertTest.php"
+  ]
+ },
+ {
+  "id": "UC-92",
+  "title": "Audit — journal global, accès aux données sensibles et export",
+  "modules": [],
+  "endpoints": [],
+  "declared": 0,
+  "found": 0,
+  "tests": [
+   "tests/Feature/AuditLogExportTest.php"
+  ]
+ },
+ {
+  "id": "UC-93",
+  "title": "Exports — employés, pointage, bulletins, absences et rapports RH",
+  "modules": [],
+  "endpoints": [],
+  "declared": 0,
+  "found": 0,
+  "tests": [
+   "tests/Feature/AttendanceMonthlyExportTest.php",
+   "tests/Feature/BankExportControllerTest.php"
+  ]
+ },
+ {
+  "id": "UC-94",
+  "title": "Partenaires — candidature, taux de commission et reversement",
+  "modules": [],
+  "endpoints": [],
+  "declared": 0,
+  "found": 0,
+  "tests": [
+   "tests/Feature/Billing/PartnerApplyTest.php",
+   "tests/Feature/GrowthPartnerTenantIsolationTest.php"
+  ]
+ },
+ {
+  "id": "UC-95",
+  "title": "Formation — cours, sessions et inscriptions",
+  "modules": [],
+  "endpoints": [],
+  "declared": 0,
+  "found": 0,
+  "tests": [
+   "tests/Feature/EduManager"
+  ]
+ },
+ {
+  "id": "UC-96",
+  "title": "Sécurité — double authentification (2FA) et MFA plateforme",
+  "modules": [],
+  "endpoints": [],
+  "declared": 0,
+  "found": 0,
+  "tests": [
+   "tests/Feature/Auth/TwoFactorAuthTest.php",
+   "tests/Feature/Auth/LastAdministratorAndPlatformMfaTest.php"
+  ]
  }
 ]

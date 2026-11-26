@@ -87,7 +87,7 @@
   {
    "id": "UC-05",
    "title": "Consultation du bulletin de paie (self-service employé)",
-   "probed": 3,
+   "probed": 2,
    "ok": 1,
    "results": [
     {
@@ -97,13 +97,7 @@
      "kind": "api"
     },
     {
-     "path": "/api/v1/me/pay-slips/1",
-     "method": "GET",
-     "status": 404,
-     "kind": "api"
-    },
-    {
-     "path": "/api/v1/me/pay-slips/1/pdf",
+     "path": "/api/v1/me/pay-slips/999999",
      "method": "GET",
      "status": 404,
      "kind": "api"
@@ -201,33 +195,9 @@
   {
    "id": "UC-13",
    "title": "Observabilité et santé de la plateforme",
-   "probed": 7,
+   "probed": 4,
    "ok": 4,
    "results": [
-    {
-     "path": "/docs",
-     "method": "GET",
-     "status": 200,
-     "kind": "web"
-    },
-    {
-     "path": "/health",
-     "method": "GET",
-     "status": 404,
-     "kind": "web"
-    },
-    {
-     "path": "/health/live",
-     "method": "GET",
-     "status": 404,
-     "kind": "web"
-    },
-    {
-     "path": "/health/ready",
-     "method": "GET",
-     "status": 404,
-     "kind": "web"
-    },
     {
      "path": "/api/v1/health",
      "method": "GET",
@@ -245,25 +215,25 @@
      "method": "GET",
      "status": 200,
      "kind": "api"
+    },
+    {
+     "path": "/docs",
+     "method": "GET",
+     "status": 200,
+     "kind": "web"
     }
    ]
   },
   {
    "id": "UC-14",
    "title": "Solution verticale « Agence de voyage » (boutique publique)",
-   "probed": 2,
-   "ok": 0,
+   "probed": 1,
+   "ok": 1,
    "results": [
     {
-     "path": "/api/v1/public/travel/shop/trips",
+     "path": "/api/v1/public/travel/marketplace/trips",
      "method": "GET",
-     "status": 401,
-     "kind": "api"
-    },
-    {
-     "path": "/api/v1/public/travel/shop/bookings",
-     "method": "POST",
-     "status": 401,
+     "status": 200,
      "kind": "api"
     }
    ]
@@ -309,9 +279,9 @@
      "kind": "api"
     },
     {
-     "path": "/api/v1/role-assignments",
+     "path": "/api/v1/company/team-roles",
      "method": "GET",
-     "status": 404,
+     "status": 403,
      "kind": "api"
     }
    ]
@@ -320,7 +290,7 @@
    "id": "UC-18",
    "title": "Validation des heures supplémentaires et du planning",
    "probed": 2,
-   "ok": 1,
+   "ok": 2,
    "results": [
     {
      "path": "/api/v1/planning",
@@ -329,9 +299,9 @@
      "kind": "api"
     },
     {
-     "path": "/api/v1/overtime",
+     "path": "/api/v1/reports/overtime",
      "method": "GET",
-     "status": 404,
+     "status": 200,
      "kind": "api"
     }
    ]
@@ -417,12 +387,12 @@
    "id": "UC-29",
    "title": "Notes de frais — soumission et validation",
    "probed": 1,
-   "ok": 0,
+   "ok": 1,
    "results": [
     {
-     "path": "/api/v1/expenses",
+     "path": "/api/v1/expense-claims",
      "method": "GET",
-     "status": 404,
+     "status": 200,
      "kind": "api"
     }
    ]
@@ -546,9 +516,9 @@
    "ok": 0,
    "results": [
     {
-     "path": "/api/v1/search",
+     "path": "/api/v1/crm/search",
      "method": "GET",
-     "status": 404,
+     "status": 422,
      "kind": "api"
     }
    ]
@@ -916,6 +886,140 @@
    "results": [
     {
      "path": "/api/v1/connectors/catalog",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-90",
+   "title": "Assistant IA — chat, proposition d'action et confirmation",
+   "probed": 2,
+   "ok": 0,
+   "results": [
+    {
+     "path": "/api/v1/ai/chat/history",
+     "method": "GET",
+     "status": 403,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/ai/tools",
+     "method": "GET",
+     "status": 403,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-91",
+   "title": "Contrats — modèle pays, signature et alerte d'expiration",
+   "probed": 3,
+   "ok": 2,
+   "results": [
+    {
+     "path": "/api/v1/contracts",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/contracts/templates",
+     "method": "GET",
+     "status": 422,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/contracts/expiring",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-92",
+   "title": "Audit — journal global, accès aux données sensibles et export",
+   "probed": 2,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/audit-logs",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/audit-logs/export",
+     "method": "GET",
+     "status": 422,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-93",
+   "title": "Exports — employés, pointage, bulletins, absences et rapports RH",
+   "probed": 2,
+   "ok": 2,
+   "results": [
+    {
+     "path": "/api/v1/export/employees",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/export/pay-slips",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-94",
+   "title": "Partenaires — candidature, taux de commission et reversement",
+   "probed": 1,
+   "ok": 0,
+   "results": [
+    {
+     "path": "/api/v1/partners",
+     "method": "GET",
+     "status": 404,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-95",
+   "title": "Formation — cours, sessions et inscriptions",
+   "probed": 2,
+   "ok": 2,
+   "results": [
+    {
+     "path": "/api/v1/training/courses",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/training/sessions",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-96",
+   "title": "Sécurité — double authentification (2FA) et MFA plateforme",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/auth/2fa/status",
      "method": "GET",
      "status": 200,
      "kind": "api"

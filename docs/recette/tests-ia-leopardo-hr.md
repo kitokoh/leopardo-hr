@@ -168,7 +168,7 @@ La liste ne contient que les bulletins de l'utilisateur connecté ; le PDF est t
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 2 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **27 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 3 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/me/pay-slips` → **200**, `GET /api/v1/me/pay-slips/1` → **404**, `GET /api/v1/me/pay-slips/1/pdf` → **404**). Note 2 = défaillance fonctionnelle sur un critère majeur. | 2 | DEFECT : GET /payrolls en persona employe (self-service bulletin) -> 403 FORBIDDEN. L'employe ne peut pas lire ses propres bulletins alors que l'API repond 200 pour GET /attendance et /absences du meme compte. |
+| 4 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **27 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/me/pay-slips` → **200**, `GET /api/v1/me/pay-slips/999999` → **404**). Note 4 = conforme en exécution (tests verts + endpoint 2xx). | 2 | DEFECT : GET /payrolls en persona employe (self-service bulletin) -> 403 FORBIDDEN. L'employe ne peut pas lire ses propres bulletins alors que l'API repond 200 pour GET /attendance et /absences du meme compte. |
 
 **Historique des modifications (1)**
 
@@ -408,7 +408,7 @@ Prérequis : Accès réseau à l'API de production.
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 2 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 7 endpoint(s) appelé(s), 4 en 2xx (`GET /docs` → **200**, `GET /health` → **404**, `GET /health/live` → **404**, `GET /health/ready` → **404**, `GET /api/v1/health` → **200**). Note 2 = défaillance fonctionnelle sur un critère majeur. | 3 | GET /api/v1/health -> 200 (status ok, modules listes). ANOMALIE : GET /platform/announcements -> 401 UNAUTHENTICATED avec un JWT pourtant valide (le meme token lit /me en 200). Un utilisateur authentifie sans role plateforme devrait recevoir 403, pas 401. |
+| 5 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 4 endpoint(s) appelé(s), 4 en 2xx (`GET /api/v1/health` → **200**, `GET /api/v1/health/live` → **200**, `GET /api/v1/health/ready` → **200**, `GET /docs` → **200**). Note 5 = tous les critères mesurés en exécution. | 3 | GET /api/v1/health -> 200 (status ok, modules listes). ANOMALIE : GET /platform/announcements -> 401 UNAUTHENTICATED avec un JWT pourtant valide (le meme token lit /me en 200). Un utilisateur authentifie sans role plateforme devrait recevoir 403, pas 401. |
 
 **Historique des modifications (1)**
 
@@ -424,12 +424,12 @@ Prérequis : Accès réseau à l'API de production.
 
 **Description / préconditions**  
 Vérifier l'activation d'un pack sectoriel et son parcours public de réservation.  
-Prérequis : Tenant avec la solution TravelAgency activée ; endpoints `/api/v1/public/travel/shop/*`.
+Prérequis : Tenant avec la solution TravelAgency activée ; endpoints `/api/v1/public/travel/marketplace/*`.
 
 **Étapes de test**
-1. Appeler `GET /api/v1/public/travel/shop/trips` et vérifier la liste.
+1. Appeler `GET /api/v1/public/travel/marketplace/trips` et vérifier la liste.
 2. Ouvrir le détail d'un trajet.
-3. Créer une réservation (`POST /api/v1/public/travel/shop/bookings`).
+3. Créer une réservation (`POST /api/v1/public/travel/marketplace/bookings`).
 4. Suivre la réservation via sa référence.
 5. Annuler la réservation et vérifier le statut.
 6. Vérifier qu'un tenant non activé renvoie une erreur explicite (fail-closed).
@@ -439,7 +439,7 @@ Le parcours recherche → réservation → suivi → annulation fonctionne de bo
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/public/travel/shop/trips` → **401**, `POST /api/v1/public/travel/shop/bookings` → **401**). **Écart constaté** : `GET /api/v1/public/travel/shop/trips` renvoie **401** en exécution : la boutique publique exige une authentification, contrairement à ce que le cas suppose. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | Boutique TravelAgency : 238 requetes du harnais, 82,4 % en 2xx ; gating par plan verifie (403 FEATURE_NOT_ENABLED sans le flag, 200 avec). DEF-01 (500 sur identifiant de reservation non numerique) touche ce parcours. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/public/travel/marketplace/trips` → **200**). **Écart constaté** : `GET /api/v1/public/travel/marketplace/trips` répond **200** sans authentification : la boutique publique est bien ouverte. Le parcours réservation → suivi → annulation n'a pas été rejoué en écriture. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | Boutique TravelAgency : 238 requetes du harnais, 82,4 % en 2xx ; gating par plan verifie (403 FEATURE_NOT_ENABLED sans le flag, 200 avec). DEF-01 (500 sur identifiant de reservation non numerique) touche ce parcours. |
 
 **Historique des modifications (1)**
 
@@ -515,12 +515,12 @@ Création et affectation fonctionnent ; l'organigramme reflète les changements 
 
 **Description / préconditions**  
 Vérifier l'invitation d'un collaborateur et l'attribution d'un rôle dans les limites autorisées.  
-Prérequis : Compte Manager RH ; endpoints `/api/v1/invitations`, `/api/v1/role-assignments`.
+Prérequis : Compte Manager RH ; endpoints `/api/v1/invitations`, `/api/v1/company/team-roles`, `/api/v1/employees/{employee}/assign-role`.
 
 **Étapes de test**
 1. Inviter un nouvel utilisateur par email.
 2. Vérifier la réception de l'invitation et l'activation du compte.
-3. Attribuer un rôle (ex. manager de département).
+3. Attribuer un rôle (ex. manager de département) via `POST /api/v1/employees/{employee}/assign-role`.
 4. Tenter d'attribuer un rôle supérieur au sien et vérifier le refus.
 5. Vérifier la trace d'audit de l'attribution.
 
@@ -529,7 +529,7 @@ L'invitation aboutit, le rôle est attribué dans les limites du délégable, l'
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 2 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/invitations` → **200**, `GET /api/v1/role-assignments` → **404**). **Écart constaté** : `GET /api/v1/role-assignments` renvoie **404** en exécution : la route documentée n'existe pas. L'attribution de rôle passe par `POST /employees/{employee}/assign-role` et `GET /company/team-roles` (vérifiés 200). Note 2 = défaillance fonctionnelle sur un critère majeur. | 3 | IAM : POST /roles -> 404 (route inexistante sous ce nom) ; RBAC verifie par ailleurs (la matrice par persona montre 14 operations correctement filtrees). L'attribution de roles n'a pas ete rejouee. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/invitations` → **200**, `GET /api/v1/company/team-roles` → **403**). **Écart constaté** : `GET /api/v1/company/team-roles` répond **403** avec le persona Manager RH : la route existe mais le périmètre RBAC ne lui ouvre pas la lecture des rôles d'équipe. `GET /api/v1/invitations` répond **200**. L'attribution passe par `POST /employees/{employee}/assign-role` (route présente au routeur, non rejouée en écriture). Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | IAM : POST /roles -> 404 (route inexistante sous ce nom) ; RBAC verifie par ailleurs (la matrice par persona montre 14 operations correctement filtrees). L'attribution de roles n'a pas ete rejouee. |
 
 **Historique des modifications (1)**
 
@@ -545,7 +545,7 @@ L'invitation aboutit, le rôle est attribué dans les limites du délégable, l'
 
 **Description / préconditions**  
 Vérifier la consultation du planning et la validation des heures supplémentaires.  
-Prérequis : Compte manager ; endpoints `/api/v1/planning`, `/api/v1/overtime`.
+Prérequis : Compte manager ; endpoints `/api/v1/planning`, `/api/v1/reports/overtime`.
 
 **Étapes de test**
 1. Consulter le planning de la semaine.
@@ -559,7 +559,7 @@ Le planning s'affiche, les heures supplémentaires sont calculées et validées/
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 2 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/planning` → **200**, `GET /api/v1/overtime` → **404**). **Écart constaté** : `GET /api/v1/overtime` renvoie **404** en exécution ; les heures supplémentaires sont sous `/hr/overtime`. `GET /api/v1/planning` répond 200. Note 2 = défaillance fonctionnelle sur un critère majeur. | 3 | GET /attendance -> 200 ; validation des heures supplementaires non rejouee. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 2 en 2xx (`GET /api/v1/planning` → **200**, `GET /api/v1/reports/overtime` → **200**). **Écart constaté** : `GET /api/v1/planning` et `GET /api/v1/reports/overtime` répondent **200** : les deux routes existent et sont lisibles. La validation/rejet d'une demande d'heures supplémentaires n'a pas été rejouée en écriture. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /attendance -> 200 ; validation des heures supplementaires non rejouee. |
 
 **Historique des modifications (1)**
 
@@ -709,7 +709,7 @@ Le kill switch produit un effet immédiat et réversible, les nœuds Edge sont s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | Ops plateforme partiellement verifie : GET /edge -> 200, GET /approvals/history -> 200. Le kill switch n'a pas ete declenche. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | Ops plateforme partiellement verifie : GET /edge -> 200, GET /approvals/history -> 200. Le kill switch n'a pas ete declenche. |
 
 **Historique des modifications (1)**
 
@@ -799,7 +799,7 @@ La bibliothèque s'affiche correctement, la navigation est fluide, le cache publ
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED (module Showcase non inclus dans le plan du tenant de demo). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED (module Showcase non inclus dans le plan du tenant de demo). |
 
 **Historique des modifications (1)**
 
@@ -875,7 +875,7 @@ L'export est complet et réimportable, le rapprochement identifie correctement l
 
 **Description / préconditions**  
 Vérifier le cycle d'une note de frais : soumission avec justificatif, validation manager, rejet motivé.  
-Prérequis : Compte employé + compte manager ; endpoints `/api/v1/expenses`.
+Prérequis : Compte employé + compte manager ; endpoints `/api/v1/expense-claims`.
 
 **Étapes de test**
 1. Créer une note de frais avec un justificatif joint.
@@ -889,7 +889,7 @@ La note suit le cycle attendu, le rejet exige un motif, et l'employé voit l'ét
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 2 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **32 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/expenses` → **404**). **Écart constaté** : `GET /api/v1/expenses` renvoie **404** en exécution : la ressource réelle est `/expense-claims`. Note 2 = défaillance fonctionnelle sur un critère majeur. | 3 | GET /expense-claims -> 200 (employe). Soumission/validation non rejouees. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **32 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/expense-claims` → **200**). **Écart constaté** : `GET /api/v1/expense-claims` répond **200** : la ressource existe et est lisible. Le cycle soumission → approbation → rejet n'a pas été rejoué en écriture. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /expense-claims -> 200 (employe). Soumission/validation non rejouees. |
 
 **Historique des modifications (1)**
 
@@ -1009,7 +1009,7 @@ L'offre est publiée, visible publiquement avec les bonnes métadonnées, puis r
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /recruitment/ats/applicants -> 200 ; page carrieres publique non verifiee. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **36 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /recruitment/ats/applicants -> 200 ; page carrieres publique non verifiee. |
 
 **Historique des modifications (1)**
 
@@ -1069,7 +1069,7 @@ Le ciblage est respecté, l'annonce est lisible, et le compteur de lecture refl�
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/announcements` → **200**). Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /communication/analytics -> 200. |
+| 4 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **48 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/announcements` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx). | 3 | GET /communication/analytics -> 200. |
 
 **Historique des modifications (1)**
 
@@ -1129,7 +1129,7 @@ Le tenant est créé une seule fois, l'utilisateur peut se connecter, et la doub
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`POST /api/v1/trial/signup` → **422**). Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : le provisioning d'essai guide cree un tenant reel ; non lance pour ne pas polluer la base de demo. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **10 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`POST /api/v1/trial/signup` → **422**). Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : le provisioning d'essai guide cree un tenant reel ; non lance pour ne pas polluer la base de demo. |
 
 **Historique des modifications (1)**
 
@@ -1189,7 +1189,7 @@ Le catalogue est cohérent, l'historique de prix est conservé, la désactivatio
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /catalog/categories -> 403 FEATURE_NOT_ENABLED ('Your plan does not include the B2B Catalog module'). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **37 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /catalog/categories -> 403 FEATURE_NOT_ENABLED ('Your plan does not include the B2B Catalog module'). |
 
 **Historique des modifications (1)**
 
@@ -1205,7 +1205,7 @@ Le catalogue est cohérent, l'historique de prix est conservé, la désactivatio
 
 **Description / préconditions**  
 Vérifier que la recherche transverse ne renvoie que ce que l'utilisateur a le droit de voir.  
-Prérequis : Deux comptes de rôles différents ; endpoints `/api/v1/search`.
+Prérequis : Deux comptes de rôles différents ; endpoints `/api/v1/crm/search`.
 
 **Étapes de test**
 1. Lancer une recherche sur un terme présent dans plusieurs modules.
@@ -1219,7 +1219,7 @@ Les résultats respectent les permissions du rôle, aucune donnée hors périmè
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 2 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **19 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/search` → **404**). **Écart constaté** : `GET /api/v1/search` renvoie **404** en exécution : la recherche est exposée sous `/crm/search` et `/trade/search`, pas à la racine. Note 2 = défaillance fonctionnelle sur un critère majeur. | 0 | Non execute : la recherche transverse (SearchIntelligence) n'a pas d'endpoint sans parametre au route:list. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **19 test(s)** exécuté(s) sur 0 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/crm/search` → **422**). **Écart constaté** : `GET /api/v1/crm/search` répond **422** : la route existe et valide ses paramètres, mais la recherche transverse n'a pas été rejouée avec un terme exploitable, donc le filtrage par permissions n'a pas été observé. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : la recherche transverse (SearchIntelligence) n'a pas d'endpoint sans parametre au route:list. |
 
 **Historique des modifications (1)**
 
@@ -1249,7 +1249,7 @@ Chaque langue expose ses propres métadonnées, les balises canoniques et `hrefl
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /pages -> 200. SEO multilingue non verifie. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /pages -> 200. SEO multilingue non verifie. |
 
 **Historique des modifications (1)**
 
@@ -1279,7 +1279,7 @@ Les surfaces publiques s'affichent correctement sur desktop et mobile, la naviga
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **26 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1309,7 +1309,7 @@ Un ouvrage ne peut être prêté qu'une fois, le retour le remet à disposition,
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /library/progress -> 200. Pret/retour non rejoue. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **31 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /library/progress -> 200. Pret/retour non rejoue. |
 
 **Historique des modifications (1)**
 
@@ -1339,7 +1339,7 @@ La caméra est enregistrée et supervisée, l'état reflète la réalité du flu
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /cameras -> 403 FEATURE_NOT_ENABLED ('Upgrade to Business'). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /cameras -> 403 FEATURE_NOT_ENABLED ('Upgrade to Business'). |
 
 **Historique des modifications (1)**
 
@@ -1369,7 +1369,7 @@ L'incident est tracé, l'intervention suit son cycle, et l'historique de mainten
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : module cameras non souscrit (403 FEATURE_NOT_ENABLED). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : module cameras non souscrit (403 FEATURE_NOT_ENABLED). |
 
 **Historique des modifications (1)**
 
@@ -1399,7 +1399,7 @@ Le véhicule est suivi de bout en bout, les échéances déclenchent des alertes
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /fleet/live-map -> 200 (principal). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **27 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /fleet/live-map -> 200 (principal). |
 
 **Historique des modifications (1)**
 
@@ -1429,7 +1429,7 @@ Le volume et le montant sont calculés correctement, la clôture est cohérente,
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /fuel-station/accounts -> 403 FUEL_SOLUTION_INACTIVE. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **15 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /fuel-station/accounts -> 403 FUEL_SOLUTION_INACTIVE. |
 
 **Historique des modifications (1)**
 
@@ -1459,7 +1459,7 @@ Le tarif suit la grille, la course suit son cycle, et l'absence de grille produi
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /vtc/dispatch/drivers -> 403 FEATURE_NOT_ENABLED. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **20 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /vtc/dispatch/drivers -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1489,7 +1489,7 @@ La tournée se constitue, chaque colis a un statut et une preuve, et le client v
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /delivery/deliveries -> 403 FEATURE_NOT_ENABLED. |
+| 2 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 3 fichier(s) — 1 échec(s)/erreur(s) (statut `fail`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 2 = défaillance fonctionnelle sur un critère majeur. | 0 | Non executable : GET /delivery/deliveries -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1519,7 +1519,7 @@ La commande est transmise, le total est correct, le ticket est généré et la t
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /restaurant/branches -> 403 FEATURE_NOT_ENABLED. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **26 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /restaurant/branches -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1549,7 +1549,7 @@ Le KDS reflète l'état réel, la commande hors-ligne est mise en file puis sync
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : module restauration non souscrit (403 FEATURE_NOT_ENABLED). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **26 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : module restauration non souscrit (403 FEATURE_NOT_ENABLED). |
 
 **Historique des modifications (1)**
 
@@ -1579,7 +1579,7 @@ Le total est correct, le ticket est généré, la numérotation est continue, et
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /retail/categories -> 403 FEATURE_NOT_ENABLED. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **24 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /retail/categories -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1609,7 +1609,7 @@ Le stock suit les ventes, la régularisation est possible et tracée, et aucun s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : module retail non souscrit (403 FEATURE_NOT_ENABLED). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **37 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : module retail non souscrit (403 FEATURE_NOT_ENABLED). |
 
 **Historique des modifications (1)**
 
@@ -1639,7 +1639,7 @@ La chambre ne peut pas être doublement réservée, les états de housekeeping s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /hospitality/dashboard/kpis -> 403 HOSPITALITY_SOLUTION_INACTIVE. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **21 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /hospitality/dashboard/kpis -> 403 HOSPITALITY_SOLUTION_INACTIVE. |
 
 **Historique des modifications (1)**
 
@@ -1669,7 +1669,7 @@ La vente sur ordonnance est contrôlée, le stock suit, la fiche publique est co
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /pharmacy/alerts -> 403 PHARMACY_SOLUTION_INACTIVE. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /pharmacy/alerts -> 403 PHARMACY_SOLUTION_INACTIVE. |
 
 **Historique des modifications (1)**
 
@@ -1699,7 +1699,7 @@ Les créneaux ne se chevauchent pas, l'accès au dossier est restreint et tracé
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /health-manager/admissions -> 403 HEALTH_SOLUTION_INACTIVE. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **26 test(s)** exécuté(s) sur 1 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /health-manager/admissions -> 403 HEALTH_SOLUTION_INACTIVE. |
 
 **Historique des modifications (1)**
 
@@ -1729,7 +1729,7 @@ L'appel est enregistré, les moyennes sont calculées correctement, et les notes
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /edu-manager/academic-years -> 403 EDU_SOLUTION_INACTIVE. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /edu-manager/academic-years -> 403 EDU_SOLUTION_INACTIVE. |
 
 **Historique des modifications (1)**
 
@@ -1759,7 +1759,7 @@ La facture est émise et visible du seul parent concerné, le solde suit les pai
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : module edu inactif (403 EDU_SOLUTION_INACTIVE). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : module edu inactif (403 EDU_SOLUTION_INACTIVE). |
 
 **Historique des modifications (1)**
 
@@ -1789,7 +1789,7 @@ La parcelle conserve son historique complet, le rendement est calculé, et les s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 1 | DEFECT : GET /farm/apps/catalogue -> 403 COMPANY_NOT_FOUND, alors que l'utilisateur a une entreprise (les autres modules verticaux renvoient FEATURE_NOT_ENABLED / *_SOLUTION_INACTIVE). Code d'erreur incoherent et message trompeur. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **32 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 1 | DEFECT : GET /farm/apps/catalogue -> 403 COMPANY_NOT_FOUND, alors que l'utilisateur a une entreprise (les autres modules verticaux renvoient FEATURE_NOT_ENABLED / *_SOLUTION_INACTIVE). Code d'erreur incoherent et message trompeur. |
 
 **Historique des modifications (1)**
 
@@ -1819,7 +1819,7 @@ La campagne est publique et lisible, le don met à jour la progression, le reçu
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /fundraising/fundraisers -> 403 FEATURE_NOT_ENABLED. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /fundraising/fundraisers -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1849,7 +1849,7 @@ Le cabinet ne voit que son portefeuille, l'accès hors portefeuille est refusé 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /cabinet/documents -> 200 (comptable). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /cabinet/documents -> 200 (comptable). |
 
 **Historique des modifications (1)**
 
@@ -1879,7 +1879,7 @@ L'intention est conservée jusqu'au devis, les totaux sont exacts, et l'absence 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /trade/cost-estimates -> 403 FEATURE_NOT_ENABLED (verticale Trade non activee sur le tenant de demo). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **19 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : GET /trade/cost-estimates -> 403 FEATURE_NOT_ENABLED (verticale Trade non activee sur le tenant de demo). |
 
 **Historique des modifications (1)**
 
@@ -1909,7 +1909,7 @@ La marque s'applique sur la surface publique, le contraste reste lisible, et la 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : branding/surfaces publiques non pilotes. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `bad-report`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : branding/surfaces publiques non pilotes. |
 
 **Historique des modifications (1)**
 
@@ -1939,7 +1939,7 @@ L'essai, l'activation, la facture et le renouvellement sont cohérents, et l'exp
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /billing/ai-credits -> 200 ; /billing/subscription -> 404 'Aucun abonnement actif' (coherent, tenant de demo sans abonnement). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /billing/ai-credits -> 200 ; /billing/subscription -> 404 'Aucun abonnement actif' (coherent, tenant de demo sans abonnement). |
 
 **Historique des modifications (1)**
 
@@ -1969,7 +1969,7 @@ Seuls les webhooks signés sont acceptés, le rejeu est idempotent, l'état de p
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : encaissement et webhooks de paiement exigent un fournisseur externe (Stripe) non configure. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **37 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : encaissement et webhooks de paiement exigent un fournisseur externe (Stripe) non configure. |
 
 **Historique des modifications (1)**
 
@@ -1999,7 +1999,7 @@ Les événements sont mis en file, rejoués une seule fois, et la file se vide s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /edge -> 200 (EdgeSync repond). La file hors-ligne et le rejeu idempotent n'ont pas ete exerces. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /edge -> 200 (EdgeSync repond). La file hors-ligne et le rejeu idempotent n'ont pas ete exerces. |
 
 **Historique des modifications (1)**
 
@@ -2029,7 +2029,7 @@ Le pointage dans la zone est accepté avec preuve, le pointage hors zone est ref
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : preuve de presence geolocalisee exige une position GPS et un client mobile. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : preuve de presence geolocalisee exige une position GPS et un client mobile. |
 
 **Historique des modifications (1)**
 
@@ -2059,7 +2059,7 @@ Le contrat est accessible et versionné, la clé respecte son périmètre, la r�
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | API : GET /api-tokens -> 200, GET /webhooks -> 200. CONSTANT : GET /openapi.json -> 404, aucune specification OpenAPI publiee a cette adresse. |
+| 2 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **163 test(s)** exécuté(s) sur 3 fichier(s) — 1 échec(s)/erreur(s) (statut `fail`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 2 = défaillance fonctionnelle sur un critère majeur. | 3 | API : GET /api-tokens -> 200, GET /webhooks -> 200. CONSTANT : GET /openapi.json -> 404, aucune specification OpenAPI publiee a cette adresse. |
 
 **Historique des modifications (1)**
 
@@ -2089,7 +2089,7 @@ L'analyse et le build passent, l'APK s'installe, et l'application démarre jusqu
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : build mobile Flutter exige une chaine Android/iOS absente du sandbox. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **25 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : build mobile Flutter exige une chaine Android/iOS absente du sandbox. |
 
 **Historique des modifications (1)**
 
@@ -2149,7 +2149,7 @@ La fiche est complète et lisible, l'état ouvert/fermé est correct, les action
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : fiche commerce publique non verifiee. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **13 test(s)** exécuté(s) sur 1 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : fiche commerce publique non verifiee. |
 
 **Historique des modifications (1)**
 
@@ -2179,7 +2179,7 @@ Chaque étape est visible et horodatée, l'échec est diagnosticable sans accès
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | Plateforme partiellement verifiee : GET /health -> 200, GET /approvals/history -> 200. Provisionnement et diagnostic non rejoues. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | Plateforme partiellement verifiee : GET /health -> 200, GET /approvals/history -> 200. Provisionnement et diagnostic non rejoues. |
 
 **Historique des modifications (1)**
 
@@ -2209,7 +2209,7 @@ L'accès inter-établissement est refusé, aucune donnée de A n'apparaît dans 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | Isolation par etablissement non attaquee ; l'isolation par tenant est coherente (403 systematique hors souscription). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **10 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | Isolation par etablissement non attaquee ; l'isolation par tenant est coherente (403 systematique hors souscription). |
 
 **Historique des modifications (1)**
 
@@ -2239,7 +2239,7 @@ La connexion SSO aboutit avec le bon rôle, une configuration invalide produit u
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /sso/providers -> 200. Le flux SSO SAML/OIDC complet exige un IdP externe. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /sso/providers -> 200. Le flux SSO SAML/OIDC complet exige un IdP externe. |
 
 **Historique des modifications (1)**
 
@@ -2269,7 +2269,7 @@ Le registre est à jour, l'export est complet, la suppression est effective ou a
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /audit-logs -> 200 (principal). Registre RGPD partiellement verifie. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **10 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /audit-logs -> 200 (principal). Registre RGPD partiellement verifie. |
 
 **Historique des modifications (1)**
 
@@ -2299,7 +2299,7 @@ Les objectifs sont partagés, le check-in est tracé, la revue est clôturée, e
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /evaluations -> 200. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **16 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /evaluations -> 200. |
 
 **Historique des modifications (1)**
 
@@ -2329,7 +2329,7 @@ Le document est accessible au seul ayant droit, l'échéance déclenche une aler
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : le coffre-fort documentaire n'a pas d'endpoint de liste sans parametre (employee-documents porte sur un employe donne). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **16 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : le coffre-fort documentaire n'a pas d'endpoint de liste sans parametre (employee-documents porte sur un employe donne). |
 
 **Historique des modifications (1)**
 
@@ -2359,7 +2359,7 @@ L'enchaînement des validations est respecté, un rejet arrête le circuit, et l
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /approvals/history -> 200. Validation multi-niveaux non rejouee. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **17 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /approvals/history -> 200. Validation multi-niveaux non rejouee. |
 
 **Historique des modifications (1)**
 
@@ -2389,7 +2389,7 @@ Chaque indicateur correspond aux données réelles du module source, la période
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : tableau de bord consolide plateforme exige un compte plateforme dedie. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : tableau de bord consolide plateforme exige un compte plateforme dedie. |
 
 **Historique des modifications (1)**
 
@@ -2419,7 +2419,7 @@ Le ticket est traité, l'impersonation est signalée, réversible et journalisé
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : support/tickets et impersonation encadree exigent un compte support. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : support/tickets et impersonation encadree exigent un compte support. |
 
 **Historique des modifications (1)**
 
@@ -2449,7 +2449,7 @@ Les métriques correspondent aux abonnements réels, le revenu récurrent est ca
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : metriques d'abonnement/revenus exigent des donnees de facturation reelles. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **18 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : metriques d'abonnement/revenus exigent des donnees de facturation reelles. |
 
 **Historique des modifications (1)**
 
@@ -2479,7 +2479,7 @@ L'état des nœuds est fidèle, le kill switch agit immédiatement et de façon 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /edge -> 200 ; GET /approvals/history -> 200. Kill switch non declenche. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **24 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /edge -> 200 ; GET /approvals/history -> 200. Kill switch non declenche. |
 
 **Historique des modifications (1)**
 
@@ -2509,7 +2509,7 @@ Le post est publié à l'heure prévue, les statistiques remontent, et la décon
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /marketing/posts -> 200. Publication sociale et statistiques non exercees (pas de compte social connecte). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | GET /marketing/posts -> 200. Publication sociale et statistiques non exercees (pas de compte social connecte). |
 
 **Historique des modifications (1)**
 
@@ -2539,7 +2539,7 @@ Le dossier est créé, l'invitation aboutit, l'employé accède uniquement à so
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : onboarding d'un nouvel employe modifie l'etat du tenant de demo. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **16 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : onboarding d'un nouvel employe modifie l'etat du tenant de demo. |
 
 **Historique des modifications (1)**
 
@@ -2571,7 +2571,7 @@ La campagne et l'idée sont créées dans le seul tenant ciblé, la promotion pr
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : Marketing OS admin exige les endpoints /admin/companies/{company}/marketing-os/* avec un compte plateforme. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : Marketing OS admin exige les endpoints /admin/companies/{company}/marketing-os/* avec un compte plateforme. |
 
 **Historique des modifications (1)**
 
@@ -2603,7 +2603,7 @@ Le post est publié à l'heure prévue avec son URL réelle, les statistiques ab
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : publication sociale reelle impossible sans compte social connecte. |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non execute : publication sociale reelle impossible sans compte social connecte. |
 
 **Historique des modifications (1)**
 
@@ -2635,7 +2635,7 @@ La RFQ est émise et diffusée, le devis est produit par le seul rôle vendeur a
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **19 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Aucun endpoint HTTP n'est déclaré pour ce cas dans `_endpoints.json` : la vérification repose sur les tests et l'inventaire statique. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). |
 
 **Historique des modifications (1)**
 
@@ -2667,7 +2667,7 @@ Le coût total rendu est exact en arithmétique entière, les postes indisponibl
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 3 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/trade/cost-estimates` → **403**, `GET /api/v1/trade/customs/checklist` → **403**, `GET /api/v1/trade/profile` → **403**). **Écart constaté** : Les 3 endpoints trade renvoient **403** avec le persona principal : la verticale Trade n'est pas activée sur le tenant de démo (feature gate), donc le parcours n'a pas pu être rejoué. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **26 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 3 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/trade/cost-estimates` → **403**, `GET /api/v1/trade/customs/checklist` → **403**, `GET /api/v1/trade/profile` → **403**). **Écart constaté** : Les 3 endpoints trade renvoient **403** avec le persona principal : la verticale Trade n'est pas activée sur le tenant de démo (feature gate), donc le parcours n'a pas pu être rejoué. Note 3 = fonctionne partiellement ou critère non vérifiable. | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). |
 
 **Historique des modifications (1)**
 
@@ -2700,7 +2700,7 @@ Le catalogue est consultable et exempt de secrets, la connexion aboutit à un é
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : aucun test n'a pu être exécuté pour ce cas (statut `no-tests`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/connectors/catalog` → **200**). Note 3 = fonctionne partiellement ou critère non vérifiable. | 3 | NOUVEAU (comble un trou de couverture) : le module Connectors est servi par l'API mais n'avait AUCUN cas d'usage au portail. GET /connectors/catalog -> 200 avec un catalogue reel (Stripe, categories payment, audience both, docs_url). Cycle de connexion OAuth non rejoue. |
+| 4 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **28 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/connectors/catalog` → **200**). Note 4 = conforme en exécution (tests verts + endpoint 2xx). | 3 | NOUVEAU (comble un trou de couverture) : le module Connectors est servi par l'API mais n'avait AUCUN cas d'usage au portail. GET /connectors/catalog -> 200 avec un catalogue reel (Stripe, categories payment, audience both, docs_url). Cycle de connexion OAuth non rejoue. |
 
 **Historique des modifications (1)**
 
@@ -2731,7 +2731,7 @@ Le chat répond, toute écriture passe par une proposition confirmée, la confir
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | Vérifié sur pièces : `api/routes/ai.php` déclare 26 routes (chat, historique, propositions, confirmation/rejet, outils, exports, voix, analytics) ; 28 fichiers de tests dans `tests/Feature/AI/` dont `AIActionProposalHttpTest`, `WriteIdempotencyTest`, `ToolPermissionMatrixTest`, `AIToolExecutionAuditTest`, `AiGoldenJourneyTest`. API live 503 : le chat n'a pas été rejoué en HTTP. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **6 test(s)** exécuté(s) sur 1 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/ai/chat/history` → **403**, `GET /api/v1/ai/tools` → **403**). **Écart constaté** : `GET /api/v1/ai/chat/history` et `GET /api/v1/ai/tools` renvoient **403** avec le persona Manager Principal : la verticale IA n'est pas ouverte à ce rôle sur le tenant de démo. Les 26 routes de `api/routes/ai.php` existent et 6 tests de proposition d'action passent, mais le chat n'a pas pu être rejoué. Note 3 = fonctionne partiellement ou critère non vérifiable. |  |  |
 
 _Aucune modification humaine enregistrée pour ce cas._
 
@@ -2758,7 +2758,7 @@ Le modèle pays est proposé, le contrat suit son cycle jusqu'à la signature, l
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | Vérifié sur pièces : `GET/POST /contracts`, `GET /contracts/templates`, `GET /contracts/expiring`, `POST /contracts/{contract}/sign` déclarés dans `api/routes/modules/hr_extended.php` (lignes 91-96) et `GET /me/contracts` (ligne 42) ; tests `ContractLifecycleTest`, `ContractWorkflowTest`, `ContractByCountryTest`, `ContractCountryTemplatesTest`, `ExpiringContractsAlertTest`, `ContractPdfAliasTest`. API 503 : signature non rejouée. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **15 test(s)** exécuté(s) sur 3 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 3 endpoint(s) appelé(s), 2 en 2xx (`GET /api/v1/contracts` → **200**, `GET /api/v1/contracts/templates` → **422**, `GET /api/v1/contracts/expiring` → **200**). **Écart constaté** : `GET /api/v1/contracts` et `GET /api/v1/contracts/expiring` répondent **200** ; `GET /api/v1/contracts/templates` répond **422** (paramètre pays obligatoire). La signature d'un contrat n'a pas été rejouée en écriture. Note 3 = fonctionne partiellement ou critère non vérifiable. |  |  |
 
 _Aucune modification humaine enregistrée pour ce cas._
 
@@ -2785,7 +2785,7 @@ Chaque action sensible produit une entrée horodatée et attribuée, le détail 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | Vérifié sur pièces : `GET /audit-logs`, `GET /audit-logs/{id}`, `GET /audit-logs/export` déclarés dans `api/routes/api.php` (lignes 492-494) ; tests `AuditLogGlobalTest`, `AuditLogExportTest`, `IdentityAccessControlAuditTest`, `SensitiveDataAccessAuditTest`, `PurgeAuditLogsCommandTest`, `AuditLoggerListenerTest`. API 503 : entrée non provoquée. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **5 test(s)** exécuté(s) sur 1 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/audit-logs` → **200**, `GET /api/v1/audit-logs/export` → **422**). **Écart constaté** : `GET /api/v1/audit-logs` répond **200** ; `GET /api/v1/audit-logs/export` répond **422** (paramètre de format obligatoire). L'export n'a pas été rejoué avec un format valide. Note 3 = fonctionne partiellement ou critère non vérifiable. |  |  |
 
 _Aucune modification humaine enregistrée pour ce cas._
 
@@ -2812,7 +2812,7 @@ Chaque export est complet sur la période demandée, correctement encodé, isol�
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | Vérifié sur pièces : `GET /export/employees`, `/export/attendance`, `/export/attendance/monthly`, `/export/pay-slips`, `/export/absences`, `/export/training`, `/export/contracts`, `/export/vehicles` déclarés dans `api/routes/modules/dashboard.php` (lignes 51-58) ; tests `ExportControllerTest`, `AttendanceMonthlyExportTest`, `AuditLogExportTest`, `PayrollAccountingExportTest`, `BankExportControllerTest`. API 503 : export non généré. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **23 test(s)** exécuté(s) sur 2 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 2 en 2xx (`GET /api/v1/export/employees` → **200**, `GET /api/v1/export/pay-slips` → **200**). **Écart constaté** : `GET /api/v1/export/employees` et `GET /api/v1/export/pay-slips` répondent **200** : les exports sont produits. Le contenu des fichiers n'a pas été ouvert ni comparé au nombre de lignes attendu. Note 3 = fonctionne partiellement ou critère non vérifiable. |  |  |
 
 _Aucune modification humaine enregistrée pour ce cas._
 
@@ -2839,7 +2839,7 @@ La candidature suit son cycle, le taux est modifiable et appliqué, les gains re
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | Vérifié sur pièces : `GET /partners`, `PATCH /partners/{partner}/rate`, `PATCH /partners/{partner}/application` déclarés dans `api/routes/modules/billing.php` (lignes 150-152) ; tests `GrowthModuleTest`, `GrowthPartnerTenantIsolationTest`, `PlatformCompanySubscriptionApiTest`. API 503 : candidature non soumise. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+| 2 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **4 test(s)** exécuté(s) sur 2 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 0 en 2xx (`GET /api/v1/partners` → **404**). **Écart constaté** : `GET /api/v1/partners` renvoie **404** en exécution : la route documentée n'existe pas sous ce chemin. Les tests de candidature partenaire passent (4 tests), mais le parcours HTTP documenté n'est pas exposé à cette adresse. Note 2 = défaillance fonctionnelle sur un critère majeur. |  |  |
 
 _Aucune modification humaine enregistrée pour ce cas._
 
@@ -2866,7 +2866,7 @@ Cours, sessions et inscriptions sont cohérents, la capacité est respectée, ch
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | Vérifié sur pièces : `GET /training/courses`, `GET /training/sessions`, `GET /training/enrollments` déclarés dans `api/routes/api.php` (lignes 1077-1079) ; module `api/app/Modules/EduManager/` ; tests `TrainingControllerTest`, `TrainingGlobalListTest`, `TrainingModuleRegistryTest`. API 503 : session non créée. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **12 test(s)** exécuté(s) sur 2 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 2 endpoint(s) appelé(s), 2 en 2xx (`GET /api/v1/training/courses` → **200**, `GET /api/v1/training/sessions` → **200**). **Écart constaté** : `GET /api/v1/training/courses` et `GET /api/v1/training/sessions` répondent **200** et 12 tests d'inscription/créneau passent. L'inscription d'un apprenant n'a pas été rejouée en écriture. Note 3 = fonctionne partiellement ou critère non vérifiable. |  |  |
 
 _Aucune modification humaine enregistrée pour ce cas._
 
@@ -2893,7 +2893,7 @@ L'enrôlement n'expose le secret qu'une fois, la confirmation active le 2FA, un 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 3 | Vérifié sur pièces : `GET /auth/2fa/status`, `POST /auth/2fa/enroll\|confirm\|verify\|disable` déclarés dans `api/routes/api.php` (lignes 144, 432-435) ; middleware `platform.mfa` appliqué au groupe `platform` ; tests `PlatformWebAuth2faTest`, `PlatformWebAuthSecurityTest`, `SsoTwoFactorGuardTest`, `GoogleSsoTwoFactorSchemaTest`. API 503 : enrôlement non rejoué. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+| 3 | **Exécution réelle** (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par `DemoCompanySeeder`) : échantillon de **22 test(s)** exécuté(s) sur 2 fichier(s) — 0 échec(s)/erreur(s) (statut `pass`). Sondes HTTP : 1 endpoint(s) appelé(s), 1 en 2xx (`GET /api/v1/auth/2fa/status` → **200**). **Écart constaté** : `GET /api/v1/auth/2fa/status` répond **200** et 22 tests 2FA/MFA passent. L'enrôlement complet (enroll → confirm → verify) n'a pas été rejoué, faute de secret TOTP généré côté testeur. Note 3 = fonctionne partiellement ou critère non vérifiable. |  |  |
 
 _Aucune modification humaine enregistrée pour ce cas._
 
@@ -2907,7 +2907,7 @@ _Aucune modification humaine enregistrée pour ce cas._
 | UC-02 | Pointage entrée / sortie (API, employé) | API | exécuté | 4 | 3 |
 | UC-03 | Pointage au kiosque biométrique (mode secours matricule) | UI/UX | exécuté | 3 | 0 |
 | UC-04 | Demande d'absence et approbation manager | Fonctionnel | exécuté | 4 | 3 |
-| UC-05 | Consultation du bulletin de paie (self-service employé) | Sécurité | exécuté | 2 | 2 |
+| UC-05 | Consultation du bulletin de paie (self-service employé) | Sécurité | exécuté | 4 | 2 |
 | UC-06 | Préparation de paie (Manager Comptable) | Fonctionnel | exécuté | 4 | 3 |
 | UC-07 | Gestion du dossier employé (création, modification, archivage) | Fonctionnel | exécuté | 4 | 3 |
 | UC-08 | Isolation multi-tenant | Sécurité | exécuté | 4 | 3 |
@@ -2915,12 +2915,12 @@ _Aucune modification humaine enregistrée pour ce cas._
 | UC-10 | Kiosque en mode dégradé / synchronisation Edge | Résilience | exécuté | 3 | 0 |
 | UC-11 | CRM client (comptes, contacts, opportunités) | Fonctionnel | exécuté | 3 | 3 |
 | UC-12 | Vitrine publique et demande d'essai | Fonctionnel | exécuté | 3 | 3 |
-| UC-13 | Observabilité et santé de la plateforme | API | exécuté | 2 | 3 |
+| UC-13 | Observabilité et santé de la plateforme | API | exécuté | 5 | 3 |
 | UC-14 | Solution verticale « Agence de voyage » (boutique publique) | Sécurité | exécuté | 3 | 3 |
 | UC-15 | Connexion Manager Principal et tableau de bord | Fonctionnel | à exécuter | 3 | 3 |
 | UC-16 | Gestion des départements et des équipes | Fonctionnel | à exécuter | 4 | 3 |
-| UC-17 | Attribution de rôles et invitations | Sécurité | à exécuter | 2 | 3 |
-| UC-18 | Validation des heures supplémentaires et du planning | Fonctionnel | à exécuter | 2 | 3 |
+| UC-17 | Attribution de rôles et invitations | Sécurité | à exécuter | 3 | 3 |
+| UC-18 | Validation des heures supplémentaires et du planning | Fonctionnel | à exécuter | 3 | 3 |
 | UC-19 | Génération et téléchargement d'un bulletin PDF | Fonctionnel | à exécuter | 3 | 0 |
 | UC-20 | Console Super Admin — gestion des entreprises | Fonctionnel | à exécuter | 3 | 0 |
 | UC-21 | Impersonation encadrée (Support) | Sécurité | à exécuter | 3 | 0 |
@@ -2931,18 +2931,18 @@ _Aucune modification humaine enregistrée pour ce cas._
 | UC-26 | Bibliothèque / Showcase public | UI/UX | à exécuter | 3 | 0 |
 | UC-27 | Comptabilité — écritures et clôture mensuelle | Fonctionnel | à exécuter | 4 | 3 |
 | UC-28 | Comptabilité — export et rapprochement bancaire | Fonctionnel | à exécuter | 3 | 3 |
-| UC-29 | Notes de frais — soumission et validation | Fonctionnel | à exécuter | 2 | 3 |
+| UC-29 | Notes de frais — soumission et validation | Fonctionnel | à exécuter | 3 | 3 |
 | UC-30 | Notes de frais — remboursement et impact paie | Fonctionnel | à exécuter | 3 | 3 |
 | UC-31 | Planning — shifts et affectations | Fonctionnel | à exécuter | 4 | 3 |
 | UC-32 | Tâches — assignation et preuve d'exécution | Fonctionnel | à exécuter | 4 | 3 |
 | UC-33 | Recrutement — offre d'emploi et page carrières | Fonctionnel | à exécuter | 3 | 3 |
 | UC-34 | Recrutement — pipeline de candidatures | Fonctionnel | à exécuter | 3 | 3 |
-| UC-35 | Communication — annonce interne et accusés de lecture | Fonctionnel | à exécuter | 3 | 3 |
+| UC-35 | Communication — annonce interne et accusés de lecture | Fonctionnel | à exécuter | 4 | 3 |
 | UC-36 | Notifications — préférences et multi-canal | Fonctionnel | à exécuter | 4 | 3 |
 | UC-37 | Onboarding — provisioning d'un essai guidé | Fonctionnel | à exécuter | 3 | 0 |
 | UC-38 | Onboarding — reprise d'un parcours interrompu | Résilience | à exécuter | 4 | 0 |
 | UC-39 | Catalogue — produits, services et tarifs | Fonctionnel | à exécuter | 3 | 0 |
-| UC-40 | Recherche — recherche transverse et permissions | Sécurité | à exécuter | 2 | 0 |
+| UC-40 | Recherche — recherche transverse et permissions | Sécurité | à exécuter | 3 | 0 |
 | UC-41 | Pages — pages publiques et SEO multilingue | UI/UX | à exécuter | 3 | 3 |
 | UC-42 | Showcase — vitrine publique et bibliothèque | UI/UX | à exécuter | 3 | 0 |
 | UC-43 | Bibliothèque — prêt et retour d'ouvrages | Fonctionnel | à exécuter | 3 | 3 |
@@ -2951,7 +2951,7 @@ _Aucune modification humaine enregistrée pour ce cas._
 | UC-46 | Flotte — véhicules, affectations et entretien | Fonctionnel | à exécuter | 3 | 3 |
 | UC-47 | Station-service — index pompes et ventes carburant | Fonctionnel | à exécuter | 3 | 0 |
 | UC-48 | VTC — course et tarification | Fonctionnel | à exécuter | 3 | 0 |
-| UC-49 | Livraison — tournée et preuve de livraison | Fonctionnel | à exécuter | 3 | 0 |
+| UC-49 | Livraison — tournée et preuve de livraison | Fonctionnel | à exécuter | 2 | 0 |
 | UC-50 | Restauration — POS et plan de salle | Fonctionnel | à exécuter | 3 | 0 |
 | UC-51 | Restauration — KDS et cycle de commande | Résilience | à exécuter | 3 | 0 |
 | UC-52 | Retail — POS et encaissement | Fonctionnel | à exécuter | 3 | 0 |
@@ -2970,7 +2970,7 @@ _Aucune modification humaine enregistrée pour ce cas._
 | UC-65 | Paiements — encaissement et webhooks | Sécurité | à exécuter | 3 | 0 |
 | UC-66 | EdgeSync — file hors-ligne et rejeu idempotent | Résilience | à exécuter | 3 | 3 |
 | UC-67 | Géolocalisation — preuve de présence | Sécurité | à exécuter | 3 | 0 |
-| UC-68 | API — contrat OpenAPI, webhooks et clés | API | à exécuter | 3 | 3 |
+| UC-68 | API — contrat OpenAPI, webhooks et clés | API | à exécuter | 2 | 3 |
 | UC-69 | Mobile — build et distribution des applications | Résilience | à exécuter | 3 | 0 |
 | UC-70 | Desktop — poste de travail et mise à jour | Fonctionnel | à exécuter | 2 | 0 |
 | UC-71 | Public — fiche commerce (leopardo_public) | UI/UX | à exécuter | 3 | 0 |
@@ -2991,16 +2991,16 @@ _Aucune modification humaine enregistrée pour ce cas._
 | UC-86 | Marketing — publication sociale, mode assisté et vitrine publique | Fonctionnel | à exécuter | 3 | 0 |
 | UC-87 | Négoce — parcours RFQ, devis et acceptation (acheteur / vendeur) | Fonctionnel | à exécuter | 3 | 0 |
 | UC-88 | Négoce — coût total rendu, checklist douanière et profil vitrine | Fonctionnel | à exécuter | 3 | 0 |
-| UC-89 | Connecteurs — catalogue, connexion et révocation d'une intégration tierce | Fonctionnel | à exécuter | 3 | 3 |
+| UC-89 | Connecteurs — catalogue, connexion et révocation d'une intégration tierce | Fonctionnel | à exécuter | 4 | 3 |
 | UC-90 | Assistant IA — chat, proposition d'action et confirmation | Sécurité | à exécuter | 3 |  |
 | UC-91 | Contrats — modèle pays, signature et alerte d'expiration | Fonctionnel | à exécuter | 3 |  |
 | UC-92 | Audit — journal global, accès aux données sensibles et export | Sécurité | à exécuter | 3 |  |
 | UC-93 | Exports — employés, pointage, bulletins, absences et rapports RH | Fonctionnel | à exécuter | 3 |  |
-| UC-94 | Partenaires — candidature, taux de commission et reversement | Fonctionnel | à exécuter | 3 |  |
+| UC-94 | Partenaires — candidature, taux de commission et reversement | Fonctionnel | à exécuter | 2 |  |
 | UC-95 | Formation — cours, sessions et inscriptions | Fonctionnel | à exécuter | 3 |  |
 | UC-96 | Sécurité — double authentification (2FA) et MFA plateforme | Sécurité | à exécuter | 3 |  |
 
-**Cas notés (IA) :** 96 · **Total des notes IA :** 293 · **Moyenne IA :** 3.05 / 5 · **Cas bloquants (≤2) :** 7
+**Cas notés (IA) :** 96 · **Total des notes IA :** 301 · **Moyenne IA :** 3.14 / 5 · **Cas bloquants (≤2) :** 4
 
 > La colonne « Note humaine (/5) » est renseignée par les testeurs humains depuis le portail
 > (ou directement dans `docs/recette/notes-humaines.json`) ; elle est versionnée dans le dépôt.
