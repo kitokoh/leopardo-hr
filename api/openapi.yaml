@@ -14604,6 +14604,84 @@ paths:
           description: Le type de connecteur a été retiré du catalogue (`CONNECTOR_CATALOG_ENTRY_MISSING`)
         '429':
           $ref: '#/components/responses/Error429'
+  /connectors/connections/{id}/usage:
+    get:
+      operationId: api_get_connectors_connection_usage
+      tags:
+      - Connectors
+      summary: Consommation de tokens IA d'une connexion, sur le mois courant (#9925)
+      description: 'LECTURE seule. Le cumul est celui réellement enregistré par `POST /connectors/connections/{id}/usage` : jamais une estimation.
+
+        Réservé aux connexions IA (`catalog_key` préfixé `ai_`) : une connexion non-IA rend `422 CONNECTOR_NOT_AI` plutôt qu''un compteur à zéro, qui laisserait croire à une consommation nulle.
+
+        `budget_tokens` et `remaining_tokens` valent `null` quand aucun budget mensuel n''est configuré — l''absence de plafond n''est pas un plafond à zéro.'
+      parameters:
+      - $ref: '#/components/parameters/ConnectorConnectionId'
+      responses:
+        '200':
+          description: Consommation du mois courant
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorAiUsage'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '404':
+          description: Connexion inconnue ou hors tenant (fail-closed)
+        '422':
+          description: 'La connexion n''est pas une connexion IA (`CONNECTOR_NOT_AI`)'
+        '429':
+          $ref: '#/components/responses/Error429'
+    post:
+      operationId: api_post_connectors_connection_usage
+      tags:
+      - Connectors
+      summary: Enregistre la consommation réelle d'un appel IA (#9925)
+      description: 'Incrémente le compteur du mois et rend le cumul. L''incrément est atomique en base : deux appels concurrents ne peuvent pas écraser mutuellement leur compteur.
+
+        **Fail-closed** : si le budget mensuel est déjà atteint, l''appel est refusé (`422 CONNECTOR_AI_BUDGET_EXCEEDED`) AVANT tout enregistrement — un appel hors budget n''est jamais comptabilisé.'
+      parameters:
+      - $ref: '#/components/parameters/ConnectorConnectionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                input_tokens:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                  description: Tokens consommés en entrée. Négatif refusé (`CONNECTOR_AI_USAGE_INVALID`).
+                output_tokens:
+                  type: integer
+                  minimum: 0
+                  default: 0
+                  description: Tokens produits en sortie. Négatif refusé (`CONNECTOR_AI_USAGE_INVALID`).
+      responses:
+        '200':
+          description: Cumul du mois après enregistrement
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ConnectorAiUsageRecorded'
+        '401':
+          $ref: '#/components/responses/Error401'
+        '403':
+          description: Acteur autre que `principal`
+        '404':
+          description: Connexion inconnue ou hors tenant (fail-closed)
+        '422':
+          description: '`CONNECTOR_NOT_AI`, `CONNECTOR_AI_USAGE_INVALID` (valeur négative) ou `CONNECTOR_AI_BUDGET_EXCEEDED` (budget mensuel atteint, rien n''est enregistré)'
+        '429':
+          $ref: '#/components/responses/Error429'
   /connectors/overview:
     get:
       operationId: api_get_connectors_overview
@@ -96898,6 +96976,50 @@ components:
                 type: boolean
               detail:
                 type: string
+    ConnectorAiUsage:
+      type: object
+      description: 'Consommation de tokens IA d''une connexion sur le mois courant. `budget_tokens` et `remaining_tokens` valent `null` quand aucun budget mensuel n''est configuré — l''absence de plafond n''est pas un plafond à zéro.'
+      properties:
+        connection_id:
+          type: integer
+        period:
+          type: string
+          description: Période de facturation au format `YYYY-MM`.
+          example: '2026-11'
+        used_tokens:
+          type: integer
+          description: Total de tokens consommés sur la période.
+        budget_tokens:
+          type: integer
+          nullable: true
+          description: Plafond mensuel configuré, ou `null` si aucun budget n'est défini.
+        remaining_tokens:
+          type: integer
+          nullable: true
+          description: '`budget_tokens - used_tokens`, borné à 0 ; `null` si aucun budget n''est configuré.'
+    ConnectorAiUsageRecorded:
+      type: object
+      description: Cumul du mois après enregistrement d'un appel IA.
+      properties:
+        connection_id:
+          type: integer
+        period:
+          type: string
+          description: Période de facturation au format `YYYY-MM`.
+          example: '2026-11'
+        input_tokens:
+          type: integer
+          description: Cumul des tokens d'entrée sur la période.
+        output_tokens:
+          type: integer
+          description: Cumul des tokens de sortie sur la période.
+        total_tokens:
+          type: integer
+          description: Cumul total (entrée + sortie) sur la période.
+        budget_tokens:
+          type: integer
+          nullable: true
+          description: Plafond mensuel configuré, ou `null` si aucun budget n'est défini.
     ConnectorOverview:
       type: object
       description: 'Index des intégrations DÉJÀ existantes. LECTURE seule : chaque intégration garde son écran natif comme source de vérité.'
