@@ -98,12 +98,43 @@ void main() {
       }
     });
 
+    test('travel n’est plus bloquée (#9943)', () {
+      final travel = journeyByCode('travel')!;
+      expect(travel.mode, JourneyMode.booking);
+      expect(travel.hasNativeBooking, isTrue);
+      expect(travel.blockers, isEmpty);
+      expect(travel.blockerFor('entry'), isNull);
+    });
+
+    test('careers n’est plus bloquée (#9944)', () {
+      final careers = journeyByCode('careers')!;
+      expect(careers.mode, JourneyMode.request);
+      expect(careers.blockers, isEmpty);
+      expect(careers.blockerFor('entry'), isNull);
+    });
+
+    test('pharmacy : catalogue ouvert, contact toujours bloqué (#9945)', () {
+      final pharmacy = journeyByCode('pharmacy')!;
+      // Le catalogue est servi par `PharmacyDiscoverableProvider` : le
+      // blocage `catalog` est périmé et doit avoir disparu.
+      expect(pharmacy.blockerFor('catalog'), isNull);
+      // Le contact reste bloqué : `PublicProfileLocator::types()` ne contient
+      // pas `pharmacy`, une demande serait refusée en 422.
+      expect(pharmacy.blockerFor('contact'), isNotNull);
+      expect(pharmacy.contactTargetType, isNull);
+      // Et la verticale reste atteignable : aucun blocage `entry`.
+      expect(pharmacy.blockerFor('entry'), isNull);
+    });
+
     test('blockerFor rend null quand la capacité n’est pas bloquée', () {
       final retail = journeyByCode('retail')!;
       expect(retail.blockerFor('order'), isNull);
 
+      // #9959 — le blocage `order` du restaurant est levé : la surface
+      // publique par slug (RESTO-902) ne demande aucun jeton, contrairement à
+      // la boutique RESTO-805 qui motivait l'ancien blocage.
       final restaurant = journeyByCode('restaurant')!;
-      expect(restaurant.blockerFor('order'), 'journeyBlockerRestaurantOrder');
+      expect(restaurant.blockerFor('order'), isNull);
     });
   });
 

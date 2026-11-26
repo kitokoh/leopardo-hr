@@ -1,0 +1,222 @@
+import '../../discovery/data/public_discovery_repository.dart';
+import '../domain/restaurant_order_models.dart';
+import 'journey_http.dart';
+
+/// Commande publique **restaurant par slug** — #9959.
+///
+/// ## Pourquoi cette passerelle existe
+///
+/// Le registre mobile déclarait la verticale `restaurant` bloquée en `order`,
+/// au motif que la boutique publique exige un jeton par tenant
+/// (`X-Restaurant-Shop-Token`). Ce motif décrivait RESTO-805 (#6226) et il est
+/// **périmé** : depuis RESTO-902 (#7747) une surface publique **par slug**
+/// existe, sans aucun jeton, et c'est celle que consomme la vitrine web
+/// `/restaurants/{slug}`.
+///
+/// ## Le contrat, tel qu'il existe réellement
+///
+/// - `GET  /public/restaurants/{slug}` — profil + `menu` ;
+/// - `POST /public/restaurants/{slug}/orders` — création, idempotente ;
+/// - `GET  /public/restaurants/{slug}/orders/{ref}?secret=` — suivi ;
+/// - `POST /public/restaurants/{slug}/orders/{ref}/pay` — paiement.
+///
+/// ## Ce que la passerelle ne fait pas
+///
+/// Elle n'envoie **aucun montant** : prix et TVA sont calculés serveur
+/// (`CreateOnlineOrderAction`). Le total affiché avant envoi est une estimation
+/// locale, et le montant qui fait foi est celui rendu à la création.
+class RestaurantOrderGateway {
+  RestaurantOrderGateway(this._api);
+
+  final JourneyApi _api;
+
+  static const String base = '/public/restaurants';
+
+  String profilePath(String slug) => '$base/${Uri.encodeComponent(slug)}';
+
+  String ordersPath(String slug) => '${profilePath(slug)}/orders';
+
+  /// Profil public d'un restaurant, menu inclus.
+  ///
+  /// `null` = introuvable **ou** non publié. Les deux cas sont indiscernables
+  /// côté public (404 fail-closed), et c'est voulu : révéler qu'un
+  /// établissement existe mais n'est pas publié serait une fuite commerciale.
+  Future<RestaurantPublicProfile?> profile(String slug) async {
+    final needle = slug.trim();
+    if (needle.isEmpty) return null;
+
+    try {
+      final json = await _api.get(profilePath(needle));
+      return RestaurantPublicProfile.tryParse(JourneyApi.dataOf(json));
+    } on PublicApiFailure catch (failure) {
+      if (failure.kind == PublicFailureKind.notFound) return null;
+      rethrow;
+    }
+  }
+
+  /// Corps EXACT de `StoreRestaurantPublicSlugOrderRequest`.
+  ///
+  /// Les contrôles ici ne remplacent pas la validation serveur : ils évitent
+  /// d'envoyer une requête qu'on sait déjà invalide (message immédiat) et
+  /// rendent le contrat testable sans réseau.
+  static Map<String, dynamic> buildOrderPayload({
+    required String customerName,
+    required String customerPhone,
+    required List<RestaurantCartLine> lines,
+    required String idempotencyKey,
+    RestaurantOrderType orderType = RestaurantOrderType.pickup,
+    String? note,
+  }) {
+    final name = customerName.trim();
+    if (name.isEmpty) {
+      throw ArgumentError.value(
+        customerName,
+        'customerName',
+        'Nom du client requis',
+      );
+    }
+
+    final phone = customerPhone.trim();
+    if (phone.isEmpty) {
+      throw ArgumentError.value(
+        customerPhone,
+        'customerPhone',
+        'Téléphone requis',
+      );
+    }
+
+    if (lines.isEmpty) {
+      throw ArgumentError.value(lines, 'lines', 'Panier vide');
+    }
+
+    if (lines.length > restaurantMaxCartLines) {
+      throw ArgumentError.value(
+        lines.length,
+        'lines',
+        'Maximum $restaurantMaxCartLines lignes',
+      );
+    }
+
+    for (final line in lines) {
+      if (line.product.code.trim().isEmpty) {
+        throw ArgumentError.value(
+          line.product.code,
+          'lines.product_code',
+          'Code produit requis',
+        );
+      }
+      if (line.quantity < 1 || line.quantity > restaurantMaxLineQuantity) {
+        throw ArgumentError.value(
+          line.quantity,
+          'lines.quantity',
+          'Quantité 1..$restaurantMaxLineQuantity',
+        );
+      }
+    }
+
+    final key = idempotencyKey.trim();
+    if (key.isEmpty || key.length > 64) {
+      throw ArgumentError.value(
+        idempotencyKey,
+        'idempotencyKey',
+        'Clé 1..64 caractères',
+      );
+    }
+
+    final trimmedNote = note?.trim() ?? '';
+
+    return {
+      'customer_name': name,
+      'customer_phone': phone,
+      'order_type': orderType.wire,
+      if (trimmedNote.isNotEmpty) 'note': trimmedNote,
+      'idempotency_key': key,
+      'items': [for (final line in lines) line.toPayload()],
+    };
+  }
+
+  /// Crée une commande invitée.
+  ///
+  /// L'idempotence est portée par la clé générée côté client et **conservée
+  /// jusqu'au succès** : un double tap ou un retry réseau renvoie la même
+  /// commande (200, `created: false`), jamais un doublon.
+  Future<RestaurantOrderResult> createOrder({
+    required String slug,
+    required String customerName,
+    required String customerPhone,
+    required List<RestaurantCartLine> lines,
+    required String idempotencyKey,
+    RestaurantOrderType orderType = RestaurantOrderType.pickup,
+    String? note,
+  }) async {
+    final json = await _api.post(
+      ordersPath(slug),
+      buildOrderPayload(
+        customerName: customerName,
+        customerPhone: customerPhone,
+        lines: lines,
+        idempotencyKey: idempotencyKey,
+        orderType: orderType,
+        note: note,
+      ),
+    );
+
+    final result = RestaurantOrderResult.tryParse(JourneyApi.dataOf(json)) ??
+        RestaurantOrderResult.tryParse(json);
+
+    if (result == null) {
+      throw const PublicApiFailure(
+        PublicFailureKind.server,
+        message: 'Order without reference',
+      );
+    }
+    return result;
+  }
+
+  /// Suit une commande par référence + secret.
+  ///
+  /// Le secret est rendu une seule fois à la création (BOS-050) : sans lui, le
+  /// serveur répond 404 uniforme. L'écran doit donc le conserver, et dire
+  /// pourquoi quand il ne l'a pas.
+  Future<RestaurantOrderTracking> track({
+    required String slug,
+    required String reference,
+    required String secret,
+  }) async {
+    final json = await _api.get(
+      '${ordersPath(slug)}/${Uri.encodeComponent(reference)}',
+      query: {'secret': secret},
+    );
+
+    final tracking = RestaurantOrderTracking.tryParse(
+      JourneyApi.dataOf(json),
+      fallbackReference: reference,
+    );
+    if (tracking == null) {
+      throw const PublicApiFailure(
+        PublicFailureKind.notFound,
+        message: 'Order not found',
+      );
+    }
+    return tracking;
+  }
+
+  /// Paie une commande.
+  ///
+  /// Lève sur échec : un `null` silencieux laisserait croire à un paiement
+  /// engagé alors qu'aucune transaction n'existe.
+  Future<void> pay({
+    required String slug,
+    required String reference,
+    required RestaurantPaymentMethod method,
+    required String idempotencyKey,
+  }) async {
+    await _api.post(
+      '${ordersPath(slug)}/${Uri.encodeComponent(reference)}/pay',
+      {
+        'provider_code': method.wire,
+        'idempotency_key': idempotencyKey.trim(),
+      },
+    );
+  }
+}

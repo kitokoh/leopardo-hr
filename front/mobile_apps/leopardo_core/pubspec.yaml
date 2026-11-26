@@ -49,11 +49,11 @@ dependencies:
   # (MobileScanner.kt:167 et :243, "Bitmap? but Bitmap was expected") et fait
   # echouer le check "Smoke build leopardo_employee (debug APK)". Voir
   # docs/ci/SMOKE_MOBILE_SCANNER_750.md. A depinner des que le plugin corrige.
-  # Pin volontaire : 7.5.0 casse le build Kotlin Android (Smoke build
-  # leopardo_employee) — voir 4882250ff et docs/ci/SMOKE_MOBILE_SCANNER_750.md.
   # Le bump automatique 05869af2e l'avait ecrase, ce qui a aussi cree un
   # conflit avec le pin exact "7.4.4" de leopardo_pos_retail (#9430).
-  mobile_scanner: 7.5.0
+  # #9949 : le pin a nouveau ecrase en 7.5.0 faisait echouer les 3 jobs
+  # `Analyze` mobiles (core, pos_retail, pos_restaurant).
+  mobile_scanner: 7.4.4
   # Pin volontaire en 1.x (#9432) : la 2.0.0 a change de LICENCE (BSD-3 ->
   # licence proprietaire FlutterBluePlus, licence commerciale payante pour
   # toute organisation a but lucratif) et exige desormais une declaration
@@ -62,8 +62,8 @@ dependencies:
   # 2.3.15 hissee par le bump automatique ne COMPILAIT pas (missing argument
   # `license`). Repasser en 2.x suppose une decision proprietaire sur la
   # licence, pas un simple bump de dependance. 1.36.8 = derniere version
-  # BSD-3.
-  flutter_blue_plus: ^2.3.15
+  # BSD-3, et c'est la version que les 11 autres apps resolvent deja (#9949).
+  flutter_blue_plus: ^1.36.8
 
 dev_dependencies:
   flutter_test:

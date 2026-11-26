@@ -635,6 +635,7 @@ def layout(title: str, depth: int, body: str, subtitle: str = "") -> str:
       <a href="{p}recap.html">Récapitulatif</a>
       <a href="{p}tests-ia-leopardo-hr.md">Markdown</a>
       <a href="{p}prompt-agent-testeur.md">Prompt IA</a>
+      <a href="{p}../marketing/index.html">Scripts marketing</a>
     </nav>
   </div>
 </header>

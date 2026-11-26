@@ -155,7 +155,8 @@ void main() {
     });
 
     test('ajoute la locale quand elle est fournie', () {
-      expect(brandPublicPath('chez-lea', locale: 'ar'), '/public/brands/chez-lea?lang=ar');
+      expect(brandPublicPath('chez-lea', locale: 'ar'),
+          '/public/brands/chez-lea?lang=ar');
     });
   });
 
@@ -173,7 +174,9 @@ void main() {
     test('classe une réponse malformée en invalid', () async {
       final result = await loadBrand(
         slug: 'chez-lea',
-        loader: (_) async => <String, dynamic>{'data': <String, dynamic>{'slug': 'chez-lea'}},
+        loader: (_) async => <String, dynamic>{
+          'data': <String, dynamic>{'slug': 'chez-lea'}
+        },
       );
 
       expect(result.outcome, BrandLoadOutcome.invalid);

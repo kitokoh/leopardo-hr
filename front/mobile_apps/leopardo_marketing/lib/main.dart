@@ -19,6 +19,7 @@ import 'features/auth/screens/login_screen.dart';
 import 'features/marketing/screens/marketing_home_screen.dart';
 import 'features/marketing/screens/social_posts_screen.dart';
 import 'features/marketing/screens/create_post_screen.dart';
+import 'features/marketing/screens/social_post_detail_screen.dart';
 import 'core/providers/core_providers.dart';
 
 void main() {
@@ -129,6 +130,23 @@ final _routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/create-post',
         builder: (context, state) => const CreatePostScreen(),
+      ),
+      // #9963 — la carte de `social_posts_screen.dart` poussait
+      // `/post/${post.id}` sans qu'aucune route ne l'enregistre : c'est le
+      // défaut #3293 (cible de navigation déclarée dans l'UI, absente du
+      // routeur) → GoException au tap, écran figé. Le test
+      // `test/navigation/marketing_router_test.dart` verrouille l'invariant.
+      GoRoute(
+        path: '/post/:id',
+        builder: (context, state) {
+          final raw = state.pathParameters['id'];
+          final id = int.tryParse(raw ?? '');
+          // Un identifiant non numérique ne doit pas produire un écran de
+          // détail vide : on revient à la liste plutôt que d'afficher
+          // « Publication #null ».
+          if (id == null) return const SocialPostsScreen();
+          return SocialPostDetailScreen(postId: id);
+        },
       ),
     ],
   );

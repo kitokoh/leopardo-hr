@@ -1,0 +1,960 @@
+{
+  "_meta": {
+    "locale": "en",
+    "dir": "ltr",
+    "description": "Contenu traduit des scripts video (EN). Les champs absents (shot, music, notes) restent en francais et sont signales par un badge FR : ce sont des consignes de tournage internes, pas du contenu public.",
+    "translated_fields": [
+      "title",
+      "objective",
+      "hook",
+      "cta",
+      "beats.vo",
+      "beats.text"
+    ],
+    "updated_at": "2026-11-26T19:40:00Z"
+  },
+  "categories": {
+    "presentation-solution": {
+      "name": "Solution overview",
+      "desc": "Brand films: introduce Leopardo to the general public, from the 90-second flagship film to the short advertising cuts."
+    },
+    "verticales": {
+      "name": "Verticals",
+      "desc": "One film per activatable business pack: restaurant, travel agency, pharmacy, hospitality, healthcare, school, fuel station, ride-hailing."
+    },
+    "personas": {
+      "name": "User roles",
+      "desc": "One film per role: what each person actually does in Leopardo, in 45 seconds."
+    },
+    "fonctionnalites": {
+      "name": "Features",
+      "desc": "Product films: multi-country payroll, attendance and offline kiosk, accounting, AI assistant and public storefront."
+    },
+    "formats-courts": {
+      "name": "Short formats & social",
+      "desc": "Vertical 9:16: hooks, testimonials and onboarding, for TikTok, Reels, Shorts and LinkedIn."
+    }
+  },
+  "vagues": {
+    "V1": {
+      "name": "Flagship film and advertising cuts",
+      "goal": "Set the master message and extract the paid formats from it. Everything else depends on it.",
+      "rationale": "The 90-second film fixes the vocabulary, the shots and the music. The 30-second and 15-second cuts are edited from the same footage, so they cost almost nothing extra."
+    },
+    "V2": {
+      "name": "Highest-demand verticals",
+      "goal": "Cover the business packs that are already the most requested, to feed the pack pages of the site.",
+      "rationale": "Restaurant, travel, pharmacy and hospitality share the same field setting: one shooting plan covers four films."
+    },
+    "V3": {
+      "name": "Remaining verticals",
+      "goal": "Complete the business pack grid, including the two verticals added in v2.",
+      "rationale": "Healthcare, school, fuel station and ride-hailing close the historical grid. Farm OS and International Trade OS land here: their interfaces are the most recent."
+    },
+    "V4": {
+      "name": "User roles",
+      "goal": "Speak to the person, not the sector: one film per role.",
+      "rationale": "These films are shot after the verticals: they reuse the same interfaces, but from a role's point of view. Shooting them earlier would mean shooting them twice."
+    },
+    "V5": {
+      "name": "Product films",
+      "goal": "Explain the four capabilities that make the difference against a spreadsheet.",
+      "rationale": "Multi-country payroll, offline attendance, accounting and the AI assistant need captures validated by the product team, which is why they come after the verticals."
+    },
+    "V6": {
+      "name": "Short formats and social",
+      "goal": "Feed TikTok, Reels, Shorts and LinkedIn with vertical formats.",
+      "rationale": "The 9:16 hooks are calibrated on the performance of the previous waves. The customer testimonial requires a client's written consent."
+    }
+  },
+  "scripts": {
+    "VID-01": {
+      "title": "Leopardo, the Business OS for field companies (flagship film)",
+      "objective": "Make people understand in 90 seconds what Leopardo replaces and who it is for. Master film from which the 30-second and 15-second cuts derive.",
+      "hook": "Three tools every field company still uses: a paper timesheet, a payroll spreadsheet, a WhatsApp group.",
+      "cta": "Try free for 14 days on kitokoh.github.io/leopardo-hr, or book a demo.",
+      "beats": [
+        {
+          "vo": "Every morning, your teams clock in on paper. Your payroll is calculated on a spreadsheet. Your customers live in WhatsApp.",
+          "text": "3 tools. 0 connection."
+        },
+        {
+          "vo": "Leopardo brings all of that into a single platform, built for companies that work in the field.",
+          "text": "One single platform."
+        },
+        {
+          "vo": "HR and multi-country payroll: employee records, contracts, documents, payslips. 21 countries of payroll rules in pilot.",
+          "text": "HR & multi-country payroll"
+        },
+        {
+          "vo": "Attendance on mobile, ZKTeco biometric kiosk, and an offline mode that syncs as soon as the network returns.",
+          "text": "Attendance anywhere, even without network"
+        },
+        {
+          "vo": "Accounting, customer CRM, marketing, and activatable business packs: restaurant, travel, pharmacy, hospitality, healthcare, school, fuel, ride-hailing.",
+          "text": "One core. Eight verticals."
+        },
+        {
+          "vo": "31 business modules, 994 open API endpoints, 8 Flutter apps, and strict multi-tenant isolation.",
+          "text": "31 modules - 994 endpoints - 8 apps"
+        },
+        {
+          "vo": "Fourteen days of trial, no credit card. Business packs included. Set up in under thirty minutes.",
+          "text": "14-day trial - 0 EUR"
+        }
+      ],
+      "audience": "General public, hands-on SME owners"
+    },
+    "VID-02": {
+      "title": "Leopardo in 30 seconds (advertising cut)",
+      "objective": "Advertising version of the flagship film: one message, one CTA. No new shots, editing only, from VID-01.",
+      "hook": "Your payroll runs on a spreadsheet. Your attendance on paper. That can stop today.",
+      "cta": "Single button: Try for free.",
+      "beats": [
+        {
+          "vo": "Your payroll runs on a spreadsheet. Your attendance on paper.",
+          "text": "That can stop today."
+        },
+        {
+          "vo": "Leopardo brings HR, payroll, attendance, accounting and CRM into a single platform.",
+          "text": "HR - Payroll - Attendance - Accounting - CRM"
+        },
+        {
+          "vo": "With business packs that are already ready: restaurant, travel, pharmacy, hospitality.",
+          "text": "Business packs included"
+        },
+        {
+          "vo": "Fourteen days of trial, no credit card.",
+          "text": "14 days - no card"
+        }
+      ],
+      "audience": "Cold outreach, YouTube pre-roll, LinkedIn"
+    },
+    "VID-03": {
+      "title": "15-second bumper (non-skippable pre-roll)",
+      "objective": "One word remembered: the name. Constrained format, no product explanation.",
+      "hook": "One question, one answer, one name.",
+      "cta": "No button: the bumper installs the name, conversion happens on the 30-second film.",
+      "beats": [
+        {
+          "vo": "How many tools does it take to run your teams?",
+          "text": "How many tools?"
+        },
+        {
+          "vo": "One.",
+          "text": "One."
+        },
+        {
+          "vo": "Leopardo. The Business OS for field companies.",
+          "text": "Leopardo"
+        }
+      ],
+      "audience": "Non-skippable YouTube pre-roll, display video"
+    },
+    "VID-04": {
+      "title": "How Leopardo replaces Excel, WhatsApp and paper (3-minute explainer)",
+      "objective": "Answer objections before the sales call: migration, security, multi-country, price. Screen-capture format with commentary.",
+      "hook": "We are not asking you to change how you work. We are asking you to stop documenting it three times.",
+      "cta": "Download the comparison grid, then book 20 minutes of demo.",
+      "beats": [
+        {
+          "vo": "We are not asking you to change how you work. We are asking you to stop documenting it three times.",
+          "text": "The problem is not the tool. It is triple entry."
+        },
+        {
+          "vo": "First step: the reference data. One employee, one record, one contract, documents. Entered once, used everywhere.",
+          "text": "Enter once."
+        },
+        {
+          "vo": "Second step: the field. Attendance comes up from mobile or the kiosk. If the network drops, the terminal keeps working and resyncs when the link returns.",
+          "text": "The field does not stop when the network stops."
+        },
+        {
+          "vo": "Third step: payroll. The country's rules apply, attendance and leave variables flow in, the payslip is generated and archived.",
+          "text": "21 countries of payroll rules in pilot."
+        },
+        {
+          "vo": "Fourth step: openness. 994 documented API endpoints, webhooks, and business packs you activate according to your sector.",
+          "text": "994 endpoints - activatable packs"
+        },
+        {
+          "vo": "Multi-tenant isolation, RBAC, audit log. Your data stays yours, in the cloud or self-hosted.",
+          "text": "Cloud or self-hosted."
+        }
+      ],
+      "audience": "Evaluating executives, product page, async demo"
+    },
+    "VID-05": {
+      "title": "Restaurant: from the dining room to the evening margin",
+      "objective": "Show the RestaurantManager pack: POS and till, orders, reservations, stock and COGS, delivery, loyalty.",
+      "hook": "At 11 pm you do not know how much you earned. The Restaurant pack does.",
+      "cta": "Activate the Restaurant pack from the product site, with no pack fee.",
+      "beats": [
+        {
+          "vo": "At eleven at night, you do not really know how much you earned tonight.",
+          "text": "Service is over. The maths begins."
+        },
+        {
+          "vo": "The Restaurant pack takes the order in the dining room, sends it to the kitchen, and takes payment on the same till.",
+          "text": "POS & till"
+        },
+        {
+          "vo": "Stock is decremented with every dish. Food cost is calculated on its own, dish by dish.",
+          "text": "Stock & COGS in real time"
+        },
+        {
+          "vo": "Reservations, delivery and the loyalty programme sit in the same back office as your payroll and your teams.",
+          "text": "One single back office"
+        },
+        {
+          "vo": "The Restaurant pack is included. You pay for the platform, not for the sector.",
+          "text": "Pack included"
+        }
+      ],
+      "audience": "Restaurant owners, multi-site managers"
+    },
+    "VID-06": {
+      "title": "Travel agency: sell, book, board",
+      "objective": "Show the Travel agency pack: public storefront, routes, bookings, tracking, check-in, cancellation.",
+      "hook": "Your customers book on WhatsApp. Your files live in a notebook. Your partners send you PDFs.",
+      "cta": "Activate the Travel agency pack and publish the storefront in one day.",
+      "beats": [
+        {
+          "vo": "Your customers book on WhatsApp. Your files live in a notebook. Your partners send you PDFs.",
+          "text": "Three channels. Zero shared file."
+        },
+        {
+          "vo": "The Travel agency pack publishes your online storefront: routes, prices, availability.",
+          "text": "Public storefront"
+        },
+        {
+          "vo": "A booking creates a single file: customer, passengers, payment, travel documents.",
+          "text": "One file per trip"
+        },
+        {
+          "vo": "Tracking and check-in happen from the same screen, and a cancellation leaves an auditable trace.",
+          "text": "Tracking & check-in"
+        },
+        {
+          "vo": "And your teams, your payroll and your accounting are already in Leopardo.",
+          "text": "Pack included"
+        }
+      ],
+      "audience": "Travel agencies, tour operators"
+    },
+    "VID-07": {
+      "title": "Pharmacy: the batch, the prescription, the traceability",
+      "objective": "Show the PharmaManager pack: product reference data, stock by batch, purchases, counter sales, prescription register.",
+      "hook": "In a pharmacy, a batch error is not a stock error. It is a public health problem.",
+      "cta": "Activate the PharmaManager pack from the product site.",
+      "beats": [
+        {
+          "vo": "In a pharmacy, a batch error is not a stock error. It is a public health problem.",
+          "text": "The batch is not a detail."
+        },
+        {
+          "vo": "The PharmaManager pack holds the product reference data and the stock batch by batch, with expiry tracked.",
+          "text": "Stock by batch"
+        },
+        {
+          "vo": "Purchases and counter sales are entered at the counter, with no double entry.",
+          "text": "Purchases & sales"
+        },
+        {
+          "vo": "The prescription register is kept and searchable, with a trace of who dispensed what.",
+          "text": "Prescription register"
+        },
+        {
+          "vo": "The pack is included, and it shares the payroll and the teams of your pharmacy.",
+          "text": "Pack included"
+        }
+      ],
+      "audience": "Pharmacies, pharmacy buying groups"
+    },
+    "VID-08": {
+      "title": "Hospitality: properties, inventory, leases and rents",
+      "objective": "Show the HospitalityManager pack: properties, inventory, reservations, leases and rents.",
+      "hook": "A hotel, residences, long-term rentals: three businesses, one single inventory.",
+      "cta": "Activate the HospitalityManager pack.",
+      "beats": [
+        {
+          "vo": "A hotel, residences, long-term rentals. Three businesses, one single inventory.",
+          "text": "Three businesses. One inventory."
+        },
+        {
+          "vo": "The Hospitality pack manages your properties and their inventory: rooms, equipment, conditions.",
+          "text": "Properties & inventory"
+        },
+        {
+          "vo": "Reservations sit on the real inventory, not on a parallel spreadsheet.",
+          "text": "Reservations"
+        },
+        {
+          "vo": "For long-term rental, leases and rents are tracked in the same tool.",
+          "text": "Leases & rents"
+        },
+        {
+          "vo": "And housekeeping, maintenance and teams feed into the same system.",
+          "text": "Pack included"
+        }
+      ],
+      "audience": "Hoteliers, residence and rental managers"
+    },
+    "VID-09": {
+      "title": "Healthcare: patients, appointments, admissions, care billing",
+      "objective": "Show the HealthManager pack: patients, appointments, admissions, care billing.",
+      "hook": "The patient record is often the one place where information arrives last.",
+      "cta": "Activate the HealthManager pack.",
+      "beats": [
+        {
+          "vo": "The patient record is often the one place where information arrives last.",
+          "text": "Information arrives last."
+        },
+        {
+          "vo": "The HealthManager pack opens a single patient record, shared between reception, care and billing.",
+          "text": "One patient record"
+        },
+        {
+          "vo": "Appointments are booked and rescheduled without calling the patient three times.",
+          "text": "Appointments"
+        },
+        {
+          "vo": "Admission and care billing follow the same flow, with no re-entry.",
+          "text": "Admission & billing"
+        },
+        {
+          "vo": "Your care teams, their schedules and their payroll stay in Leopardo.",
+          "text": "Pack included"
+        }
+      ],
+      "audience": "Private clinics, hospitals, care centres"
+    },
+    "VID-10": {
+      "title": "School: institutions, classes, grades",
+      "objective": "Show the EduManager pack: institutions, classes, grades, and the link with the teams.",
+      "hook": "Grades arrive on a spreadsheet. Absences in a notebook. Parents call reception.",
+      "cta": "Activate the EduManager pack.",
+      "beats": [
+        {
+          "vo": "Grades arrive on a spreadsheet. Absences in a notebook. Parents call reception.",
+          "text": "Three sources."
+        },
+        {
+          "vo": "The EduManager pack structures your institutions and your classes in a single reference base.",
+          "text": "Institutions & classes"
+        },
+        {
+          "vo": "Grades are entered per class, and consolidated with no retyping.",
+          "text": "Grades"
+        },
+        {
+          "vo": "Teachers and administrative staff are in the same HR system as everyone else.",
+          "text": "Pack included"
+        }
+      ],
+      "audience": "Private schools, school groups"
+    },
+    "VID-11": {
+      "title": "Fuel station: the litre, the pump, the margin",
+      "objective": "Show the FuelStation pack: pump tracking, volumes and entries, with shift teams.",
+      "hook": "A station never closes. Your management does.",
+      "cta": "Activate the FuelStation pack.",
+      "beats": [
+        {
+          "vo": "A station never closes. Your management does.",
+          "text": "24 hours a day."
+        },
+        {
+          "vo": "The FuelStation pack tracks pumps and volumes, and attaches entries to the right day.",
+          "text": "Pumps & volumes"
+        },
+        {
+          "vo": "Shift teams clock in on the kiosk, even when the network drops.",
+          "text": "Shift teams"
+        },
+        {
+          "vo": "And your night teams' payroll is calculated from the same data.",
+          "text": "Pack included"
+        }
+      ],
+      "audience": "Fuel station networks, independent operators"
+    },
+    "VID-12": {
+      "title": "Ride-hailing: book, dispatch to the nearest, track",
+      "objective": "Show the VTC pack: ride booking, dispatch to the nearest driver via the geospatial core, pricing and tracking.",
+      "hook": "The customer calls. You look for who is closest. By hand.",
+      "cta": "Activate the VTC pack.",
+      "beats": [
+        {
+          "vo": "The customer calls. You look for who is closest. By hand.",
+          "text": "Dispatch by hand."
+        },
+        {
+          "vo": "The VTC pack takes the booking and dispatches to the nearest driver, computed by the geospatial core.",
+          "text": "Dispatch to the nearest"
+        },
+        {
+          "vo": "Pricing applies per ride, and tracking is visible until the end.",
+          "text": "Pricing & tracking"
+        },
+        {
+          "vo": "Your drivers, their schedules and their payroll are in the same tool.",
+          "text": "Pack included"
+        }
+      ],
+      "audience": "Ride-hailing and taxi fleets, local platforms"
+    },
+    "VID-13": {
+      "title": "Employee: my day in Leopardo",
+      "objective": "Show employee self-service: clock in, request leave, view a payslip. No training needed.",
+      "hook": "Three things you already do. In thirty seconds, without calling HR.",
+      "cta": "No commercial CTA: onboarding film, to be embedded in the arrival journey.",
+      "beats": [
+        {
+          "vo": "Three things you already do. In thirty seconds, without calling HR.",
+          "text": "Without calling HR."
+        },
+        {
+          "vo": "You clock in from your phone, or on the kiosk at the entrance.",
+          "text": "Clock in"
+        },
+        {
+          "vo": "You request leave, and you see where the approval stands.",
+          "text": "Request leave"
+        },
+        {
+          "vo": "You view your payslip, archived and downloadable.",
+          "text": "View my payslip"
+        }
+      ],
+      "audience": "Employees, candidates, internal onboarding"
+    },
+    "VID-14": {
+      "title": "Manager: run the operation without waiting for Friday's report",
+      "objective": "Show the manager dashboard: teams, presence, approvals, CRM.",
+      "hook": "Friday's report describes a week that is already over.",
+      "cta": "Book a 20-minute manager demo.",
+      "beats": [
+        {
+          "vo": "Friday's report describes a week that is already over.",
+          "text": "Too late."
+        },
+        {
+          "vo": "The dashboard shows your teams' presence, today, right now.",
+          "text": "Today, right now"
+        },
+        {
+          "vo": "Leave requests and approvals arrive in a single queue.",
+          "text": "One single queue"
+        },
+        {
+          "vo": "And customer tracking is on the same screen as your teams.",
+          "text": "Teams & customers"
+        }
+      ],
+      "audience": "Operations managers, operations directors"
+    },
+    "VID-15": {
+      "title": "HR: the reference data that feeds everything else",
+      "objective": "Show the HR role: employee reference data, contracts, absences, roles, recruitment.",
+      "hook": "If the employee reference data is wrong, payroll is wrong. Everything else follows.",
+      "cta": "Book a 20-minute HR demo.",
+      "beats": [
+        {
+          "vo": "If the employee reference data is wrong, payroll is wrong. Everything else follows.",
+          "text": "Everything starts from the reference data."
+        },
+        {
+          "vo": "One record per employee: contract, documents, department, history.",
+          "text": "One record per employee"
+        },
+        {
+          "vo": "Absences and balances update without manual recalculation.",
+          "text": "Absences & balances"
+        },
+        {
+          "vo": "Roles and rights are assigned by profile, not by person.",
+          "text": "Roles & rights"
+        }
+      ],
+      "audience": "HR managers, HR directors of multi-site SMEs"
+    },
+    "VID-16": {
+      "title": "Accountant: from the payroll variable to the payslip",
+      "objective": "Show the accountant journey: salary structures, simulation, payslips, country compliance.",
+      "hook": "The payroll month should not start with a spreadsheet export.",
+      "cta": "Book a 20-minute payroll demo.",
+      "beats": [
+        {
+          "vo": "The payroll month should not start with a spreadsheet export.",
+          "text": "No export."
+        },
+        {
+          "vo": "Salary structures are defined once, per country and per category.",
+          "text": "Salary structures"
+        },
+        {
+          "vo": "The simulation shows the result before the month is locked.",
+          "text": "Simulate before locking"
+        },
+        {
+          "vo": "Payslips are generated, archived and stay auditable.",
+          "text": "Payslips & audit"
+        }
+      ],
+      "audience": "Accountants, firms, payroll managers"
+    },
+    "VID-17": {
+      "title": "Multi-country payroll: 21 countries of rules in pilot",
+      "objective": "Explain multi-country payroll: rules per country, structures, simulation, payslips, audit.",
+      "hook": "One group, five countries, five ways of calculating a payslip.",
+      "cta": "Ask for the list of covered countries and their status.",
+      "beats": [
+        {
+          "vo": "One group, five countries, five ways of calculating a payslip.",
+          "text": "Five countries. Five rule sets."
+        },
+        {
+          "vo": "Each country carries its payroll rules, its structures and its categories.",
+          "text": "Rules per country"
+        },
+        {
+          "vo": "Attendance and leave variables flow automatically into the calculation.",
+          "text": "Automatic variables"
+        },
+        {
+          "vo": "The simulation validates the month before issue, and every payslip stays auditable.",
+          "text": "Simulate, then issue"
+        },
+        {
+          "vo": "Twenty-one countries of payroll rules in pilot today.",
+          "text": "21 countries (pilot)"
+        }
+      ],
+      "audience": "Multi-country groups, HR directors, CFOs"
+    },
+    "VID-18": {
+      "title": "Attendance, kiosk and offline mode",
+      "objective": "Show the three attendance paths (mobile, biometric kiosk, fallback mode) and Edge resynchronisation.",
+      "hook": "The network drops. The teams still clock in.",
+      "cta": "Book a field demo with a simulated network outage.",
+      "beats": [
+        {
+          "vo": "The network drops. The teams still clock in.",
+          "text": "The network drops."
+        },
+        {
+          "vo": "Three paths: the employee's mobile, the ZKTeco biometric kiosk, and the fallback mode by staff number.",
+          "text": "Mobile - Kiosk - Staff number"
+        },
+        {
+          "vo": "Offline, punches queue locally, then sync when the link returns.",
+          "text": "Local queue, then sync"
+        },
+        {
+          "vo": "Every punch keeps its original timestamp, not the synchronisation one.",
+          "text": "Original timestamp kept"
+        },
+        {
+          "vo": "And that data feeds payroll directly.",
+          "text": "From punch to payroll"
+        }
+      ],
+      "audience": "Operations directors, site managers"
+    },
+    "VID-19": {
+      "title": "Accounting: journals, general ledger, trial balance, FEC",
+      "objective": "Show the accounting module: journals, general ledger, trial balance, FEC, reconciliation.",
+      "hook": "Accounting does not need a new tool. It needs the same data as payroll.",
+      "cta": "Book a 20-minute accounting demo.",
+      "beats": [
+        {
+          "vo": "Accounting does not need a new tool. It needs the same data as payroll.",
+          "text": "The same data."
+        },
+        {
+          "vo": "Journals, general ledger and trial balance are in the same tenant as your payroll entries.",
+          "text": "Journals - Ledger - Trial balance"
+        },
+        {
+          "vo": "The FEC exports in the format your accountant expects.",
+          "text": "FEC export"
+        },
+        {
+          "vo": "Reconciliation happens in the tool, with a trace of who matched what.",
+          "text": "Reconciliation & trace"
+        }
+      ],
+      "audience": "CFOs, chartered accountants, partner firms"
+    },
+    "VID-20": {
+      "title": "AI assistant and public storefront: be found, then answer",
+      "objective": "Show the one-click public storefront and the AI assistant (with GDPR minimisation and audit).",
+      "hook": "A customer looks for you. They find an empty page. They call a competitor.",
+      "cta": "Create a demo storefront, then book a demo.",
+      "beats": [
+        {
+          "vo": "A customer looks for you. They find an empty page. They call a competitor.",
+          "text": "Be found."
+        },
+        {
+          "vo": "The public storefront is created in one click: sections, theme, publication.",
+          "text": "Storefront in one click"
+        },
+        {
+          "vo": "The AI assistant answers common questions, with data minimisation and an audit log.",
+          "text": "AI with audit"
+        },
+        {
+          "vo": "Sending to a cloud provider remains an explicit decision, and can be switched off.",
+          "text": "Can be switched off"
+        },
+        {
+          "vo": "Be found, answer, and keep control of your data.",
+          "text": "Control of your data"
+        }
+      ],
+      "audience": "Executives, marketing managers"
+    },
+    "VID-21": {
+      "title": "3 signs your company has outgrown Excel (9:16 hook)",
+      "objective": "Discovery hook: three recognisable signals, one CTA. No product demonstration.",
+      "hook": "Three signs your company has outgrown Excel without knowing it.",
+      "cta": "Link in bio: 14-day trial, no card.",
+      "beats": [
+        {
+          "vo": "Three signs your company has outgrown Excel without knowing it.",
+          "text": "3 signs"
+        },
+        {
+          "vo": "One: your payroll depends on a single person.",
+          "text": "1. A single person"
+        },
+        {
+          "vo": "Two: your timesheets arrive as photos on WhatsApp.",
+          "text": "2. Photos"
+        },
+        {
+          "vo": "Three: you do not know what an hour of work really costs. Leopardo does.",
+          "text": "3. The real cost"
+        }
+      ],
+      "audience": "TikTok, Reels, Shorts, LinkedIn video"
+    },
+    "VID-22": {
+      "title": "Customer testimonial: before / after (9:16)",
+      "objective": "Reusable testimonial structure: before, trigger, after, advice. To be shot with a real customer.",
+      "hook": "Before, I spent Friday stitching spreadsheets back together.",
+      "cta": "See the full case study on the product site.",
+      "beats": [
+        {
+          "vo": "Before, I spent Friday stitching spreadsheets back together.",
+          "text": "Before"
+        },
+        {
+          "vo": "We started with attendance and payroll, because that is where mistakes cost the most.",
+          "text": "The trigger"
+        },
+        {
+          "vo": "Today, Friday is for something else.",
+          "text": "After"
+        },
+        {
+          "vo": "My advice: start with one module, not with everything.",
+          "text": "One module at a time"
+        }
+      ],
+      "audience": "Social, testimonials page, sales pitch"
+    },
+    "VID-23": {
+      "title": "Set-up in under 30 minutes (9:16)",
+      "objective": "Reduce the fear of migration: show the four real set-up steps.",
+      "hook": "You think migrating takes three months. Here are the four real steps.",
+      "cta": "Start the 14-day trial.",
+      "beats": [
+        {
+          "vo": "You think migrating takes three months. Here are the four real steps.",
+          "text": "4 steps"
+        },
+        {
+          "vo": "One: create the company and invite the managers.",
+          "text": "1. Create"
+        },
+        {
+          "vo": "Two: import the employees and the contracts.",
+          "text": "2. Import"
+        },
+        {
+          "vo": "Three: activate the business pack. Four: clock in. That is it.",
+          "text": "3. Activate - 4. Clock in"
+        },
+        {
+          "vo": "Under thirty minutes, with no credit card.",
+          "text": "30 minutes"
+        }
+      ],
+      "audience": "Trial prospects, onboarding"
+    },
+    "VID-24": {
+      "title": "Farm OS: the plot, the herd, the harvest, the margin",
+      "objective": "Show the Farm OS pack (BC-37): plots and crops, work calendar, inputs and stock, equipment, livestock, harvests and traceability, purchases and sales, costs and profitability.",
+      "hook": "You know what you sowed. Do you know what the plot brought in?",
+      "cta": "Activate the Farm OS pack from the product site, with no pack fee.",
+      "beats": [
+        {
+          "vo": "You know what you sowed. You rarely know what each plot actually brought in.",
+          "text": "Sowing is easy. Counting is not."
+        },
+        {
+          "vo": "Farm OS holds the plot register: each plot, its crop, its declared area, its crop cycle.",
+          "text": "Plots & crop cycles"
+        },
+        {
+          "vo": "The work calendar is filled in from the field, even without network. Every entry carries a unique identifier: nothing is counted twice.",
+          "text": "Field entries, offline"
+        },
+        {
+          "vo": "Inputs and stock, equipment, livestock, harvests and traceability: a harvest creates a single stock lot, and every issue is a typed movement.",
+          "text": "Stock, livestock, harvests"
+        },
+        {
+          "vo": "Purchases, sales, costs and profitability are calculated on the same data. The Farm OS pack is included: you pay for the platform, not for the sector.",
+          "text": "Costs & profitability - pack included"
+        }
+      ],
+      "audience": "Farmers, livestock breeders, farms and agricultural cooperatives"
+    },
+    "VID-25": {
+      "title": "International Trade OS: from RFQ to landed cost",
+      "objective": "Show the International Trade OS pack (BC-36): sourcing and counterparties, multi-supplier RFQ, quotes, orders, transport, landed cost and documentary assistance.",
+      "hook": "Your margin is not lost at the sale. It is lost between the quote and the container.",
+      "cta": "Activate the International Trade OS pack from the product site, with no pack fee.",
+      "beats": [
+        {
+          "vo": "Your margin is not lost at the moment of sale. It is lost between the quote and the container.",
+          "text": "The quote says yes. The container says no."
+        },
+        {
+          "vo": "Trade OS holds your counterparties and your product catalogue, on the buy side as well as the sell side. The same company can import and export: no fixed role.",
+          "text": "Buy and sell, no fixed role"
+        },
+        {
+          "vo": "You send a price request to several suppliers, compare the quotes, then turn the best one into an order.",
+          "text": "Multi-supplier RFQ"
+        },
+        {
+          "vo": "Transport, documents and costs attach to the order. Landed cost is calculated on real data, not on a corridor estimate.",
+          "text": "Landed cost, not an estimate"
+        },
+        {
+          "vo": "Documentary assistance prepares your papers. It replaces neither the forwarder nor customs: it gets you there prepared.",
+          "text": "Prepared, not cleared"
+        }
+      ],
+      "audience": "Importers, exporters, B2B wholesalers, freight forwarders"
+    },
+    "VID-26": {
+      "title": "Restaurant: the dinner rush, the evening margin (9:16 TikTok)",
+      "objective": "Decline the Restaurant vertical in native vertical format: show the dinner rush in the dining room and the evening margin, without a long product demonstration. Points to the 16:9 film VID-05 for the full version.",
+      "hook": "The dinner rush is over. Do you know what the service brought in?",
+      "cta": "Full film (16:9) in bio - 14-day trial, no card.",
+      "beats": [
+        {
+          "vo": "The dinner rush is over. Do you know what the service brought in?",
+          "text": "The dinner rush is over."
+        },
+        {
+          "vo": "Paid bills, tips, comped items, cancelled covers: it is all there, but in three different places.",
+          "text": "3 places. 0 overview."
+        },
+        {
+          "vo": "Leopardo holds the dining room: orders, payments, tips and discounts on the same day.",
+          "text": "Dining room, payments, tips"
+        },
+        {
+          "vo": "And in the evening, the real margin per service - not revenue, margin.",
+          "text": "Margin, not revenue"
+        },
+        {
+          "vo": "Restaurant: from the dining room to the evening margin. The full film is in bio.",
+          "text": "Full film in bio"
+        }
+      ],
+      "audience": "Restaurant owners, floor managers, restaurant chains — TikTok, Reels, Shorts"
+    },
+    "VID-27": {
+      "title": "Pharmacy: the recalled batch, the prescription (9:16 TikTok)",
+      "objective": "Decline the Pharmacy vertical in native vertical format: the recalled batch and the prescription register, without a long product demonstration. Points to the 16:9 film VID-07 for the full version.",
+      "hook": "A recalled batch. Do you know where it went?",
+      "cta": "Full film (16:9) in bio - activate the PharmaManager pack, with no pack fee.",
+      "beats": [
+        {
+          "vo": "A recalled batch. Do you know where it went?",
+          "text": "A recalled batch."
+        },
+        {
+          "vo": "Three notebooks, two spreadsheets, one till. And a box that should never have left.",
+          "text": "3 places. 0 traceability."
+        },
+        {
+          "vo": "Leopardo holds stock batch by batch, with expiry tracked at the counter.",
+          "text": "Stock by batch"
+        },
+        {
+          "vo": "The prescription register keeps who dispensed what, and when.",
+          "text": "Who dispensed what"
+        },
+        {
+          "vo": "Pharmacy: from the counter to the batch. The full film is in bio.",
+          "text": "Full film in bio"
+        }
+      ],
+      "audience": "Pharmacists, dispensary staff, pharmacy groups — TikTok, Reels, Shorts"
+    },
+    "VID-28": {
+      "title": "Hospitality: the room, the lease, the margin (9:16 TikTok)",
+      "objective": "Decline the Hospitality vertical in native vertical format: the real inventory and the leases, without a long product demonstration. Points to the 16:9 film VID-08 for the full version.",
+      "hook": "An empty room costs nothing. A room counted twice costs the season.",
+      "cta": "Full film (16:9) in bio - activate the HospitalityManager pack, with no pack fee.",
+      "beats": [
+        {
+          "vo": "An empty room costs nothing. A room counted twice costs the season.",
+          "text": "Counted twice."
+        },
+        {
+          "vo": "Reservations in a notebook, inventory on a spreadsheet, leases in a drawer.",
+          "text": "3 sources. 1 inventory."
+        },
+        {
+          "vo": "Leopardo places reservations on the real inventory: rooms, equipment, conditions.",
+          "text": "On the real inventory"
+        },
+        {
+          "vo": "And long-term rental tracks leases and rents in the same tool.",
+          "text": "Leases & rents"
+        },
+        {
+          "vo": "Hospitality: from the room to the margin. The full film is in bio.",
+          "text": "Full film in bio"
+        }
+      ],
+      "audience": "Hoteliers, residence and long-stay rental managers — TikTok, Reels, Shorts"
+    },
+    "VID-29": {
+      "title": "School: the grade, the absence, the parent's call (9:16 TikTok)",
+      "objective": "Decline the School vertical in native vertical format: the grade, the absence and the parent's call, without a long product demonstration. Points to the 16:9 film VID-10 for the full version.",
+      "hook": "The grade is in a spreadsheet. The absence is in a notebook. And the parent is calling the front desk.",
+      "cta": "Full film (16:9) in bio - activate the EduManager pack, with no pack fee.",
+      "beats": [
+        {
+          "vo": "The grade is in a spreadsheet. The absence is in a notebook. And the parent is calling the front desk.",
+          "text": "3 sources. 0 overview."
+        },
+        {
+          "vo": "Three people retype the same information. And nobody knows which version is right.",
+          "text": "Who has the right version?"
+        },
+        {
+          "vo": "Leopardo holds schools and classes in a single reference.",
+          "text": "Schools & classes"
+        },
+        {
+          "vo": "Grades are entered per class and consolidated with no retyping.",
+          "text": "Consolidated grades"
+        },
+        {
+          "vo": "School: from the classroom to the report card. The full film is in bio.",
+          "text": "Full film in bio"
+        }
+      ],
+      "audience": "Private school headteachers, school groups, administrative leads - TikTok, Reels, Shorts"
+    },
+    "VID-30": {
+      "title": "Fuel station: the night, the pump, the margin (9:16 TikTok)",
+      "objective": "Decline the Fuel station vertical in native vertical format: the night, the pump and the margin, without a long product demonstration. Points to the 16:9 film VID-11 for the full version.",
+      "hook": "A station never closes. Your management does.",
+      "cta": "Full film (16:9) in bio - activate the FuelStation pack, with no pack fee.",
+      "beats": [
+        {
+          "vo": "A station never closes. Your management does.",
+          "text": "24/7."
+        },
+        {
+          "vo": "The night reading goes into a notebook. The next day, nobody knows which day to attach it to.",
+          "text": "Which day?"
+        },
+        {
+          "vo": "Leopardo tracks pumps and volumes, and attaches every entry to the right day.",
+          "text": "Pumps & volumes"
+        },
+        {
+          "vo": "Shift teams clock in on the kiosk, even when the network drops.",
+          "text": "Offline kiosk"
+        },
+        {
+          "vo": "Fuel station: from the litre to the night payroll. The full film is in bio.",
+          "text": "Full film in bio"
+        }
+      ],
+      "audience": "Fuel station managers, fuel distribution networks - TikTok, Reels, Shorts"
+    },
+    "VID-31": {
+      "title": "Health: the record, the appointment, the invoice (9:16 TikTok)",
+      "objective": "Decline the Health vertical in native vertical format: the patient record, the appointment and the care invoice, without a long product demonstration. Points to the 16:9 film VID-09 for the full version.",
+      "hook": "The patient's record always arrives after the patient.",
+      "cta": "Full film (16:9) in bio - activate the HealthManager pack, with no pack fee.",
+      "audience": "Private clinics, care centres, group practices - TikTok, Reels, Shorts",
+      "beats": [
+        {
+          "vo": "The patient's record always arrives after the patient.",
+          "text": "The record arrives last."
+        },
+        {
+          "vo": "The front desk notes the time. The carer notes the care. Billing rebuilds it all from memory.",
+          "text": "3 places. 1 patient."
+        },
+        {
+          "vo": "Leopardo opens a single patient record, shared between the front desk, the care team and billing.",
+          "text": "One patient record"
+        },
+        {
+          "vo": "The appointment is rescheduled without calling the patient three times. The invoice follows the care.",
+          "text": "Appointments & invoice"
+        },
+        {
+          "vo": "Health: from the corridor to the invoice. The full film is in bio.",
+          "text": "Full film in bio"
+        }
+      ]
+    },
+    "VID-32": {
+      "title": "Ride-hailing: the trip, the nearest driver, the margin (9:16 TikTok)",
+      "objective": "Decline the ride-hailing vertical in native vertical format: the booking, the nearest-driver dispatch and the trip tracking, without a long product demonstration. Points to the 16:9 film VID-12 for the full version.",
+      "hook": "The customer calls. You look for who is closest. By hand.",
+      "cta": "Full film (16:9) in bio - activate the ride-hailing pack, with no pack fee.",
+      "audience": "Ride-hailing and taxi fleets, local mobility platforms - TikTok, Reels, Shorts",
+      "beats": [
+        {
+          "vo": "The customer calls. You look for who is closest. By hand.",
+          "text": "Dispatch by hand."
+        },
+        {
+          "vo": "Three calls for one trip. And the driver next door is still waiting.",
+          "text": "One trip, three calls."
+        },
+        {
+          "vo": "Leopardo takes the booking and dispatches to the nearest driver, computed by the geospatial core.",
+          "text": "Nearest-driver dispatch"
+        },
+        {
+          "vo": "The fare applies per trip, and tracking stays visible to the end.",
+          "text": "Fare & tracking"
+        },
+        {
+          "vo": "Ride-hailing: from the call to the trip. The full film is in bio.",
+          "text": "Full film in bio"
+        }
+      ]
+    }
+  }
+}

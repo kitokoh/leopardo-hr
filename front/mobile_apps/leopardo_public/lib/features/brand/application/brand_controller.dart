@@ -106,8 +106,8 @@ class BrandController extends Notifier<BrandState> {
 /// `autoDispose` : une marque ne doit pas survivre à l'écran qui l'affiche.
 /// Garder une marque en mémoire après la sortie d'un établissement ferait
 /// apparaître les couleurs de l'enseigne précédente au retour sur l'accueil.
-final brandControllerProvider =
-    NotifierProvider.autoDispose.family<BrandController, BrandState, String>((slug) {
+final brandControllerProvider = NotifierProvider.autoDispose
+    .family<BrandController, BrandState, String>((slug) {
   return BrandController();
 });
 

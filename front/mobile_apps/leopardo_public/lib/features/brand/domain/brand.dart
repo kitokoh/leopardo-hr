@@ -171,7 +171,10 @@ class BrandSurfaceProfile {
     final vertical = json?['vertical'];
     final label = json?['label'];
 
-    if (vertical is! String || vertical.isEmpty || label is! String || label.isEmpty) {
+    if (vertical is! String ||
+        vertical.isEmpty ||
+        label is! String ||
+        label.isEmpty) {
       return null;
     }
 
@@ -232,16 +235,26 @@ class Brand {
 
     final slug = json['slug'];
     final identity = BrandIdentity.tryParse(
-      json['identity'] is Map<String, dynamic> ? json['identity'] as Map<String, dynamic> : null,
+      json['identity'] is Map<String, dynamic>
+          ? json['identity'] as Map<String, dynamic>
+          : null,
     );
     final palette = BrandPalette.tryParse(
-      json['palette'] is Map<String, dynamic> ? json['palette'] as Map<String, dynamic> : null,
+      json['palette'] is Map<String, dynamic>
+          ? json['palette'] as Map<String, dynamic>
+          : null,
     );
     final profile = BrandSurfaceProfile.tryParse(
-      json['profile'] is Map<String, dynamic> ? json['profile'] as Map<String, dynamic> : null,
+      json['profile'] is Map<String, dynamic>
+          ? json['profile'] as Map<String, dynamic>
+          : null,
     );
 
-    if (slug is! String || slug.isEmpty || identity == null || palette == null || profile == null) {
+    if (slug is! String ||
+        slug.isEmpty ||
+        identity == null ||
+        palette == null ||
+        profile == null) {
       return null;
     }
 
@@ -250,10 +263,13 @@ class Brand {
         ? (json['locales'] as List).whereType<String>().toList(growable: false)
         : <String>[locale];
 
-    final surfaceJson =
-        json['surface'] is Map<String, dynamic> ? json['surface'] as Map<String, dynamic> : null;
+    final surfaceJson = json['surface'] is Map<String, dynamic>
+        ? json['surface'] as Map<String, dynamic>
+        : null;
     final surfaceLocales = surfaceJson?['locales'] is List
-        ? (surfaceJson!['locales'] as List).whereType<String>().toList(growable: false)
+        ? (surfaceJson!['locales'] as List)
+            .whereType<String>()
+            .toList(growable: false)
         : locales;
     final defaultLocale = surfaceJson?['default_locale'] is String
         ? surfaceJson!['default_locale'] as String
@@ -262,17 +278,24 @@ class Brand {
     return Brand(
       slug: slug,
       locale: locale,
-      direction: json['direction'] == 'rtl' ? TextDirectionality.rtl : TextDirectionality.ltr,
+      direction: json['direction'] == 'rtl'
+          ? TextDirectionality.rtl
+          : TextDirectionality.ltr,
       locales: locales,
       defaultLocale: defaultLocale,
-      vertical: json['vertical'] is String ? json['vertical'] as String : 'generic',
+      vertical:
+          json['vertical'] is String ? json['vertical'] as String : 'generic',
       identity: identity,
       palette: palette,
       surface: BrandSurface(
-        host: surfaceJson?['host'] is String ? surfaceJson!['host'] as String : null,
-        pathPrefix:
-            surfaceJson?['path_prefix'] is String ? surfaceJson!['path_prefix'] as String : null,
-        locales: surfaceLocales.isEmpty ? <String>[defaultLocale] : surfaceLocales,
+        host: surfaceJson?['host'] is String
+            ? surfaceJson!['host'] as String
+            : null,
+        pathPrefix: surfaceJson?['path_prefix'] is String
+            ? surfaceJson!['path_prefix'] as String
+            : null,
+        locales:
+            surfaceLocales.isEmpty ? <String>[defaultLocale] : surfaceLocales,
         defaultLocale: defaultLocale,
       ),
       profile: profile,
