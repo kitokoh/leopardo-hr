@@ -1,0 +1,518 @@
+{
+  "version": 1,
+  "updated": "2026-11-26",
+  "owner": "Marketing / QA",
+  "note": "Source de verite des scripts video de promotion. Editable directement : le portail est regenere par build_marketing.py. Chaque script porte un identifiant stable (VID-nn) : ne jamais le reutiliser pour un autre sujet.",
+  "categories": [
+    {
+      "slug": "presentation-solution",
+      "name": "Presentation de la solution",
+      "icon": "\ud83c\udfac",
+      "color": "#0f766e",
+      "desc": "Films de marque : presenter Leopardo au grand public, du film pilier de 90 s aux formats publicitaires courts."
+    },
+    {
+      "slug": "verticales",
+      "name": "Verticales",
+      "icon": "\ud83c\udfed",
+      "color": "#7c3aed",
+      "desc": "Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hotellerie, sante, ecole, station-service, VTC."
+    },
+    {
+      "slug": "personas",
+      "name": "Profils utilisateurs",
+      "icon": "\ud83d\udc65",
+      "color": "#2563eb",
+      "desc": "Un film par role : ce que chaque personne fait concretement dans Leopardo, en 45 secondes."
+    },
+    {
+      "slug": "fonctionnalites",
+      "name": "Fonctionnalites",
+      "icon": "\u2699\ufe0f",
+      "color": "#b45309",
+      "desc": "Films produit : paie multi-pays, pointage et kiosque hors-ligne, comptabilite, assistant IA et vitrine publique."
+    },
+    {
+      "slug": "formats-courts",
+      "name": "Formats courts & social",
+      "icon": "\ud83d\udcf1",
+      "color": "#db2777",
+      "desc": "Vertical 9:16 : hooks, temoignages et onboarding, pour TikTok, Reels, Shorts et LinkedIn."
+    }
+  ],
+  "scripts": [
+    {
+      "id": "VID-01",
+      "title": "Leopardo, le Business OS des entreprises de terrain (film pilier)",
+      "category": "presentation-solution",
+      "format": "16:9",
+      "duration": "90 s",
+      "audience": "Grand public, dirigeants de PME de terrain",
+      "objective": "Faire comprendre en 90 secondes ce que Leopardo remplace et pour qui il est fait. Film maitre dont derivent les cuts 30 s et 15 s.",
+      "hook": "Trois outils que toute entreprise de terrain utilise encore : un carnet de pointage, un tableur de paie, un groupe WhatsApp.",
+      "beats": [
+        {"t": "0:00-0:08", "vo": "Chaque matin, vos equipes pointent sur du papier. Vos paies se calculent sur un tableur. Vos clients vivent dans WhatsApp.", "shot": "Montage serre : carnet de pointage qui se remplit, tableur qui defile, fil de messages qui explose.", "text": "3 outils. 0 connexion."},
+        {"t": "0:08-0:20", "vo": "Leopardo reunit tout cela dans une seule plateforme, concue pour les entreprises qui travaillent sur le terrain.", "shot": "Les trois plans precedents se dissolvent dans une interface unique qui s'assemble.", "text": "Une seule plateforme."},
+        {"t": "0:20-0:38", "vo": "RH et paie multi-pays : dossiers employes, contrats, documents, bulletins. 21 pays de regles de paie en pilote.", "shot": "Ecran dossier employe, puis bulletin de paie qui se genere.", "text": "RH & paie multi-pays"},
+        {"t": "0:38-0:54", "vo": "Pointage sur mobile, kiosque biometrique ZKTeco, et mode hors-ligne qui synchronise des le retour du reseau.", "shot": "Employe qui badine sur un kiosque, telephone en mode hors-ligne, badge de synchronisation qui passe au vert.", "text": "Pointage partout, meme sans reseau"},
+        {"t": "0:54-1:10", "vo": "Comptabilite, CRM client, marketing, et des packs metier activables : restaurant, voyage, pharmacie, hotellerie, sante, ecole, carburant, VTC.", "shot": "Grille de packs metier qui s'allument un par un.", "text": "Un socle. Huit verticales."},
+        {"t": "1:10-1:22", "vo": "31 modules metier, 994 endpoints API ouverts, 8 applications Flutter, et une isolation multi-tenant stricte.", "shot": "Chiffres qui s'affichent en grand, puis schema d'isolation tenant.", "text": "31 modules - 994 endpoints - 8 apps"},
+        {"t": "1:22-1:30", "vo": "Quatorze jours d'essai, sans carte bancaire. Packs metier offerts. Mise en route en moins de trente minutes.", "shot": "Logo, URL, bouton d'essai.", "text": "14 jours d'essai - 0 EUR"}
+      ],
+      "cta": "Essayer gratuitement 14 jours sur kitokoh.github.io/leopardo-hr, ou demander une demo.",
+      "music": "Percussion organique montante, 100-110 BPM, silence d'une seconde avant le CTA.",
+      "notes": "Chiffres issus du site produit (mesures du 2026-09-20). Ne pas modifier sans re-mesure. Le film doit rester comprehensible sans son : chaque plan porte son texte a l'ecran.",
+      "tags": ["marque", "film pilier", "business os", "pme"]
+    },
+    {
+      "id": "VID-02",
+      "title": "Leopardo en 30 secondes (cut publicitaire)",
+      "category": "presentation-solution",
+      "format": "16:9",
+      "duration": "30 s",
+      "audience": "Prospection froide, pre-roll YouTube, LinkedIn",
+      "objective": "Version publicitaire du film pilier : un seul message, un seul CTA. Aucun plan nouveau, uniquement du montage dans VID-01.",
+      "hook": "Votre paie tient sur un tableur. Vos pointages sur du papier. Ca peut s'arreter aujourd'hui.",
+      "beats": [
+        {"t": "0:00-0:05", "vo": "Votre paie tient sur un tableur. Vos pointages sur du papier.", "shot": "Reprises de VID-01 : tableur, carnet.", "text": "Ca peut s'arreter aujourd'hui."},
+        {"t": "0:05-0:14", "vo": "Leopardo reunit RH, paie, pointage, comptabilite et CRM dans une seule plateforme.", "shot": "Interface unique qui s'assemble.", "text": "RH - Paie - Pointage - Compta - CRM"},
+        {"t": "0:14-0:23", "vo": "Avec des packs metier deja prets : restaurant, voyage, pharmacie, hotellerie.", "shot": "Quatre packs qui s'allument.", "text": "Packs metier offerts"},
+        {"t": "0:23-0:30", "vo": "Quatorze jours d'essai, sans carte bancaire.", "shot": "CTA plein ecran.", "text": "14 jours - sans carte"}
+      ],
+      "cta": "Bouton unique : Essayer gratuitement.",
+      "music": "Meme theme que VID-01, coupe a 30 s, impact sur le CTA.",
+      "notes": "Ne pas reecrire de voix off differente : reutiliser les prises de VID-01 pour garantir la coherence de marque.",
+      "tags": ["publicite", "pre-roll", "30s"]
+    },
+    {
+      "id": "VID-03",
+      "title": "Bumper 15 secondes (pre-roll non skippable)",
+      "category": "presentation-solution",
+      "format": "16:9",
+      "duration": "15 s",
+      "audience": "Pre-roll YouTube non skippable, display video",
+      "objective": "Un seul mot retenu : le nom. Format contraint, aucune explication produit.",
+      "hook": "Une question, une reponse, un nom.",
+      "beats": [
+        {"t": "0:00-0:04", "vo": "Combien d'outils pour gerer vos equipes ?", "shot": "Icones qui s'empilent : tableur, carnet, messagerie, badgeuse.", "text": "Combien d'outils ?"},
+        {"t": "0:04-0:10", "vo": "Un seul.", "shot": "Toutes les icones aspirees dans un seul logo.", "text": "Un seul."},
+        {"t": "0:10-0:15", "vo": "Leopardo. Le Business OS des entreprises de terrain.", "shot": "Logo centre, baseline.", "text": "Leopardo"}
+      ],
+      "cta": "Aucun bouton : le bumper installe le nom, la conversion se fait sur le film 30 s.",
+      "music": "Deux notes, un impact, silence.",
+      "notes": "Format non skippable : la marque doit apparaitre avant la seconde 10, sinon le budget est perdu.",
+      "tags": ["bumper", "15s", "notoriete"]
+    },
+    {
+      "id": "VID-04",
+      "title": "Comment Leopardo remplace Excel, WhatsApp et le papier (explainer 3 min)",
+      "category": "presentation-solution",
+      "format": "16:9",
+      "duration": "3 min",
+      "audience": "Dirigeants en evaluation, page produit, demo asynchrone",
+      "objective": "Repondre aux objections avant l'appel commercial : migration, securite, multi-pays, prix. Format capture d'ecran commentee.",
+      "hook": "On ne vous demande pas de changer votre facon de travailler. On vous demande d'arreter de la documenter trois fois.",
+      "beats": [
+        {"t": "0:00-0:15", "vo": "On ne vous demande pas de changer votre facon de travailler. On vous demande d'arreter de la documenter trois fois.", "shot": "Trois copies du meme document sur trois outils.", "text": "Le probleme n'est pas l'outil. C'est la triple saisie."},
+        {"t": "0:15-0:50", "vo": "Premier temps : le referentiel. Un employe, un dossier, un contrat, des documents. Saisi une fois, utilise partout.", "shot": "Capture : creation d'un employe, puis le meme employe visible dans paie, pointage et conges.", "text": "Saisir une fois."},
+        {"t": "0:50-1:30", "vo": "Deuxieme temps : le terrain. Le pointage remonte du mobile ou du kiosque. En cas de coupure reseau, la borne continue et resynchronise au retour du lien.", "shot": "Capture kiosque, coupure simulee, file hors-ligne, resynchronisation.", "text": "Le terrain ne s'arrete pas quand le reseau s'arrete."},
+        {"t": "1:30-2:10", "vo": "Troisieme temps : la paie. Les regles du pays s'appliquent, les variables de pointage et de conges remontent, le bulletin se genere et s'archive.", "shot": "Capture simulation de paie, puis bulletin PDF.", "text": "21 pays de regles de paie en pilote."},
+        {"t": "2:10-2:40", "vo": "Quatrieme temps : l'ouverture. 994 endpoints API documentes, des webhooks, et des packs metier activables selon votre secteur.", "shot": "Capture documentation OpenAPI, puis grille de packs.", "text": "994 endpoints - packs activables"},
+        {"t": "2:40-3:00", "vo": "Isolation multi-tenant, RBAC, journal d'audit. Vos donnees restent les votres, en cloud ou auto-hebergees.", "shot": "Schema d'isolation, ecran de roles.", "text": "Cloud ou auto-heberge."}
+      ],
+      "cta": "Telecharger la grille de comparaison, puis reserver 20 minutes de demo.",
+      "music": "Nappe discrete, aucun rythme fort : la voix porte.",
+      "notes": "Script le plus regarde en evaluation : chaque affirmation doit etre verifiable dans le depot. Ne pas promettre de fonctionnalite non livree.",
+      "tags": ["explainer", "objections", "demo", "3min"]
+    },
+    {
+      "id": "VID-05",
+      "title": "Restaurant : du service en salle a la marge du soir",
+      "category": "verticales",
+      "format": "16:9",
+      "duration": "60 s",
+      "audience": "Restaurateurs, gerants de plusieurs etablissements",
+      "objective": "Montrer le pack RestaurantManager : POS et caisse, commandes, reservations, stock et COGS, livraison, fidelite.",
+      "hook": "A 23 h, vous ne savez pas combien vous avez gagne. Le pack Restaurant, si.",
+      "beats": [
+        {"t": "0:00-0:08", "vo": "A vingt-trois heures, vous ne savez pas combien vous avez reellement gagne ce soir.", "shot": "Salle qui se vide, gerant devant un ticket de caisse.", "text": "Le service est fini. Le calcul commence."},
+        {"t": "0:08-0:22", "vo": "Le pack Restaurant prend la commande en salle, l'envoie en cuisine, et encaisse sur la meme caisse.", "shot": "Capture POS : table, commande, envoi cuisine, encaissement.", "text": "POS & caisse"},
+        {"t": "0:22-0:36", "vo": "Le stock se decremente a chaque plat. Le cout matiere se calcule tout seul, plat par plat.", "shot": "Capture stock et COGS, marge par plat.", "text": "Stock & COGS en temps reel"},
+        {"t": "0:36-0:48", "vo": "Reservations, livraison et programme de fidelite sont dans le meme back-office que votre paie et vos equipes.", "shot": "Capture reservations, puis onglet fidelite.", "text": "Un seul back-office"},
+        {"t": "0:48-1:00", "vo": "Le pack Restaurant est offert. Vous payez la plateforme, pas le secteur.", "shot": "CTA, logo, URL du pack.", "text": "Pack offert"}
+      ],
+      "cta": "Activer le pack Restaurant depuis le site produit, sans frais de pack.",
+      "music": "Groove leger, ambiance service, 115 BPM.",
+      "notes": "Ne pas montrer de chiffres de marge inventes : afficher des libelles, pas des valeurs. Le pack est decrit dans api/config/feature-flags.php (restaurantmanager).",
+      "tags": ["restaurant", "pos", "cogs", "verticale"]
+    },
+    {
+      "id": "VID-06",
+      "title": "Agence de voyage : vendre, reserver, embarquer",
+      "category": "verticales",
+      "format": "16:9",
+      "duration": "60 s",
+      "audience": "Agences de voyage, tour-operateurs",
+      "objective": "Montrer le pack Agence de voyage : boutique publique, trajets, reservations, suivi, check-in, annulation.",
+      "hook": "Vos clients reservent sur WhatsApp. Vos dossiers vivent dans un cahier. Vos partenaires vous envoient des PDF.",
+      "beats": [
+        {"t": "0:00-0:08", "vo": "Vos clients reservent sur WhatsApp. Vos dossiers vivent dans un cahier. Vos partenaires vous envoient des PDF.", "shot": "Trois sources qui arrivent en desordre sur un bureau.", "text": "Trois canaux. Zero dossier commun."},
+        {"t": "0:08-0:22", "vo": "Le pack Agence de voyage publie votre boutique en ligne : trajets, prix, disponibilites.", "shot": "Capture boutique publique, fiche trajet.", "text": "Boutique publique"},
+        {"t": "0:22-0:36", "vo": "La reservation cree un dossier unique : client, passagers, paiement, documents de voyage.", "shot": "Capture dossier de reservation.", "text": "Un dossier par voyage"},
+        {"t": "0:36-0:48", "vo": "Le suivi et le check-in se font depuis le meme ecran, et l'annulation laisse une trace auditable.", "shot": "Capture suivi, check-in, annulation avec journal.", "text": "Suivi & check-in"},
+        {"t": "0:48-1:00", "vo": "Et vos equipes, votre paie et votre comptabilite sont deja dans Leopardo.", "shot": "Passage vers l'ecran RH puis CTA.", "text": "Pack offert"}
+      ],
+      "cta": "Activer le pack Agence de voyage et publier la boutique en une journee.",
+      "music": "Cordes legeres, sentiment de depart.",
+      "notes": "Le guide d'integration partenaires existe dans docs/travel/PARTNER_INTEGRATION_GUIDE.md : le citer en description, pas a l'ecran.",
+      "tags": ["voyage", "reservation", "boutique", "verticale"]
+    },
+    {
+      "id": "VID-07",
+      "title": "Pharmacie : le lot, l'ordonnance, la tracabilite",
+      "category": "verticales",
+      "format": "16:9",
+      "duration": "60 s",
+      "audience": "Pharmacies, groupements officinaux",
+      "objective": "Montrer le pack PharmaManager : referentiel produits, stock par lots, achats, ventes comptoir, ordonnancier.",
+      "hook": "En pharmacie, une erreur de lot n'est pas une erreur de stock. C'est un probleme de sante publique.",
+      "beats": [
+        {"t": "0:00-0:08", "vo": "En pharmacie, une erreur de lot n'est pas une erreur de stock. C'est un probleme de sante publique.", "shot": "Boite de medicament, numero de lot en gros plan.", "text": "Le lot n'est pas un detail."},
+        {"t": "0:08-0:22", "vo": "Le pack PharmaManager tient le referentiel produits et le stock lot par lot, avec peremption suivie.", "shot": "Capture referentiel, stock par lot, alerte peremption.", "text": "Stock par lots"},
+        {"t": "0:22-0:36", "vo": "Les achats et les ventes comptoir se saisissent au comptoir, sans double saisie.", "shot": "Capture achat fournisseur, puis vente comptoir.", "text": "Achats & ventes"},
+        {"t": "0:36-0:48", "vo": "L'ordonnancier est conserve et consultable, avec la trace de qui a delivre quoi.", "shot": "Capture ordonnancier, filtre par date.", "text": "Ordonnancier"},
+        {"t": "0:48-1:00", "vo": "Le pack est offert, et il partage la paie et les equipes de votre officine.", "shot": "CTA.", "text": "Pack offert"}
+      ],
+      "cta": "Activer le pack PharmaManager depuis le site produit.",
+      "music": "Discret, clinique, sans dramatisation.",
+      "notes": "Sujet sensible : ne jamais suggerer une conformite reglementaire pays que le produit ne certifie pas. Rester descriptif.",
+      "tags": ["pharmacie", "stock", "lot", "verticale"]
+    },
+    {
+      "id": "VID-08",
+      "title": "Hotellerie : etablissements, inventaire, baux et loyers",
+      "category": "verticales",
+      "format": "16:9",
+      "duration": "60 s",
+      "audience": "Hoteliers, gestionnaires de residences et de locations",
+      "objective": "Montrer le pack HospitalityManager : etablissements, inventaire, reservations, baux et loyers.",
+      "hook": "Un hotel, des residences, des locations longue duree : trois metiers, un seul inventaire.",
+      "beats": [
+        {"t": "0:00-0:08", "vo": "Un hotel, des residences, des locations longue duree. Trois metiers, un seul inventaire.", "shot": "Trois facades differentes, meme plan de coupe.", "text": "Trois metiers. Un inventaire."},
+        {"t": "0:08-0:22", "vo": "Le pack Hospitality gere vos etablissements et leur inventaire : chambres, equipements, etats.", "shot": "Capture etablissements, inventaire, etat d'une chambre.", "text": "Etablissements & inventaire"},
+        {"t": "0:22-0:36", "vo": "Les reservations se posent sur l'inventaire reel, pas sur un tableur parallele.", "shot": "Capture planning de reservations.", "text": "Reservations"},
+        {"t": "0:36-0:48", "vo": "Pour la location longue duree, les baux et les loyers sont suivis dans le meme outil.", "shot": "Capture bail, echeancier de loyers.", "text": "Baux & loyers"},
+        {"t": "0:48-1:00", "vo": "Et le menage, la maintenance et les equipes remontent dans le meme systeme.", "shot": "CTA.", "text": "Pack offert"}
+      ],
+      "cta": "Activer le pack HospitalityManager.",
+      "music": "Piano, ambiance calme, 90 BPM.",
+      "notes": "Le RBAC de cette verticale est documente dans docs/hospitality/DONNEES_RBAC.md : utile pour un film dedie aux profils, pas ici.",
+      "tags": ["hotellerie", "reservations", "baux", "verticale"]
+    },
+    {
+      "id": "VID-09",
+      "title": "Sante : patients, rendez-vous, hospitalisations, facturation des soins",
+      "category": "verticales",
+      "format": "16:9",
+      "duration": "60 s",
+      "audience": "Cliniques privees, hopitaux, centres de soins",
+      "objective": "Montrer le pack HealthManager : patients, rendez-vous, hospitalisations, facturation des soins.",
+      "hook": "Le dossier patient est souvent le seul endroit ou l'information arrive en dernier.",
+      "beats": [
+        {"t": "0:00-0:08", "vo": "Le dossier patient est souvent le seul endroit ou l'information arrive en dernier.", "shot": "Couloir de clinique, dossier papier qui circule.", "text": "L'information arrive en dernier."},
+        {"t": "0:08-0:22", "vo": "Le pack HealthManager ouvre un dossier patient unique, partage entre l'accueil, le soin et la facturation.", "shot": "Capture dossier patient, onglets.", "text": "Un dossier patient"},
+        {"t": "0:22-0:36", "vo": "Les rendez-vous se prennent et se replanifient sans appeler le patient trois fois.", "shot": "Capture agenda, replanification.", "text": "Rendez-vous"},
+        {"t": "0:36-0:48", "vo": "L'hospitalisation et la facturation des soins se suivent dans le meme flux, sans ressaisie.", "shot": "Capture admission, puis facture de soins.", "text": "Hospitalisation & facturation"},
+        {"t": "0:48-1:00", "vo": "Vos equipes soignantes, leurs plannings et leur paie restent dans Leopardo.", "shot": "CTA.", "text": "Pack offert"}
+      ],
+      "cta": "Activer le pack HealthManager.",
+      "music": "Nappe douce, aucune urgence sonore.",
+      "notes": "Ne jamais montrer de donnee patient reelle ni de nom lisible : utiliser des donnees de demonstration. Aucune allegation de conformite reglementaire.",
+      "tags": ["sante", "clinique", "patients", "verticale"]
+    },
+    {
+      "id": "VID-10",
+      "title": "Ecole : etablissements, classes, notes",
+      "category": "verticales",
+      "format": "16:9",
+      "duration": "45 s",
+      "audience": "Ecoles privees, groupes scolaires",
+      "objective": "Montrer le pack EduManager : etablissements, classes, notes, et le lien avec les equipes.",
+      "hook": "Les notes arrivent sur un tableur. Les absences sur un cahier. Les parents appellent l'accueil.",
+      "beats": [
+        {"t": "0:00-0:07", "vo": "Les notes arrivent sur un tableur. Les absences sur un cahier. Les parents appellent l'accueil.", "shot": "Trois plans : tableur, cahier, standard telephonique.", "text": "Trois sources."},
+        {"t": "0:07-0:20", "vo": "Le pack EduManager structure vos etablissements et vos classes dans un seul referentiel.", "shot": "Capture etablissement, classes, eleves.", "text": "Etablissements & classes"},
+        {"t": "0:20-0:33", "vo": "Les notes se saisissent par classe, et se consolident sans recopie.", "shot": "Capture saisie de notes, consolidation.", "text": "Notes"},
+        {"t": "0:33-0:45", "vo": "Les enseignants et le personnel administratif sont dans le meme systeme RH que le reste.", "shot": "CTA.", "text": "Pack offert"}
+      ],
+      "cta": "Activer le pack EduManager.",
+      "music": "Leger, optimiste.",
+      "notes": "Ne pas montrer de notes d'eleves reelles. Le pack est decrit comme solution EduManager dans le registre de feature flags.",
+      "tags": ["ecole", "education", "notes", "verticale"]
+    },
+    {
+      "id": "VID-11",
+      "title": "Station-service : le litre, le poste, la marge",
+      "category": "verticales",
+      "format": "16:9",
+      "duration": "45 s",
+      "audience": "Reseaux de stations-service, gerants independants",
+      "objective": "Montrer le pack FuelStation : suivi des postes, des volumes et des ecritures, avec les equipes en decalage.",
+      "hook": "Une station ne ferme jamais. Votre gestion, si.",
+      "beats": [
+        {"t": "0:00-0:07", "vo": "Une station ne ferme jamais. Votre gestion, si.", "shot": "Station de nuit, pompe eclairee, gerant seul.", "text": "24 h sur 24."},
+        {"t": "0:07-0:20", "vo": "Le pack FuelStation suit les postes et les volumes, et rattache les ecritures a la bonne journee.", "shot": "Capture postes, releves, ecritures.", "text": "Postes & volumes"},
+        {"t": "0:20-0:33", "vo": "Les equipes en decalage pointent sur le kiosque, meme quand le reseau tombe.", "shot": "Capture kiosque, mode hors-ligne.", "text": "Equipes en decalage"},
+        {"t": "0:33-0:45", "vo": "Et la paie de vos equipes de nuit se calcule avec les memes donnees.", "shot": "CTA.", "text": "Pack offert"}
+      ],
+      "cta": "Activer le pack FuelStation.",
+      "music": "Basse continue, ambiance nocturne.",
+      "notes": "Verticale pilote terrain (BC-15 FUEL). Ne pas afficher de prix de carburant : ils varient par pays et par jour.",
+      "tags": ["carburant", "station", "postes", "verticale"]
+    },
+    {
+      "id": "VID-12",
+      "title": "VTC : reserver, dispatcher au plus proche, suivre",
+      "category": "verticales",
+      "format": "16:9",
+      "duration": "45 s",
+      "audience": "Flottes VTC et taxi, plateformes locales",
+      "objective": "Montrer le pack VTC : reservation de courses, dispatch au plus proche chauffeur via le core geospatial, tarification et suivi.",
+      "hook": "Le client appelle. Vous cherchez qui est le plus proche. A la main.",
+      "beats": [
+        {"t": "0:00-0:07", "vo": "Le client appelle. Vous cherchez qui est le plus proche. A la main.", "shot": "Standard, carte papier, plusieurs chauffeurs au telephone.", "text": "Le dispatch a la main."},
+        {"t": "0:07-0:20", "vo": "Le pack VTC prend la reservation et dispatche au chauffeur le plus proche, calcule par le core geospatial.", "shot": "Capture reservation, carte, attribution automatique.", "text": "Dispatch au plus proche"},
+        {"t": "0:20-0:33", "vo": "La tarification s'applique selon la course, et le suivi est visible jusqu'a la fin.", "shot": "Capture tarification, suivi de course.", "text": "Tarification & suivi"},
+        {"t": "0:33-0:45", "vo": "Vos chauffeurs, leurs plannings et leur paie sont dans le meme outil.", "shot": "CTA.", "text": "Pack offert"}
+      ],
+      "cta": "Activer le pack VTC.",
+      "music": "Rythme urbain, 120 BPM.",
+      "notes": "Le pack VTC requiert le core geospatial `geo` (PostGIS). Ne pas promettre de dispatch temps reel si l'environnement de demo ne l'a pas active.",
+      "tags": ["vtc", "taxi", "dispatch", "geo", "verticale"]
+    },
+    {
+      "id": "VID-13",
+      "title": "Employe : ma journee dans Leopardo",
+      "category": "personas",
+      "format": "16:9",
+      "duration": "45 s",
+      "audience": "Collaborateurs, candidats, onboarding interne",
+      "objective": "Montrer le self-service employe : pointer, demander un conge, consulter un bulletin. Aucune formation necessaire.",
+      "hook": "Trois choses que vous faites deja. En trente secondes, sans appeler les RH.",
+      "beats": [
+        {"t": "0:00-0:06", "vo": "Trois choses que vous faites deja. En trente secondes, sans appeler les RH.", "shot": "Employe qui arrive au travail, telephone en main.", "text": "Sans appeler les RH."},
+        {"t": "0:06-0:18", "vo": "Vous pointez depuis votre telephone, ou sur le kiosque de l'entree.", "shot": "Capture pointage mobile, puis kiosque.", "text": "Pointer"},
+        {"t": "0:18-0:30", "vo": "Vous demandez un conge, et vous voyez ou en est la validation.", "shot": "Capture demande de conge, statut.", "text": "Demander un conge"},
+        {"t": "0:30-0:45", "vo": "Vous consultez votre bulletin de paie, archive et telechargeable.", "shot": "Capture bulletin, telechargement.", "text": "Consulter mon bulletin"}
+      ],
+      "cta": "Aucun CTA commercial : film d'onboarding, a integrer dans le parcours d'arrivee.",
+      "music": "Pop legere, 105 BPM.",
+      "notes": "Film interne : ne pas l'utiliser en acquisition. Les personas de demonstration sont listes dans docs/DEMO_ACCOUNTS.md.",
+      "tags": ["employe", "self-service", "onboarding", "persona"]
+    },
+    {
+      "id": "VID-14",
+      "title": "Manager : piloter sans attendre le rapport du vendredi",
+      "category": "personas",
+      "format": "16:9",
+      "duration": "45 s",
+      "audience": "Managers operationnels, directeurs d'exploitation",
+      "objective": "Montrer le tableau de bord manager : equipes, presence, validations, CRM.",
+      "hook": "Le rapport du vendredi decrit une semaine deja finie.",
+      "beats": [
+        {"t": "0:00-0:06", "vo": "Le rapport du vendredi decrit une semaine deja finie.", "shot": "Classeur de rapports empiles.", "text": "Trop tard."},
+        {"t": "0:06-0:18", "vo": "Le tableau de bord montre la presence de vos equipes, aujourd'hui, maintenant.", "shot": "Capture tableau de bord, presence du jour.", "text": "Aujourd'hui, maintenant"},
+        {"t": "0:18-0:30", "vo": "Les demandes de conge et les validations arrivent dans une seule file.", "shot": "Capture file de validation.", "text": "Une seule file"},
+        {"t": "0:30-0:45", "vo": "Et le suivi client est dans le meme ecran que vos equipes.", "shot": "Capture CRM, CTA.", "text": "Equipes & clients"}
+      ],
+      "cta": "Demander une demo manager de 20 minutes.",
+      "music": "Montant, 110 BPM.",
+      "notes": "Ne pas montrer de noms d'employes reels : utiliser les comptes de demonstration.",
+      "tags": ["manager", "dashboard", "validation", "persona"]
+    },
+    {
+      "id": "VID-15",
+      "title": "RH : le referentiel qui alimente tout le reste",
+      "category": "personas",
+      "format": "16:9",
+      "duration": "45 s",
+      "audience": "Responsables RH, DRH de PME multi-sites",
+      "objective": "Montrer le role RH : referentiel employes, contrats, absences, roles, recrutement.",
+      "hook": "Si le referentiel employe est faux, la paie est fausse. Tout le reste suit.",
+      "beats": [
+        {"t": "0:00-0:06", "vo": "Si le referentiel employe est faux, la paie est fausse. Tout le reste suit.", "shot": "Dossier employe avec une ligne surlignee.", "text": "Tout part du referentiel."},
+        {"t": "0:06-0:18", "vo": "Un dossier par employe : contrat, documents, departement, historique.", "shot": "Capture dossier employe, onglets.", "text": "Un dossier par employe"},
+        {"t": "0:18-0:30", "vo": "Les absences et les soldes se mettent a jour sans recalcul manuel.", "shot": "Capture absences, soldes.", "text": "Absences & soldes"},
+        {"t": "0:30-0:45", "vo": "Les roles et les droits se distribuent par profil, pas par personne.", "shot": "Capture roles, CTA.", "text": "Roles & droits"}
+      ],
+      "cta": "Demander une demo RH de 20 minutes.",
+      "music": "Neutre, structure.",
+      "notes": "Le RBAC est un point de vente : montrer l'ecran de roles, pas seulement le dossier employe.",
+      "tags": ["rh", "referentiel", "roles", "persona"]
+    },
+    {
+      "id": "VID-16",
+      "title": "Comptable : de la variable de paie au bulletin",
+      "category": "personas",
+      "format": "16:9",
+      "duration": "45 s",
+      "audience": "Comptables, cabinets, responsables paie",
+      "objective": "Montrer le parcours comptable : structures salariales, simulation, bulletins, conformite pays.",
+      "hook": "Le mois de paie ne devrait pas commencer par un export de tableur.",
+      "beats": [
+        {"t": "0:00-0:06", "vo": "Le mois de paie ne devrait pas commencer par un export de tableur.", "shot": "Export CSV qui s'ouvre, colonnes qui ne correspondent pas.", "text": "Pas d'export."},
+        {"t": "0:06-0:18", "vo": "Les structures salariales sont definies une fois, par pays et par categorie.", "shot": "Capture structure salariale.", "text": "Structures salariales"},
+        {"t": "0:18-0:30", "vo": "La simulation montre le resultat avant de figer le mois.", "shot": "Capture simulation de paie.", "text": "Simuler avant de figer"},
+        {"t": "0:30-0:45", "vo": "Les bulletins se generent, s'archivent et restent auditables.", "shot": "Capture bulletins, journal d'audit.", "text": "Bulletins & audit"}
+      ],
+      "cta": "Demander une demo paie de 20 minutes.",
+      "music": "Precis, metronomique.",
+      "notes": "Ne pas afficher de montants reels ni de taux de cotisation : ils dependent du pays et de l'annee.",
+      "tags": ["comptable", "paie", "simulation", "persona"]
+    },
+    {
+      "id": "VID-17",
+      "title": "Paie multi-pays : 21 pays de regles en pilote",
+      "category": "fonctionnalites",
+      "format": "16:9",
+      "duration": "60 s",
+      "audience": "Groupes multi-pays, DRH, DAF",
+      "objective": "Expliquer la paie multi-pays : regles par pays, structures, simulation, bulletins, audit.",
+      "hook": "Un groupe, cinq pays, cinq facons de calculer un bulletin.",
+      "beats": [
+        {"t": "0:00-0:08", "vo": "Un groupe, cinq pays, cinq facons de calculer un bulletin.", "shot": "Carte avec cinq pays qui s'allument.", "text": "Cinq pays. Cinq regles."},
+        {"t": "0:08-0:24", "vo": "Chaque pays porte ses regles de paie, ses structures et ses categories.", "shot": "Capture selection pays, structure.", "text": "Regles par pays"},
+        {"t": "0:24-0:40", "vo": "Les variables de pointage et de conges remontent automatiquement dans le calcul.", "shot": "Capture variables, calcul.", "text": "Variables automatiques"},
+        {"t": "0:40-0:52", "vo": "La simulation valide le mois avant edition, et chaque bulletin reste auditable.", "shot": "Capture simulation, journal.", "text": "Simuler, puis editer"},
+        {"t": "0:52-1:00", "vo": "Vingt-et-un pays de regles de paie en pilote aujourd'hui.", "shot": "CTA.", "text": "21 pays (pilote)"}
+      ],
+      "cta": "Demander la liste des pays couverts et leur statut.",
+      "music": "Nappe internationale, discrete.",
+      "notes": "Le mot « pilote » est obligatoire : ne pas presenter la couverture comme complete. Chiffre mesure le 2026-09-09 sur le site produit.",
+      "tags": ["paie", "multi-pays", "conformite", "fonctionnalite"]
+    },
+    {
+      "id": "VID-18",
+      "title": "Pointage, kiosque et mode hors-ligne",
+      "category": "fonctionnalites",
+      "format": "16:9",
+      "duration": "60 s",
+      "audience": "Directeurs d'exploitation, responsables de site",
+      "objective": "Montrer les trois chemins de pointage (mobile, kiosque biometrique, mode secours) et la resynchronisation Edge.",
+      "hook": "Le reseau tombe. Les equipes pointent quand meme.",
+      "beats": [
+        {"t": "0:00-0:08", "vo": "Le reseau tombe. Les equipes pointent quand meme.", "shot": "Ecran de kiosque qui passe en mode degrade, sans erreur.", "text": "Le reseau tombe."},
+        {"t": "0:08-0:24", "vo": "Trois chemins : le mobile du collaborateur, le kiosque biometrique ZKTeco, et le mode secours par matricule.", "shot": "Trois captures successives.", "text": "Mobile - Kiosque - Matricule"},
+        {"t": "0:24-0:40", "vo": "Hors-ligne, les pointages se mettent en file localement, puis se synchronisent au retour du lien.", "shot": "Capture file hors-ligne, puis badge de synchronisation.", "text": "File locale, puis sync"},
+        {"t": "0:40-0:52", "vo": "Chaque pointage garde son horodatage d'origine, pas celui de la synchronisation.", "shot": "Capture detail d'un pointage, deux horodatages.", "text": "Horodatage d'origine conserve"},
+        {"t": "0:52-1:00", "vo": "Et ces donnees alimentent directement la paie.", "shot": "CTA.", "text": "Du pointage a la paie"}
+      ],
+      "cta": "Demander une demo terrain avec simulation de coupure reseau.",
+      "music": "Tension legere puis resolution.",
+      "notes": "Le mode hors-ligne est un argument fort : le montrer en coupure simulee, pas en animation. Documentation : docs/kiosk/README.md et docs/kiosk/punch-methods-config.md.",
+      "tags": ["pointage", "kiosque", "hors-ligne", "edge", "fonctionnalite"]
+    },
+    {
+      "id": "VID-19",
+      "title": "Comptabilite : journaux, grand livre, balance, FEC",
+      "category": "fonctionnalites",
+      "format": "16:9",
+      "duration": "45 s",
+      "audience": "DAF, experts-comptables, cabinets partenaires",
+      "objective": "Montrer le module comptabilite : journaux, grand livre, balance, FEC, lettrage.",
+      "hook": "La comptabilite n'a pas besoin d'un nouvel outil. Elle a besoin des memes donnees que la paie.",
+      "beats": [
+        {"t": "0:00-0:06", "vo": "La comptabilite n'a pas besoin d'un nouvel outil. Elle a besoin des memes donnees que la paie.", "shot": "Deux ecrans cote a cote, une fleche entre eux.", "text": "Les memes donnees."},
+        {"t": "0:06-0:18", "vo": "Journaux, grand livre et balance sont dans le meme tenant que vos ecritures de paie.", "shot": "Capture journaux, grand livre, balance.", "text": "Journaux - Grand livre - Balance"},
+        {"t": "0:18-0:30", "vo": "Le FEC s'exporte dans le format attendu par votre expert-comptable.", "shot": "Capture export FEC.", "text": "Export FEC"},
+        {"t": "0:30-0:45", "vo": "Le lettrage se fait dans l'outil, avec une trace de qui a rapproche quoi.", "shot": "Capture lettrage, CTA.", "text": "Lettrage & trace"}
+      ],
+      "cta": "Demander une demo comptabilite de 20 minutes.",
+      "music": "Neutre, precis.",
+      "notes": "Ne pas afficher de montants. Le FEC est un format francais : preciser le pays dans la description si le film est diffuse hors France.",
+      "tags": ["comptabilite", "fec", "lettrage", "fonctionnalite"]
+    },
+    {
+      "id": "VID-20",
+      "title": "Assistant IA et vitrine publique : etre trouve, puis repondre",
+      "category": "fonctionnalites",
+      "format": "16:9",
+      "duration": "60 s",
+      "audience": "Dirigeants, responsables marketing",
+      "objective": "Montrer la vitrine publique en 1 clic et l'assistant IA (avec la minimisation RGPD et l'audit).",
+      "hook": "Un client vous cherche. Il trouve une page vide. Il appelle un concurrent.",
+      "beats": [
+        {"t": "0:00-0:08", "vo": "Un client vous cherche. Il trouve une page vide. Il appelle un concurrent.", "shot": "Recherche, resultat vide, client qui raccroche.", "text": "Etre trouve."},
+        {"t": "0:08-0:24", "vo": "La vitrine publique se cree en un clic : sections, theme, publication.", "shot": "Capture creation de vitrine, choix du theme, publication.", "text": "Vitrine en 1 clic"},
+        {"t": "0:24-0:40", "vo": "L'assistant IA repond aux questions courantes, avec la minimisation des donnees et un journal d'audit.", "shot": "Capture assistant, panneau d'audit.", "text": "IA avec audit"},
+        {"t": "0:40-0:52", "vo": "L'envoi vers un fournisseur cloud reste une decision explicite, desactivable.", "shot": "Capture kill switch IA.", "text": "Desactivable"},
+        {"t": "0:52-1:00", "vo": "Etre trouve, repondre, et garder la maitrise de vos donnees.", "shot": "CTA.", "text": "Maitrise des donnees"}
+      ],
+      "cta": "Creer une vitrine de demonstration, puis demander une demo.",
+      "music": "Moderne, lumineux.",
+      "notes": "Ne jamais suggerer que l'IA est indispensable : le kill switch `ai_cloud_allowed` est un argument de confiance. Ne pas promettre de SEO.",
+      "tags": ["ia", "vitrine", "rgpd", "audit", "fonctionnalite"]
+    },
+    {
+      "id": "VID-21",
+      "title": "3 signes que votre entreprise a depasse Excel (hook 9:16)",
+      "category": "formats-courts",
+      "format": "9:16",
+      "duration": "20 s",
+      "audience": "TikTok, Reels, Shorts, LinkedIn video",
+      "objective": "Hook de decouverte : trois signaux reconnaissables, un seul CTA. Aucune demonstration produit.",
+      "hook": "Trois signes que votre entreprise a depasse Excel sans le savoir.",
+      "beats": [
+        {"t": "0:00-0:04", "vo": "Trois signes que votre entreprise a depasse Excel sans le savoir.", "shot": "Visage face camera, plan serre.", "text": "3 signes"},
+        {"t": "0:04-0:09", "vo": "Un : votre paie depend d'une seule personne.", "shot": "Cut sur un tableur protege par mot de passe.", "text": "1. Une seule personne"},
+        {"t": "0:09-0:14", "vo": "Deux : vos pointages arrivent en photo sur WhatsApp.", "shot": "Cut sur un fil de photos de badgeuse.", "text": "2. Des photos"},
+        {"t": "0:14-0:20", "vo": "Trois : vous ne savez pas combien coute une heure de travail. Leopardo, si.", "shot": "Cut sur le logo et le CTA.", "text": "3. Le cout reel"}
+      ],
+      "cta": "Lien en bio : essai 14 jours, sans carte.",
+      "music": "Beat court, 130 BPM, coupe nette.",
+      "notes": "Format vertical : sous-titres obligatoires, texte dans les 60 % centraux de l'ecran. Aucun chiffre invente.",
+      "tags": ["9:16", "hook", "social", "tiktok"]
+    },
+    {
+      "id": "VID-22",
+      "title": "Temoignage client : avant / apres (9:16)",
+      "category": "formats-courts",
+      "format": "9:16",
+      "duration": "30 s",
+      "audience": "Social, page temoignages, argumentaire commercial",
+      "objective": "Structure de temoignage reutilisable : avant, declencheur, apres, conseil. A tourner avec un client reel.",
+      "hook": "Avant, je passais le vendredi a recoller des tableurs.",
+      "beats": [
+        {"t": "0:00-0:06", "vo": "Avant, je passais le vendredi a recoller des tableurs.", "shot": "Interview, plan poitrine, lumiere naturelle.", "text": "Avant"},
+        {"t": "0:06-0:14", "vo": "On a commence par le pointage et la paie, parce que c'est la que les erreurs coutaient le plus.", "shot": "B-roll : kiosque, bulletin.", "text": "Le declencheur"},
+        {"t": "0:14-0:24", "vo": "Aujourd'hui, le vendredi sert a autre chose.", "shot": "Interview, sourire, puis B-roll equipe.", "text": "Apres"},
+        {"t": "0:24-0:30", "vo": "Mon conseil : commencez par un seul module, pas par tout.", "shot": "CTA.", "text": "Un module a la fois"}
+      ],
+      "cta": "Voir l'etude de cas complete sur le site produit.",
+      "music": "Aucune musique sur la voix ; nappe tres basse en fin.",
+      "notes": "Gabarit a remplir avec un client reel et son accord ecrit. Ne jamais fabriquer un temoignage : si aucun client n'est disponible, ne pas produire ce film.",
+      "tags": ["9:16", "temoignage", "social", "etude de cas"]
+    },
+    {
+      "id": "VID-23",
+      "title": "Mise en route en moins de 30 minutes (9:16)",
+      "category": "formats-courts",
+      "format": "9:16",
+      "duration": "30 s",
+      "audience": "Prospects en essai, onboarding",
+      "objective": "Reduire la peur de la migration : montrer les quatre etapes reelles de mise en route.",
+      "hook": "Vous pensez que migrer prend trois mois. Voici les quatre etapes reelles.",
+      "beats": [
+        {"t": "0:00-0:05", "vo": "Vous pensez que migrer prend trois mois. Voici les quatre etapes reelles.", "shot": "Face camera, chronometre en incrustation.", "text": "4 etapes"},
+        {"t": "0:05-0:12", "vo": "Un : creer l'entreprise et inviter les managers.", "shot": "Capture creation entreprise.", "text": "1. Creer"},
+        {"t": "0:12-0:19", "vo": "Deux : importer les employes et les contrats.", "shot": "Capture import.", "text": "2. Importer"},
+        {"t": "0:19-0:26", "vo": "Trois : activer le pack metier. Quatre : pointer. C'est tout.", "shot": "Capture activation pack, puis kiosque.", "text": "3. Activer - 4. Pointer"},
+        {"t": "0:26-0:30", "vo": "Moins de trente minutes, sans carte bancaire.", "shot": "CTA.", "text": "30 minutes"}
+      ],
+      "cta": "Commencer l'essai de 14 jours.",
+      "music": "Montant, 120 BPM.",
+      "notes": "La promesse « moins de 30 minutes » figure deja sur le site produit : ne pas la durcir. Filmer un vrai parcours, pas une maquette.",
+      "tags": ["9:16", "onboarding", "essai", "social"]
+    }
+  ]
+}
