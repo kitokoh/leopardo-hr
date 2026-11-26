@@ -764,6 +764,16 @@ main{padding:28px 20px 60px}
      lecture devient penible (constate au test 390 px du 2026-11-26). */
   .data-table{min-width:760px}
   .table-wrap{-webkit-overflow-scrolling:touch}
+  /* Calendrier : sur mobile, les colonnes secondaires sont masquees pour que
+     # / ID / Titre / Statut tiennent sans defilement horizontal. Mesure du
+     2026-11-26 a 390 px : tableau 760 px dans un conteneur de 288 px, la
+     colonne Statut restait hors ecran. */
+  .vague .data-table{min-width:0}
+  .vague .data-table th:nth-child(4), .vague .data-table td:nth-child(4),
+  .vague .data-table th:nth-child(5), .vague .data-table td:nth-child(5),
+  .vague .data-table th:nth-child(6), .vague .data-table td:nth-child(6){display:none}
+  .vague .data-table th:nth-child(3), .vague .data-table td:nth-child(3){min-width:0}
+  .vague .data-table th, .vague .data-table td{padding-left:8px;padding-right:8px;font-size:12.5px}
   .vague-head{flex-wrap:wrap}
   .vague-head .hist-count-badge{margin-left:0}
 }
