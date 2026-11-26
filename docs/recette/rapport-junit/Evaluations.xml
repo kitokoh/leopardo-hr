@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/workspace/leopardo-hr/api/phpunit.xml" tests="3" assertions="23" errors="0" failures="0" skipped="0" time="18.097344">
+    <testsuite name="Evaluations" tests="3" assertions="23" errors="0" failures="0" skipped="0" time="18.097344">
+      <testsuite name="Tests\Feature\Evaluations\EvaluationWorkflowTest" file="/workspace/leopardo-hr/api/tests/Feature/Evaluations/EvaluationWorkflowTest.php" tests="3" assertions="23" errors="0" failures="0" skipped="0" time="18.097344">
+        <testcase name="test_manager_can_create_submit_and_delete_draft_evaluations" file="/workspace/leopardo-hr/api/tests/Feature/Evaluations/EvaluationWorkflowTest.php" line="29" class="Tests\Feature\Evaluations\EvaluationWorkflowTest" classname="Tests.Feature.Evaluations.EvaluationWorkflowTest" assertions="10" time="11.686087"/>
+        <testcase name="test_employee_sees_only_own_evaluations_and_can_acknowledge_submitted_one" file="/workspace/leopardo-hr/api/tests/Feature/Evaluations/EvaluationWorkflowTest.php" line="80" class="Tests\Feature\Evaluations\EvaluationWorkflowTest" classname="Tests.Feature.Evaluations.EvaluationWorkflowTest" assertions="7" time="3.213832"/>
+        <testcase name="test_duplicate_create_acknowledged_update_and_non_submitted_acknowledge_are_blocked" file="/workspace/leopardo-hr/api/tests/Feature/Evaluations/EvaluationWorkflowTest.php" line="126" class="Tests\Feature\Evaluations\EvaluationWorkflowTest" classname="Tests.Feature.Evaluations.EvaluationWorkflowTest" assertions="6" time="3.197425"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

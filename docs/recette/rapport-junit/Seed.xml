@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/workspace/leopardo-hr/api/phpunit.xml" tests="6" assertions="6" errors="0" failures="0" skipped="2" time="5.523084">
+    <testsuite name="Seed" tests="6" assertions="6" errors="0" failures="0" skipped="2" time="5.523084">
+      <testsuite name="Tests\Feature\Seed\PilotSeedCommandTest" file="/workspace/leopardo-hr/api/tests/Feature/Seed/PilotSeedCommandTest.php" tests="6" assertions="6" errors="0" failures="0" skipped="2" time="5.523084">
+        <testcase name="test_pilot_seed_creates_pilots_and_is_idempotent" file="/workspace/leopardo-hr/api/tests/Feature/Seed/PilotSeedCommandTest.php" line="39" class="Tests\Feature\Seed\PilotSeedCommandTest" classname="Tests.Feature.Seed.PilotSeedCommandTest" assertions="0" time="1.309402">
+          <skipped/>
+        </testcase>
+        <testcase name="test_pilot_cleanup_removes_pilot_tenants_and_is_idempotent" file="/workspace/leopardo-hr/api/tests/Feature/Seed/PilotSeedCommandTest.php" line="51" class="Tests\Feature\Seed\PilotSeedCommandTest" classname="Tests.Feature.Seed.PilotSeedCommandTest" assertions="0" time="0.802726">
+          <skipped/>
+        </testcase>
+        <testcase name="test_pilot_cleanup_targets_only_allowlisted_slugs" file="/workspace/leopardo-hr/api/tests/Feature/Seed/PilotSeedCommandTest.php" line="61" class="Tests\Feature\Seed\PilotSeedCommandTest" classname="Tests.Feature.Seed.PilotSeedCommandTest" assertions="2" time="1.083858"/>
+        <testcase name="test_pilot_seed_unknown_vertical_fails_cleanly" file="/workspace/leopardo-hr/api/tests/Feature/Seed/PilotSeedCommandTest.php" line="72" class="Tests\Feature\Seed\PilotSeedCommandTest" classname="Tests.Feature.Seed.PilotSeedCommandTest" assertions="2" time="0.903235"/>
+        <testcase name="test_guard_refuses_production_without_force" file="/workspace/leopardo-hr/api/tests/Feature/Seed/PilotSeedCommandTest.php" line="82" class="Tests\Feature\Seed\PilotSeedCommandTest" classname="Tests.Feature.Seed.PilotSeedCommandTest" assertions="1" time="0.813905"/>
+        <testcase name="test_guard_refuses_non_allowlisted_slug" file="/workspace/leopardo-hr/api/tests/Feature/Seed/PilotSeedCommandTest.php" line="98" class="Tests\Feature\Seed\PilotSeedCommandTest" classname="Tests.Feature.Seed.PilotSeedCommandTest" assertions="1" time="0.609959"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>
