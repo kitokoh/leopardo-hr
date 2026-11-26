@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">4/5</span></td>
-          <td class="obs">Exécuté contre l&#x27;API locale reconstruite. <code>POST /api/v1/auth/login</code> (karim.aouad@example.com / password123) → <strong>200</strong>, jeton Sanctum retourné (<code>token_type</code>, <code>token_expires_at</code>), <code>data.role = &quot;employee&quot;</code>. <code>GET /api/v1/auth/me</code> avec le jeton → <strong>200</strong> (profil complet, session valide). Mauvais mot de passe → <strong>401</strong> (pas de fuite). L&#x27;UI web Next.js n&#x27;a pas pu être servie : <code>next build</code> est tué par la limite mémoire de l&#x27;environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n&#x27;a donc pas été observé dans un navigateur. Le socle d&#x27;authentification est conforme.</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : <code>POST /api/v1/auth/login</code> et <code>GET /api/v1/auth/me</code> déclarés dans <code>api/routes/api.php</code> ; 59 fichiers de tests d&#x27;authentification présents (<code>tests/Feature/Auth/*</code>, <code>AuthLoginTest</code>, <code>AuthMeLogoutTest</code>). Vérification réseau réelle : l&#x27;espace client web <code>gestionemployer-backend.vercel.app</code> répond <strong>402</strong> (déploiement suspendu) et l&#x27;API <code>gestionemployerbackend.onrender.com/api/v1/health</code> répond <strong>503</strong> — le parcours navigateur (redirection, F5, déconnexion) n&#x27;a donc pas pu être rejoué. Note 3 = critère d&#x27;exécution non vérifiable, exécution runtime non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-01"><span class="note-badge">4/5</span></td>
           <td class="human-cell" data-human-obs="UC-01">Connexion verifiee : POST /api/v1/auth/login -&gt; 200 + JWT pour 5 personas sur 5 (principal, RH, comptable, superviseur, employe). Token accepte ensuite par GET /me/* (200).<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

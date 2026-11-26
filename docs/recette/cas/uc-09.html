@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">5/5</span></td>
-          <td class="obs">API : <code>GET /auth/me</code> expose <code>language</code> et <code>is_rtl</code> ; <code>PATCH /auth/language {language:&quot;ar&quot;}</code> → <strong>200</strong>, puis <code>is_rtl=true</code> confirmé sur <code>/auth/me</code>. Kiosque : bascule en <code>ar</code> → <code>dir=&quot;rtl&quot;</code>, <code>lang=&quot;ar&quot;</code>. Aucune clé de traduction brute détectée dans le DOM (<code>[]</code>). Tests kiosque <code>npm test</code> → <strong>40 tests OK</strong> (i18n 4 langues / 228 clés, parité + usage vérifiés).</td>
+          <td class="center"><span class="note note-good">4/5</span></td>
+          <td class="obs">Vérifié réellement : les 4 catalogues web <code>front/web/src/lib/i18n/locales/{fr,en,tr,ar}.json</code> ont <strong>7863 clés chacun, 0 clé manquante</strong> par rapport au français (parité mesurée par script) ; le RTL est câblé dans <code>front/web/src/app/layout.tsx</code> (<code>resolveSsrDir</code> → <code>&#x27;rtl&#x27;</code> pour <code>ar</code>, ligne 174-175) et <code>front/web/src/components/locale-sync.tsx</code> ; les 4 catalogues mobiles <code>app_{fr,en,tr,ar}.arb</code> existent dans <code>leopardo_core/lib/l10n</code>. Le rendu visuel RTL n&#x27;a pas été observé (web 402). Note 4 = conforme sur pièces + parité mesurée.</td>
           <td class="center human-cell" data-human-note="UC-09"><span class="note-badge">0/5</span></td>
           <td class="human-cell" data-human-obs="UC-09">Non execute dans ce run : aucun cas i18n/RTL n&#x27;a ete pilote (necessite une verification navigateur sur les 4 locales).<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

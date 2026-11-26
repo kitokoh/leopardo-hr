@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">4/5</span></td>
-          <td class="obs"><code>GET /me/pay-slips</code> → <strong>200</strong> (liste paginée, <code>data: []</code> pour l&#x27;employé de démo — aucun bulletin n&#x27;est généré par le seeder). Accès à un bulletin inexistant/tiers (<code>/me/pay-slips/999999</code>) → <strong>404 <code>RESOURCE_NOT_FOUND</code></strong> avec message localisé, sans fuite d&#x27;information. Le contrôle d&#x27;accès est conforme ; le téléchargement PDF n&#x27;a pas pu être vérifié faute de bulletin en base.</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : <code>GET /me/pay-slips</code>, <code>GET /me/pay-slips/{paySlip}</code>, <code>GET /me/pay-slips/{paySlip}/pdf</code> déclarés dans <code>api/routes/modules/payroll_engine.php</code> (lignes 39-43) ; 143 fichiers de tests paie (<code>PaySlipControllerTest</code>, <code>PaySlipPdfLocaleTest</code>, <code>PayrollCalculatorUnitTest</code>). Le cloisonnement self-service est couvert par <code>SensitiveDataAccessAuditTest</code>. API 503 : téléchargement non rejoué. Note 3 = critère d&#x27;exécution non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-05"><span class="note-badge">2/5</span></td>
           <td class="human-cell" data-human-obs="UC-05">DEFECT : GET /payrolls en persona employe (self-service bulletin) -&gt; 403 FORBIDDEN. L&#x27;employe ne peut pas lire ses propres bulletins alors que l&#x27;API repond 200 pour GET /attendance et /absences du meme compte.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

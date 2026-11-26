@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">5/5</span></td>
-          <td class="obs">Jeton <code>pharmaplus-casablanca</code> (MA) utilisé pour lire l&#x27;employé #6 de <code>techcorp-algerie</code> (DZ) → <strong>404 <code>RESOURCE_NOT_FOUND</code></strong> (pas de fuite). <code>GET /employees</code> avec le jeton MA → <strong>200</strong>, aucune donnée de TechCorp (recherche « techcorp »/« Karim » absente). Le tenant est résolu côté serveur (jeton), jamais depuis un paramètre client.</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : 66 fichiers de tests d&#x27;isolation (<code>TenantIsolationTest</code>, <code>CrossTenantIndexIsolationTest</code>, <code>MultiTenantSharedIsolationTest</code>, <code>TenantCompanyIdSpoofingTest</code>, <code>TenantContextLockdownTest</code>) et middlewares <code>tenant</code> appliqués dans <code>api/routes/api.php</code>. API 503 : tentative cross-tenant non rejouée en HTTP. Note 3 = critère d&#x27;exécution non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-08"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-08">Isolation : les modules non souscrits renvoient 403 (aucune fuite de donnees inter-tenant observee sur la matrice RBAC), mais l&#x27;isolation n&#x27;a pas ete attaquee avec deux tenants actifs comparables.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>
