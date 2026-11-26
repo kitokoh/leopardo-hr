@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">5/5</span></td>
-          <td class="obs"><code>GET /salary-structures</code> (comptable) → <strong>200</strong>, structures DZ listées (base_salary, currency DZD). <code>POST /payroll/simulate</code> (gross_salary=180000, country_code=DZ) → <strong>200</strong>, détail complet : <code>gross</code>, <code>country_code</code>, bloc <code>compliance</code> (niveau « pilot », avertissement de validation légale, source <code>docs/payroll/DZ_COMPLIANCE.md</code>), <code>correlation_id</code>. Même appel avec le jeton employé → <strong>403 <code>MANAGER_REQUIRED</code></strong> (contrôle de rôle effectif).</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : routes de préparation de paie dans <code>api/routes/modules/payroll_engine.php</code> ; 143 fichiers de tests paie dont <code>PayrollRunControllerTest</code>, <code>PayrollCycleIntegrationTest</code>, <code>PayrollCyclePreviewTest</code>, <code>PayrollCountryRulesTemporalVersioningTest</code>. API 503 : run de paie non exécuté. Note 3 = critère d&#x27;exécution non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-06"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-06">GET /payroll/audit -&gt; 403 INSUFFICIENT_ROLE pour le persona comptable (&#x27;Your manager role does not have access to this resource&#x27;). A confirmer cote produit : soit le role demo est sous-dote, soit l&#x27;audit de paie est ferme au comptable.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

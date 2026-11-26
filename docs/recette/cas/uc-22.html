@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-empty">—</span></td>
-          <td class="obs"><span class="muted">Non exécuté — à réaliser par le testeur IA.</span></td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : <code>api/routes/modules/billing.php</code> (39 routes) et module <code>api/app/Modules/Billing/</code> ; tests <code>BillingControllerTest</code>, <code>PlatformPlanApiTest</code>, <code>PlatformCompanySubscriptionApiTest</code>, <code>PlanSeederTrialDaysAlignmentTest</code>. API 503 : facturation non rejouée. Note 3 = critère d&#x27;exécution non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-22"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-22">GET /billing/ai-credits -&gt; 200 ; GET /billing/subscription -&gt; 404 &#x27;Aucun abonnement actif&#x27; (coherent avec un tenant de demo sans abonnement).<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

@@ -186,6 +186,18 @@ MODULES_EXT = [
          desc="12 applications Flutter + package partagé `leopardo_core`, builds et distribution."),
     dict(slug="desktop", name="Poste de travail (desktop)", icon="🖥️",
          desc="Application desktop, distribution et mises à jour."),
+    dict(slug="ai", name="Assistant IA", icon="🤖",
+         desc="Chat, propositions d'actions à confirmer, outils IA, exports de conversation et analytics d'usage (routes `api/routes/ai.php`)."),
+    dict(slug="contracts", name="Contrats", icon="📝",
+         desc="Cycle de vie des contrats de travail : modèles par pays, signature, échéances et alertes d'expiration (module HR, `hr_extended.php`)."),
+    dict(slug="audit", name="Audit & conformité", icon="🧾",
+         desc="Journal d'audit global, accès aux données sensibles, export et rétention (Core/Auth, `audit-logs`)."),
+    dict(slug="exports", name="Exports & rapports", icon="📤",
+         desc="Exports employés, pointage, bulletins, absences, contrats, véhicules et rapports RH consolidés (`dashboard.php`, `hr_extended.php`)."),
+    dict(slug="growth", name="Programme partenaires", icon="🤝",
+         desc="Partenaires, taux de commission, candidatures et reversements (absorbé par Billing, `billing.php`)."),
+    dict(slug="training", name="Formation", icon="🎓",
+         desc="Cours, sessions et inscriptions, côté plateforme et côté tenant (`training/*`)."),
     dict(slug="public", name="Surfaces publiques", icon="🌐",
          desc="Vitrine, fiches commerce, `leopardo_public`, SEO et cache public."),
 ]
@@ -207,7 +219,7 @@ USE_CASES_EXT = [
                 "Consulter la balance et vérifier la somme nulle.",
                 "Clôturer la période et vérifier le verrouillage des écritures."],
          expected="L'écriture équilibrée est acceptée, la déséquilibrée refusée avec un code métier explicite, la balance est nulle et la clôture empêche toute nouvelle saisie sur la période.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `GET /journals`, `POST /journals`, `PUT /journals/{journal}` d\u00e9clar\u00e9s dans `api/routes/modules/accounting.php` (lignes 131-164) ; 75 fichiers de tests comptables (`LedgerTest`, `AccountingActivationTest`, `AccountingAnalyticsGoldenJourneyTest`, `AccountingAuditRetentionTest`). API 503 : \u00e9criture non saisie. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-28", title="Comptabilité — export et rapprochement bancaire",
          profiles=["manager-comptable", "comptable-cabinet"], modules=["accounting", "paiements"],
          type="Fonctionnel", status="à exécuter",
@@ -219,7 +231,7 @@ USE_CASES_EXT = [
                 "Contrôler les lignes non rapprochées et leur motif.",
                 "Vérifier qu'aucun montant d'un autre tenant n'apparaît."],
          expected="L'export est complet et réimportable, le rapprochement identifie correctement les écarts, et l'isolation entre tenants est respectée.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : export comptable via `GET /reports/vat-declaration` (`api/routes/modules/accounting.php` ligne 172) et `GET /export/*` (`api/routes/modules/dashboard.php` lignes 51-58) ; rapprochement couvert par `BankExportControllerTest`, `BankExportGeneratorTest`, `GenerateBankExportJobTest`, `CompanyBankingControllerTest`. API 503 : export non g\u00e9n\u00e9r\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Notes de frais ---------------------------------------------------
     dict(id="UC-29", title="Notes de frais — soumission et validation",
@@ -233,7 +245,7 @@ USE_CASES_EXT = [
                 "Créer une seconde note et la rejeter avec un motif.",
                 "Vérifier que le rejet est visible côté employé avec son motif."],
          expected="La note suit le cycle attendu, le rejet exige un motif, et l'employé voit l'état réel de sa demande.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : le cycle de note de frais est expos\u00e9 par `GET/POST /expense-claims`, `PUT /expense-claims/{id}/submit`, `POST /expense-claims/{id}/approve|reject` (`api/routes/modules/expense.php` lignes 15-28) ; tests `ExpenseClaimControllerTest`, `Expense/*`. **\u00c9cart** : l'\u00e9tape 1 documente `POST /api/v1/expenses`, chemin **inexistant** \u2014 la ressource r\u00e9elle est `/expense-claims`. Note 3 = contournement n\u00e9cessaire (chemin \u00e0 corriger)."),
     dict(id="UC-30", title="Notes de frais — remboursement et impact paie",
          profiles=["manager-comptable"], modules=["expense", "payroll"], type="Fonctionnel",
          status="à exécuter",
@@ -245,7 +257,7 @@ USE_CASES_EXT = [
                 "Rejouer le remboursement et vérifier l'idempotence.",
                 "Vérifier la trace d'audit de l'opération."],
          expected="Le remboursement est tracé une seule fois, le montant est correct, et le rejeu ne crée pas de doublon.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : impact paie des notes de frais couvert par `ExpenseAccountingController` (`GET/POST /expense-claims/{id}/accounting-entries`, `api/routes/modules/expense.php` lignes 36-37) et par les tests paie (`PayrollAccountingExportTest`, `PayrollCycleIntegrationTest`). API 503 : remboursement non ex\u00e9cut\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Planning & tâches ------------------------------------------------
     dict(id="UC-31", title="Planning — shifts et affectations",
@@ -259,7 +271,7 @@ USE_CASES_EXT = [
                 "Publier le planning et vérifier la visibilité côté employé.",
                 "Modifier un shift publié et vérifier la notification."],
          expected="Le planning se crée et se publie, les conflits sont signalés avant publication, et les employés voient la version à jour.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `GET /planning`, `GET /planning/weekly-optimization`, `GET /planning/shift-rebalancing` (`api/routes/modules/planning.php` lignes 9-11) ; tests `PlanningControllerTest`, `PlanningOptimizationTest`, `ScheduleControllerTest`. **\u00c9cart** : l'\u00e9tape 1 documente `GET /api/v1/planning` alors que le groupe est mont\u00e9 sous le pr\u00e9fixe `planning` \u2014 le chemin racine r\u00e9el est `/api/v1/planning/`. Note 3 = contournement n\u00e9cessaire."),
     dict(id="UC-32", title="Tâches — assignation et preuve d'exécution",
          profiles=["manager-principal", "employe"], modules=["planning"], type="Fonctionnel",
          status="à exécuter",
@@ -271,7 +283,7 @@ USE_CASES_EXT = [
                 "Vérifier l'horodatage et l'auteur de la clôture.",
                 "Créer une tâche en retard et vérifier l'escalade."],
          expected="La tâche circule correctement, la preuve est horodatée et attribuée, et le retard déclenche l'escalade prévue.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `GET/POST /tasks` d\u00e9clar\u00e9s dans `api/routes/modules/rh.php` (lignes 357-358) ; tests `TaskControllerTest`, `CrmActivitiesTasksTest`, `CrmTaskTimelineTest`. API 503 : assignation non rejou\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Recrutement ------------------------------------------------------
     dict(id="UC-33", title="Recrutement — offre d'emploi et page carrières",
@@ -285,7 +297,7 @@ USE_CASES_EXT = [
                 "Vérifier le SEO de la page (titre, description, langue).",
                 "Dépublier l'offre et vérifier sa disparition."],
          expected="L'offre est publiée, visible publiquement avec les bonnes métadonnées, puis retirée proprement à la dépublication.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/recruitment_platform.php` et page carri\u00e8res publique couverte par `PublicCareerControllerTest`, `JobPostingLifecycleTest` ; page `front/web/src/app/(dashboard)/recruitment/`. API 503 : offre non publi\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-34", title="Recrutement — pipeline de candidatures",
          profiles=["recruteur"], modules=["recruitment"], type="Fonctionnel",
          status="à exécuter",
@@ -297,7 +309,7 @@ USE_CASES_EXT = [
                 "Rejeter une candidature avec un motif.",
                 "Vérifier l'historique des changements d'étape."],
          expected="Chaque transition est enregistrée avec auteur et date, le rejet est motivé, et l'historique est complet.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : module `api/app/Modules/Recruitment/` (9 contr\u00f4leurs) ; tests `RecruitmentControllerTest`, `CandidateHiringTest`, `CareerEventTest`. API 503 : pipeline non parcouru. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Communication & notifications ------------------------------------
     dict(id="UC-35", title="Communication — annonce interne et accusés de lecture",
@@ -311,7 +323,7 @@ USE_CASES_EXT = [
                 "Vérifier qu'un employé hors cible ne la reçoit pas.",
                 "Contrôler le compteur d'accusés de lecture."],
          expected="Le ciblage est respecté, l'annonce est lisible, et le compteur de lecture reflète les lectures réelles.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `GET/POST /announcements` d\u00e9clar\u00e9s dans `api/routes/api.php` (lignes 887-890) et module `api/app/Modules/Communication/` ; tests `AnnouncementControllerTest`, `CommunicationServiceTest`, `CommunicationAnalyticsControllerTest`. API 503 : annonce non publi\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-36", title="Notifications — préférences et multi-canal",
          profiles=["employe", "ops"], modules=["notification"], type="Fonctionnel",
          status="à exécuter",
@@ -323,7 +335,7 @@ USE_CASES_EXT = [
                 "Vérifier que l'e-mail reste envoyé si le canal est actif.",
                 "Réactiver le canal et vérifier le retour du push."],
          expected="Chaque canal suit la préférence enregistrée, sans effet de bord sur les autres canaux, et le journal d'envoi trace la décision.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `GET/PATCH /notification-preferences` d\u00e9clar\u00e9s dans `api/routes/api.php` (lignes 446-447) ; tests `NotificationPreferenceControllerTest`, `NotificationControllerTest`, `BackfillNotificationPreferencesCommandTest`, `DeviceTokenControllerTest`. API 503 : pr\u00e9f\u00e9rence non modifi\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Onboarding -------------------------------------------------------
     dict(id="UC-37", title="Onboarding — provisioning d'un essai guidé",
@@ -337,7 +349,7 @@ USE_CASES_EXT = [
                 "Se connecter avec le compte créé.",
                 "Vérifier qu'aucun tenant en doublon n'est créé en cas de double soumission."],
          expected="Le tenant est créé une seule fois, l'utilisateur peut se connecter, et la double soumission est idempotente.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `POST /trial/signup` d\u00e9clar\u00e9 dans `api/routes/api.php` (ligne 206) ; provisioning couvert par `TrialProvisioningDedupTest`, `TrialProvisioningStatusTest`, `SelfServiceTrialTest`, `TrialOnboardingAccessTest`, `TrialSolutionsActivationTest`. API 503 : essai non cr\u00e9\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-38", title="Onboarding — reprise d'un parcours interrompu",
          profiles=["client-final"], modules=["onboarding"], type="Résilience",
          status="à exécuter",
@@ -349,7 +361,7 @@ USE_CASES_EXT = [
                 "Vérifier que `furthest_step` ne régresse jamais.",
                 "Terminer le parcours et vérifier la cohérence des données saisies."],
          expected="La reprise se fait à l'étape atteinte, les données déjà saisies sont conservées, et l'étape la plus avancée est monotone.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `GET/PATCH /onboarding-setup/state`, `GET /onboarding-setup/checklist`, `GET /onboarding-setup/progress` d\u00e9clar\u00e9s dans `api/routes/modules/billing.php` (lignes 31-40) ; tests `OnboardingStepControllerTest`, `OnboardingChecklistTest`, `OnboardingE2ETest`, `OnboardingQrControllerTest`. API 503 : reprise non rejou\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Catalogue & recherche --------------------------------------------
     dict(id="UC-39", title="Catalogue — produits, services et tarifs",
@@ -363,7 +375,7 @@ USE_CASES_EXT = [
                 "Désactiver l'article et vérifier sa disparition des ventes.",
                 "Tenter un prix négatif et vérifier la validation."],
          expected="Le catalogue est cohérent, l'historique de prix est conservé, la désactivation est effective et les valeurs invalides sont refusées.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/catalog.php` et `catalog_public.php` ; module `api/app/Modules/Catalog/` ; tests `Catalog/*`, `CrmMigrationsTest` non applicable \u2014 voir `tests/Feature/Catalog`. API 503 : CRUD non rejou\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-40", title="Recherche — recherche transverse et permissions",
          profiles=["manager-principal", "support"], modules=["search"], type="Sécurité",
          status="à exécuter",
@@ -375,7 +387,7 @@ USE_CASES_EXT = [
                 "Vérifier l'absence de résultats hors périmètre.",
                 "Vérifier qu'aucun identifiant d'un autre tenant n'apparaît."],
          expected="Les résultats respectent les permissions du rôle, aucune donnée hors périmètre n'est exposée, et la recherche reste rapide.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `GET /search` d\u00e9clar\u00e9 dans `api/routes/modules/crm.php` (ligne 178) et `api/routes/modules/trade.php` (ligne 133) ; module `api/app/Modules/SearchIntelligence/` ; tests `SearchIntelligence/*`. Le respect des permissions est couvert par `SensitiveDataAccessAuditTest`. API 503 : recherche non ex\u00e9cut\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Pages & surfaces publiques ---------------------------------------
     dict(id="UC-41", title="Pages — pages publiques et SEO multilingue",
@@ -389,7 +401,7 @@ USE_CASES_EXT = [
                 "Contrôler le rendu RTL en arabe.",
                 "Vérifier l'absence de clé de traduction brute."],
          expected="Chaque langue expose ses propres métadonnées, les balises canoniques et `hreflang` sont correctes, et le RTL est effectif.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/pages.php` et `pages_public.php` ; module `api/app/Modules/Pages/` ; tests `Pages/*`, `TranslationCatalogApiTest` (SEO multilingue) ; 230 pages `page.tsx` c\u00f4t\u00e9 web. API 503 : page non publi\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-42", title="Showcase — vitrine publique et bibliothèque",
          profiles=["marketing", "client-final"], modules=["showcase", "public"], type="UI/UX",
          status="à exécuter",
@@ -401,7 +413,7 @@ USE_CASES_EXT = [
                 "Contrôler les en-têtes de cache public.",
                 "Vérifier qu'aucune donnée interne n'est exposée."],
          expected="Les surfaces publiques s'affichent correctement sur desktop et mobile, la navigation est fluide, le cache est actif et aucune donnée interne ne fuit.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 r\u00e9ellement : le portail public r\u00e9pond **200** ; module `api/app/Modules/Showcase/` et `api/routes/modules/showcase.php` ; tests `Showcase/*`, `LeopardoPublic`. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable : la surface publique r\u00e9pond 200 mais le parcours du cas n'a pas \u00e9t\u00e9 rejou\u00e9, API 503."),
 
     # --- Bibliothèque -----------------------------------------------------
     dict(id="UC-43", title="Bibliothèque — prêt et retour d'ouvrages",
@@ -415,7 +427,7 @@ USE_CASES_EXT = [
                 "Enregistrer le retour et vérifier la remise à disposition.",
                 "Vérifier le calcul du retard sur un prêt échu."],
          expected="Un ouvrage ne peut être prêté qu'une fois, le retour le remet à disposition, et le retard est calculé correctement.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/library.php` et `library_public.php` ; module `api/app/Modules/Library/` ; tests `Library/*`. API 503 : pr\u00eat non enregistr\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Caméras ----------------------------------------------------------
     dict(id="UC-44", title="Caméras — parc et supervision des flux",
@@ -429,7 +441,7 @@ USE_CASES_EXT = [
                 "Simuler une caméra injoignable et vérifier l'état dégradé.",
                 "Vérifier qu'aucune caméra d'un autre tenant n'est visible."],
          expected="La caméra est enregistrée et supervisée, l'état reflète la réalité du flux, et l'isolation entre tenants est respectée.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/cameras.php` ; module `api/app/Modules/Cameras/` ; tests `Cameras/*`. API 503 : flux non supervis\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-45", title="Caméras — incident et maintenance",
          profiles=["technicien"], modules=["cameras"], type="Fonctionnel",
          status="à exécuter",
@@ -441,7 +453,7 @@ USE_CASES_EXT = [
                 "Clôturer l'intervention.",
                 "Vérifier l'historique de maintenance de la caméra."],
          expected="L'incident est tracé, l'intervention suit son cycle, et l'historique de maintenance reste consultable.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/cameras.php` ; module `api/app/Modules/Cameras/` ; tests `Cameras/*`. API 503 : incident non d\u00e9clar\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Flotte -----------------------------------------------------------
     dict(id="UC-46", title="Flotte — véhicules, affectations et entretien",
@@ -455,7 +467,7 @@ USE_CASES_EXT = [
                 "Vérifier l'alerte d'échéance (assurance, visite technique).",
                 "Tenter une immatriculation en doublon et vérifier le refus."],
          expected="Le véhicule est suivi de bout en bout, les échéances déclenchent des alertes, et les doublons d'immatriculation sont refusés.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : module `api/app/Modules/Fleet/` et routes flotte dans `api/routes/modules/tracking.php` ; tests `FleetControllerTest`, `VehicleControllerTest`, `Fleet/*`. API 503 : affectation non rejou\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Station-service --------------------------------------------------
     dict(id="UC-47", title="Station-service — index pompes et ventes carburant",
@@ -469,7 +481,7 @@ USE_CASES_EXT = [
                 "Clôturer la caisse de la journée.",
                 "Tenter un index décroissant et vérifier le refus."],
          expected="Le volume et le montant sont calculés correctement, la clôture est cohérente, et un index incohérent est refusé avec un message explicite.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/fuel_station.php` (140 routes) ; module `api/app/Modules/FuelStation/` ; tests `Fuel/*`, `FuelStation/*`. API 503 : vente non enregistr\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- VTC --------------------------------------------------------------
     dict(id="UC-48", title="VTC — course et tarification",
@@ -483,7 +495,7 @@ USE_CASES_EXT = [
                 "Vérifier le montant final et le mode de paiement.",
                 "Tenter une course sans grille active et vérifier le refus explicite."],
          expected="Le tarif suit la grille, la course suit son cycle, et l'absence de grille produit une erreur métier claire (jamais une 500).",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/vtc.php` ; module `api/app/Modules/Vtc/` (Application, Console, Domain, Infrastructure, Interfaces, Policies) ; tests `Vtc/*`. API 503 : course non cr\u00e9\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Livraison --------------------------------------------------------
     dict(id="UC-49", title="Livraison — tournée et preuve de livraison",
@@ -497,7 +509,7 @@ USE_CASES_EXT = [
                 "Marquer un colis en échec avec un motif.",
                 "Vérifier le suivi visible côté client."],
          expected="La tournée se constitue, chaque colis a un statut et une preuve, et le client voit l'état réel de sa livraison.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/delivery.php` ; module `api/app/Modules/Delivery/` ; tests `Delivery/*`, `DeliveryReportController` couvert. API 503 : tourn\u00e9e non ouverte. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Restauration -----------------------------------------------------
     dict(id="UC-50", title="Restauration — POS et plan de salle",
@@ -511,7 +523,7 @@ USE_CASES_EXT = [
                 "Encaisser la table et vérifier le ticket.",
                 "Vérifier la libération de la table après encaissement."],
          expected="La commande est transmise, le total est correct, le ticket est généré et la table redevient disponible.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/restaurantmanager.php` (229 routes) ; modules `api/app/Modules/Restaurant/` et `RestaurantManager/` ; 88 fichiers de tests li\u00e9s (`Restaurant/*`, `RestaurantMobileManagerApiTest`, `RestaurantOfflineSyncTest`). API 503 : POS non ouvert. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-51", title="Restauration — KDS et cycle de commande",
          profiles=["restaurateur"], modules=["restaurant"], type="Résilience",
          status="à exécuter",
@@ -523,7 +535,7 @@ USE_CASES_EXT = [
                 "Couper le réseau et envoyer une commande : vérifier la mise en file.",
                 "Rétablir le réseau et vérifier la synchronisation sans doublon."],
          expected="Le KDS reflète l'état réel, la commande hors-ligne est mise en file puis synchronisée une seule fois.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/restaurantmanager.php` ; module `RestaurantManager/` (Console, Policies) ; tests `RestaurantOfflineSyncTest`, `RestaurantSyncRoutesTest`, `RestaurantPrintBridgeController` couvert. API 503 : cycle de commande non rejou\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Retail -----------------------------------------------------------
     dict(id="UC-52", title="Retail — POS et encaissement",
@@ -537,7 +549,7 @@ USE_CASES_EXT = [
                 "Vérifier le ticket et la numérotation.",
                 "Tenter une remise supérieure au seuil autorisé et vérifier le refus."],
          expected="Le total est correct, le ticket est généré, la numérotation est continue, et les remises hors seuil sont refusées.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/retail.php` ; module `api/app/Modules/Retail/` ; tests `Retail/*` ; pages `front/web/src/app/(dashboard)/commerce/pos/page.tsx`. API 503 : encaissement non rejou\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-53", title="Retail — stock et inventaire",
          profiles=["retail"], modules=["retail", "catalog"], type="Fonctionnel",
          status="à exécuter",
@@ -549,7 +561,7 @@ USE_CASES_EXT = [
                 "Saisir un inventaire physique et régulariser l'écart.",
                 "Vérifier la trace de la régularisation."],
          expected="Le stock suit les ventes, la régularisation est possible et tracée, et aucun stock négatif n'est accepté sans règle explicite.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/retail.php` et `catalog.php` ; modules `Retail/` et `Catalog/` ; tests `Retail/*`, `Catalog/*` ; page `commerce/stock/page.tsx`. API 503 : inventaire non rejou\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Hôtellerie -------------------------------------------------------
     dict(id="UC-54", title="Hôtellerie — chambres, séjours et housekeeping",
@@ -563,7 +575,7 @@ USE_CASES_EXT = [
                 "Passer la chambre en « à nettoyer » puis « propre ».",
                 "Effectuer le check-out et vérifier la facture."],
          expected="La chambre ne peut pas être doublement réservée, les états de housekeeping sont cohérents, et la facture reflète le séjour.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/hospitality_manager.php` ; module `api/app/Modules/HospitalityManager/` (Console) ; tests `Hospitality/*`. API 503 : s\u00e9jour non cr\u00e9\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Pharmacie --------------------------------------------------------
     dict(id="UC-55", title="Pharmacie — stock, ordonnance et profil public",
@@ -577,7 +589,7 @@ USE_CASES_EXT = [
                 "Ouvrir la fiche publique de la pharmacie (horaires, adresse).",
                 "Vérifier qu'aucune donnée de stock n'est exposée publiquement."],
          expected="La vente sur ordonnance est contrôlée, le stock suit, la fiche publique est correcte et n'expose aucune donnée interne.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/pharmacy.php` ; module `api/app/Modules/Pharmacy/` ; tests `Pharmacy/*` ; page `front/web/src/app/(dashboard)/pharmacy/`. API 503 : vente non enregistr\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Santé ------------------------------------------------------------
     dict(id="UC-56", title="Santé — patients, rendez-vous et dossier",
@@ -591,7 +603,7 @@ USE_CASES_EXT = [
                 "Tenter d'accéder au dossier d'un patient hors périmètre.",
                 "Vérifier la trace d'audit des accès au dossier."],
          expected="Les créneaux ne se chevauchent pas, l'accès au dossier est restreint et tracé, et aucune donnée de santé n'est exposée hors périmètre.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/health_manager.php` (63 routes) ; module `api/app/Modules/HealthManager/` ; 8 fichiers de tests rattach\u00e9s (`tests/Feature/HealthManager/*`). La couverture automatis\u00e9e est nettement plus faible que les autres verticales et le dossier patient (donn\u00e9es de sant\u00e9) n'a pas pu \u00eatre exerc\u00e9 (API 503). Note 3 = crit\u00e8re de s\u00e9curit\u00e9 non v\u00e9rifiable."),
 
     # --- École ------------------------------------------------------------
     dict(id="UC-57", title="École — classes, notes et présences",
@@ -605,7 +617,7 @@ USE_CASES_EXT = [
                 "Vérifier le calcul de la moyenne de l'élève.",
                 "Tenter une note hors barème et vérifier le refus."],
          expected="L'appel est enregistré, les moyennes sont calculées correctement, et les notes hors barème sont refusées.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/edu_manager.php` (111 routes) ; module `api/app/Modules/EduManager/` (Console, Policies) ; tests `EduManager/*`, `TrainingControllerTest`. API 503 : classe non cr\u00e9\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-58", title="École — facturation scolaire et espace parents",
          profiles=["formateur", "client-final"], modules=["edu", "billing"], type="Fonctionnel",
          status="à exécuter",
@@ -617,7 +629,7 @@ USE_CASES_EXT = [
                 "Enregistrer un paiement partiel et vérifier le solde.",
                 "Vérifier qu'un parent ne voit que ses propres enfants."],
          expected="La facture est émise et visible du seul parent concerné, le solde suit les paiements, et l'isolation entre familles est respectée.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/edu_manager.php` et `billing.php` ; modules `EduManager/` et `Billing/` ; tests `EduManager/*`, `BillingControllerTest`, `PlanSeederTrialDaysAlignmentTest`. API 503 : facture non \u00e9mise. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Agriculture ------------------------------------------------------
     dict(id="UC-59", title="Agriculture — parcelles, cultures et récoltes",
@@ -631,7 +643,7 @@ USE_CASES_EXT = [
                 "Saisir la récolte et le rendement.",
                 "Vérifier l'historique de la parcelle."],
          expected="La parcelle conserve son historique complet, le rendement est calculé, et les surfaces incohérentes sont refusées.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/farm_os.php` (83 routes) ; module `api/app/Modules/FarmOs/` ; tests `Farm/*`. API 503 : parcelle non cr\u00e9\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Cagnottes --------------------------------------------------------
     dict(id="UC-60", title="Cagnottes — campagne de collecte et dons",
@@ -645,7 +657,7 @@ USE_CASES_EXT = [
                 "Vérifier la progression de l'objectif et le reçu.",
                 "Vérifier qu'aucune coordonnée de donateur n'est exposée publiquement."],
          expected="La campagne est publique et lisible, le don met à jour la progression, le reçu est émis, et les données personnelles restent privées.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/fundraising.php` ; module `api/app/Modules/Fundraising/` ; tests `Fundraising/*`, `MobileMoneyProviderAdaptersTest`. API 503 : don non enregistr\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Cabinet comptable ------------------------------------------------
     dict(id="UC-61", title="Cabinet comptable — portefeuille clients",
@@ -659,7 +671,7 @@ USE_CASES_EXT = [
                 "Vérifier le code HTTP et l'absence de fuite.",
                 "Vérifier la trace d'audit des accès inter-dossiers."],
          expected="Le cabinet ne voit que son portefeuille, l'accès hors portefeuille est refusé sans fuite, et chaque accès est tracé.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/cabinet.php` ; module `api/app/Modules/Cabinet/` ; tests `Cabinet/*` ; isolation couverte par `TenantIsolationTest`. API 503 : portefeuille non parcouru. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Négoce -----------------------------------------------------------
     dict(id="UC-62", title="Négoce — intention, sous-profil et devis",
@@ -673,7 +685,7 @@ USE_CASES_EXT = [
                 "Confirmer le devis et vérifier son statut.",
                 "Tenter un devis sans sous-profil et vérifier le comportement attendu."],
          expected="L'intention est conservée jusqu'au devis, les totaux sont exacts, et l'absence de sous-profil produit un message explicite.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/trade.php` (42 routes) ; module `api/app/Modules/Trade/` (Console) ; tests `Trade/*`. API 503 : devis non cr\u00e9\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Branding ---------------------------------------------------------
     dict(id="UC-63", title="Marque — branding tenant et surfaces publiques",
@@ -687,7 +699,7 @@ USE_CASES_EXT = [
                 "Vérifier le contraste et la lisibilité des textes.",
                 "Suspendre la marque et vérifier le retour à l'identité par défaut."],
          expected="La marque s'applique sur la surface publique, le contraste reste lisible, et la suspension restaure proprement l'identité par défaut.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/branding.php` et `branding_public.php` ; module `api/app/Modules/Branding/` (Console) ; tests `Branding/*`, `PdfBrandingTest`, `CompanyBrandingControllerTest`. API 503 : enseigne non publi\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Abonnements & paiements ------------------------------------------
     dict(id="UC-64", title="Abonnements — plan, essai et facturation",
@@ -701,7 +713,7 @@ USE_CASES_EXT = [
                 "Simuler un renouvellement et vérifier la période suivante.",
                 "Vérifier le blocage attendu à l'expiration sans paiement."],
          expected="L'essai, l'activation, la facture et le renouvellement sont cohérents, et l'expiration produit le blocage prévu sans erreur technique.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/billing.php` ; module `api/app/Modules/Billing/` ; tests `BillingControllerTest`, `PlatformPlanApiTest`, `PlanSeederTrialDaysAlignmentTest`, `TrialProvisioningStatusTest`. API 503 : abonnement non souscrit. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-65", title="Paiements — encaissement et webhooks",
          profiles=["finance", "developpeur"], modules=["paiements", "billing"], type="Sécurité",
          status="à exécuter",
@@ -713,7 +725,7 @@ USE_CASES_EXT = [
                 "Vérifier la mise à jour de l'état de paiement.",
                 "Vérifier la trace d'audit de chaque appel."],
          expected="Seuls les webhooks signés sont acceptés, le rejeu est idempotent, l'état de paiement est cohérent et chaque appel est tracé.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/paiements.php` et webhooks `POST /webhooks/stripe`, `POST /webhooks/chargily` (`api/routes/api.php` lignes 313-314) ; tests `PaymentWebhookControllerTest`, `PaymentWebhookFailClosedTest`, `OutboundWebhookSignatureUnificationTest`, `WebhookDeadLetterTest`, `WebhookRetryAndDeactivationTest`. API 503 : webhook non rejou\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Edge / hors-ligne ------------------------------------------------
     dict(id="UC-66", title="EdgeSync — file hors-ligne et rejeu idempotent",
@@ -727,7 +739,7 @@ USE_CASES_EXT = [
                 "Vérifier qu'aucun événement n'est dupliqué côté cloud.",
                 "Contrôler l'état de la file (vide, `dead_letter_count` à zéro)."],
          expected="Les événements sont mis en file, rejoués une seule fois, et la file se vide sans lettre morte.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : module `api/app/Modules/EdgeSync/` (Application, Console, Domain, Infrastructure, Interfaces, routes) ; tests `EdgeSync/*`, `RestaurantOfflineSyncTest`, `KioskSyncSkippedEventsTest`, `WriteIdempotencyTest`. API 503 : rejeu non provoqu\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Géolocalisation --------------------------------------------------
     dict(id="UC-67", title="Géolocalisation — preuve de présence",
@@ -741,7 +753,7 @@ USE_CASES_EXT = [
                 "Vérifier le message retourné (explicite, non technique).",
                 "Vérifier que les coordonnées ne sont pas exposées à des tiers."],
          expected="Le pointage dans la zone est accepté avec preuve, le pointage hors zone est refusé avec un message clair, et les coordonnées restent confidentielles.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/geo.php` et `tracking.php` ; module `api/app/Modules/Geo/` (Console, Policies) ; tests `Geo/*`, `AttendanceGeofenceServiceTest`, `AttendanceGeofenceServiceTest` (Unit). API 503 : preuve de pr\u00e9sence non produite. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- API --------------------------------------------------------------
     dict(id="UC-68", title="API — contrat OpenAPI, webhooks et clés",
@@ -755,7 +767,7 @@ USE_CASES_EXT = [
                 "Révoquer la clé et vérifier le refus immédiat.",
                 "Vérifier que la clé n'apparaît jamais en clair dans les journaux."],
          expected="Le contrat est accessible et versionné, la clé respecte son périmètre, la révocation est immédiate et aucun secret n'est journalisé.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 r\u00e9ellement : `api/openapi.yaml` existe (3,09 Mo, **1983 chemins** d\u00e9clar\u00e9s) ; tests `OpenApiDocsTest`, `ApiErrorContractTest`, `FrontendApiContractTest`, `RouteControllerMethodContractTest`, `WebhookRoutesUniquenessTest`. Le contrat n'a pas \u00e9t\u00e9 servi en ligne (`/docs` \u2192 **503**). Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable : le fichier `api/openapi.yaml` est mesur\u00e9 (1983 chemins) mais le contrat n'est pas servi en ligne (`/docs` \u2192 503)."),
 
     # --- Mobile & desktop -------------------------------------------------
     dict(id="UC-69", title="Mobile — build et distribution des applications",
@@ -769,7 +781,7 @@ USE_CASES_EXT = [
                 "Distribuer sur le canal de test et vérifier l'installation.",
                 "Vérifier que l'application démarre et atteint l'écran de connexion."],
          expected="L'analyse et le build passent, l'APK s'installe, et l'application démarre jusqu'à l'écran de connexion sans plantage.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : **13** dossiers d'applications Flutter dans `front/mobile_apps/` (dont `leopardo_core` partag\u00e9) ; workflows `.github/workflows/mobile-distribute.yml` et `mobile-distribute-main.yml` ; tests `Contracts/MobilePayloadContractTest`, `MobileMoneyProviderAdaptersTest`. Aucun build APK n'a \u00e9t\u00e9 produit ici (pas de SDK Android dans cet environnement). Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-70", title="Desktop — poste de travail et mise à jour",
          profiles=["ops", "developpeur"], modules=["desktop"], type="Fonctionnel",
          status="à exécuter",
@@ -781,7 +793,7 @@ USE_CASES_EXT = [
                 "Vérifier la détection de la mise à jour.",
                 "Appliquer la mise à jour et vérifier la nouvelle version."],
          expected="L'application démarre, affiche sa version réelle, détecte la mise à jour et l'applique sans perte de session.",
-         note_ia="", obs_ia=""),
+         note_ia="2", obs_ia="**\u00c9cart constat\u00e9 sur pi\u00e8ces** : le scaffolding desktop existe (`front/mobile_apps/*/windows`, `*/macos` pour 6 apps) et le workflow `.github/workflows/desktop-ci.yml` est pr\u00e9sent, mais `docs/desktop/README.md` indique explicitement \u00ab cha\u00eene de build/distribution : \u274c aucune \u00bb pour 5 apps sur 7, et **aucun test automatis\u00e9** n'est rattach\u00e9 au desktop (0 fichier). La mise \u00e0 jour applicative (auto-update) n'est pas impl\u00e9ment\u00e9e. Note 2 = d\u00e9faillance sur un crit\u00e8re majeur (distribution et mise \u00e0 jour absentes)."),
 
     # --- Surfaces publiques -----------------------------------------------
     dict(id="UC-71", title="Public — fiche commerce (leopardo_public)",
@@ -795,7 +807,7 @@ USE_CASES_EXT = [
                 "Tester l'action de contact (appel, itinéraire).",
                 "Vérifier le rendu sur un écran étroit."],
          expected="La fiche est complète et lisible, l'état ouvert/fermé est correct, les actions fonctionnent et le rendu mobile est propre.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/trade_public.php`, `catalog_public.php`, `market_public.php` (fiches publiques sans auth) ; app `front/mobile_apps/leopardo_public/` ; **un seul** test rattach\u00e9 (`PublicCareerControllerTest`, qui ne couvre pas la fiche commerce). La fiche commerce publique n'a pas \u00e9t\u00e9 ouverte (API 503). Note 3 = crit\u00e8re non v\u00e9rifiable et couverture de test insuffisante."),
 
     # --- Plateforme -------------------------------------------------------
     dict(id="UC-72", title="Plateforme — provisionnement et diagnostic",
@@ -809,7 +821,7 @@ USE_CASES_EXT = [
                 "Consulter le diagnostic (étape, message, corrélation).",
                 "Relancer le provisionnement et vérifier l'idempotence."],
          expected="Chaque étape est visible et horodatée, l'échec est diagnosticable sans accès serveur, et la relance ne crée pas de doublon.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : provisioning couvert par `PlatformCompanyProvisioningTest`, `PlatformCompanyRequestProvisioningTest`, `TrialProvisioningDedupTest`, `TrialProvisioningStatusTest` ; diagnostic par `PlatformCompanyHealthApiTest`, `HealthReadyCriticalDepsTest`, `LaunchReadinessControllerTest`. API 503 : provisioning non d\u00e9clench\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-73", title="Tenant — isolation par établissement",
          profiles=["manager-principal", "ops"], modules=["tenant"], type="Sécurité",
          status="à exécuter",
@@ -821,7 +833,7 @@ USE_CASES_EXT = [
                 "Vérifier l'absence de la donnée dans les listes de B.",
                 "Vérifier que le périmètre est résolu côté serveur."],
          expected="L'accès inter-établissement est refusé, aucune donnée de A n'apparaît dans B, et le périmètre n'est jamais dérivé d'un paramètre client.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : 66 fichiers de tests d'isolation (`TenantIsolationTest`, `TenantCompanyIdSpoofingTest`, `TenantContextLockdownTest`, `CrossTenantIndexIsolationTest`, `MultiTenantSharedIsolationTest`) ; middleware `tenant` dans `api/routes/api.php`. API 503 : tentative cross-tenant non rejou\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-74", title="IAM — connexion SSO (SAML / OIDC)",
          profiles=["admin-plateforme", "developpeur"], modules=["iam"], type="Sécurité",
          status="à exécuter",
@@ -833,7 +845,7 @@ USE_CASES_EXT = [
                 "Tester une configuration invalide et vérifier le message d'erreur.",
                 "Vérifier qu'aucun jeton du fournisseur n'est journalisé."],
          expected="La connexion SSO aboutit avec le bon rôle, une configuration invalide produit une erreur explicite, et aucun jeton n'est journalisé.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/sso.php` et `integrations.php` ; tests `SSOControllerTest`, `SSOOidcFlowTest`, `OidcIdTokenValidatorHardeningTest`, `SsoCallbackThrottleTest`, `SsoConfigureSsrfGuardTest`, `GoogleSsoTwoFactorSchemaTest`. API 503 : flux SSO non rejou\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-75", title="RGPD — registre des traitements et droits",
          profiles=["admin-plateforme", "support"], modules=["tenant", "platform"], type="Sécurité",
          status="à exécuter",
@@ -845,7 +857,7 @@ USE_CASES_EXT = [
                 "Demander la suppression et vérifier l'effacement ou l'anonymisation.",
                 "Vérifier la trace d'audit de l'opération."],
          expected="Le registre est à jour, l'export est complet, la suppression est effective ou anonymisée selon la règle, et l'opération est tracée.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `docs/RGPD_REGISTRE_TRAITEMENTS.md` pr\u00e9sent ; tests `GdprAnonymizeEmployeeTest`, `PrivacyControllerTest`, `PiiFieldRegistryTest`, `SensitiveDataEncryptorTest`, `SensitiveDataAccessAuditTest`, `PurgeAuditLogsCommandTest`. API 503 : demande d'acc\u00e8s non exerc\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-76", title="Performance — objectifs et évaluations",
          profiles=["manager-rh", "employe"], modules=["hr"], type="Fonctionnel",
          status="à exécuter",
@@ -857,7 +869,7 @@ USE_CASES_EXT = [
                 "Clôturer la revue avec une note et un commentaire.",
                 "Vérifier que l'employé ne peut pas modifier sa propre note."],
          expected="Les objectifs sont partagés, le check-in est tracé, la revue est clôturée, et l'employé ne peut pas s'auto-noter.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : module `api/app/Modules/HR/` et `api/routes/modules/hr_extended.php` ; tests `Evaluations/*`, `HrReportControllerTest`, `ProfileFunctionalReadinessTest`. API 503 : \u00e9valuation non cr\u00e9\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-77", title="Documents — coffre-fort et échéances",
          profiles=["manager-rh", "employe"], modules=["hr"], type="Fonctionnel",
          status="à exécuter",
@@ -869,7 +881,7 @@ USE_CASES_EXT = [
                 "Renseigner une échéance proche et vérifier l'alerte.",
                 "Vérifier la trace de téléchargement."],
          expected="Le document est accessible au seul ayant droit, l'échéance déclenche une alerte, et chaque téléchargement est tracé.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : documents employ\u00e9 couverts par `EmployeeDocumentTest`, `ContractController` (`GET /contracts/expiring`, `api/routes/modules/hr_extended.php` ligne 93) et `EmployeeDocumentTest` ; coffre-fort et \u00e9ch\u00e9ances c\u00f4t\u00e9 HR. API 503 : document non d\u00e9pos\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-78", title="Workflows — validations multi-niveaux",
          profiles=["manager-principal", "manager-rh"], modules=["planning", "absence"], type="Fonctionnel",
          status="à exécuter",
@@ -881,7 +893,7 @@ USE_CASES_EXT = [
                 "Rejeter au second niveau et vérifier le retour à l'employé.",
                 "Vérifier l'historique complet des décisions."],
          expected="L'enchaînement des validations est respecté, un rejet arrête le circuit, et l'historique est complet et horodaté.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : validations multi-niveaux couvertes par `ApprovalControllerTest`, `LeaveWorkflowIntegrationTest`, `PlanningControllerTest`, `ExpenseClaimControllerTest` (approve/reject) ; routes dans `absence.php`, `expense.php`, `planning.php`. API 503 : workflow non d\u00e9clench\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-79", title="Plateforme — tableau de bord consolidé",
          profiles=["manager-principal", "ops"], modules=["platform"], type="Fonctionnel",
          status="à exécuter",
@@ -893,7 +905,7 @@ USE_CASES_EXT = [
                 "Vérifier la période couverte par chaque indicateur.",
                 "Vérifier qu'aucune donnée d'un autre tenant n'est agrégée."],
          expected="Chaque indicateur correspond aux données réelles du module source, la période est explicite, et l'agrégation reste dans le tenant.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `GET /dashboard/stats`, `/dashboard/activities`, `/dashboard/alerts` (`api/routes/api.php` lignes 953-956) ; tests `DashboardControllerTest`, `PlatformMetricsOverviewApiTest`, `WeeklyManagerDigestTest`. API 503 : tableau de bord non charg\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-80", title="Support — tickets et impersonation encadrée",
          profiles=["support"], modules=["platform"], type="Sécurité",
          status="à exécuter",
@@ -905,7 +917,7 @@ USE_CASES_EXT = [
                 "Terminer l'impersonation et vérifier le retour au compte support.",
                 "Vérifier la trace d'audit (qui, quand, quel utilisateur)."],
          expected="Le ticket est traité, l'impersonation est signalée, réversible et journalisée, et aucune action sensible n'est permise pendant celle-ci.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `PlatformSupportTicketControllerTest`, `SupportTicketEmailNotificationTest`, `PlatformImpersonationControllerTest`, `AdminImpersonationEndpointsTest` ; routes dans le groupe `platform` de `api/routes/api.php` ; page `front/web/src/app/(dashboard)/support/`. API 503 : ticket non cr\u00e9\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-81", title="Finance — métriques d'abonnement et revenus",
          profiles=["finance"], modules=["billing"], type="Fonctionnel",
          status="à exécuter",
@@ -917,7 +929,7 @@ USE_CASES_EXT = [
                 "Vérifier le décompte des essais en cours.",
                 "Vérifier qu'aucun montant n'est compté deux fois."],
          expected="Les métriques correspondent aux abonnements réels, le revenu récurrent est calculé sans double comptage, et la période est explicite.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/billing.php` ; tests `PlatformMetricsOverviewApiTest`, `BillingControllerTest`, `PlatformCompanySubscriptionApiTest`, `GrowthPartnerTenantIsolationTest`. API 503 : m\u00e9triques non lues. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-82", title="Ops — nœuds Edge et kill switch",
          profiles=["ops"], modules=["edge", "platform"], type="Résilience",
          status="à exécuter",
@@ -929,7 +941,7 @@ USE_CASES_EXT = [
                 "Désactiver le kill switch et vérifier le retour à la normale.",
                 "Vérifier la journalisation des deux bascules."],
          expected="L'état des nœuds est fidèle, le kill switch agit immédiatement et de façon réversible, et chaque bascule est tracée.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : module `api/app/Modules/EdgeSync/` et `Platform/` ; tests `FeatureKillSwitchTest`, `FeatureFlagTest`, `EdgeSilentNodeDetectionTest`, `QueueObservabilityApiTest`. API 503 : kill switch non actionn\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-83", title="Marketing OS — publication sociale et statistiques",
          profiles=["marketing"], modules=["marketing"], type="Fonctionnel",
          status="à exécuter",
@@ -941,7 +953,7 @@ USE_CASES_EXT = [
                 "Consulter les statistiques remontées.",
                 "Déconnecter le compte social et vérifier le comportement attendu."],
          expected="Le post est publié à l'heure prévue, les statistiques remontent, et la déconnexion du compte produit un état explicite sans erreur technique.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/marketing.php` ; module `api/app/Modules/Marketing/` ; tests `GrowthModuleTest`, `SocialDeclarationControllerTest`, `PublishScheduledSocialPostsCommandTest`, `PublishScheduledPostJobTest`. API 503 : publication non d\u00e9clench\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
     dict(id="UC-84", title="RH — onboarding d'un nouvel employé",
          profiles=["manager-rh", "employe"], modules=["hr", "onboarding"], type="Fonctionnel",
          status="à exécuter",
@@ -953,7 +965,7 @@ USE_CASES_EXT = [
                 "Vérifier l'accès aux seules fonctionnalités de son rôle.",
                 "Vérifier la présence du dossier dans l'organigramme."],
          expected="Le dossier est créé, l'invitation aboutit, l'employé accède uniquement à son périmètre, et l'organigramme reflète son arrivée.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `POST /employees` (`api/routes/modules/hr_app.php` ligne 40) et `GET/PATCH /onboarding-setup/*` (`api/routes/modules/billing.php`) ; tests `EmployeeInvitationOnboardingTest`, `OnboardingE2ETest`, `OnboardingChecklistTest`, `EmployeeCreatePersistsPasswordHashTest`. API 503 : onboarding non rejou\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Marketing : Marketing OS (Super Admin) ---------------------------
     # Référence : docs/specifications/marketing-os/MARKETING_OS_SPECIFICATIONS.md
@@ -972,7 +984,7 @@ USE_CASES_EXT = [
                 "Basculer sur la seconde entreprise et vérifier que ni la campagne ni l'idée n'y sont visibles.",
                 "Vérifier qu'un rôle sans `marketing_os.manage` reçoit un 403 sur la promotion."],
          expected="La campagne et l'idée sont créées dans le seul tenant ciblé, la promotion produit une tâche de production sans perte de saisie, un second appel ne crée pas de doublon, et l'écriture est refusée en 403 sans la permission `marketing_os.manage`.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/marketing.php` ; module `api/app/Modules/Marketing/` ; tests `GrowthModuleTest`, `SocialDeclarationControllerTest`, `PublishScheduledSocialPostsCommandTest`. API 503 : promotion non publi\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     dict(id="UC-86", title="Marketing — publication sociale, mode assisté et vitrine publique",
          profiles=["marketing"], modules=["marketing", "public"], type="Fonctionnel",
@@ -987,7 +999,7 @@ USE_CASES_EXT = [
                 "Soumettre le formulaire de contact de la vitrine publique et vérifier la création du lead côté marketing.",
                 "Qualifier le lead et vérifier sa conversion en contact comptable."],
          expected="Le post est publié à l'heure prévue avec son URL réelle, les statistiques absentes sont annoncées comme indisponibles et non estimées, le mode assisté est explicite et refuse une confirmation sans URL, et le lead de la vitrine est capté puis qualifié sans ressaisie.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/marketing.php` et `market_public.php` ; tests `GrowthModuleTest`, `SocialDeclarationControllerTest`, `PlatformMarketingLeadsReadApiTest` ; vitrine publique joignable (**200**). API 503 : publication assist\u00e9e non d\u00e9clench\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Négoce : International Trade OS ----------------------------------
     # Référence : docs/specifications/VERTICAL_TRADE_OS.md
@@ -1005,7 +1017,7 @@ USE_CASES_EXT = [
                 "Accepter un devis en tant qu'acheteur et vérifier la transition de statut ainsi que la trace dans la timeline du dossier.",
                 "Tenter une transition d'état illégale et vérifier le refus en 422 `INVALID_STATE_TRANSITION`."],
          expected="La RFQ est émise et diffusée, le devis est produit par le seul rôle vendeur avec des totaux figés côté serveur, la comparaison signale explicitement les périmètres non comparables, l'acceptation est réservée à l'acheteur, et toute transition illégale est refusée et tracée.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `api/routes/modules/trade.php` (42 routes) ; module `api/app/Modules/Trade/` ; tests `Trade/*`. API 503 : RFQ non cr\u00e9\u00e9. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     dict(id="UC-88", title="Négoce — coût total rendu, checklist douanière et profil vitrine",
          profiles=["manager-principal", "admin-plateforme"], modules=["trade", "public"], type="Fonctionnel",
@@ -1020,7 +1032,7 @@ USE_CASES_EXT = [
                 "Renseigner le profil commercial puis publier la vitrine, et vérifier l'apparition de l'entreprise sur la surface publique.",
                 "Dépublier et vérifier que la fiche disparaît de la vitrine sans casser les données internes."],
          expected="Le coût total rendu est exact en arithmétique entière, les postes indisponibles sont exclus du total mais visibles, la checklist douanière porte toujours son avertissement légal et signale les informations manquantes, et la publication du profil est un acte distinct qui rend la fiche visible puis invisible sur la vitrine.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `GET/POST /cost-estimates`, `GET /customs/checklist` d\u00e9clar\u00e9s dans `api/routes/modules/trade.php` (lignes 105-109) ; profil vitrine via `trade_public.php` ; tests `Trade/*`. API 503 : estimation non calcul\u00e9e. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
 
     # --- Connecteurs & intégrations : module Connectors --------------------
     # Surface : `/api/v1/connectors/*`. Cas ajouté après la campagne QA du
@@ -1040,5 +1052,109 @@ USE_CASES_EXT = [
                 "Tenter de connecter un fournisseur non présent au catalogue et vérifier le refus métier (422) au lieu d'une 500.",
                 "Vérifier qu'un rôle sans droit d'administration des intégrations reçoit un 403 sur la connexion et la révocation."],
          expected="Le catalogue est consultable et exempt de secrets, la connexion aboutit à un état « connectée » avec horodatage, la révocation coupe réellement les appels sortants, un fournisseur hors catalogue est refusé en 422, et toute tentative d'un rôle non autorisé renvoie 403.",
-         note_ia="", obs_ia=""),
+         note_ia="3", obs_ia="V\u00e9rifi\u00e9 sur pi\u00e8ces : `GET /catalog`, `GET/POST /connections`, `PATCH /connections/{id}/status`, `DELETE /connections/{id}` d\u00e9clar\u00e9s dans `api/routes/modules/connectors.php` (lignes 26-42) ; module `api/app/Modules/Connectors/` ; tests `Connectors/*`, `ConnectorSchemaValidatorTest`, `OutboundWebhookSignatureUnificationTest`. API 503 : connexion non \u00e9tablie. Note 3 = crit\u00e8re d'ex\u00e9cution non v\u00e9rifiable."),
+    # --- Assistant IA ------------------------------------------------------
+    dict(id="UC-90", title="Assistant IA — chat, proposition d'action et confirmation",
+         profiles=["manager-principal", "manager-rh"], modules=["ai"], type="Sécurité",
+         status="à exécuter",
+         desc="Vérifier que l'assistant IA répond, propose des actions d'écriture sans les exécuter, et n'agit qu'après confirmation explicite.",
+         pre="Compte manager ; routes `api/routes/ai.php` (`POST /api/v1/ai/chat`, `POST /api/v1/ai/actions/propose`, `POST /api/v1/ai/actions/{id}/confirm`).",
+         steps=["Envoyer un message de lecture (`POST /api/v1/ai/chat`) et vérifier la réponse et l'historique (`GET /api/v1/ai/chat/history`).",
+                "Demander une action d'écriture et vérifier qu'elle revient en proposition (`POST /api/v1/ai/actions/propose`) sans effet en base.",
+                "Confirmer la proposition (`POST /api/v1/ai/actions/{pendingActionId}/confirm`) et vérifier l'effet réel.",
+                "Rejouer la même confirmation et vérifier l'idempotence (aucun doublon).",
+                "Rejeter une proposition (`POST /api/v1/ai/actions/{pendingActionId}/reject`) et vérifier l'absence d'effet.",
+                "Vérifier qu'un rôle sans droit d'écriture reçoit un refus explicite, jamais une 500."],
+         expected="Le chat répond, toute écriture passe par une proposition confirmée, la confirmation est idempotente, le rejet n'a aucun effet et les rôles non autorisés sont refusés proprement.",
+         note_ia="3", obs_ia="Vérifié sur pièces : `api/routes/ai.php` déclare 26 routes (chat, historique, propositions, confirmation/rejet, outils, exports, voix, analytics) ; 28 fichiers de tests dans `tests/Feature/AI/` dont `AIActionProposalHttpTest`, `WriteIdempotencyTest`, `ToolPermissionMatrixTest`, `AIToolExecutionAuditTest`, `AiGoldenJourneyTest`. API live 503 : le chat n'a pas été rejoué en HTTP. Note 3 = critère d'exécution non vérifiable (API 503)."),
+
+    # --- Contrats ----------------------------------------------------------
+    dict(id="UC-91", title="Contrats — modèle pays, signature et alerte d'expiration",
+         profiles=["manager-rh", "employe"], modules=["contracts", "hr"], type="Fonctionnel",
+         status="à exécuter",
+         desc="Vérifier la création d'un contrat depuis un modèle pays, sa signature et la remontée des échéances.",
+         pre="Compte Manager RH ; routes `GET/POST /api/v1/contracts`, `GET /api/v1/contracts/templates`, `GET /api/v1/contracts/expiring`, `POST /api/v1/contracts/{id}/sign`.",
+         steps=["Lister les modèles disponibles (`GET /api/v1/contracts/templates`) et vérifier la variante pays.",
+                "Créer un contrat pour un employé (`POST /api/v1/contracts`) et vérifier le statut initial.",
+                "Signer le contrat (`POST /api/v1/contracts/{contract}/sign`) et vérifier la transition d'état.",
+                "Consulter les contrats à échéance (`GET /api/v1/contracts/expiring`) et vérifier la présence du contrat créé.",
+                "Vérifier que l'employé voit son contrat en self-service (`GET /api/v1/me/contracts`).",
+                "Tenter une signature par un rôle non autorisé et vérifier le 403."],
+         expected="Le modèle pays est proposé, le contrat suit son cycle jusqu'à la signature, l'échéance remonte dans la liste dédiée, l'employé voit son contrat et les rôles non autorisés sont refusés.",
+         note_ia="3", obs_ia="Vérifié sur pièces : `GET/POST /contracts`, `GET /contracts/templates`, `GET /contracts/expiring`, `POST /contracts/{contract}/sign` déclarés dans `api/routes/modules/hr_extended.php` (lignes 91-96) et `GET /me/contracts` (ligne 42) ; tests `ContractLifecycleTest`, `ContractWorkflowTest`, `ContractByCountryTest`, `ContractCountryTemplatesTest`, `ExpiringContractsAlertTest`, `ContractPdfAliasTest`. API 503 : signature non rejouée. Note 3 = critère d'exécution non vérifiable (API 503)."),
+
+    # --- Audit & conformité ------------------------------------------------
+    dict(id="UC-92", title="Audit — journal global, accès aux données sensibles et export",
+         profiles=["super-admin", "admin-plateforme"], modules=["audit", "tenant"], type="Sécurité",
+         status="à exécuter",
+         desc="Vérifier que les actions sensibles sont journalisées, consultables et exportables, sans fuite inter-tenant.",
+         pre="Compte disposant du droit d'audit ; routes `GET /api/v1/audit-logs`, `GET /api/v1/audit-logs/{id}`, `GET /api/v1/audit-logs/export`.",
+         steps=["Provoquer une action sensible (attribution de rôle, accès à un dossier employé).",
+                "Lister le journal (`GET /api/v1/audit-logs`) et vérifier la présence de l'entrée avec acteur, cible et horodatage.",
+                "Ouvrir le détail d'une entrée (`GET /api/v1/audit-logs/{id}`).",
+                "Exporter le journal (`GET /api/v1/audit-logs/export`) et vérifier l'intégralité de la période.",
+                "Vérifier qu'aucune entrée d'un autre tenant n'apparaît.",
+                "Vérifier qu'un rôle sans droit d'audit reçoit un 403."],
+         expected="Chaque action sensible produit une entrée horodatée et attribuée, le détail et l'export sont complets, l'isolation inter-tenant est respectée et l'accès non autorisé est refusé.",
+         note_ia="3", obs_ia="Vérifié sur pièces : `GET /audit-logs`, `GET /audit-logs/{id}`, `GET /audit-logs/export` déclarés dans `api/routes/api.php` (lignes 492-494) ; tests `AuditLogGlobalTest`, `AuditLogExportTest`, `IdentityAccessControlAuditTest`, `SensitiveDataAccessAuditTest`, `PurgeAuditLogsCommandTest`, `AuditLoggerListenerTest`. API 503 : entrée non provoquée. Note 3 = critère d'exécution non vérifiable (API 503)."),
+
+    # --- Exports & rapports ------------------------------------------------
+    dict(id="UC-93", title="Exports — employés, pointage, bulletins, absences et rapports RH",
+         profiles=["manager-rh", "manager-comptable"], modules=["exports", "hr"], type="Fonctionnel",
+         status="à exécuter",
+         desc="Vérifier que chaque export produit un fichier complet, filtré sur le tenant et la période demandée.",
+         pre="Compte Manager RH ; routes `GET /api/v1/export/{employees,attendance,attendance/monthly,pay-slips,absences,contracts,vehicles,training}`.",
+         steps=["Exporter les employés (`GET /api/v1/export/employees`) et vérifier le nombre de lignes.",
+                "Exporter le pointage mensuel (`GET /api/v1/export/attendance/monthly`) sur une période bornée.",
+                "Exporter les bulletins (`GET /api/v1/export/pay-slips`) et vérifier la présence de chaque bulletin de la période.",
+                "Exporter les absences et les contrats, puis vérifier l'encodage et les en-têtes.",
+                "Vérifier qu'aucune ligne d'un autre tenant n'apparaît dans aucun export.",
+                "Demander un export sur une période vide et vérifier un fichier d'en-tête seul, sans erreur 500."],
+         expected="Chaque export est complet sur la période demandée, correctement encodé, isolé par tenant, et une période vide produit un fichier valide plutôt qu'une erreur.",
+         note_ia="3", obs_ia="Vérifié sur pièces : `GET /export/employees`, `/export/attendance`, `/export/attendance/monthly`, `/export/pay-slips`, `/export/absences`, `/export/training`, `/export/contracts`, `/export/vehicles` déclarés dans `api/routes/modules/dashboard.php` (lignes 51-58) ; tests `ExportControllerTest`, `AttendanceMonthlyExportTest`, `AuditLogExportTest`, `PayrollAccountingExportTest`, `BankExportControllerTest`. API 503 : export non généré. Note 3 = critère d'exécution non vérifiable (API 503)."),
+
+    # --- Programme partenaires ---------------------------------------------
+    dict(id="UC-94", title="Partenaires — candidature, taux de commission et reversement",
+         profiles=["marketing", "finance"], modules=["growth", "billing"], type="Fonctionnel",
+         status="à exécuter",
+         desc="Vérifier le cycle d'un partenaire apporteur d'affaires : candidature, taux, suivi des gains et reversement.",
+         pre="Compte disposant du droit facturation ; routes `GET /api/v1/partners`, `PATCH /api/v1/partners/{partner}/rate`, `PATCH /api/v1/partners/{partner}/application`.",
+         steps=["Lister les partenaires (`GET /api/v1/partners`) et vérifier les états.",
+                "Soumettre une candidature partenaire et vérifier son entrée en attente.",
+                "Accepter la candidature (`PATCH /api/v1/partners/{partner}/application`) et vérifier le changement d'état.",
+                "Modifier le taux de commission (`PATCH /api/v1/partners/{partner}/rate`) et vérifier la prise en compte.",
+                "Vérifier que les gains d'un partenaire n'exposent aucune donnée d'un autre tenant.",
+                "Vérifier qu'un rôle sans droit facturation reçoit un 403."],
+         expected="La candidature suit son cycle, le taux est modifiable et appliqué, les gains restent isolés par tenant et l'accès non autorisé est refusé.",
+         note_ia="3", obs_ia="Vérifié sur pièces : `GET /partners`, `PATCH /partners/{partner}/rate`, `PATCH /partners/{partner}/application` déclarés dans `api/routes/modules/billing.php` (lignes 150-152) ; tests `GrowthModuleTest`, `GrowthPartnerTenantIsolationTest`, `PlatformCompanySubscriptionApiTest`. API 503 : candidature non soumise. Note 3 = critère d'exécution non vérifiable (API 503)."),
+
+    # --- Formation ---------------------------------------------------------
+    dict(id="UC-95", title="Formation — cours, sessions et inscriptions",
+         profiles=["formateur", "admin-plateforme"], modules=["training", "edu"], type="Fonctionnel",
+         status="à exécuter",
+         desc="Vérifier la gestion des cours, des sessions et des inscriptions, côté plateforme et côté tenant.",
+         pre="Compte formateur / administrateur ; routes `GET /api/v1/training/courses`, `GET /api/v1/training/sessions`, `GET /api/v1/training/enrollments`.",
+         steps=["Lister les cours (`GET /api/v1/training/courses`) et vérifier la pagination.",
+                "Créer une session rattachée à un cours et vérifier ses dates et sa capacité.",
+                "Inscrire un apprenant et vérifier l'inscription (`GET /api/v1/training/enrollments`).",
+                "Tenter une inscription au-delà de la capacité et vérifier le refus métier.",
+                "Vérifier qu'un apprenant ne voit que ses propres inscriptions.",
+                "Vérifier qu'un rôle non autorisé reçoit un 403 sur la création de session."],
+         expected="Cours, sessions et inscriptions sont cohérents, la capacité est respectée, chaque apprenant ne voit que ses inscriptions et les rôles non autorisés sont refusés.",
+         note_ia="3", obs_ia="Vérifié sur pièces : `GET /training/courses`, `GET /training/sessions`, `GET /training/enrollments` déclarés dans `api/routes/api.php` (lignes 1077-1079) ; module `api/app/Modules/EduManager/` ; tests `TrainingControllerTest`, `TrainingGlobalListTest`, `TrainingModuleRegistryTest`. API 503 : session non créée. Note 3 = critère d'exécution non vérifiable (API 503)."),
+
+    # --- 2FA / MFA ---------------------------------------------------------
+    dict(id="UC-96", title="Sécurité — double authentification (2FA) et MFA plateforme",
+         profiles=["employe", "super-admin"], modules=["iam"], type="Sécurité",
+         status="à exécuter",
+         desc="Vérifier l'enrôlement, la vérification et la désactivation du second facteur, côté tenant et côté plateforme.",
+         pre="Compte employé et compte super-admin ; routes `GET /api/v1/auth/2fa/status`, `POST /api/v1/auth/2fa/enroll`, `POST /api/v1/auth/2fa/confirm`, `POST /api/v1/auth/2fa/verify`, `POST /api/v1/auth/2fa/disable`.",
+         steps=["Consulter l'état du 2FA (`GET /api/v1/auth/2fa/status`) et vérifier qu'il est désactivé au départ.",
+                "Lancer l'enrôlement (`POST /api/v1/auth/2fa/enroll`) et vérifier le secret/QR retourné une seule fois.",
+                "Confirmer avec un code valide (`POST /api/v1/auth/2fa/confirm`) et vérifier l'activation.",
+                "Se reconnecter et vérifier l'exigence du code (`POST /api/v1/auth/2fa/verify`), puis un code invalide → refus.",
+                "Désactiver le 2FA (`POST /api/v1/auth/2fa/disable`) et vérifier le retour à l'état initial.",
+                "Vérifier que le MFA plateforme est bien exigé sur les routes super-admin."],
+         expected="L'enrôlement n'expose le secret qu'une fois, la confirmation active le 2FA, un code invalide est refusé, la désactivation est effective et le MFA plateforme est obligatoire.",
+         note_ia="3", obs_ia="Vérifié sur pièces : `GET /auth/2fa/status`, `POST /auth/2fa/enroll|confirm|verify|disable` déclarés dans `api/routes/api.php` (lignes 144, 432-435) ; middleware `platform.mfa` appliqué au groupe `platform` ; tests `PlatformWebAuth2faTest`, `PlatformWebAuthSecurityTest`, `SsoTwoFactorGuardTest`, `GoogleSsoTwoFactorSchemaTest`. API 503 : enrôlement non rejoué. Note 3 = critère d'exécution non vérifiable (API 503)."),
 ]

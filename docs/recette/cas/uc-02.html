@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">5/5</span></td>
-          <td class="obs"><code>POST /attendance/check-in</code> → <strong>201</strong>, <code>id=1</code>, <code>session_number=1</code>, <code>check_in=2026-11-03T15:57:38+00:00</code>, <code>timezone=Africa/Algiers</code>, <code>method=mobile</code>. <code>GET /attendance/today</code> → <strong>200</strong>, <code>checked_in=true</code>, <code>session_number=1</code>, <code>check_in_time=16:57</code>. <code>POST /attendance/check-out</code> → <strong>200</strong>, <code>check_out</code> renseigné. Second <code>check-in</code> immédiat → <strong>201</strong>, <code>session_number=2</code> (nouvelle session, pas de doublon). Un <code>check-in</code> alors qu&#x27;une session est déjà ouverte renvoie <strong>422 <code>ALREADY_CHECKED_IN</code></strong> avec message localisé — jamais de 500. Horodatage serveur UTC + heure locale entreprise corrects.</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : <code>POST /attendance/check-in</code>, <code>POST /attendance/check-out</code>, <code>GET /attendance/today</code> déclarés dans <code>api/routes/modules/rh.php</code> (lignes 137-139) ; 77 fichiers de tests pointage/kiosque présents (<code>tests/Feature/Attendance/*</code>, <code>KioskMultiEventPunchTest</code>, <code>AttendanceServiceTest</code>). API live en <strong>503</strong> : le cycle entrée/sortie n&#x27;a pas été rejoué en HTTP. Note 3 = critère d&#x27;exécution non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-02"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-02">Surface OK (GET /attendance -&gt; 200 en persona employe). Le cycle complet entree/sortie n&#x27;a pas ete rejoue : seule la lecture a ete mesuree.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

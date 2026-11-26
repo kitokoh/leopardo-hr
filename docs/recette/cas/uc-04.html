@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">5/5</span></td>
-          <td class="obs"><code>POST /absences</code> (absence_type_id=1 « Conge annuel », 2026-12-01→2026-12-03) → <strong>201</strong>, <code>id=13</code>, <code>status=&quot;pending&quot;</code>, <code>days_count=3</code>. <code>GET /absences</code> (Manager RH) → <strong>200</strong>, la demande #13 est présente. <code>POST /absences/13/approve</code> → <strong>200</strong>, <code>status=&quot;approved&quot;</code>, <code>approved_by=2</code>. Seconde approbation → <strong>422 <code>ABSENCE_NOT_PENDING</code></strong> (code métier explicite, pas de doublon, pas de 500). Validation : absence_type_id manquant → <strong>422</strong> avec message localisé.</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : <code>GET/POST /absences</code>, <code>POST /absences/{absence}/approve</code>, <code>POST /absences/{absence}/reject</code> déclarés dans <code>api/routes/modules/absence.php</code> (lignes 21-31) ; 36 fichiers de tests congés (<code>tests/Feature/Leave/*</code>, <code>LeaveWorkflowIntegrationTest</code>, <code>ApprovalControllerTest</code>). API live 503 : cycle demande→approbation non rejoué. Note 3 = critère d&#x27;exécution non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-04"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-04">GET /absences -&gt; 200 (employe), GET /absence-types -&gt; 404 : le chemin de liste fonctionne, la route des types d&#x27;absence n&#x27;existe pas sous ce nom.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

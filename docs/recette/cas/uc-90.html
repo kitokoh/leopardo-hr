@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UC-90 — Assistant IA — chat, proposition d&#x27;action et confirmation — Portail de recette Leopardo</title>
+<link rel="stylesheet" href="../assets/portal.css">
+</head>
+<body data-notes-url="../notes-humaines.json">
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <a class="brand" href="../index.html">
+      <span class="brand-mark">L</span>
+      <span class="brand-text">Portail de recette <small>leopardo-hr</small></span>
+    </a>
+    <nav class="mainnav">
+      <a href="../index.html">Accueil</a>
+      <a href="../profils/index.html">Profils</a>
+      <a href="../modules/index.html">Modules</a>
+      <a href="../recap.html">Récapitulatif</a>
+      <a href="../tests-ia-leopardo-hr.md">Markdown</a>
+      <a href="../prompt-agent-testeur.md">Prompt IA</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  <h1 class="page-title">UC-90 — Assistant IA — chat, proposition d&#x27;action et confirmation</h1>
+  <p class="page-sub">Fiche de résultats du cas d&#x27;usage.</p>
+  
+<nav class="breadcrumb"><a href="../index.html">Portail</a> <span class="sep">›</span> <a href="../profils/index.html">Profils</a> <span class="sep">›</span> <a href="../profils/manager-principal.html">Manager Principal</a> <span class="sep">›</span> <span aria-current="page">UC-90</span></nav>
+<div class="uc-head">
+  <div class="uc-id">UC-90</div>
+  <div class="uc-head-main">
+    <h2 class="uc-title">Assistant IA — chat, proposition d&#x27;action et confirmation</h2>
+    <div class="chips">
+      <span class="badge" style="background:#be123c1a;color:#be123c;border-color:#be123c33">Sécurité</span>
+      <span class="badge badge-todo">◻ à exécuter</span>
+      <span class="chip">Profil : <a href="../profils/manager-principal.html">Manager Principal</a> · <a href="../profils/manager-rh.html">Manager RH</a></span>
+      <span class="chip">Module : <a href="../modules/ai.html">Assistant IA</a></span>
+      <span class="chip hist-count" data-hist-count="UC-90">0 modifications</span>
+    </div>
+  </div>
+</div>
+
+<div class="uc-grid">
+  <section class="panel">
+    <h3>Description / préconditions</h3>
+    <p>Vérifier que l&#x27;assistant IA répond, propose des actions d&#x27;écriture sans les exécuter, et n&#x27;agit qu&#x27;après confirmation explicite.</p>
+    <p class="muted"><strong>Prérequis :</strong> Compte manager ; routes <code>api/routes/ai.php</code> (<code>POST /api/v1/ai/chat</code>, <code>POST /api/v1/ai/actions/propose</code>, <code>POST /api/v1/ai/actions/{id}/confirm</code>).</p>
+  </section>
+  <section class="panel">
+    <h3>Résultat attendu</h3>
+    <p>Le chat répond, toute écriture passe par une proposition confirmée, la confirmation est idempotente, le rejet n&#x27;a aucun effet et les rôles non autorisés sont refusés proprement.</p>
+  </section>
+</div>
+
+<section class="panel">
+  <h3>Étapes de test</h3>
+  <ol class="steps"><li>Envoyer un message de lecture (<code>POST /api/v1/ai/chat</code>) et vérifier la réponse et l&#x27;historique (<code>GET /api/v1/ai/chat/history</code>).</li><li>Demander une action d&#x27;écriture et vérifier qu&#x27;elle revient en proposition (<code>POST /api/v1/ai/actions/propose</code>) sans effet en base.</li><li>Confirmer la proposition (<code>POST /api/v1/ai/actions/{pendingActionId}/confirm</code>) et vérifier l&#x27;effet réel.</li><li>Rejouer la même confirmation et vérifier l&#x27;idempotence (aucun doublon).</li><li>Rejeter une proposition (<code>POST /api/v1/ai/actions/{pendingActionId}/reject</code>) et vérifier l&#x27;absence d&#x27;effet.</li><li>Vérifier qu&#x27;un rôle sans droit d&#x27;écriture reçoit un refus explicite, jamais une 500.</li></ol>
+</section>
+
+<section class="panel">
+  <h3>Fiche de résultats</h3>
+  <div class="table-wrap">
+    <table class="result-table">
+      <thead>
+        <tr>
+          <th class="col-note">Note IA (/5)</th>
+          <th>Observation IA</th>
+          <th class="col-note">Note humaine (/5)</th>
+          <th>Observation humaine</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : <code>api/routes/ai.php</code> déclare 26 routes (chat, historique, propositions, confirmation/rejet, outils, exports, voix, analytics) ; 28 fichiers de tests dans <code>tests/Feature/AI/</code> dont <code>AIActionProposalHttpTest</code>, <code>WriteIdempotencyTest</code>, <code>ToolPermissionMatrixTest</code>, <code>AIToolExecutionAuditTest</code>, <code>AiGoldenJourneyTest</code>. API live 503 : le chat n&#x27;a pas été rejoué en HTTP. Note 3 = critère d&#x27;exécution non vérifiable (API 503).</td>
+          <td class="center human-cell" data-human-note="UC-90"><span class="muted">—</span></td>
+          <td class="human-cell" data-human-obs="UC-90"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="panel hist-panel" data-hist-panel="UC-90">
+  <h3>Historique des modifications <span class="hist-count-badge" data-hist-count-badge="UC-90">0</span></h3>
+  <p class="muted small">Toutes les saisies de notation humaine de ce cas, de la plus récente à la plus ancienne.
+  Chaque enregistrement depuis le portail ajoute une entrée horodatée (UTC).</p>
+  <div class="hist-body" data-hist-body="UC-90">
+    <p class="hist-empty muted">Aucune modification enregistrée pour ce cas.
+    La première note saisie ci-dessous créera la première entrée d'historique.</p>
+  </div>
+</section>
+
+<section class="panel eval-panel" data-uc="UC-90"
+         data-repo="Kitokoh/leopardo-hr" data-branch="main"
+         data-path="docs/recette/notes-humaines.json" data-notes-url="../notes-humaines.json">
+  <h3>Votre évaluation humaine</h3>
+  <p class="muted">Les notes saisies ici sont <strong>enregistrées dans le dépôt</strong>
+  (<code>docs/recette/notes-humaines.json</code>) via l'API GitHub : elles sont donc versionnées et visibles par tous.
+  Un jeton personnel GitHub est requis ; il reste stocké <strong>uniquement dans votre navigateur</strong>.</p>
+
+  <details class="token-box">
+    <summary>Configurer mon jeton GitHub</summary>
+    <div class="token-body">
+      <p class="muted small">Créez un token sur
+        <a href="https://github.com/settings/tokens" target="_blank" rel="noopener">github.com/settings/tokens</a>
+        avec le scope <code>repo</code> (token classique) ou la permission
+        <code>Contents: Read and write</code> (token fin). Il n'est envoyé qu'à
+        <code>api.github.com</code> et n'est jamais écrit dans le dépôt.</p>
+      <label>Jeton GitHub
+        <input type="password" class="gh-token" autocomplete="off" spellcheck="false"
+               placeholder="ghp_… ou github_pat_…">
+      </label>
+      <label>Votre nom (affiché comme auteur)
+        <input type="text" class="gh-author" autocomplete="off" placeholder="ex. Amina T.">
+      </label>
+      <div class="eval-actions">
+        <button class="btn btn-primary token-save" type="button">Enregistrer le jeton</button>
+        <button class="btn btn-ghost token-clear" type="button">Effacer le jeton</button>
+        <span class="token-status muted"></span>
+      </div>
+    </div>
+  </details>
+
+  <div class="eval-form">
+    <label>Note humaine (/5)
+      <select class="eval-note">
+        <option value="">—</option>
+        <option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+      </select>
+    </label>
+    <label class="eval-obs-label">Observation humaine
+      <textarea class="eval-obs" rows="3" placeholder="Décrivez factuellement ce que vous avez observé…"></textarea>
+    </label>
+    <div class="eval-actions">
+      <button class="btn btn-primary eval-save" type="button">Enregistrer dans le dépôt</button>
+      <a class="btn btn-ghost" href="https://github.com/Kitokoh/leopardo-hr/edit/main/docs/recette/notes-humaines.json" target="_blank" rel="noopener">Éditer sur GitHub</a>
+      <span class="eval-status muted"></span>
+    </div>
+    <p class="eval-meta muted small"></p>
+  </div>
+</section>
+
+<p class="uc-nav">
+  <a class="btn-back" href="../index.html">← Portail</a>
+  <a class="btn-back" href="../profils/manager-principal.html">← Profil Manager Principal</a>
+  <a class="btn-back" href="../modules/ai.html">← Module Assistant IA</a>
+</p>
+
+</main>
+<footer class="footer">
+  <div class="wrap">
+    <p>Portail de recette <strong>leopardo-hr</strong> — dépôt
+      <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
+      Colonnes « Note IA » / « Observation IA » remplies par le testeur IA ;
+      colonnes « Note humaine » / « Observation humaine » réservées à l'évaluation humaine.</p>
+  </div>
+</footer>
+<script src="../assets/portal.js"></script>
+</body>
+</html>

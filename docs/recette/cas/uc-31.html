@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-empty">—</span></td>
-          <td class="obs"><span class="muted">Non exécuté — à réaliser par le testeur IA.</span></td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : <code>GET /planning</code>, <code>GET /planning/weekly-optimization</code>, <code>GET /planning/shift-rebalancing</code> (<code>api/routes/modules/planning.php</code> lignes 9-11) ; tests <code>PlanningControllerTest</code>, <code>PlanningOptimizationTest</code>, <code>ScheduleControllerTest</code>. <strong>Écart</strong> : l&#x27;étape 1 documente <code>GET /api/v1/planning</code> alors que le groupe est monté sous le préfixe <code>planning</code> — le chemin racine réel est <code>/api/v1/planning/</code>. Note 3 = contournement nécessaire.</td>
           <td class="center human-cell" data-human-note="UC-31"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-31">GET /planning -&gt; 200 (principal).<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>
