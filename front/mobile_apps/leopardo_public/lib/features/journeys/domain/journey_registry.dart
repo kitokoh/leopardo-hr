@@ -225,15 +225,15 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'careers',
     labelKey: 'journeyVerticalCareers',
     counterpartPath: '/emploi',
-    mode: JourneyMode.blocked,
+    // #9944 — le contrat public ATS existe et est appelé par la vitrine web
+    // `/emploi` : annuaire, portail, offre, candidature et suivi par e-mail
+    // sont servis sans compte. Le blocage `entry` est donc périmé.
+    mode: JourneyMode.request,
     discoveryType: null,
+    // Aucun resolver public `careers` dans `PublicProfileLocator::types()` :
+    // la candidature passe par la route ATS dédiée, pas par
+    // `POST /public/contact-requests`.
     contactTargetType: null,
-    blockers: [
-      JourneyBlocker(
-        capability: 'entry',
-        reasonKey: 'journeyBlockerCareersEntry',
-      ),
-    ],
   ),
 ];
 

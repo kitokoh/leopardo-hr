@@ -339,6 +339,61 @@ class AppStrings {
       'travelExpiresAt': 'À confirmer avant',
       'travelKeepCodeNotice':
           'Conservez la référence et le code de validation : ils sont nécessaires pour suivre ou annuler la réservation.',
+
+      // ── Verticale Emploi (careers) — #9944 ──
+      'careersDirectoryNotice':
+          'Les offres viennent des entreprises qui publient sur la plateforme. Certaines offres sont agrégées de partenaires : la candidature se fait alors chez eux.',
+      'careersSearchCompany': 'Rechercher une entreprise',
+      'careersSearchHint': 'Nom de l’entreprise',
+      'careersSearch': 'Rechercher',
+      'careersEmptyTitle': 'Aucun portail carrière',
+      'careersEmptyBody':
+          'Aucune entreprise ne publie d’offre pour le moment.',
+      'careersCompanyOffers': 'Offres de l’entreprise',
+      'careersPartnerOffers': 'Offres partenaires',
+      'careersNoOffersTitle': 'Aucune offre ouverte',
+      'careersNoOffersBody':
+          'Ce portail n’a pas d’offre publiée actuellement.',
+      'careersExternalOffer': 'Offre partenaire',
+      'careersClosed': 'Offre clôturée',
+      'careersCompany': 'Entreprise',
+      'careersDepartment': 'Service',
+      'careersLocation': 'Lieu',
+      'careersContract': 'Contrat',
+      'careersRemote': 'Télétravail',
+      'careersSalary': 'Salaire',
+      'careersClosesAt': 'Clôture',
+      'careersSkills': 'Compétences',
+      'careersDescription': 'Description du poste',
+      'careersApply': 'Postuler',
+      'careersApplyPartner': 'Postuler chez le partenaire',
+      'careersApplyNotice':
+          'Vos données sont transmises à l’entreprise pour l’examen de votre candidature.',
+      'careersFirstName': 'Prénom',
+      'careersLastName': 'Nom',
+      'careersCoverLetter': 'Lettre de motivation (optionnel)',
+      'careersResumeUrl': 'Lien vers votre CV (optionnel)',
+      'careersResumeUrlHint': 'https://… (PDF, DOC ou DOCX)',
+      'careersConsent':
+          'J’accepte que mes données soient traitées pour l’examen de ma candidature.',
+      'careersSubmitApplication': 'Envoyer ma candidature',
+      'careersAppliedTitle': 'Candidature envoyée',
+      'careersAppliedNotice':
+          'Votre candidature a bien été enregistrée. Conservez votre e-mail : il vous permet de suivre son avancement.',
+      'careersApplicationStatus': 'Statut',
+      'careersJob': 'Poste',
+      'careersAppliedAt': 'Envoyée le',
+      'careersTrackHint':
+          'Le suivi se fait avec l’adresse e-mail utilisée pour candidater.',
+      'careersTrackNeedsCompany':
+          'Choisissez d’abord une entreprise pour suivre vos candidatures.',
+      'careersTrackTitle': 'Suivre mes candidatures',
+      'careersTrack': 'Voir mes candidatures',
+      'careersTrackEmptyTitle': 'Aucune candidature trouvée',
+      'careersTrackEmptyBody':
+          'Aucune candidature n’est associée à cette adresse pour cette entreprise.',
+      'careersRetention': 'Durée de conservation',
+      'careersDays': 'jours',
     },
 
     // ───────────────────────────── EN ─────────────────────────────
@@ -593,6 +648,59 @@ class AppStrings {
       'travelExpiresAt': 'Confirm before',
       'travelKeepCodeNotice':
           'Keep the reference and validation code: they are required to track or cancel the booking.',
+
+      // ── Careers vertical — #9944 ──
+      'careersDirectoryNotice':
+          'Jobs come from companies publishing on the platform. Some offers are aggregated from partners: you then apply on their site.',
+      'careersSearchCompany': 'Search a company',
+      'careersSearchHint': 'Company name',
+      'careersSearch': 'Search',
+      'careersEmptyTitle': 'No career portal',
+      'careersEmptyBody': 'No company is publishing jobs right now.',
+      'careersCompanyOffers': 'Company jobs',
+      'careersPartnerOffers': 'Partner jobs',
+      'careersNoOffersTitle': 'No open position',
+      'careersNoOffersBody': 'This portal has no published job at the moment.',
+      'careersExternalOffer': 'Partner offer',
+      'careersClosed': 'Position closed',
+      'careersCompany': 'Company',
+      'careersDepartment': 'Department',
+      'careersLocation': 'Location',
+      'careersContract': 'Contract',
+      'careersRemote': 'Remote',
+      'careersSalary': 'Salary',
+      'careersClosesAt': 'Closes',
+      'careersSkills': 'Skills',
+      'careersDescription': 'Job description',
+      'careersApply': 'Apply',
+      'careersApplyPartner': 'Apply on partner site',
+      'careersApplyNotice':
+          'Your data is sent to the company to review your application.',
+      'careersFirstName': 'First name',
+      'careersLastName': 'Last name',
+      'careersCoverLetter': 'Cover letter (optional)',
+      'careersResumeUrl': 'Link to your resume (optional)',
+      'careersResumeUrlHint': 'https://… (PDF, DOC or DOCX)',
+      'careersConsent':
+          'I agree that my data is processed to review my application.',
+      'careersSubmitApplication': 'Send my application',
+      'careersAppliedTitle': 'Application sent',
+      'careersAppliedNotice':
+          'Your application has been recorded. Keep your email: it lets you track its progress.',
+      'careersApplicationStatus': 'Status',
+      'careersJob': 'Position',
+      'careersAppliedAt': 'Sent on',
+      'careersTrackHint':
+          'Tracking uses the email address you applied with.',
+      'careersTrackNeedsCompany':
+          'Pick a company first to track your applications.',
+      'careersTrackTitle': 'Track my applications',
+      'careersTrack': 'View my applications',
+      'careersTrackEmptyTitle': 'No application found',
+      'careersTrackEmptyBody':
+          'No application is linked to this address for this company.',
+      'careersRetention': 'Retention period',
+      'careersDays': 'days',
     },
 
     // ───────────────────────────── AR (RTL) ─────────────────────────────
@@ -834,6 +942,59 @@ class AppStrings {
       'travelExpiresAt': 'أكّد قبل',
       'travelKeepCodeNotice':
           'احتفظ بالمرجع ورمز التحقق: يلزمك لتتبع الحجز أو إلغائه.',
+
+      // ── قطاع التوظيف (careers) — #9944 ──
+      'careersDirectoryNotice':
+          'الوظائف تأتي من الشركات المنشورة على المنصة. بعض العروض مجمّعة من شركاء: التقديم يتم عندهم.',
+      'careersSearchCompany': 'ابحث عن شركة',
+      'careersSearchHint': 'اسم الشركة',
+      'careersSearch': 'بحث',
+      'careersEmptyTitle': 'لا يوجد بوابة توظيف',
+      'careersEmptyBody': 'لا توجد شركة تنشر وظائف حاليًا.',
+      'careersCompanyOffers': 'وظائف الشركة',
+      'careersPartnerOffers': 'وظائف الشركاء',
+      'careersNoOffersTitle': 'لا وظيفة مفتوحة',
+      'careersNoOffersBody': 'لا توجد وظيفة منشورة في هذه البوابة حاليًا.',
+      'careersExternalOffer': 'عرض شريك',
+      'careersClosed': 'الوظيفة مغلقة',
+      'careersCompany': 'الشركة',
+      'careersDepartment': 'القسم',
+      'careersLocation': 'المكان',
+      'careersContract': 'نوع العقد',
+      'careersRemote': 'عن بُعد',
+      'careersSalary': 'الراتب',
+      'careersClosesAt': 'يُغلق في',
+      'careersSkills': 'المهارات',
+      'careersDescription': 'وصف الوظيفة',
+      'careersApply': 'تقدّم',
+      'careersApplyPartner': 'تقدّم عند الشريك',
+      'careersApplyNotice':
+          'تُرسل بياناتك إلى الشركة لدراسة ترشيحك.',
+      'careersFirstName': 'الاسم الشخصي',
+      'careersLastName': 'الاسم العائلي',
+      'careersCoverLetter': 'رسالة تحفيزية (اختياري)',
+      'careersResumeUrl': 'رابط سيرتك الذاتية (اختياري)',
+      'careersResumeUrlHint': 'https://… (PDF أو DOC أو DOCX)',
+      'careersConsent':
+          'أوافق على معالجة بياناتي لدراسة ترشيحي.',
+      'careersSubmitApplication': 'أرسل ترشيحي',
+      'careersAppliedTitle': 'تم إرسال الترشيح',
+      'careersAppliedNotice':
+          'تم تسجيل ترشيحك. احتفظ ببريدك الإلكتروني: به تتابع تقدمه.',
+      'careersApplicationStatus': 'الحالة',
+      'careersJob': 'الوظيفة',
+      'careersAppliedAt': 'أُرسل في',
+      'careersTrackHint':
+          'يتم التتبع بالبريد الإلكتروني المستخدم في الترشيح.',
+      'careersTrackNeedsCompany':
+          'اختر شركة أولًا لتتبع ترشيحاتك.',
+      'careersTrackTitle': 'تتبع ترشيحاتي',
+      'careersTrack': 'عرض ترشيحاتي',
+      'careersTrackEmptyTitle': 'لا ترشيح موجود',
+      'careersTrackEmptyBody':
+          'لا يوجد ترشيح مرتبط بهذا العنوان لهذه الشركة.',
+      'careersRetention': 'مدة الاحتفاظ',
+      'careersDays': 'يومًا',
     },
 
     // ───────────────────────────── TR ─────────────────────────────
@@ -1087,6 +1248,59 @@ class AppStrings {
       'travelExpiresAt': 'Şu tarihe kadar onayla',
       'travelKeepCodeNotice':
           'Referansı ve doğrulama kodunu saklayın: takip veya iptal için gereklidir.',
+
+      // ── İşe alım dikeyi (careers) — #9944 ──
+      'careersDirectoryNotice':
+          'İlanlar platformda yayın yapan şirketlerden gelir. Bazı ilanlar iş ortaklarından derlenmiştir: başvuru onların sitesinde yapılır.',
+      'careersSearchCompany': 'Şirket ara',
+      'careersSearchHint': 'Şirket adı',
+      'careersSearch': 'Ara',
+      'careersEmptyTitle': 'Kariyer portalı yok',
+      'careersEmptyBody': 'Şu anda ilan yayınlayan şirket yok.',
+      'careersCompanyOffers': 'Şirket ilanları',
+      'careersPartnerOffers': 'Partner ilanları',
+      'careersNoOffersTitle': 'Açık pozisyon yok',
+      'careersNoOffersBody': 'Bu portalda şu anda yayınlanmış ilan yok.',
+      'careersExternalOffer': 'Partner ilanı',
+      'careersClosed': 'İlan kapandı',
+      'careersCompany': 'Şirket',
+      'careersDepartment': 'Departman',
+      'careersLocation': 'Konum',
+      'careersContract': 'Sözleşme',
+      'careersRemote': 'Uzaktan',
+      'careersSalary': 'Maaş',
+      'careersClosesAt': 'Kapanış',
+      'careersSkills': 'Beceriler',
+      'careersDescription': 'İş tanımı',
+      'careersApply': 'Başvur',
+      'careersApplyPartner': 'Partner sitesinde başvur',
+      'careersApplyNotice':
+          'Verileriniz başvurunuzu değerlendirmek için şirkete iletilir.',
+      'careersFirstName': 'Ad',
+      'careersLastName': 'Soyad',
+      'careersCoverLetter': 'Ön yazı (isteğe bağlı)',
+      'careersResumeUrl': 'CV bağlantınız (isteğe bağlı)',
+      'careersResumeUrlHint': 'https://… (PDF, DOC veya DOCX)',
+      'careersConsent':
+          'Verilerimin başvurumu değerlendirmek için işlenmesini kabul ediyorum.',
+      'careersSubmitApplication': 'Başvurumu gönder',
+      'careersAppliedTitle': 'Başvuru gönderildi',
+      'careersAppliedNotice':
+          'Başvurunuz kaydedildi. E-postanızı saklayın: ilerlemesini onunla takip edersiniz.',
+      'careersApplicationStatus': 'Durum',
+      'careersJob': 'Pozisyon',
+      'careersAppliedAt': 'Gönderim tarihi',
+      'careersTrackHint':
+          'Takip, başvuruda kullandığınız e-posta ile yapılır.',
+      'careersTrackNeedsCompany':
+          'Başvurularınızı takip etmek için önce bir şirket seçin.',
+      'careersTrackTitle': 'Başvurularımı takip et',
+      'careersTrack': 'Başvurularımı gör',
+      'careersTrackEmptyTitle': 'Başvuru bulunamadı',
+      'careersTrackEmptyBody':
+          'Bu şirket için bu adrese bağlı başvuru yok.',
+      'careersRetention': 'Saklama süresi',
+      'careersDays': 'gün',
     },
   };
 }

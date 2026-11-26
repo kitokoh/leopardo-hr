@@ -11,6 +11,7 @@ import '../../features/journeys/screens/contact_request_screen.dart';
 import '../../features/journeys/screens/retail_order_screen.dart';
 import '../../features/journeys/screens/stay_reservation_screen.dart';
 import '../../features/journeys/screens/travel_journey_screen.dart';
+import '../../features/journeys/screens/careers_journey_screen.dart';
 import '../../features/tabs/secondary_tabs.dart';
 
 /// Coque à 4 onglets.
@@ -176,6 +177,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/journey/travel',
         builder: (context, state) => TravelJourneyScreen(
           initialTripId: int.tryParse(state.uri.queryParameters['trip'] ?? ''),
+        ),
+      ),
+      // Verticale Emploi (#9944) : l'annuaire des portails est la porte
+      // d'entrée ; `company` en query ouvre directement un portail.
+      GoRoute(
+        path: '/journey/careers',
+        builder: (context, state) => CareersJourneyScreen(
+          initialCompanySlug: state.uri.queryParameters['company'],
         ),
       ),
 

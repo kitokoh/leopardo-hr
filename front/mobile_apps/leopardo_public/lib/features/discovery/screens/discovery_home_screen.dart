@@ -280,6 +280,7 @@ class _VerticalShortcuts extends StatelessWidget {
   /// Verticales à parcours autonome, avec leur route.
   static const List<({String code, String route, IconData icon})> _entries = [
     (code: 'travel', route: '/journey/travel', icon: Icons.directions_bus),
+    (code: 'careers', route: '/journey/careers', icon: Icons.work_outline),
   ];
 
   @override
