@@ -482,6 +482,36 @@
    "observation": "Script 9:16 redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage a ce jour.",
    "auteur": "QA Agent (Teamily)",
    "date_modification": "2026-11-26T17:24:12Z"
+  },
+  "VID-31": {
+   "historique": [
+    {
+     "date": "2026-11-26T19:33:16Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "a_ecrire",
+     "observation": "Script 9:16 redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage a ce jour.",
+     "action": "creation"
+    }
+   ],
+   "statut": "a_ecrire",
+   "observation": "Script 9:16 redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage a ce jour.",
+   "auteur": "QA Agent (Teamily)",
+   "date_modification": "2026-11-26T19:33:16Z"
+  },
+  "VID-32": {
+   "historique": [
+    {
+     "date": "2026-11-26T19:33:16Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "a_ecrire",
+     "observation": "Script 9:16 redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage a ce jour.",
+     "action": "creation"
+    }
+   ],
+   "statut": "a_ecrire",
+   "observation": "Script 9:16 redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage a ce jour.",
+   "auteur": "QA Agent (Teamily)",
+   "date_modification": "2026-11-26T19:33:16Z"
   }
  }
 }

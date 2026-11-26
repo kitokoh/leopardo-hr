@@ -11,7 +11,7 @@
       "beats.vo",
       "beats.text"
     ],
-    "updated_at": "2026-11-26T13:58:00Z"
+    "updated_at": "2026-11-26T19:40:00Z"
   },
   "categories": {
     "presentation-solution": {
@@ -897,6 +897,64 @@
         }
       ],
       "audience": "Akaryakit istasyonu yoneticileri, akaryakit dagitim aglari - TikTok, Reels, Shorts"
+    },
+    "VID-31": {
+      "title": "Saglik: dosya, randevu, fatura (9:16 TikTok)",
+      "objective": "Saglik dikeyini yerel dikey formatta turetmek: hasta dosyasi, randevu ve bakim faturasi, uzun urun gosterimi olmadan. Tam surum icin 16:9 VID-09 filmine yonlendirir.",
+      "hook": "Hastanin dosyasi her zaman hastadan sonra gelir.",
+      "cta": "Tam film (16:9) bio'da - HealthManager paketini etkinlestirin, paket ucreti yok.",
+      "audience": "Ozel klinikler, bakim merkezleri, grup muayenehaneleri - TikTok, Reels, Shorts",
+      "beats": [
+        {
+          "vo": "Hastanin dosyasi her zaman hastadan sonra gelir.",
+          "text": "Dosya en son gelir."
+        },
+        {
+          "vo": "Resepsiyon saati yazar. Bakim veren bakimi yazar. Faturalama hepsini hafizadan yeniden kurar.",
+          "text": "3 yer. 1 hasta."
+        },
+        {
+          "vo": "Leopardo tek bir hasta dosyasi acar; resepsiyon, bakim ve faturalama arasinda paylasilir.",
+          "text": "Tek hasta dosyasi"
+        },
+        {
+          "vo": "Randevu, hastayi uc kez aramadan yeniden planlanir. Fatura bakimi takip eder.",
+          "text": "Randevu & fatura"
+        },
+        {
+          "vo": "Saglik: koridordan faturaya. Tam film bio'da.",
+          "text": "Tam film bio'da"
+        }
+      ]
+    },
+    "VID-32": {
+      "title": "VTC: yolculuk, en yakin sofor, marj (9:16 TikTok)",
+      "objective": "VTC dikeyini yerel dikey formatta turetmek: rezervasyon, en yakin sofore dagitim ve yolculuk takibi, uzun urun gosterimi olmadan. Tam surum icin 16:9 VID-12 filmine yonlendirir.",
+      "hook": "Musteri ariyor. En yakin kim, elle ariyorsunuz.",
+      "cta": "Tam film (16:9) bio'da - VTC paketini etkinlestirin, paket ucreti yok.",
+      "audience": "VTC ve taksi filolari, yerel mobilite platformlari - TikTok, Reels, Shorts",
+      "beats": [
+        {
+          "vo": "Musteri ariyor. En yakin kim, elle ariyorsunuz.",
+          "text": "Elle dagitim."
+        },
+        {
+          "vo": "Bir yolculuk icin uc telefon. Ve yan sokaktaki sofor hala bekliyor.",
+          "text": "Bir yolculuk, uc arama."
+        },
+        {
+          "vo": "Leopardo rezervasyonu alir ve jeo-mekansal cekirdegin hesapladigi en yakin sofore dagitir.",
+          "text": "En yakin sofore dagitim"
+        },
+        {
+          "vo": "Tarife yolculuga gore uygulanir ve takip sonuna kadar gorunur kalir.",
+          "text": "Tarife & takip"
+        },
+        {
+          "vo": "VTC: aramadan yolculuga. Tam film bio'da.",
+          "text": "Tam film bio'da"
+        }
+      ]
     }
   }
 }
