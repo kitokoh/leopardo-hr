@@ -200,8 +200,7 @@ class TravelGateway {
     );
 
     // La ressource est rendue à la racine (`data` + `agency`), pas sous `data`.
-    final confirmation =
-        TravelBookingConfirmation.tryParse(json) ??
+    final confirmation = TravelBookingConfirmation.tryParse(json) ??
         TravelBookingConfirmation.tryParse(JourneyApi.dataOf(json));
 
     if (confirmation == null) {

@@ -92,12 +92,14 @@ class AppStrings {
           'Publiez votre Page gratuitement et apparaissez dans la recherche.',
       'merchantInviteCta': 'Publier ma Page',
       'discoveryUseLocation': 'Utiliser ma position',
-      'discoveryLocationDenied': 'Sans votre position, choisissez votre ville pour voir ce qui est autour.',
+      'discoveryLocationDenied':
+          'Sans votre position, choisissez votre ville pour voir ce qui est autour.',
 
       // États obligatoires (chaque écran)
       'stateLoading': 'Chargement…',
       'stateEmptyTitle': 'Rien ici pour le moment',
-      'stateEmptyBody': 'Aucun commerce publié dans cette ville pour l’instant. Revenez bientôt.',
+      'stateEmptyBody':
+          'Aucun commerce publié dans cette ville pour l’instant. Revenez bientôt.',
       'stateNoResultsTitle': 'Aucun résultat',
       'stateNoResultsBody': 'Essayez un autre mot, ou élargissez la zone.',
       'stateNoResultsWiden': 'Élargir la recherche',
@@ -108,7 +110,8 @@ class AppStrings {
       'stateOfflineBody':
           'Voici ce que nous avions gardé de votre dernière visite.',
       'stateNotFoundTitle': 'Page introuvable',
-      'stateNotFoundBody': 'Ce commerce n’est plus disponible. Il a peut-être fermé ou cessé d’être publié.',
+      'stateNotFoundBody':
+          'Ce commerce n’est plus disponible. Il a peut-être fermé ou cessé d’être publié.',
       'stateNotFoundAction': 'Revenir à la recherche',
       'stateNotAvailable': 'Indisponible pour le moment',
 
@@ -130,7 +133,8 @@ class AppStrings {
       'businessPhotos': 'Photos',
       'businessActionsUnavailable':
           'Ce commerce ne propose pas encore cette action.',
-      'businessMultipleEstablishments': 'Cet établissement fait partie d’un commerce avec plusieurs adresses.',
+      'businessMultipleEstablishments':
+          'Cet établissement fait partie d’un commerce avec plusieurs adresses.',
 
       // Commun
       'commonCancel': 'Annuler',
@@ -141,15 +145,18 @@ class AppStrings {
 
       // Messages (M2) — présents pour que l’onglet ne soit jamais muet
       'messagesEmptyTitle': 'Aucune conversation',
-      'messagesEmptyBody': 'Quand vous contacterez un commerçant, la conversation apparaîtra ici.',
+      'messagesEmptyBody':
+          'Quand vous contacterez un commerçant, la conversation apparaîtra ici.',
       'messagesAssistant': 'Léa',
       'messagesAssistantBadge': 'Assistante IA',
       'messagesUnread': 'Non lus',
-      'messagesComingSoon': 'La messagerie arrive avec votre compte. Aucun message n’est perdu entre-temps.',
+      'messagesComingSoon':
+          'La messagerie arrive avec votre compte. Aucun message n’est perdu entre-temps.',
 
       // Activités (M3)
       'activityEmptyTitle': 'Aucune activité',
-      'activityEmptyBody': 'Vos commandes et réservations apparaîtront ici dès votre premier contact.',
+      'activityEmptyBody':
+          'Vos commandes et réservations apparaîtront ici dès votre premier contact.',
       'activityOrders': 'Commandes',
       'activityBookings': 'Réservations',
       'activityFavorites': 'Favoris',
@@ -164,7 +171,8 @@ class AppStrings {
       'profileDelete': 'Supprimer mon compte',
       'profileSignIn': 'Se connecter',
       'profileNotSignedIn': 'Vous naviguez sans compte',
-      'profileNotSignedInBody': 'Vous pouvez tout consulter. Un compte n’est demandé qu’au moment de contacter un commerçant.',
+      'profileNotSignedInBody':
+          'Vous pouvez tout consulter. Un compte n’est demandé qu’au moment de contacter un commerçant.',
       'profileComingSoon': 'Disponible avec votre compte.',
 
       // Activités, favoris, historique (M3)
@@ -184,7 +192,8 @@ class AppStrings {
       'journeyTitleOrder': 'Commander',
       'journeyTitleStay': 'Réserver',
       'journeyTitleContact': 'Contacter',
-      'journeyCatalogNotice': 'Les prix sont ceux du commerçant. Le montant final est confirmé par le serveur au moment de la commande.',
+      'journeyCatalogNotice':
+          'Les prix sont ceux du commerçant. Le montant final est confirmé par le serveur au moment de la commande.',
       'journeyProductUnavailable': 'Indisponible',
       'journeyFieldRequired': 'Ce champ est requis',
       'journeyFieldInvalidEmail': 'Adresse e-mail invalide',
@@ -208,22 +217,30 @@ class AppStrings {
       'journeyConfirmationTitle': 'À conserver',
       'journeyConfirmationReference': 'Référence',
       'journeyConfirmationTrackingCode': 'Code de suivi',
-      'journeyKeepCodeNotice': 'Ce code ne sera plus affiché. Notez-le avec la référence : il est demandé pour suivre la commande.',
+      'journeyKeepCodeNotice':
+          'Ce code ne sera plus affiché. Notez-le avec la référence : il est demandé pour suivre la commande.',
       'journeyPayNow': 'Payer maintenant',
       'journeyTrackTitle': 'Suivre',
       'journeyTrackCode': 'Code de suivi',
       'journeyTrack': 'Suivre',
       'journeyTrackStatus': 'Statut',
       'journeyBlockedTitle': 'Pas encore disponible ici',
-      'journeyBlockedBody': 'Ce parcours n’a pas de contrat public appelable depuis l’application. Voici ce qui manque, précisément :',
-      'journeyBlockerRestaurantOrder': 'La commande restaurant exige un jeton de boutique émis par l’établissement : elle reste possible sur sa page web.',
-      'journeyBlockerTradeQuote': 'Le devis B2B structuré (lignes, quantités, incoterm) n’existe pas encore dans le contrat public : seule une demande libre est possible.',
-      'journeyBlockerVtcRide': 'La course VTC exige des coordonnées d’arrivée ; l’application n’a pas de recherche d’adresse, un devis serait faux.',
+      'journeyBlockedBody':
+          'Ce parcours n’a pas de contrat public appelable depuis l’application. Voici ce qui manque, précisément :',
+      'journeyBlockerRestaurantOrder':
+          'La commande restaurant exige un jeton de boutique émis par l’établissement : elle reste possible sur sa page web.',
+      'journeyBlockerTradeQuote':
+          'Le devis B2B structuré (lignes, quantités, incoterm) n’existe pas encore dans le contrat public : seule une demande libre est possible.',
+      'journeyBlockerVtcRide':
+          'La course VTC exige des coordonnées d’arrivée ; l’application n’a pas de recherche d’adresse, un devis serait faux.',
       'journeyBlockerPharmacyCatalog':
           'Aucune route publique n’expose le catalogue d’une pharmacie.',
-      'journeyBlockerPharmacyContact': 'La passerelle de demande n’accepte pas le type « pharmacie » : elle répondrait 422.',
-      'journeyBlockerTravelEntry': 'La billetterie n’est pas exposée par la découverte : aucune entrée depuis l’application.',
-      'journeyBlockerCareersEntry': 'Le portail emploi n’est pas exposé par la découverte : aucune entrée depuis l’application.',
+      'journeyBlockerPharmacyContact':
+          'La passerelle de demande n’accepte pas le type « pharmacie » : elle répondrait 422.',
+      'journeyBlockerTravelEntry':
+          'La billetterie n’est pas exposée par la découverte : aucune entrée depuis l’application.',
+      'journeyBlockerCareersEntry':
+          'Le portail emploi n’est pas exposé par la découverte : aucune entrée depuis l’application.',
       'journeyVerticalRestaurant': 'Restaurant',
       'journeyVerticalRetail': 'Boutique',
       'journeyVerticalHospitality': 'Séjour',
@@ -232,7 +249,8 @@ class AppStrings {
       'journeyVerticalVtc': 'Opérateur VTC',
       'journeyVerticalTravel': 'Billets',
       'journeyVerticalCareers': 'Emploi',
-      'journeyStayNotice': 'Les disponibilités sont calculées par l’établissement pour vos dates exactes.',
+      'journeyStayNotice':
+          'Les disponibilités sont calculées par l’établissement pour vos dates exactes.',
       'journeyFrom': 'Arrivée',
       'journeyTo': 'Départ',
       'journeyDateHint': 'Date au format AAAA-MM-JJ',
@@ -243,37 +261,48 @@ class AppStrings {
       'journeyRoomAvailable': 'Disponible',
       'journeyRoomSoldOut': 'Complet sur ces dates',
       'journeyRoomsEmptyTitle': 'Aucune chambre sur ces dates',
-      'journeyRoomsEmptyBody': 'Essayez d’autres dates : l’établissement n’a rien de libre sur cette période.',
+      'journeyRoomsEmptyBody':
+          'Essayez d’autres dates : l’établissement n’a rien de libre sur cette période.',
       'journeyChangeDates': 'Changer les dates',
       'journeyGuest': 'Voyageur',
       'journeyGuestName': 'Nom du voyageur',
-      'journeyContactRequired': 'Un e-mail ou un téléphone est nécessaire pour confirmer la réservation.',
+      'journeyContactRequired':
+          'Un e-mail ou un téléphone est nécessaire pour confirmer la réservation.',
       'journeySubmitBooking': 'Réserver',
       'journeyRequestNotice':
           'Votre demande est transmise directement à ce professionnel.',
       'journeyMessage': 'Message',
       'journeyMessageTooShort':
           'Décrivez votre demande en quelques mots (10 caractères minimum)',
-      'journeyConsentLabel': 'J’accepte que mes coordonnées soient transmises à ce professionnel pour répondre à ma demande.',
+      'journeyConsentLabel':
+          'J’accepte que mes coordonnées soient transmises à ce professionnel pour répondre à ma demande.',
       'journeyConsentRequired': 'Cochez la case de consentement pour envoyer.',
       'journeySubmitRequest': 'Envoyer la demande',
-      'journeyPrivacyNotice': 'Aucune donnée n’est conservée par l’application : la demande part directement au professionnel.',
+      'journeyPrivacyNotice':
+          'Aucune donnée n’est conservée par l’application : la demande part directement au professionnel.',
       'journeyRequestSentBody': 'Votre demande a été transmise.',
-      'journeyRequestSentHint': 'Le professionnel vous répond sur le contact que vous avez indiqué. Aucun suivi dans l’application pour ce type de demande.',
+      'journeyRequestSentHint':
+          'Le professionnel vous répond sur le contact que vous avez indiqué. Aucun suivi dans l’application pour ce type de demande.',
       // Parcours transactionnels par verticale (#9907) — le motif affiché
       // quand l'app ne peut pas mener la transaction elle-même.
-      'journeyReasonRestaurantOrder': 'La commande en ligne n’est pas encore ouverte au grand public. Envoyez votre demande : le restaurant vous répond.',
-      'journeyReasonTradeQuote': 'Le devis détaillé se prépare avec l’entreprise. Envoyez votre demande, elle revient avec une proposition.',
-      'journeyReasonVtcRide': 'Réserver une course demande de choisir une adresse de départ et d’arrivée. Envoyez votre demande, l’opérateur vous rappelle.',
-      'journeyReasonTravelPortal': 'Les billets ne sont pas encore accessibles depuis cette application.',
+      'journeyReasonRestaurantOrder':
+          'La commande en ligne n’est pas encore ouverte au grand public. Envoyez votre demande : le restaurant vous répond.',
+      'journeyReasonTradeQuote':
+          'Le devis détaillé se prépare avec l’entreprise. Envoyez votre demande, elle revient avec une proposition.',
+      'journeyReasonVtcRide':
+          'Réserver une course demande de choisir une adresse de départ et d’arrivée. Envoyez votre demande, l’opérateur vous rappelle.',
+      'journeyReasonTravelPortal':
+          'Les billets ne sont pas encore accessibles depuis cette application.',
       'journeyReasonPharmacyCatalog':
           'Le catalogue des pharmacies n’est pas encore publié.',
-      'journeyReasonCareersPortal': 'Les offres d’emploi ne sont pas encore accessibles depuis cette application.',
+      'journeyReasonCareersPortal':
+          'Les offres d’emploi ne sont pas encore accessibles depuis cette application.',
       'journeyRequestCta': 'Envoyer une demande',
       'journeyNativeCta': 'Commander',
 
       // ── Verticale Billets (travel) — #9943 ──
-      'travelSearchNotice': 'Les trajets viennent des agences partenaires. Le prix final est confirmé par le serveur au moment de la réservation.',
+      'travelSearchNotice':
+          'Les trajets viennent des agences partenaires. Le prix final est confirmé par le serveur au moment de la réservation.',
       'travelOrigin': 'Ville de départ',
       'travelDestination': 'Ville d’arrivée',
       'travelCityHint': 'Nom de la ville',
@@ -284,7 +313,8 @@ class AppStrings {
           'Essayez une autre date, ou retirez un filtre de ville.',
       'travelRouteUnknown': 'Itinéraire non communiqué',
       'travelSoldOut': 'Complet',
-      'travelNoFare': 'Aucun tarif publié pour ce trajet : la réservation n’est pas encore ouverte.',
+      'travelNoFare':
+          'Aucun tarif publié pour ce trajet : la réservation n’est pas encore ouverte.',
       'travelDeparture': 'Départ',
       'travelArrival': 'Arrivée',
       'travelAgency': 'Agence',
@@ -309,10 +339,12 @@ class AppStrings {
       'travelSubmitBooking': 'Confirmer la réservation',
       'travelValidationCode': 'Code de validation',
       'travelExpiresAt': 'À confirmer avant',
-      'travelKeepCodeNotice': 'Conservez la référence et le code de validation : ils sont nécessaires pour suivre ou annuler la réservation.',
+      'travelKeepCodeNotice':
+          'Conservez la référence et le code de validation : ils sont nécessaires pour suivre ou annuler la réservation.',
 
       // ── Verticale Emploi (careers) — #9944 ──
-      'careersDirectoryNotice': 'Les offres viennent des entreprises qui publient sur la plateforme. Certaines offres sont agrégées de partenaires : la candidature se fait alors chez eux.',
+      'careersDirectoryNotice':
+          'Les offres viennent des entreprises qui publient sur la plateforme. Certaines offres sont agrégées de partenaires : la candidature se fait alors chez eux.',
       'careersSearchCompany': 'Rechercher une entreprise',
       'careersSearchHint': 'Nom de l’entreprise',
       'careersSearch': 'Rechercher',
@@ -335,16 +367,19 @@ class AppStrings {
       'careersDescription': 'Description du poste',
       'careersApply': 'Postuler',
       'careersApplyPartner': 'Postuler chez le partenaire',
-      'careersApplyNotice': 'Vos données sont transmises à l’entreprise pour l’examen de votre candidature.',
+      'careersApplyNotice':
+          'Vos données sont transmises à l’entreprise pour l’examen de votre candidature.',
       'careersFirstName': 'Prénom',
       'careersLastName': 'Nom',
       'careersCoverLetter': 'Lettre de motivation (optionnel)',
       'careersResumeUrl': 'Lien vers votre CV (optionnel)',
       'careersResumeUrlHint': 'https://… (PDF, DOC ou DOCX)',
-      'careersConsent': 'J’accepte que mes données soient traitées pour l’examen de ma candidature.',
+      'careersConsent':
+          'J’accepte que mes données soient traitées pour l’examen de ma candidature.',
       'careersSubmitApplication': 'Envoyer ma candidature',
       'careersAppliedTitle': 'Candidature envoyée',
-      'careersAppliedNotice': 'Votre candidature a bien été enregistrée. Conservez votre e-mail : il vous permet de suivre son avancement.',
+      'careersAppliedNotice':
+          'Votre candidature a bien été enregistrée. Conservez votre e-mail : il vous permet de suivre son avancement.',
       'careersApplicationStatus': 'Statut',
       'careersJob': 'Poste',
       'careersAppliedAt': 'Envoyée le',
@@ -355,23 +390,27 @@ class AppStrings {
       'careersTrackTitle': 'Suivre mes candidatures',
       'careersTrack': 'Voir mes candidatures',
       'careersTrackEmptyTitle': 'Aucune candidature trouvée',
-      'careersTrackEmptyBody': 'Aucune candidature n’est associée à cette adresse pour cette entreprise.',
+      'careersTrackEmptyBody':
+          'Aucune candidature n’est associée à cette adresse pour cette entreprise.',
       'careersRetention': 'Durée de conservation',
       'careersDays': 'jours',
 
       // ── Verticale Pharmacie (pharmacy) — #9945 ──
-      'pharmacyDirectoryNotice': 'Seules les officines ayant activé leur publication apparaissent ici. Aucune vente en ligne de médicaments n’est proposée.',
+      'pharmacyDirectoryNotice':
+          'Seules les officines ayant activé leur publication apparaissent ici. Aucune vente en ligne de médicaments n’est proposée.',
       'pharmacySearch': 'Rechercher une officine',
       'pharmacySearchHint': 'Nom ou description',
       'pharmacyCity': 'Ville',
       'pharmacySearchCta': 'Rechercher',
       'pharmacyEmptyTitle': 'Aucune officine publiée',
-      'pharmacyEmptyBody': 'Aucune pharmacie n’a encore activé sa publication. Ce n’est pas une panne : l’annuaire se remplira dès qu’une officine s’inscrira.',
+      'pharmacyEmptyBody':
+          'Aucune pharmacie n’a encore activé sa publication. Ce n’est pas une panne : l’annuaire se remplira dès qu’une officine s’inscrira.',
       'pharmacyDuty': 'Garde',
       'pharmacyOnDuty': 'De garde',
       'pharmacyRegularHours': 'Horaires normaux',
       'pharmacyServices': 'Services',
-      'pharmacyContactUnavailable': 'La prise de contact depuis l’app n’est pas encore disponible pour les pharmacies. Appelez l’officine directement.',
+      'pharmacyContactUnavailable':
+          'La prise de contact depuis l’app n’est pas encore disponible pour les pharmacies. Appelez l’officine directement.',
       'pharmacyBackToDirectory': 'Retour à l’annuaire',
     },
 
@@ -412,7 +451,8 @@ class AppStrings {
       'stateOfflineTitle': 'You are offline',
       'stateOfflineBody': 'Here is what we kept from your last visit.',
       'stateNotFoundTitle': 'Page not found',
-      'stateNotFoundBody': 'This business is no longer available. It may have closed or stopped publishing.',
+      'stateNotFoundBody':
+          'This business is no longer available. It may have closed or stopped publishing.',
       'stateNotFoundAction': 'Back to search',
       'stateNotAvailable': 'Not available right now',
       'businessOpenNow': 'Open',
@@ -444,7 +484,8 @@ class AppStrings {
       'messagesAssistant': 'Léa',
       'messagesAssistantBadge': 'AI assistant',
       'messagesUnread': 'Unread',
-      'messagesComingSoon': 'Messaging arrives with your account. No message is lost in the meantime.',
+      'messagesComingSoon':
+          'Messaging arrives with your account. No message is lost in the meantime.',
       'activityEmptyTitle': 'No activity',
       'activityEmptyBody':
           'Your orders and bookings will appear here after your first contact.',
@@ -460,7 +501,8 @@ class AppStrings {
       'profileDelete': 'Delete my account',
       'profileSignIn': 'Sign in',
       'profileNotSignedIn': 'You are browsing without an account',
-      'profileNotSignedInBody': 'You can browse everything. An account is only asked for when you contact a business.',
+      'profileNotSignedInBody':
+          'You can browse everything. An account is only asked for when you contact a business.',
       'profileComingSoon': 'Available with your account.',
 
       // Activities, favourites, history (M3)
@@ -480,7 +522,8 @@ class AppStrings {
       'journeyTitleOrder': 'Order',
       'journeyTitleStay': 'Book',
       'journeyTitleContact': 'Contact',
-      'journeyCatalogNotice': 'Prices come from the merchant. The final amount is confirmed by the server when the order is placed.',
+      'journeyCatalogNotice':
+          'Prices come from the merchant. The final amount is confirmed by the server when the order is placed.',
       'journeyProductUnavailable': 'Unavailable',
       'journeyFieldRequired': 'This field is required',
       'journeyFieldInvalidEmail': 'Invalid email address',
@@ -504,22 +547,30 @@ class AppStrings {
       'journeyConfirmationTitle': 'Keep this',
       'journeyConfirmationReference': 'Reference',
       'journeyConfirmationTrackingCode': 'Tracking code',
-      'journeyKeepCodeNotice': 'This code will not be shown again. Note it with the reference: it is required to track the order.',
+      'journeyKeepCodeNotice':
+          'This code will not be shown again. Note it with the reference: it is required to track the order.',
       'journeyPayNow': 'Pay now',
       'journeyTrackTitle': 'Track',
       'journeyTrackCode': 'Tracking code',
       'journeyTrack': 'Track',
       'journeyTrackStatus': 'Status',
       'journeyBlockedTitle': 'Not available here yet',
-      'journeyBlockedBody': 'This journey has no public contract the app can call. Here is exactly what is missing:',
-      'journeyBlockerRestaurantOrder': 'Restaurant ordering requires a shop token issued by the venue: it remains available on its web page.',
-      'journeyBlockerTradeQuote': 'A structured B2B quote (lines, quantities, incoterm) does not exist in the public contract yet: only a free-form request is possible.',
-      'journeyBlockerVtcRide': 'A VTC ride needs drop-off coordinates; the app has no address search, so any estimate would be wrong.',
+      'journeyBlockedBody':
+          'This journey has no public contract the app can call. Here is exactly what is missing:',
+      'journeyBlockerRestaurantOrder':
+          'Restaurant ordering requires a shop token issued by the venue: it remains available on its web page.',
+      'journeyBlockerTradeQuote':
+          'A structured B2B quote (lines, quantities, incoterm) does not exist in the public contract yet: only a free-form request is possible.',
+      'journeyBlockerVtcRide':
+          'A VTC ride needs drop-off coordinates; the app has no address search, so any estimate would be wrong.',
       'journeyBlockerPharmacyCatalog':
           'No public route exposes a pharmacy catalogue.',
-      'journeyBlockerPharmacyContact': 'The request gateway does not accept the "pharmacy" type: it would answer 422.',
-      'journeyBlockerTravelEntry': 'Ticketing is not exposed by discovery: there is no entry point from the app.',
-      'journeyBlockerCareersEntry': 'The careers portal is not exposed by discovery: there is no entry point from the app.',
+      'journeyBlockerPharmacyContact':
+          'The request gateway does not accept the "pharmacy" type: it would answer 422.',
+      'journeyBlockerTravelEntry':
+          'Ticketing is not exposed by discovery: there is no entry point from the app.',
+      'journeyBlockerCareersEntry':
+          'The careers portal is not exposed by discovery: there is no entry point from the app.',
       'journeyVerticalRestaurant': 'Restaurant',
       'journeyVerticalRetail': 'Shop',
       'journeyVerticalHospitality': 'Stay',
@@ -553,16 +604,22 @@ class AppStrings {
       'journeyMessage': 'Message',
       'journeyMessageTooShort':
           'Describe your request in a few words (10 characters minimum)',
-      'journeyConsentLabel': 'I agree that my contact details are sent to this professional to answer my request.',
+      'journeyConsentLabel':
+          'I agree that my contact details are sent to this professional to answer my request.',
       'journeyConsentRequired': 'Tick the consent box to send.',
       'journeySubmitRequest': 'Send request',
-      'journeyPrivacyNotice': 'The app stores nothing: the request goes directly to the professional.',
+      'journeyPrivacyNotice':
+          'The app stores nothing: the request goes directly to the professional.',
       'journeyRequestSentBody': 'Your request has been sent.',
-      'journeyRequestSentHint': 'The professional replies to the contact details you provided. There is no in-app tracking for this kind of request.',
+      'journeyRequestSentHint':
+          'The professional replies to the contact details you provided. There is no in-app tracking for this kind of request.',
       // Per-vertical transactional journeys (#9907).
-      'journeyReasonRestaurantOrder': 'Online ordering is not open to the public yet. Send a request and the restaurant will reply.',
-      'journeyReasonTradeQuote': 'A detailed quote is prepared with the company. Send a request and they will come back with an offer.',
-      'journeyReasonVtcRide': 'Booking a ride needs a pickup and a drop-off address. Send a request and the operator will call you back.',
+      'journeyReasonRestaurantOrder':
+          'Online ordering is not open to the public yet. Send a request and the restaurant will reply.',
+      'journeyReasonTradeQuote':
+          'A detailed quote is prepared with the company. Send a request and they will come back with an offer.',
+      'journeyReasonVtcRide':
+          'Booking a ride needs a pickup and a drop-off address. Send a request and the operator will call you back.',
       'journeyReasonTravelPortal':
           'Tickets are not reachable from this app yet.',
       'journeyReasonPharmacyCatalog':
@@ -573,7 +630,8 @@ class AppStrings {
       'journeyNativeCta': 'Order',
 
       // ── Billets vertical (travel) — #9943 ──
-      'travelSearchNotice': 'Trips come from partner agencies. The final price is confirmed by the server when you book.',
+      'travelSearchNotice':
+          'Trips come from partner agencies. The final price is confirmed by the server when you book.',
       'travelOrigin': 'Departure city',
       'travelDestination': 'Arrival city',
       'travelCityHint': 'City name',
@@ -608,10 +666,12 @@ class AppStrings {
       'travelSubmitBooking': 'Confirm booking',
       'travelValidationCode': 'Validation code',
       'travelExpiresAt': 'Confirm before',
-      'travelKeepCodeNotice': 'Keep the reference and validation code: they are required to track or cancel the booking.',
+      'travelKeepCodeNotice':
+          'Keep the reference and validation code: they are required to track or cancel the booking.',
 
       // ── Careers vertical — #9944 ──
-      'careersDirectoryNotice': 'Jobs come from companies publishing on the platform. Some offers are aggregated from partners: you then apply on their site.',
+      'careersDirectoryNotice':
+          'Jobs come from companies publishing on the platform. Some offers are aggregated from partners: you then apply on their site.',
       'careersSearchCompany': 'Search a company',
       'careersSearchHint': 'Company name',
       'careersSearch': 'Search',
@@ -645,7 +705,8 @@ class AppStrings {
           'I agree that my data is processed to review my application.',
       'careersSubmitApplication': 'Send my application',
       'careersAppliedTitle': 'Application sent',
-      'careersAppliedNotice': 'Your application has been recorded. Keep your email: it lets you track its progress.',
+      'careersAppliedNotice':
+          'Your application has been recorded. Keep your email: it lets you track its progress.',
       'careersApplicationStatus': 'Status',
       'careersJob': 'Position',
       'careersAppliedAt': 'Sent on',
@@ -661,18 +722,21 @@ class AppStrings {
       'careersDays': 'days',
 
       // ── Pharmacy vertical — #9945 ──
-      'pharmacyDirectoryNotice': 'Only pharmacies that enabled publication appear here. No online medicine sales are offered.',
+      'pharmacyDirectoryNotice':
+          'Only pharmacies that enabled publication appear here. No online medicine sales are offered.',
       'pharmacySearch': 'Search a pharmacy',
       'pharmacySearchHint': 'Name or description',
       'pharmacyCity': 'City',
       'pharmacySearchCta': 'Search',
       'pharmacyEmptyTitle': 'No published pharmacy',
-      'pharmacyEmptyBody': 'No pharmacy has enabled publication yet. This is not a failure: the directory fills up as soon as one signs up.',
+      'pharmacyEmptyBody':
+          'No pharmacy has enabled publication yet. This is not a failure: the directory fills up as soon as one signs up.',
       'pharmacyDuty': 'On duty',
       'pharmacyOnDuty': 'On duty',
       'pharmacyRegularHours': 'Regular hours',
       'pharmacyServices': 'Services',
-      'pharmacyContactUnavailable': 'Contacting pharmacies from the app is not available yet. Call the pharmacy directly.',
+      'pharmacyContactUnavailable':
+          'Contacting pharmacies from the app is not available yet. Call the pharmacy directly.',
       'pharmacyBackToDirectory': 'Back to the directory',
     },
 
@@ -813,10 +877,14 @@ class AppStrings {
       'journeyTrack': 'تتبع',
       'journeyTrackStatus': 'الحالة',
       'journeyBlockedTitle': 'غير متاح هنا بعد',
-      'journeyBlockedBody': 'هذا المسار لا يملك عقدًا عامًا يمكن للتطبيق استدعاؤه. إليك ما ينقص بالتحديد:',
-      'journeyBlockerRestaurantOrder': 'طلب المطعم يتطلب رمز متجر يصدره المطعم: يبقى ممكنًا عبر صفحته على الويب.',
-      'journeyBlockerTradeQuote': 'عرض السعر المهيكل بين الشركات (الأسطر، الكميات، شروط التسليم) غير موجود بعد في العقد العام: المتاح طلب حر فقط.',
-      'journeyBlockerVtcRide': 'رحلة النقل تتطلب إحداثيات الوصول؛ التطبيق لا يملك بحث عنوان، وأي تسعير سيكون خاطئًا.',
+      'journeyBlockedBody':
+          'هذا المسار لا يملك عقدًا عامًا يمكن للتطبيق استدعاؤه. إليك ما ينقص بالتحديد:',
+      'journeyBlockerRestaurantOrder':
+          'طلب المطعم يتطلب رمز متجر يصدره المطعم: يبقى ممكنًا عبر صفحته على الويب.',
+      'journeyBlockerTradeQuote':
+          'عرض السعر المهيكل بين الشركات (الأسطر، الكميات، شروط التسليم) غير موجود بعد في العقد العام: المتاح طلب حر فقط.',
+      'journeyBlockerVtcRide':
+          'رحلة النقل تتطلب إحداثيات الوصول؛ التطبيق لا يملك بحث عنوان، وأي تسعير سيكون خاطئًا.',
       'journeyBlockerPharmacyCatalog': 'لا يوجد مسار عام يعرض كتالوج الصيدلية.',
       'journeyBlockerPharmacyContact':
           'بوابة الطلبات لا تقبل نوع «صيدلية»: سترد بخطأ 422.',
@@ -853,15 +921,18 @@ class AppStrings {
       'journeyRequestNotice': 'طلبك يُرسل مباشرة إلى هذا المهني.',
       'journeyMessage': 'الرسالة',
       'journeyMessageTooShort': 'اشرح طلبك بكلمات قليلة (10 أحرف على الأقل)',
-      'journeyConsentLabel': 'أوافق على إرسال بيانات الاتصال الخاصة بي إلى هذا المهني للرد على طلبي.',
+      'journeyConsentLabel':
+          'أوافق على إرسال بيانات الاتصال الخاصة بي إلى هذا المهني للرد على طلبي.',
       'journeyConsentRequired': 'حدّد مربع الموافقة للإرسال.',
       'journeySubmitRequest': 'أرسل الطلب',
       'journeyPrivacyNotice':
           'التطبيق لا يحفظ شيئًا: الطلب يذهب مباشرة إلى المهني.',
       'journeyRequestSentBody': 'تم إرسال طلبك.',
-      'journeyRequestSentHint': 'سيرد المهني على بيانات الاتصال التي أدخلتها. لا يوجد تتبع داخل التطبيق لهذا النوع من الطلبات.',
+      'journeyRequestSentHint':
+          'سيرد المهني على بيانات الاتصال التي أدخلتها. لا يوجد تتبع داخل التطبيق لهذا النوع من الطلبات.',
       // مسارات المعاملات لكل قطاع (#9907).
-      'journeyReasonRestaurantOrder': 'الطلب عبر الإنترنت غير متاح للعموم بعد. أرسل طلبك وسيرد عليك المطعم.',
+      'journeyReasonRestaurantOrder':
+          'الطلب عبر الإنترنت غير متاح للعموم بعد. أرسل طلبك وسيرد عليك المطعم.',
       'journeyReasonTradeQuote':
           'يُعدّ عرض السعر المفصل مع الشركة. أرسل طلبك وستعود إليك بعرض.',
       'journeyReasonVtcRide':
@@ -911,7 +982,8 @@ class AppStrings {
           'احتفظ بالمرجع ورمز التحقق: يلزمك لتتبع الحجز أو إلغائه.',
 
       // ── قطاع التوظيف (careers) — #9944 ──
-      'careersDirectoryNotice': 'الوظائف تأتي من الشركات المنشورة على المنصة. بعض العروض مجمّعة من شركاء: التقديم يتم عندهم.',
+      'careersDirectoryNotice':
+          'الوظائف تأتي من الشركات المنشورة على المنصة. بعض العروض مجمّعة من شركاء: التقديم يتم عندهم.',
       'careersSearchCompany': 'ابحث عن شركة',
       'careersSearchHint': 'اسم الشركة',
       'careersSearch': 'بحث',
@@ -958,18 +1030,21 @@ class AppStrings {
       'careersDays': 'يومًا',
 
       // ── قطاع الصيدلة (pharmacy) — #9945 ──
-      'pharmacyDirectoryNotice': 'تظهر هنا فقط الصيدليات التي فعّلت النشر. لا يُعرض بيع الأدوية عبر الإنترنت.',
+      'pharmacyDirectoryNotice':
+          'تظهر هنا فقط الصيدليات التي فعّلت النشر. لا يُعرض بيع الأدوية عبر الإنترنت.',
       'pharmacySearch': 'ابحث عن صيدلية',
       'pharmacySearchHint': 'الاسم أو الوصف',
       'pharmacyCity': 'المدينة',
       'pharmacySearchCta': 'بحث',
       'pharmacyEmptyTitle': 'لا صيدلية منشورة',
-      'pharmacyEmptyBody': 'لم تفعّل أي صيدلية النشر بعد. هذا ليس عطلًا: يمتلئ الدليل بمجرد تسجيل صيدلية.',
+      'pharmacyEmptyBody':
+          'لم تفعّل أي صيدلية النشر بعد. هذا ليس عطلًا: يمتلئ الدليل بمجرد تسجيل صيدلية.',
       'pharmacyDuty': 'المداومة',
       'pharmacyOnDuty': 'في المداومة',
       'pharmacyRegularHours': 'التوقيت العادي',
       'pharmacyServices': 'الخدمات',
-      'pharmacyContactUnavailable': 'التواصل مع الصيدليات من التطبيق غير متاح بعد. اتصل بالصيدلية مباشرة.',
+      'pharmacyContactUnavailable':
+          'التواصل مع الصيدليات من التطبيق غير متاح بعد. اتصل بالصيدلية مباشرة.',
       'pharmacyBackToDirectory': 'العودة إلى الدليل',
     },
 
@@ -1011,7 +1086,8 @@ class AppStrings {
       'stateOfflineTitle': 'Çevrimdışısın',
       'stateOfflineBody': 'Son ziyaretinden sakladıklarımız bunlar.',
       'stateNotFoundTitle': 'Sayfa bulunamadı',
-      'stateNotFoundBody': 'Bu işletme artık mevcut değil. Kapanmış veya yayımdan kaldırılmış olabilir.',
+      'stateNotFoundBody':
+          'Bu işletme artık mevcut değil. Kapanmış veya yayımdan kaldırılmış olabilir.',
       'stateNotFoundAction': 'Aramaya dön',
       'stateNotAvailable': 'Şu an kullanılamıyor',
       'businessOpenNow': 'Açık',
@@ -1043,9 +1119,11 @@ class AppStrings {
       'messagesAssistant': 'Léa',
       'messagesAssistantBadge': 'Yapay zekâ asistanı',
       'messagesUnread': 'Okunmamış',
-      'messagesComingSoon': 'Mesajlaşma hesabınla birlikte gelir. Bu arada hiçbir mesaj kaybolmaz.',
+      'messagesComingSoon':
+          'Mesajlaşma hesabınla birlikte gelir. Bu arada hiçbir mesaj kaybolmaz.',
       'activityEmptyTitle': 'Etkinlik yok',
-      'activityEmptyBody': 'Siparişlerin ve rezervasyonların ilk iletişiminden sonra burada görünecek.',
+      'activityEmptyBody':
+          'Siparişlerin ve rezervasyonların ilk iletişiminden sonra burada görünecek.',
       'activityOrders': 'Siparişler',
       'activityBookings': 'Rezervasyonlar',
       'activityFavorites': 'Favoriler',
@@ -1058,7 +1136,8 @@ class AppStrings {
       'profileDelete': 'Hesabımı sil',
       'profileSignIn': 'Giriş yap',
       'profileNotSignedIn': 'Hesapsız geziyorsun',
-      'profileNotSignedInBody': 'Her şeye bakabilirsin. Hesap yalnızca bir işletmeyle iletişime geçerken istenir.',
+      'profileNotSignedInBody':
+          'Her şeye bakabilirsin. Hesap yalnızca bir işletmeyle iletişime geçerken istenir.',
       'profileComingSoon': 'Hesabınla kullanılabilir.',
 
       // Etkinlikler, favoriler, arama geçmişi (M3)
@@ -1078,7 +1157,8 @@ class AppStrings {
       'journeyTitleOrder': 'Sipariş ver',
       'journeyTitleStay': 'Rezervasyon',
       'journeyTitleContact': 'İletişim',
-      'journeyCatalogNotice': 'Fiyatlar işletmeden gelir. Kesin tutar sipariş sırasında sunucu tarafından onaylanır.',
+      'journeyCatalogNotice':
+          'Fiyatlar işletmeden gelir. Kesin tutar sipariş sırasında sunucu tarafından onaylanır.',
       'journeyProductUnavailable': 'Mevcut değil',
       'journeyFieldRequired': 'Bu alan zorunlu',
       'journeyFieldInvalidEmail': 'Geçersiz e-posta adresi',
@@ -1102,17 +1182,22 @@ class AppStrings {
       'journeyConfirmationTitle': 'Bunu saklayın',
       'journeyConfirmationReference': 'Referans',
       'journeyConfirmationTrackingCode': 'Takip kodu',
-      'journeyKeepCodeNotice': 'Bu kod bir daha gösterilmeyecek. Referansla birlikte not alın: siparişi takip etmek için gerekir.',
+      'journeyKeepCodeNotice':
+          'Bu kod bir daha gösterilmeyecek. Referansla birlikte not alın: siparişi takip etmek için gerekir.',
       'journeyPayNow': 'Şimdi öde',
       'journeyTrackTitle': 'Takip',
       'journeyTrackCode': 'Takip kodu',
       'journeyTrack': 'Takip et',
       'journeyTrackStatus': 'Durum',
       'journeyBlockedTitle': 'Burada henüz yok',
-      'journeyBlockedBody': 'Bu akışın uygulamadan çağrılabilen bir genel sözleşmesi yok. Eksik olan tam olarak şu:',
-      'journeyBlockerRestaurantOrder': 'Restoran siparişi işletme tarafından verilen bir mağaza jetonu gerektirir: web sayfasında hâlâ mümkün.',
-      'journeyBlockerTradeQuote': 'Yapılandırılmış B2B teklif (satırlar, miktarlar, teslim şartı) genel sözleşmede yok: yalnızca serbest talep mümkün.',
-      'journeyBlockerVtcRide': 'VTC yolculuğu varış koordinatları gerektirir; uygulamada adres arama yok, her fiyat yanlış olurdu.',
+      'journeyBlockedBody':
+          'Bu akışın uygulamadan çağrılabilen bir genel sözleşmesi yok. Eksik olan tam olarak şu:',
+      'journeyBlockerRestaurantOrder':
+          'Restoran siparişi işletme tarafından verilen bir mağaza jetonu gerektirir: web sayfasında hâlâ mümkün.',
+      'journeyBlockerTradeQuote':
+          'Yapılandırılmış B2B teklif (satırlar, miktarlar, teslim şartı) genel sözleşmede yok: yalnızca serbest talep mümkün.',
+      'journeyBlockerVtcRide':
+          'VTC yolculuğu varış koordinatları gerektirir; uygulamada adres arama yok, her fiyat yanlış olurdu.',
       'journeyBlockerPharmacyCatalog':
           'Eczane kataloğunu yayınlayan genel bir yol yok.',
       'journeyBlockerPharmacyContact':
@@ -1153,17 +1238,22 @@ class AppStrings {
       'journeyMessage': 'Mesaj',
       'journeyMessageTooShort':
           'Talebinizi birkaç kelimeyle yazın (en az 10 karakter)',
-      'journeyConsentLabel': 'İletişim bilgilerimin talebime yanıt vermek için bu işletmeye iletilmesini kabul ediyorum.',
+      'journeyConsentLabel':
+          'İletişim bilgilerimin talebime yanıt vermek için bu işletmeye iletilmesini kabul ediyorum.',
       'journeyConsentRequired': 'Göndermek için onay kutusunu işaretleyin.',
       'journeySubmitRequest': 'Talebi gönder',
       'journeyPrivacyNotice':
           'Uygulama hiçbir veriyi saklamaz: talep doğrudan işletmeye gider.',
       'journeyRequestSentBody': 'Talebiniz iletildi.',
-      'journeyRequestSentHint': 'İşletme verdiğiniz iletişim bilgisinden yanıtlar. Bu talep türü için uygulama içi takip yok.',
+      'journeyRequestSentHint':
+          'İşletme verdiğiniz iletişim bilgisinden yanıtlar. Bu talep türü için uygulama içi takip yok.',
       // Dikey başına işlem akışları (#9907).
-      'journeyReasonRestaurantOrder': 'Çevrimiçi sipariş henüz herkese açık değil. Talebinizi gönderin, restoran size dönsün.',
-      'journeyReasonTradeQuote': 'Ayrıntılı teklif şirketle birlikte hazırlanır. Talebinizi gönderin, size bir öneriyle dönsünler.',
-      'journeyReasonVtcRide': 'Yolculuk rezervasyonu kalkış ve varış adresi gerektirir. Talebinizi gönderin, operatör sizi arasın.',
+      'journeyReasonRestaurantOrder':
+          'Çevrimiçi sipariş henüz herkese açık değil. Talebinizi gönderin, restoran size dönsün.',
+      'journeyReasonTradeQuote':
+          'Ayrıntılı teklif şirketle birlikte hazırlanır. Talebinizi gönderin, size bir öneriyle dönsünler.',
+      'journeyReasonVtcRide':
+          'Yolculuk rezervasyonu kalkış ve varış adresi gerektirir. Talebinizi gönderin, operatör sizi arasın.',
       'journeyReasonTravelPortal':
           'Biletlere bu uygulamadan henüz ulaşılamıyor.',
       'journeyReasonPharmacyCatalog': 'Eczane kataloğu henüz yayımlanmadı.',
@@ -1173,7 +1263,8 @@ class AppStrings {
       'journeyNativeCta': 'Sipariş ver',
 
       // ── Bilet dikeyi (travel) — #9943 ──
-      'travelSearchNotice': 'Seferler iş ortağı acentelerden gelir. Nihai fiyat rezervasyon sırasında sunucu tarafından onaylanır.',
+      'travelSearchNotice':
+          'Seferler iş ortağı acentelerden gelir. Nihai fiyat rezervasyon sırasında sunucu tarafından onaylanır.',
       'travelOrigin': 'Kalkış şehri',
       'travelDestination': 'Varış şehri',
       'travelCityHint': 'Şehir adı',
@@ -1209,10 +1300,12 @@ class AppStrings {
       'travelSubmitBooking': 'Rezervasyonu onayla',
       'travelValidationCode': 'Doğrulama kodu',
       'travelExpiresAt': 'Şu tarihe kadar onayla',
-      'travelKeepCodeNotice': 'Referansı ve doğrulama kodunu saklayın: takip veya iptal için gereklidir.',
+      'travelKeepCodeNotice':
+          'Referansı ve doğrulama kodunu saklayın: takip veya iptal için gereklidir.',
 
       // ── İşe alım dikeyi (careers) — #9944 ──
-      'careersDirectoryNotice': 'İlanlar platformda yayın yapan şirketlerden gelir. Bazı ilanlar iş ortaklarından derlenmiştir: başvuru onların sitesinde yapılır.',
+      'careersDirectoryNotice':
+          'İlanlar platformda yayın yapan şirketlerden gelir. Bazı ilanlar iş ortaklarından derlenmiştir: başvuru onların sitesinde yapılır.',
       'careersSearchCompany': 'Şirket ara',
       'careersSearchHint': 'Şirket adı',
       'careersSearch': 'Ara',
@@ -1242,10 +1335,12 @@ class AppStrings {
       'careersCoverLetter': 'Ön yazı (isteğe bağlı)',
       'careersResumeUrl': 'CV bağlantınız (isteğe bağlı)',
       'careersResumeUrlHint': 'https://… (PDF, DOC veya DOCX)',
-      'careersConsent': 'Verilerimin başvurumu değerlendirmek için işlenmesini kabul ediyorum.',
+      'careersConsent':
+          'Verilerimin başvurumu değerlendirmek için işlenmesini kabul ediyorum.',
       'careersSubmitApplication': 'Başvurumu gönder',
       'careersAppliedTitle': 'Başvuru gönderildi',
-      'careersAppliedNotice': 'Başvurunuz kaydedildi. E-postanızı saklayın: ilerlemesini onunla takip edersiniz.',
+      'careersAppliedNotice':
+          'Başvurunuz kaydedildi. E-postanızı saklayın: ilerlemesini onunla takip edersiniz.',
       'careersApplicationStatus': 'Durum',
       'careersJob': 'Pozisyon',
       'careersAppliedAt': 'Gönderim tarihi',
@@ -1260,18 +1355,21 @@ class AppStrings {
       'careersDays': 'gün',
 
       // ── Eczane dikeyi (pharmacy) — #9945 ──
-      'pharmacyDirectoryNotice': 'Burada yalnızca yayını etkinleştiren eczaneler görünür. Çevrimiçi ilaç satışı sunulmaz.',
+      'pharmacyDirectoryNotice':
+          'Burada yalnızca yayını etkinleştiren eczaneler görünür. Çevrimiçi ilaç satışı sunulmaz.',
       'pharmacySearch': 'Eczane ara',
       'pharmacySearchHint': 'Ad veya açıklama',
       'pharmacyCity': 'Şehir',
       'pharmacySearchCta': 'Ara',
       'pharmacyEmptyTitle': 'Yayınlanmış eczane yok',
-      'pharmacyEmptyBody': 'Henüz hiçbir eczane yayını etkinleştirmedi. Bu bir arıza değil: bir eczane kaydolduğunda dizin dolar.',
+      'pharmacyEmptyBody':
+          'Henüz hiçbir eczane yayını etkinleştirmedi. Bu bir arıza değil: bir eczane kaydolduğunda dizin dolar.',
       'pharmacyDuty': 'Nöbet',
       'pharmacyOnDuty': 'Nöbette',
       'pharmacyRegularHours': 'Normal saatler',
       'pharmacyServices': 'Hizmetler',
-      'pharmacyContactUnavailable': 'Eczanelerle uygulamadan iletişim henüz kullanılamıyor. Eczaneyi doğrudan arayın.',
+      'pharmacyContactUnavailable':
+          'Eczanelerle uygulamadan iletişim henüz kullanılamıyor. Eczaneyi doğrudan arayın.',
       'pharmacyBackToDirectory': 'Dizine dön',
     },
   };

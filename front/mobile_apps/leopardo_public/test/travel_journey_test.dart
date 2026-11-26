@@ -89,13 +89,13 @@ void main() {
 
   group('corps de réservation', () {
     List<TravelPassengerDraft> passengers({int count = 1}) => [
-      for (var i = 0; i < count; i++)
-        TravelPassengerDraft(
-          fullName: 'Passager ${i + 1}',
-          ageCategory: TravelAgeCategory.adult,
-          classId: 3,
-        ),
-    ];
+          for (var i = 0; i < count; i++)
+            TravelPassengerDraft(
+              fullName: 'Passager ${i + 1}',
+              ageCategory: TravelAgeCategory.adult,
+              classId: 3,
+            ),
+        ];
 
     test('le corps porte les clés exactes du contrat', () {
       final payload = TravelGateway.buildBookingPayload(

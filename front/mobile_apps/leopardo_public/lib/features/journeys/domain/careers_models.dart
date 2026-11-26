@@ -191,14 +191,14 @@ class CareerPortal {
   final int externalCount;
 
   List<CareerJob> get internalJobs => [
-    for (final job in jobs)
-      if (!job.isExternal) job,
-  ];
+        for (final job in jobs)
+          if (!job.isExternal) job,
+      ];
 
   List<CareerJob> get externalJobs => [
-    for (final job in jobs)
-      if (job.isExternal) job,
-  ];
+        for (final job in jobs)
+          if (job.isExternal) job,
+      ];
 
   /// Construit le portail depuis la réponse de `GET /public/careers/{slug}`.
   ///
@@ -219,8 +219,7 @@ class CareerPortal {
 
     final meta = raw['meta'];
     final companyRaw = meta is Map ? meta['company'] : null;
-    final company =
-        CareerCompany.tryParse(companyRaw) ??
+    final company = CareerCompany.tryParse(companyRaw) ??
         CareerCompany(slug: fallbackSlug, name: fallbackSlug);
 
     final counts = meta is Map ? meta['counts'] : null;
@@ -265,15 +264,16 @@ class CareerApplicationDraft {
     String? coverLetter,
     String? resumeUrl,
     bool? consent,
-  }) => CareerApplicationDraft(
-    firstName: firstName ?? this.firstName,
-    lastName: lastName ?? this.lastName,
-    email: email ?? this.email,
-    phone: phone ?? this.phone,
-    coverLetter: coverLetter ?? this.coverLetter,
-    resumeUrl: resumeUrl ?? this.resumeUrl,
-    consent: consent ?? this.consent,
-  );
+  }) =>
+      CareerApplicationDraft(
+        firstName: firstName ?? this.firstName,
+        lastName: lastName ?? this.lastName,
+        email: email ?? this.email,
+        phone: phone ?? this.phone,
+        coverLetter: coverLetter ?? this.coverLetter,
+        resumeUrl: resumeUrl ?? this.resumeUrl,
+        consent: consent ?? this.consent,
+      );
 }
 
 /// Candidature déposée (`ApplicantResource`).

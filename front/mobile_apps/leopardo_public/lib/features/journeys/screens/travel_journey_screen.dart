@@ -124,9 +124,7 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
 
     try {
       final date = _date.text.trim();
-      final trips = await ref
-          .read(travelGatewayProvider)
-          .searchTrips(
+      final trips = await ref.read(travelGatewayProvider).searchTrips(
             originCityId: _cityId(_origin.text),
             destinationCityId: _cityId(_destination.text),
             date: date.isEmpty ? null : date,
@@ -212,9 +210,7 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
     });
 
     try {
-      final confirmation = await ref
-          .read(travelGatewayProvider)
-          .book(
+      final confirmation = await ref.read(travelGatewayProvider).book(
             tripId: _selected!.id,
             passengers: _passengers,
             idempotencyKey: _idempotencyKey ?? newJourneyIdempotencyKey(),
@@ -434,8 +430,8 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
       'total': formatMinorPrice(status.totalMinor, status.currency),
       if (status.tripCode != null) 'trip': status.tripCode!,
       if (status.departureDate != null)
-        'departure': '${status.departureDate} ${status.departureTime ?? ''}'
-            .trim(),
+        'departure':
+            '${status.departureDate} ${status.departureTime ?? ''}'.trim(),
     };
 
     return JourneyStatusReport(

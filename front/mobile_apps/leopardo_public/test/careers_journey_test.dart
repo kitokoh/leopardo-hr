@@ -137,15 +137,16 @@ void main() {
       String? coverLetter,
       String? resumeUrl,
       bool consent = true,
-    }) => CareerApplicationDraft(
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-      phone: phone,
-      coverLetter: coverLetter,
-      resumeUrl: resumeUrl,
-      consent: consent,
-    );
+    }) =>
+        CareerApplicationDraft(
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          phone: phone,
+          coverLetter: coverLetter,
+          resumeUrl: resumeUrl,
+          consent: consent,
+        );
 
     test('le corps porte les clés exactes de PublicApplyRequest', () {
       final payload = CareersGateway.buildApplicationPayload(
