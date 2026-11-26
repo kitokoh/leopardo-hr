@@ -1,6 +1,6 @@
 # Scripts marketing — leopardo-hr
 
-_26 scripts video, 5 categories. Source de verite : `docs/marketing/scripts-video.json`._
+_28 scripts video, 5 categories. Source de verite : `docs/marketing/scripts-video.json`._
 
 ## Calendrier de tournage
 
@@ -83,6 +83,8 @@ Alimenter TikTok, Reels, Shorts et LinkedIn avec des formats verticaux.
 | 24 | VID-22 | Temoignage client : avant / apres (9:16) | A ecrire |
 | 25 | VID-23 | Mise en route en moins de 30 minutes (9:16) | A ecrire |
 | 26 | VID-26 | Restaurant : le coup de feu, la marge du soir (9:16 TikTok) | A ecrire |
+| 27 | VID-27 | Pharmacie : le lot rappele, l'ordonnance (9:16 TikTok) | A ecrire |
+| 28 | VID-28 | Hotellerie : la chambre, le bail, la marge (9:16 TikTok) | A ecrire |
 
 **Pourquoi cet ordre :** Les hooks 9:16 se calibrent sur les performances des vagues precedentes. Le temoignage client exige un client d'accord pour etre filme : a planifier en dernier.
 
@@ -641,4 +643,46 @@ Vertical 9:16 : hooks, temoignages et onboarding, pour TikTok, Reels, Shorts et 
 **Son :** Beat sobre 100 BPM, ambiance restauration ; coupe nette sur le CTA.
 
 **Notes :** Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-05 : reutiliser les rushes de salle, ne pas re-tourner. Aucune donnee client reelle a l'ecran.
+
+### VID-27 — Pharmacie : le lot rappele, l'ordonnance (9:16 TikTok)
+
+- **Format :** 9:16 · **Duree :** 35 s · **Audience :** Pharmaciens, prepares, groupements officinaux - TikTok, Reels, Shorts
+- **Statut de production :** A ecrire
+- **Objectif :** Decliner la verticale Pharmacie en format vertical natif : le lot rappele et l'ordonnancier, sans demonstration produit longue. Renvoi vers le film 16:9 VID-07 pour la version complete.
+- **Hook :** « Un lot rappele. Vous savez ou il est parti ? »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:05 | Un lot rappele. Vous savez ou il est parti ? | Plan serre : une boite posee sur le comptoir, une main qui la retourne pour lire le numero de lot. Lumiere de fin de journee. | Un lot rappele. |
+| 0:05-0:12 | Trois carnets, deux tableurs, une caisse. Et une boite qui n'aurait jamais du sortir. | Cut rapide : carnet d'ordonnancier, ecran de tableur, tiroir de caisse. Puis retour sur la boite. | 3 endroits. 0 tracabilite. |
+| 0:12-0:20 | Leopardo tient le stock lot par lot, avec la peremption suivie au comptoir. | Capture verticale : liste de lots avec numero, quantite et date de peremption. | Stock par lots |
+| 0:20-0:28 | L'ordonnancier garde qui a delivre quoi, et quand. | Capture verticale : fiche d'ordonnancier, ligne de delivrance et horodatage. | Qui a delivre quoi |
+| 0:28-0:35 | Pharmacie : du comptoir au lot. Le film complet est en bio. | Retour sur le comptoir, logo Leopardo, CTA en bas de cadre. | Film complet en bio |
+
+**CTA :** Film complet (16:9) en bio - activer le pack PharmaManager, sans frais de pack.
+
+**Son :** Nappe sobre, percussions discretes, aucun effet de tension medicale.
+
+**Notes :** Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-07 : reutiliser les rushes du comptoir, ne pas re-tourner. Sujet sensible : ne jamais suggerer une conformite reglementaire pays que le produit ne certifie pas, et ne jamais montrer de donnee patient reelle.
+
+### VID-28 — Hotellerie : la chambre, le bail, la marge (9:16 TikTok)
+
+- **Format :** 9:16 · **Duree :** 35 s · **Audience :** Hoteliers, gestionnaires de residences et de locations longue duree - TikTok, Reels, Shorts
+- **Statut de production :** A ecrire
+- **Objectif :** Decliner la verticale Hotellerie en format vertical natif : l'inventaire reel et les baux, sans demonstration produit longue. Renvoi vers le film 16:9 VID-08 pour la version complete.
+- **Hook :** « Une chambre libre ne coute rien. Une chambre comptee deux fois coute la saison. »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:05 | Une chambre libre ne coute rien. Une chambre comptee deux fois coute la saison. | Travelling court dans un couloir d'hotel, portes fermees, lumiere chaude. Camera a l'epaule. | Comptee deux fois. |
+| 0:05-0:12 | Reservations sur un cahier, inventaire sur un tableur, baux dans un tiroir. | Cut rapide : cahier de reservations, ecran de tableur, chemise de baux ouverte. | 3 sources. 1 inventaire. |
+| 0:12-0:20 | Leopardo pose les reservations sur l'inventaire reel : chambres, equipements, etats. | Capture verticale : inventaire par etablissement avec etat de chaque chambre. | Sur l'inventaire reel |
+| 0:20-0:28 | Et la location longue duree suit baux et loyers dans le meme outil. | Capture verticale : echeancier de loyers et fiche de bail. | Baux & loyers |
+| 0:28-0:35 | Hotellerie : de la chambre a la marge. Le film complet est en bio. | Retour sur le couloir, logo Leopardo, CTA en bas de cadre. | Film complet en bio |
+
+**CTA :** Film complet (16:9) en bio - activer le pack HospitalityManager, sans frais de pack.
+
+**Son :** Beat discret, ambiance lounge, aucun effet de urgence.
+
+**Notes :** Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-08 : reutiliser les rushes de couloir et de chambre, ne pas re-tourner. Aucune donnee client reelle ni nom de client a l'ecran.
 

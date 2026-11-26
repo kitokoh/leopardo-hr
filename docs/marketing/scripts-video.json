@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "updated": "2026-11-26",
   "owner": "Marketing / QA",
   "note": "Source de verite des scripts video de promotion. Editable directement : le portail est regenere par build_marketing.py. Chaque script porte un identifiant stable (VID-nn) : ne jamais le reutiliser pour un autre sujet.",
@@ -1311,6 +1311,110 @@
         "verticale",
         "social"
       ]
+    },
+    {
+      "id": "VID-27",
+      "title": "Pharmacie : le lot rappele, l'ordonnance (9:16 TikTok)",
+      "category": "formats-courts",
+      "format": "9:16",
+      "duration": "35 s",
+      "audience": "Pharmaciens, prepares, groupements officinaux - TikTok, Reels, Shorts",
+      "objective": "Decliner la verticale Pharmacie en format vertical natif : le lot rappele et l'ordonnancier, sans demonstration produit longue. Renvoi vers le film 16:9 VID-07 pour la version complete.",
+      "hook": "Un lot rappele. Vous savez ou il est parti ?",
+      "beats": [
+        {
+          "t": "0:00-0:05",
+          "vo": "Un lot rappele. Vous savez ou il est parti ?",
+          "shot": "Plan serre : une boite posee sur le comptoir, une main qui la retourne pour lire le numero de lot. Lumiere de fin de journee.",
+          "text": "Un lot rappele."
+        },
+        {
+          "t": "0:05-0:12",
+          "vo": "Trois carnets, deux tableurs, une caisse. Et une boite qui n'aurait jamais du sortir.",
+          "shot": "Cut rapide : carnet d'ordonnancier, ecran de tableur, tiroir de caisse. Puis retour sur la boite.",
+          "text": "3 endroits. 0 tracabilite."
+        },
+        {
+          "t": "0:12-0:20",
+          "vo": "Leopardo tient le stock lot par lot, avec la peremption suivie au comptoir.",
+          "shot": "Capture verticale : liste de lots avec numero, quantite et date de peremption.",
+          "text": "Stock par lots"
+        },
+        {
+          "t": "0:20-0:28",
+          "vo": "L'ordonnancier garde qui a delivre quoi, et quand.",
+          "shot": "Capture verticale : fiche d'ordonnancier, ligne de delivrance et horodatage.",
+          "text": "Qui a delivre quoi"
+        },
+        {
+          "t": "0:28-0:35",
+          "vo": "Pharmacie : du comptoir au lot. Le film complet est en bio.",
+          "shot": "Retour sur le comptoir, logo Leopardo, CTA en bas de cadre.",
+          "text": "Film complet en bio"
+        }
+      ],
+      "cta": "Film complet (16:9) en bio - activer le pack PharmaManager, sans frais de pack.",
+      "music": "Nappe sobre, percussions discretes, aucun effet de tension medicale.",
+      "notes": "Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-07 : reutiliser les rushes du comptoir, ne pas re-tourner. Sujet sensible : ne jamais suggerer une conformite reglementaire pays que le produit ne certifie pas, et ne jamais montrer de donnee patient reelle.",
+      "tags": [
+        "9:16",
+        "tiktok",
+        "pharmacie",
+        "verticale",
+        "social"
+      ]
+    },
+    {
+      "id": "VID-28",
+      "title": "Hotellerie : la chambre, le bail, la marge (9:16 TikTok)",
+      "category": "formats-courts",
+      "format": "9:16",
+      "duration": "35 s",
+      "audience": "Hoteliers, gestionnaires de residences et de locations longue duree - TikTok, Reels, Shorts",
+      "objective": "Decliner la verticale Hotellerie en format vertical natif : l'inventaire reel et les baux, sans demonstration produit longue. Renvoi vers le film 16:9 VID-08 pour la version complete.",
+      "hook": "Une chambre libre ne coute rien. Une chambre comptee deux fois coute la saison.",
+      "beats": [
+        {
+          "t": "0:00-0:05",
+          "vo": "Une chambre libre ne coute rien. Une chambre comptee deux fois coute la saison.",
+          "shot": "Travelling court dans un couloir d'hotel, portes fermees, lumiere chaude. Camera a l'epaule.",
+          "text": "Comptee deux fois."
+        },
+        {
+          "t": "0:05-0:12",
+          "vo": "Reservations sur un cahier, inventaire sur un tableur, baux dans un tiroir.",
+          "shot": "Cut rapide : cahier de reservations, ecran de tableur, chemise de baux ouverte.",
+          "text": "3 sources. 1 inventaire."
+        },
+        {
+          "t": "0:12-0:20",
+          "vo": "Leopardo pose les reservations sur l'inventaire reel : chambres, equipements, etats.",
+          "shot": "Capture verticale : inventaire par etablissement avec etat de chaque chambre.",
+          "text": "Sur l'inventaire reel"
+        },
+        {
+          "t": "0:20-0:28",
+          "vo": "Et la location longue duree suit baux et loyers dans le meme outil.",
+          "shot": "Capture verticale : echeancier de loyers et fiche de bail.",
+          "text": "Baux & loyers"
+        },
+        {
+          "t": "0:28-0:35",
+          "vo": "Hotellerie : de la chambre a la marge. Le film complet est en bio.",
+          "shot": "Retour sur le couloir, logo Leopardo, CTA en bas de cadre.",
+          "text": "Film complet en bio"
+        }
+      ],
+      "cta": "Film complet (16:9) en bio - activer le pack HospitalityManager, sans frais de pack.",
+      "music": "Beat discret, ambiance lounge, aucun effet de urgence.",
+      "notes": "Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-08 : reutiliser les rushes de couloir et de chambre, ne pas re-tourner. Aucune donnee client reelle ni nom de client a l'ecran.",
+      "tags": [
+        "9:16",
+        "tiktok",
+        "hotellerie",
+        "verticale",
+        "social"
+      ]
     }
   ],
   "calendrier": {
@@ -1386,7 +1490,9 @@
           "VID-21",
           "VID-22",
           "VID-23",
-          "VID-26"
+          "VID-26",
+          "VID-27",
+          "VID-28"
         ],
         "rationale": "Les hooks 9:16 se calibrent sur les performances des vagues precedentes. Le temoignage client exige un client d'accord pour etre filme : a planifier en dernier."
       }

@@ -5,18 +5,34 @@ Espace jumeau du portail de recette (`docs/recette/`) : meme charte, meme
 navigation, meme logique de publication GitHub Pages. Il rassemble les scripts
 des videos de promotion de la solution, organises et classes par categorie.
 
-Sortie (par defaut dans le dossier de ce script) :
-  index.html                     — accueil : categories, formats, tous les scripts
-  categories/index.html          — liste des categories
-  categories/<slug>.html         — page par categorie (presentation, verticales, ...)
-  scripts/<vid-id>.html          — fiche complete d'un script (hook, beats, CTA)
-  recap.html                     — tableau recapitulatif filtrable
-  assets/marketing.css           — feuille de style (jetons identiques au portail)
-  assets/marketing.js            — recherche / filtre / tri
-  scripts-video.md               — export Markdown de tous les scripts
+MULTILINGUE (v3)
+----------------
+L'espace est publie dans les 4 locales du produit (fr, en, tr, ar), celles de
+`shared/i18n/locales/`. Le francais reste a la racine (`/marketing/`) pour ne
+casser aucun lien existant ; les autres locales vivent dans `/marketing/<loc>/`
+avec la meme arborescence. Chaque page porte ses balises `hreflang` et un
+selecteur de langue. L'arabe est servi en `dir="rtl"`.
 
-Source de verite : `scripts-video.json` (categories + scripts). Le script ne
-l'ecrase jamais ; il le lit et le rend.
+Sources de verite (jamais ecrasees par ce script) :
+  scripts-video.json        — categories, scripts, calendrier (contenu FR)
+  statuts-tournage.json     — suivi de production
+  i18n/ui.json              — libelles d'interface, 4 locales
+  i18n/content-<loc>.json   — contenu traduit (title, objective, hook, cta, beats)
+
+Les champs non traduits (shot, music, notes) restent en francais et sont
+signales par un badge FR : ce sont des consignes de tournage internes.
+
+Sortie (par defaut dans le dossier de ce script) :
+  index.html                     — accueil FR (racine, liens historiques)
+  categories/index.html          — liste des categories
+  categories/<slug>.html         — page par categorie
+  scripts/<vid-id>.html          — fiche complete d'un script
+  recap.html                     — tableau recapitulatif filtrable
+  calendrier.html                — calendrier de tournage + export CSV
+  calendrier-tournage.csv        — export production (BOM UTF-8, ';')
+  assets/marketing.css|.js       — feuille de style et filtres
+  scripts-video.md               — export Markdown (FR)
+  <loc>/...                      — meme arborescence pour en, tr, ar
 
 Usage :
   python3 build_marketing.py [--out DIR]
@@ -33,19 +49,32 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 DATA_FILENAME = "scripts-video.json"
+STATUS_FILENAME = "statuts-tournage.json"
+CSV_FILENAME = "calendrier-tournage.csv"
+I18N_DIR = HERE / "i18n"
+UI_FILENAME = "ui.json"
 GITHUB_REPO = "Kitokoh/leopardo-hr"
 GITHUB_DATA_PATH = "docs/marketing/scripts-video.json"
+
+LOCALES = ("fr", "en", "tr", "ar")
+DEFAULT_LOCALE = "fr"
+RTL_LOCALES = ("ar",)
+LOCALE_SHORT = {"fr": "FR", "en": "EN", "tr": "TR", "ar": "AR"}
 
 
 def esc(s) -> str:
     return html.escape(str(s), quote=True)
 
 
+# ---------------------------------------------------------------------------
+# DONNEES
+# ---------------------------------------------------------------------------
+
 def load_data() -> dict:
     raw = json.loads((HERE / DATA_FILENAME).read_text(encoding="utf-8"))
-    cats = raw.get("categories") or []
-    scripts = raw.get("scripts") or []
-    return {"categories": cats, "scripts": scripts, "meta": raw}
+    return {"categories": raw.get("categories") or [],
+            "scripts": raw.get("scripts") or [],
+            "meta": raw}
 
 
 DATA = load_data()
@@ -56,25 +85,90 @@ META = DATA["meta"]
 CAT_BY_SLUG = {c["slug"]: c for c in CATEGORIES}
 SCRIPT_BY_ID = {s["id"]: s for s in SCRIPTS}
 
+
+def load_json(path: Path, default: dict) -> dict:
+    if not path.exists():
+        return default
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+UI = load_json(I18N_DIR / UI_FILENAME, {"fr": {}})
+CONTENT = {loc: load_json(I18N_DIR / f"content-{loc}.json", {})
+           for loc in LOCALES if loc != DEFAULT_LOCALE}
+
+
+def t(loc: str, key: str, **kw) -> str:
+    """Libelle d'interface dans la locale demandee, repli sur le francais."""
+    val = (UI.get(loc) or {}).get(key)
+    if val is None:
+        val = (UI.get(DEFAULT_LOCALE) or {}).get(key, key)
+    if kw:
+        try:
+            val = val.format(**kw)
+        except (KeyError, IndexError):
+            pass
+    return val
+
+
+def cfield(loc: str, sid: str, field: str):
+    """Champ de contenu traduit. Retourne (texte, est_un_repli_fr)."""
+    base = SCRIPT_BY_ID[sid].get(field, "")
+    if loc == DEFAULT_LOCALE:
+        return base, False
+    node = ((CONTENT.get(loc) or {}).get("scripts") or {}).get(sid) or {}
+    if field in node and node[field]:
+        return node[field], False
+    return base, True
+
+
+def cbeats(loc: str, sid: str):
+    """Decoupage traduit : liste de dicts {t, vo, shot, text, fr_vo, fr_text}."""
+    base = SCRIPT_BY_ID[sid].get("beats", [])
+    if loc == DEFAULT_LOCALE:
+        return [{"t": b["t"], "vo": b["vo"], "shot": b["shot"],
+                 "text": b.get("text", ""), "fr_vo": False, "fr_text": False}
+                for b in base]
+    node = ((CONTENT.get(loc) or {}).get("scripts") or {}).get(sid) or {}
+    tr_beats = node.get("beats") or []
+    out = []
+    for i, b in enumerate(base):
+        tb = tr_beats[i] if i < len(tr_beats) else {}
+        vo = tb.get("vo") or b["vo"]
+        tx = tb.get("text") or b.get("text", "")
+        out.append({"t": b["t"], "vo": vo, "shot": b["shot"], "text": tx,
+                    "fr_vo": not bool(tb.get("vo")),
+                    "fr_text": not bool(tb.get("text"))})
+    return out
+
+
+def ccat(loc: str, slug: str) -> dict:
+    base = CAT_BY_SLUG.get(slug, {"slug": slug, "name": slug, "icon": "🎬",
+                                  "color": "#0f766e", "desc": ""})
+    if loc == DEFAULT_LOCALE:
+        return base
+    node = ((CONTENT.get(loc) or {}).get("categories") or {}).get(slug) or {}
+    out = dict(base)
+    out["name"] = node.get("name") or base["name"]
+    out["desc"] = node.get("desc") or base["desc"]
+    return out
+
+
+def cvague(loc: str, v: dict) -> dict:
+    if loc == DEFAULT_LOCALE:
+        return v
+    node = ((CONTENT.get(loc) or {}).get("vagues") or {}).get(v.get("id", "")) or {}
+    out = dict(v)
+    for k in ("name", "goal", "rationale"):
+        if node.get(k):
+            out[k] = node[k]
+    return out
+
+
 # ---------------------------------------------------------------------------
 # SUIVI DE PRODUCTION (statuts-tournage.json)
 # ---------------------------------------------------------------------------
-# Fichier jumeau de `docs/recette/notes-humaines.json` : une entree par script,
-# un statut, une observation, un auteur, une date, un historique horodate.
-# Le generateur ne l'ecrit JAMAIS : il le lit et le rend.
 
-STATUS_FILENAME = "statuts-tournage.json"
-CSV_FILENAME = "calendrier-tournage.csv"
-
-
-def load_statuts() -> dict:
-    p = HERE / STATUS_FILENAME
-    if not p.exists():
-        return {"_meta": {"statuts": []}, "statuts": {}}
-    return json.loads(p.read_text(encoding="utf-8"))
-
-
-STATUS_DOC = load_statuts()
+STATUS_DOC = load_json(HERE / STATUS_FILENAME, {"_meta": {"statuts": []}, "statuts": {}})
 STATUS_DEFS = {s["code"]: s for s in (STATUS_DOC.get("_meta", {}).get("statuts") or [])}
 STATUS_ORDER = [s["code"] for s in (STATUS_DOC.get("_meta", {}).get("statuts") or [])]
 
@@ -87,11 +181,25 @@ def status_code(sid: str) -> str:
     return status_of(sid).get("statut") or "a_ecrire"
 
 
-def status_badge(sid: str) -> str:
+def status_label(loc: str, code: str) -> str:
+    key = f"st_{code}"
+    if key in (UI.get(loc) or {}):
+        return t(loc, key)
+    return STATUS_DEFS.get(code, {}).get("label", code)
+
+
+def status_desc(loc: str, code: str) -> str:
+    key = f"st_{code}_d"
+    if key in (UI.get(loc) or {}):
+        return t(loc, key)
+    return STATUS_DEFS.get(code, {}).get("desc", "")
+
+
+def status_badge(loc: str, sid: str) -> str:
     code = status_code(sid)
-    d = STATUS_DEFS.get(code, {"label": code, "color": "#64748b"})
+    d = STATUS_DEFS.get(code, {"color": "#64748b"})
     return (f'<span class="badge status-badge" style="background:{d["color"]}1a;color:{d["color"]};'
-            f'border-color:{d["color"]}33">{esc(d["label"])}</span>')
+            f'border-color:{d["color"]}33">{esc(status_label(loc, code))}</span>')
 
 
 def status_counts() -> dict:
@@ -102,6 +210,10 @@ def status_counts() -> dict:
     return out
 
 
+# ---------------------------------------------------------------------------
+# CHEMINS
+# ---------------------------------------------------------------------------
+
 def vid_slug(vid: str) -> str:
     return vid.lower().replace("_", "-")
 
@@ -110,53 +222,97 @@ def rel(depth: int) -> str:
     return "../" * depth
 
 
-def cat_of(s: dict) -> dict:
-    return CAT_BY_SLUG.get(s["category"], {"slug": s["category"], "name": s["category"],
-                                           "icon": "🎬", "color": "#0f766e", "desc": ""})
+def loc_root(loc: str) -> str:
+    """Prefixe relatif vers la racine de la locale (depuis la racine du site)."""
+    return "" if loc == DEFAULT_LOCALE else f"{loc}/"
 
 
-def fmt_badge(fmt: str) -> str:
-    color = {"16:9": "#0f766e", "9:16": "#db2777", "1:1": "#7c3aed"}.get(fmt, "#475569")
-    return (f'<span class="badge" style="background:{color}1a;color:{color};'
-            f'border-color:{color}33">{esc(fmt)}</span>')
+def href(loc: str, depth: int, page_rel: str, src: str | None = None) -> str:
+    """Lien vers `page_rel` dans la locale `loc`, depuis une page de profondeur `depth`.
+
+    `depth` est mesure depuis la RACINE DE LA LOCALE DE LA PAGE SOURCE (`src`,
+    par defaut la locale cible). Une page d'une locale non par defaut est un
+    niveau plus bas dans l'arbre du site (`/marketing/<loc>/`), donc son prefixe
+    vers la racine du site compte un `../` de plus. Le decalage depend de la
+    SOURCE, pas de la cible : c'est ce qui casse les liens du selecteur de
+    langue si on l'oublie (222 liens casses mesures le 2026-11-26).
+    """
+    src = src or loc
+    site_depth = depth + (0 if src == DEFAULT_LOCALE else 1)
+    return rel(site_depth) + loc_root(loc) + page_rel
 
 
-def cat_badge(s: dict) -> str:
-    c = cat_of(s)
-    return (f'<span class="badge" style="background:{c["color"]}1a;color:{c["color"]};'
-            f'border-color:{c["color"]}33">{c["icon"]} {esc(c["name"])}</span>')
+def site_href(loc: str, depth: int, page_rel: str) -> str:
+    """Lien vers un livrable de NIVEAU SITE (racine /marketing/), pas de locale.
+
+    Le CSV de tournage et l'export Markdown sont des livrables production : ils
+    existent en une seule copie, en francais, a la racine. Les autres locales y
+    renvoient donc sans prefixe de locale (sinon `ar/scripts-video.md`, absent).
+    """
+    site_depth = depth + (0 if loc == DEFAULT_LOCALE else 1)
+    return rel(site_depth) + page_rel
+
+
+def fr_badge(loc: str) -> str:
+    if loc == DEFAULT_LOCALE:
+        return ""
+    return (f' <span class="fr-badge" title="{esc(t(loc, "fallback_legend"))}">'
+            f'{esc(t(loc, "fallback_badge"))}</span>')
 
 
 # ---------------------------------------------------------------------------
 # LAYOUT
 # ---------------------------------------------------------------------------
 
-def layout(title: str, depth: int, body: str, subtitle: str = "") -> str:
-    p = rel(depth)
+def layout(loc: str, title: str, depth: int, page_rel: str, body: str,
+           subtitle: str = "") -> str:
+    # Prefixe vers la racine du SITE (pas de la locale) : voir href().
+    p = rel(depth + (0 if loc == DEFAULT_LOCALE else 1))
     sub = f'<p class="page-sub">{esc(subtitle)}</p>' if subtitle else ""
+    direction = "rtl" if loc in RTL_LOCALES else "ltr"
+
+    # hreflang : chaque page declare ses 4 variantes + x-default (fr).
+    alts = [f'<link rel="alternate" hreflang="{L}" href="{href(L, depth, page_rel, src=loc)}">'
+            for L in LOCALES]
+    alts.append(f'<link rel="alternate" hreflang="x-default" '
+                f'href="{href(DEFAULT_LOCALE, depth, page_rel, src=loc)}">')
+
+    # Selecteur de langue : conserve la page courante.
+    lang_items = []
+    for L in LOCALES:
+        cls = "lang-link is-current" if L == loc else "lang-link"
+        cur = ' aria-current="true"' if L == loc else ""
+        lang_items.append(
+            f'<a class="{cls}" href="{href(L, depth, page_rel, src=loc)}" hreflang="{L}" '
+            f'lang="{L}"{cur}>{esc(LOCALE_SHORT[L])}</a>')
+
     return f"""<!doctype html>
-<html lang="fr">
+<html lang="{loc}" dir="{direction}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{esc(title)} — Scripts marketing Leopardo</title>
+<title>{esc(title)} — {esc(t(loc, "brand"))} Leopardo</title>
+{chr(10).join(alts)}
 <link rel="stylesheet" href="{p}assets/marketing.css">
 </head>
-<body>
+<body class="loc-{loc}">
 <header class="topbar">
   <div class="wrap topbar-inner">
-    <a class="brand" href="{p}index.html">
+    <a class="brand" href="{href(loc, depth, "index.html")}">
       <span class="brand-mark">L</span>
-      <span class="brand-text">Scripts marketing <small>leopardo-hr</small></span>
+      <span class="brand-text">{esc(t(loc, "brand"))} <small>{esc(t(loc, "brand_sub"))}</small></span>
     </a>
     <nav class="mainnav">
-      <a href="{p}index.html">Accueil</a>
-      <a href="{p}categories/index.html">Categories</a>
-      <a href="{p}calendrier.html">Calendrier de tournage</a>
-      <a href="{p}recap.html">Recapitulatif</a>
-      <a href="{p}scripts-video.md">Markdown</a>
-      <a href="{p}../recette/index.html">Portail recette</a>
+      <a href="{href(loc, depth, "index.html")}">{esc(t(loc, "nav_home"))}</a>
+      <a href="{href(loc, depth, "categories/index.html")}">{esc(t(loc, "nav_categories"))}</a>
+      <a href="{href(loc, depth, "calendrier.html")}">{esc(t(loc, "nav_calendar"))}</a>
+      <a href="{href(loc, depth, "recap.html")}">{esc(t(loc, "nav_recap"))}</a>
+      <a href="{site_href(loc, depth, "scripts-video.md")}">{esc(t(loc, "nav_markdown"))}</a>
+      <a href="{p}../recette/index.html">{esc(t(loc, "nav_portal"))}</a>
     </nav>
+    <div class="langswitch" role="group" aria-label="{esc(t(loc, "lang_label"))}">
+      {''.join(lang_items)}
+    </div>
   </div>
 </header>
 <main class="wrap">
@@ -166,10 +322,9 @@ def layout(title: str, depth: int, body: str, subtitle: str = "") -> str:
 </main>
 <footer class="footer">
   <div class="wrap">
-    <p>Espace <strong>Scripts marketing</strong> de <strong>leopardo-hr</strong> — depot
+    <p>{esc(t(loc, "brand"))} — <strong>leopardo-hr</strong> —
       <a href="https://github.com/{GITHUB_REPO}" target="_blank" rel="noopener">{GITHUB_REPO}</a>.
-      Source de verite : <a href="https://github.com/{GITHUB_REPO}/blob/main/{GITHUB_DATA_PATH}">{GITHUB_DATA_PATH}</a>.
-      Chaque script porte un identifiant stable (VID-nn) : ne jamais le reutiliser pour un autre sujet.</p>
+      <a href="https://github.com/{GITHUB_REPO}/blob/main/{GITHUB_DATA_PATH}">{GITHUB_DATA_PATH}</a>.</p>
   </div>
 </footer>
 <script src="{p}assets/marketing.js"></script>
@@ -178,22 +333,37 @@ def layout(title: str, depth: int, body: str, subtitle: str = "") -> str:
 """
 
 
-def breadcrumb(depth: int, items: list[tuple[str, str]]) -> str:
-    p = rel(depth)
-    parts = [f'<a href="{p}index.html">Scripts marketing</a>']
-    for label, href in items:
-        if href:
-            parts.append(f'<a href="{href}">{esc(label)}</a>')
+def breadcrumb(loc: str, depth: int, items: list) -> str:
+    parts = [f'<a href="{href(loc, depth, "index.html")}">{esc(t(loc, "crumb_root"))}</a>']
+    for label, target in items:
+        if target:
+            parts.append(f'<a href="{href(loc, depth, target)}">{esc(label)}</a>')
         else:
             parts.append(f'<span aria-current="page">{esc(label)}</span>')
     return '<nav class="breadcrumb">' + ' <span class="sep">›</span> '.join(parts) + "</nav>"
+
+
+def fmt_badge(fmt: str) -> str:
+    color = {"16:9": "#0f766e", "9:16": "#db2777", "1:1": "#7c3aed"}.get(fmt, "#475569")
+    return (f'<span class="badge" style="background:{color}1a;color:{color};'
+            f'border-color:{color}33">{esc(fmt)}</span>')
+
+
+def cat_badge(loc: str, s: dict) -> str:
+    c = ccat(loc, s["category"])
+    return (f'<span class="badge" style="background:{c["color"]}1a;color:{c["color"]};'
+            f'border-color:{c["color"]}33">{c["icon"]} {esc(c["name"])}</span>')
+
+
+def n_scripts_label(loc: str, n: int) -> str:
+    return f"{n} {t(loc, 'n_script' if n <= 1 else 'n_scripts')}"
 
 
 # ---------------------------------------------------------------------------
 # PAGES
 # ---------------------------------------------------------------------------
 
-def page_home() -> str:
+def page_home(loc: str) -> str:
     total = len(SCRIPTS)
     n_cats = len(CATEGORIES)
     n_vert = sum(1 for s in SCRIPTS if s["category"] == "verticales")
@@ -201,182 +371,206 @@ def page_home() -> str:
 
     cat_cards = []
     for c in CATEGORIES:
+        cc = ccat(loc, c["slug"])
         n = sum(1 for s in SCRIPTS if s["category"] == c["slug"])
         cat_cards.append(f"""
-        <a class="card profile-card" href="categories/{c['slug']}.html" style="--accent:{c['color']}">
+        <a class="card profile-card" href="{href(loc, 0, f"categories/{c['slug']}.html")}" style="--accent:{c['color']}">
           <div class="card-icon">{c['icon']}</div>
-          <h3>{esc(c['name'])}</h3>
-          <p>{esc(c['desc'])}</p>
-          <span class="card-meta">{n} script{'s' if n > 1 else ''}</span>
+          <h3>{esc(cc['name'])}</h3>
+          <p>{esc(cc['desc'])}</p>
+          <span class="card-meta">{esc(n_scripts_label(loc, n))}</span>
         </a>""")
 
     rows = []
     for s in SCRIPTS:
-        c = cat_of(s)
+        title, _ = cfield(loc, s["id"], "title")
+        aud, aud_fb = cfield(loc, s["id"], "audience")
         rows.append(f"""
         <tr data-cat="{esc(s['category'])}" data-format="{esc(s['format'])}" data-status="{esc(status_code(s['id']))}">
-          <td class="nowrap"><a class="uc-link" href="scripts/{vid_slug(s['id'])}.html">{esc(s['id'])}</a></td>
-          <td><a class="uc-link" href="scripts/{vid_slug(s['id'])}.html">{esc(s['title'])}</a></td>
-          <td>{cat_badge(s)}</td>
+          <td class="nowrap"><a class="uc-link" href="{href(loc, 0, f"scripts/{vid_slug(s['id'])}.html")}">{esc(s['id'])}</a></td>
+          <td><a class="uc-link" href="{href(loc, 0, f"scripts/{vid_slug(s['id'])}.html")}">{esc(title)}</a></td>
+          <td>{cat_badge(loc, s)}</td>
           <td class="center">{fmt_badge(s['format'])}</td>
           <td class="center nowrap">{esc(s['duration'])}</td>
-          <td class="center nowrap">{status_badge(s['id'])}</td>
-          <td>{esc(s['audience'])}</td>
+          <td class="center nowrap">{status_badge(loc, s['id'])}</td>
+          <td>{esc(aud)}{fr_badge(loc) if aud_fb else ''}</td>
         </tr>""")
 
-    return layout("Scripts marketing — videos de promotion", 0, f"""
+    return layout(loc, t(loc, "home_title"), 0, "index.html", f"""
   <section class="hero">
-    <p class="hero-kicker">Espace scripts marketing</p>
-    <h2 class="hero-title">Toutes les videos de promotion, ecrites et classees</h2>
-    <p class="hero-lead">Le film pilier de presentation de la solution, un film par verticale,
-      un film par profil utilisateur, les films produit et les formats courts pour le social.
-      Chaque script est complet : hook, decoupage seconde par seconde, voix off, plans, CTA.</p>
+    <p class="hero-kicker">{esc(t(loc, "home_kicker"))}</p>
+    <h2 class="hero-title">{esc(t(loc, "home_title"))}</h2>
+    <p class="hero-lead">{esc(t(loc, "home_lead"))}</p>
     <div class="stats">
-      <div class="stat"><span class="stat-num">{total}</span><span class="stat-label">scripts video</span></div>
-      <div class="stat"><span class="stat-num">{n_cats}</span><span class="stat-label">categories</span></div>
-      <div class="stat"><span class="stat-num">{n_vert}</span><span class="stat-label">verticales couvertes</span></div>
-      <div class="stat"><span class="stat-num">{n_short}</span><span class="stat-label">formats 9:16</span></div>
+      <div class="stat"><span class="stat-num">{total}</span><span class="stat-label">{esc(t(loc, "stat_scripts"))}</span></div>
+      <div class="stat"><span class="stat-num">{n_cats}</span><span class="stat-label">{esc(t(loc, "stat_categories"))}</span></div>
+      <div class="stat"><span class="stat-num">{n_vert}</span><span class="stat-label">{esc(t(loc, "stat_verticals"))}</span></div>
+      <div class="stat"><span class="stat-num">{n_short}</span><span class="stat-label">{esc(t(loc, "stat_short"))}</span></div>
     </div>
   </section>
 
   <section class="section">
-    <h2 class="section-title">Par categorie</h2>
-    <p class="section-sub">Meme organisation que le portail de recette : une page par categorie, une fiche par script.</p>
+    <h2 class="section-title">{esc(t(loc, "sec_by_cat"))}</h2>
+    <p class="section-sub">{esc(t(loc, "sec_by_cat_sub"))}</p>
     <div class="grid grid-profiles">{''.join(cat_cards)}</div>
   </section>
 
   <section class="section">
-    <h2 class="section-title">Tous les scripts</h2>
-    <p class="section-sub">Filtrez par categorie ou par format, ou recherchez un titre.</p>
+    <h2 class="section-title">{esc(t(loc, "sec_all"))}</h2>
+    <p class="section-sub">{esc(t(loc, "sec_all_sub"))}</p>
     <div class="toolbar">
-      <input class="search" id="q" type="search" placeholder="Rechercher un script, une verticale, un mot-cle...">
+      <input class="search" id="q" type="search" placeholder="{esc(t(loc, "search_ph"))}">
       <select class="select" id="f-cat">
-        <option value="">Toutes les categories</option>
-        {''.join(f'<option value="{esc(c["slug"])}">{esc(c["name"])}</option>' for c in CATEGORIES)}
+        <option value="">{esc(t(loc, "all_cats"))}</option>
+        {''.join(f'<option value="{esc(c["slug"])}">{esc(ccat(loc, c["slug"])["name"])}</option>' for c in CATEGORIES)}
       </select>
       <select class="select" id="f-format">
-        <option value="">Tous les formats</option>
+        <option value="">{esc(t(loc, "all_formats"))}</option>
         <option value="16:9">16:9</option>
         <option value="9:16">9:16</option>
       </select>
       <select class="select" id="f-status">
-        <option value="">Tous les statuts</option>
-        {''.join(f'<option value="{esc(c)}">{esc(STATUS_DEFS.get(c, {}).get("label", c))}</option>' for c in STATUS_ORDER)}
+        <option value="">{esc(t(loc, "all_status"))}</option>
+        {''.join(f'<option value="{esc(c)}">{esc(status_label(loc, c))}</option>' for c in STATUS_ORDER)}
       </select>
     </div>
     <div class="table-wrap">
       <table class="data-table" id="tbl">
         <thead><tr>
-          <th>ID</th><th>Titre</th><th>Categorie</th><th class="center">Format</th>
-          <th class="center">Duree</th><th class="center">Statut</th><th>Audience</th>
+          <th>{esc(t(loc, "th_id"))}</th><th>{esc(t(loc, "th_title"))}</th><th>{esc(t(loc, "th_cat"))}</th>
+          <th class="center">{esc(t(loc, "th_format"))}</th>
+          <th class="center">{esc(t(loc, "th_duration"))}</th><th class="center">{esc(t(loc, "th_status"))}</th>
+          <th>{esc(t(loc, "th_audience"))}</th>
         </tr></thead>
         <tbody>{''.join(rows)}</tbody>
       </table>
     </div>
-    <p class="empty-hint" id="empty" hidden>Aucun script ne correspond a ce filtre.</p>
+    <p class="empty-hint" id="empty" hidden>{esc(t(loc, "empty_hint"))}</p>
   </section>
-""", "Videos de promotion de la solution leopardo-hr — navigation par categorie, format et script.")
+""")
 
 
-def page_categories_index() -> str:
+def page_categories_index(loc: str) -> str:
     cards = []
     for c in CATEGORIES:
+        cc = ccat(loc, c["slug"])
         items = [s for s in SCRIPTS if s["category"] == c["slug"]]
-        lis = "".join(
-            f'<li><a href="../scripts/{vid_slug(s["id"])}.html">{esc(s["id"])} — {esc(s["title"])}</a>'
-            f' <span class="muted small">({esc(s["duration"])})</span></li>'
-            for s in items)
+        lis_parts = []
+        for s in items:
+            s_url = href(loc, 1, "scripts/" + vid_slug(s["id"]) + ".html")
+            lis_parts.append(
+                f'<li><a href="{s_url}">{esc(s["id"])} — '
+                f'{esc(cfield(loc, s["id"], "title")[0])}</a> '
+                f'<span class="muted small">({esc(s["duration"])})</span></li>')
+        lis = "".join(lis_parts)
         cards.append(f"""
         <div class="panel" style="border-left:4px solid {c['color']}">
-          <h3>{c['icon']} <a href="{c['slug']}.html">{esc(c['name'])}</a>
+          <h3>{c['icon']} <a href="{href(loc, 1, f"categories/{c['slug']}.html")}">{esc(cc['name'])}</a>
             <span class="hist-count-badge">{len(items)}</span></h3>
-          <p class="muted">{esc(c['desc'])}</p>
+          <p class="muted">{esc(cc['desc'])}</p>
           <ul class="plain">{lis}</ul>
         </div>""")
-    return layout("Categories de scripts", 1, f"""
-  {breadcrumb(1, [("Categories", None)])}
-  <p class="lead">Les scripts sont classes par categorie, comme les cas d'usage du portail de recette
-    sont classes par profil et par module.</p>
+    return layout(loc, t(loc, "cats_title"), 1, "categories/index.html", f"""
+  {breadcrumb(loc, 1, [(t(loc, "nav_categories"), None)])}
+  <p class="lead">{esc(t(loc, "cats_lead"))}</p>
   {''.join(cards)}
 """)
 
 
-def page_category(slug: str) -> str:
+def page_category(loc: str, slug: str) -> str:
     c = CAT_BY_SLUG[slug]
+    cc = ccat(loc, slug)
     items = [s for s in SCRIPTS if s["category"] == slug]
     cards = []
     for s in items:
+        title, _ = cfield(loc, s["id"], "title")
+        obj, _ = cfield(loc, s["id"], "objective")
         cards.append(f"""
-        <a class="card" href="../scripts/{vid_slug(s['id'])}.html" style="--accent:{c['color']}">
+        <a class="card" href="{href(loc, 1, f"scripts/{vid_slug(s['id'])}.html")}" style="--accent:{c['color']}">
           <div class="card-icon">{c['icon']}</div>
-          <h3>{esc(s['id'])} — {esc(s['title'])}</h3>
-          <p>{esc(s['objective'])}</p>
+          <h3>{esc(s['id'])} — {esc(title)}</h3>
+          <p>{esc(obj)}</p>
           <div class="chips">{fmt_badge(s['format'])}<span class="chip">{esc(s['duration'])}</span></div>
         </a>""")
-    return layout(c["name"], 1, f"""
-  {breadcrumb(1, [("Categories", "index.html"), (c["name"], None)])}
+    return layout(loc, cc["name"], 1, f"categories/{slug}.html", f"""
+  {breadcrumb(loc, 1, [(t(loc, "nav_categories"), "categories/index.html"), (cc["name"], None)])}
   <div class="profile-head" style="--accent:{c['color']}">
     <div class="profile-icon">{c['icon']}</div>
     <div>
-      <p class="profile-desc">{esc(c['desc'])}</p>
-      <div class="chips"><span class="chip">{len(items)} script{'s' if len(items) > 1 else ''}</span></div>
+      <p class="profile-desc">{esc(cc['desc'])}</p>
+      <div class="chips"><span class="chip">{esc(n_scripts_label(loc, len(items)))}</span></div>
     </div>
   </div>
   <div class="grid grid-modules">{''.join(cards)}</div>
-""", c["desc"])
+""", cc["desc"])
 
 
-def page_script(s: dict) -> str:
-    c = cat_of(s)
+def page_script(loc: str, s: dict) -> str:
+    sid = s["id"]
+    c = CAT_BY_SLUG.get(s["category"], {"slug": s["category"], "color": "#0f766e", "icon": "🎬"})
+    cc = ccat(loc, s["category"])
+    title, _ = cfield(loc, sid, "title")
+    obj, _ = cfield(loc, sid, "objective")
+    hook, _ = cfield(loc, sid, "hook")
+    cta, _ = cfield(loc, sid, "cta")
+    aud, _ = cfield(loc, sid, "audience")
+    music, music_fr = cfield(loc, sid, "music")
+    notes, notes_fr = cfield(loc, sid, "notes")
+
     beats = []
-    for b in s.get("beats", []):
+    for b in cbeats(loc, sid):
         beats.append(f"""
         <tr>
           <td class="nowrap"><strong>{esc(b['t'])}</strong></td>
-          <td>{esc(b['vo'])}</td>
-          <td>{esc(b['shot'])}</td>
-          <td><span class="ontext">{esc(b.get('text', ''))}</span></td>
+          <td>{esc(b['vo'])}{fr_badge(loc) if b['fr_vo'] else ''}</td>
+          <td>{esc(b['shot'])}{fr_badge(loc)}</td>
+          <td><span class="ontext">{esc(b['text'])}</span>{fr_badge(loc) if b['fr_text'] else ''}</td>
         </tr>""")
-    tags = "".join(f'<span class="chip">#{esc(t)}</span>' for t in s.get("tags", []))
-    idx = [x["id"] for x in SCRIPTS].index(s["id"])
+
+    tags = "".join(f'<span class="chip">#{esc(x)}</span>' for x in s.get("tags", []))
+    idx = [x["id"] for x in SCRIPTS].index(sid)
     prev_s = SCRIPTS[idx - 1] if idx > 0 else None
     next_s = SCRIPTS[idx + 1] if idx < len(SCRIPTS) - 1 else None
     nav = []
     if prev_s:
-        nav.append(f'<a class="btn-back" href="{vid_slug(prev_s["id"])}.html">← {esc(prev_s["id"])}</a>')
-    nav.append(f'<a class="btn-back" href="../categories/{c["slug"]}.html">Toute la categorie</a>')
+        prev_url = href(loc, 1, "scripts/" + vid_slug(prev_s["id"]) + ".html")
+        nav.append(f'<a class="btn-back" href="{prev_url}">← {esc(prev_s["id"])}</a>')
+    cat_url = href(loc, 1, "categories/" + c["slug"] + ".html")
+    nav.append(f'<a class="btn-back" href="{cat_url}">{esc(t(loc, "all_cat_btn"))}</a>')
     if next_s:
-        nav.append(f'<a class="btn-back" href="{vid_slug(next_s["id"])}.html">{esc(next_s["id"])} →</a>')
+        next_url = href(loc, 1, "scripts/" + vid_slug(next_s["id"]) + ".html")
+        nav.append(f'<a class="btn-back" href="{next_url}">{esc(next_s["id"])} →</a>')
 
-    return layout(f"{s['id']} — {s['title']}", 1, f"""
-  {breadcrumb(1, [("Categories", "../categories/index.html"),
-                  (c["name"], f"../categories/{c['slug']}.html"),
-                  (s["id"], None)])}
+    return layout(loc, f"{sid} — {title}", 1, f"scripts/{vid_slug(sid)}.html", f"""
+  {breadcrumb(loc, 1, [(t(loc, "nav_categories"), "categories/index.html"),
+                       (cc["name"], f"categories/{c['slug']}.html"),
+                       (sid, None)])}
   <div class="uc-head">
-    <div class="uc-id">{esc(s['id'])}</div>
+    <div class="uc-id">{esc(sid)}</div>
     <div>
-      <h2 class="uc-title">{esc(s['title'])}</h2>
-      <div class="chips">{cat_badge(s)}{fmt_badge(s['format'])}
+      <h2 class="uc-title">{esc(title)}</h2>
+      <div class="chips">{cat_badge(loc, s)}{fmt_badge(s['format'])}
         <span class="chip">⏱ {esc(s['duration'])}</span>
-        <span class="chip">🎯 {esc(s['audience'])}</span></div>
+        <span class="chip">🎯 {esc(aud)}</span></div>
     </div>
   </div>
 
   <div class="panel">
-    <h3>Objectif du film</h3>
-    <p>{esc(s['objective'])}</p>
+    <h3>{esc(t(loc, "obj_title"))}</h3>
+    <p>{esc(obj)}</p>
   </div>
 
   <div class="panel">
-    <h3>Hook (3 premieres secondes)</h3>
-    <p class="hook">« {esc(s['hook'])} »</p>
+    <h3>{esc(t(loc, "hook_title"))}</h3>
+    <p class="hook">« {esc(hook)} »</p>
   </div>
 
   <div class="panel">
-    <h3>Decoupage</h3>
+    <h3>{esc(t(loc, "beats_title"))}</h3>
     <div class="table-wrap">
       <table class="data-table">
-        <thead><tr><th>Temps</th><th>Voix off</th><th>Plan / image</th><th>Texte a l'ecran</th></tr></thead>
+        <thead><tr><th>{esc(t(loc, "th_time"))}</th><th>{esc(t(loc, "th_vo"))}</th>
+          <th>{esc(t(loc, "th_shot"))}</th><th>{esc(t(loc, "th_text"))}</th></tr></thead>
         <tbody>{''.join(beats)}</tbody>
       </table>
     </div>
@@ -384,56 +578,55 @@ def page_script(s: dict) -> str:
 
   <div class="two-col">
     <div class="panel">
-      <h3>Appel a l'action</h3>
-      <p>{esc(s['cta'])}</p>
+      <h3>{esc(t(loc, "cta_title"))}</h3>
+      <p>{esc(cta)}</p>
     </div>
     <div class="panel">
-      <h3>Son & musique</h3>
-      <p>{esc(s['music'])}</p>
+      <h3>{esc(t(loc, "music_title"))}</h3>
+      <p>{esc(music)}{fr_badge(loc) if music_fr else ''}</p>
     </div>
   </div>
 
   <div class="panel">
-    <h3>Notes de production</h3>
-    <p>{esc(s['notes'])}</p>
+    <h3>{esc(t(loc, "notes_title"))}</h3>
+    <p>{esc(notes)}{fr_badge(loc) if notes_fr else ''}</p>
     <div class="chips">{tags}</div>
   </div>
 
-  {status_panel(s)}
+  {status_panel(loc, s)}
 
   <div class="uc-nav">{''.join(nav)}</div>
 """)
 
 
-def status_panel(s: dict) -> str:
-    """Panneau de suivi de production d'un script (statut + historique)."""
+def status_panel(loc: str, s: dict) -> str:
     sid = s["id"]
     st = status_of(sid)
     code = status_code(sid)
-    d = STATUS_DEFS.get(code, {"label": code, "color": "#64748b", "desc": ""})
+    d = STATUS_DEFS.get(code, {"color": "#64748b"})
 
-    # Frise des 4 statuts : etapes franchies / restantes.
     try:
         cur = STATUS_ORDER.index(code)
     except ValueError:
         cur = 0
     steps = []
     for i, c in enumerate(STATUS_ORDER):
-        sd = STATUS_DEFS.get(c, {"label": c, "color": "#64748b"})
+        sd = STATUS_DEFS.get(c, {"color": "#64748b"})
         done = i <= cur
         steps.append(
             f'<li class="step{" step-done" if done else ""}" style="--step:{sd["color"]}">'
             f'<span class="step-dot">{i + 1}</span>'
-            f'<span class="step-label">{esc(sd["label"])}</span></li>')
+            f'<span class="step-label">{esc(status_label(loc, c))}</span></li>')
 
     hist = st.get("historique") or []
     hrows = []
     for h in reversed(hist):
-        hd = STATUS_DEFS.get(h.get("statut", ""), {"label": h.get("statut", ""), "color": "#64748b"})
+        hc = h.get("statut", "")
+        hd = STATUS_DEFS.get(hc, {"color": "#64748b"})
         hrows.append(f"""
         <tr>
           <td class="nowrap">{esc(h.get('date', ''))}</td>
-          <td class="nowrap"><span class="badge" style="background:{hd['color']}1a;color:{hd['color']};border-color:{hd['color']}33">{esc(hd['label'])}</span></td>
+          <td class="nowrap"><span class="badge" style="background:{hd['color']}1a;color:{hd['color']};border-color:{hd['color']}33">{esc(status_label(loc, hc))}</span></td>
           <td>{esc(h.get('auteur', ''))}</td>
           <td>{esc(h.get('observation', ''))}</td>
           <td class="nowrap">{esc(h.get('action', ''))}</td>
@@ -444,27 +637,25 @@ def status_panel(s: dict) -> str:
         <thead><tr><th>Date</th><th>Statut</th><th>Auteur</th><th>Observation</th><th>Action</th></tr></thead>
         <tbody>""" + "".join(hrows) + """</tbody>
       </table>
-    </div>""") if hrows else '<p class="muted">Aucun historique enregistre.</p>'
+    </div>""") if hrows else f'<p class="muted">{esc(t(loc, "prod_none"))}</p>'
 
     return f"""
   <div class="panel status-panel" style="--accent:{d['color']}">
-    <h3>Suivi de production {status_badge(sid)}</h3>
-    <p class="muted small">{esc(d.get('desc', ''))}</p>
+    <h3>{esc(t(loc, "prod_title"))} {status_badge(loc, sid)}</h3>
+    <p class="muted small">{esc(status_desc(loc, code))}</p>
     <ol class="status-steps">{''.join(steps)}</ol>
-    <p><strong>Observation :</strong> {esc(st.get('observation', 'Aucune observation.'))}</p>
-    <p class="muted small">Derniere modification : {esc(st.get('date_modification', 'n/a'))}
-      par {esc(st.get('auteur', 'n/a'))}.</p>
+    <p><strong>{esc(t(loc, "prod_obs"))} :</strong> {esc(st.get('observation', '—'))}</p>
+    <p class="muted small">{esc(t(loc, "prod_lastmod"))} : {esc(st.get('date_modification', 'n/a'))}
+      — {esc(st.get('auteur', 'n/a'))}.</p>
     <details class="hist-details">
-      <summary>Historique ({len(hist)} entree{'s' if len(hist) > 1 else ''})</summary>
+      <summary>{esc(t(loc, "prod_hist"))} ({len(hist)} {esc(t(loc, "prod_entries"))})</summary>
       {hist_block}
     </details>
-    <p class="muted small">Source : <code>{STATUS_FILENAME}</code> — modifiable directement sur GitHub,
-      le site est regenere au prochain deploiement.</p>
+    <p class="muted small">{esc(t(loc, "prod_source"))} : <code>{STATUS_FILENAME}</code></p>
   </div>"""
 
 
-def page_calendrier() -> str:
-    """Calendrier de tournage : les scripts dans l'ordre reel de production."""
+def page_calendrier(loc: str) -> str:
     cal = META.get("calendrier") or {}
     vagues = cal.get("vagues") or []
     counts = status_counts()
@@ -472,76 +663,74 @@ def page_calendrier() -> str:
     blocks = []
     n = 0
     for v in vagues:
+        vv = cvague(loc, v)
         items = []
         for sid in v.get("scripts", []):
             s = SCRIPT_BY_ID.get(sid)
             if not s:
                 continue
             n += 1
-            c = cat_of(s)
+            title, _ = cfield(loc, sid, "title")
             items.append(f"""
             <tr data-status="{esc(status_code(sid))}">
               <td class="center nowrap"><strong>{n}</strong></td>
-              <td class="nowrap"><a class="uc-link" href="scripts/{vid_slug(sid)}.html">{esc(sid)}</a></td>
-              <td><a class="uc-link" href="scripts/{vid_slug(sid)}.html">{esc(s['title'])}</a></td>
-              <td>{cat_badge(s)}</td>
+              <td class="nowrap"><a class="uc-link" href="{href(loc, 0, f"scripts/{vid_slug(sid)}.html")}">{esc(sid)}</a></td>
+              <td><a class="uc-link" href="{href(loc, 0, f"scripts/{vid_slug(sid)}.html")}">{esc(title)}</a></td>
+              <td>{cat_badge(loc, s)}</td>
               <td class="center">{fmt_badge(s['format'])}</td>
               <td class="center nowrap">{esc(s['duration'])}</td>
-              <td class="center nowrap">{status_badge(sid)}</td>
+              <td class="center nowrap">{status_badge(loc, sid)}</td>
             </tr>""")
         blocks.append(f"""
     <section class="panel vague" style="border-left:4px solid var(--brand)">
       <div class="vague-head">
         <span class="vague-id">{esc(v['id'])}</span>
         <div>
-          <h3>{esc(v['name'])}</h3>
-          <p class="muted small">{esc(v.get('goal', ''))}</p>
+          <h3>{esc(vv['name'])}</h3>
+          <p class="muted small">{esc(vv.get('goal', ''))}</p>
         </div>
         <span class="hist-count-badge">{len(v.get('scripts', []))}</span>
       </div>
       <div class="table-wrap">
         <table class="data-table">
-          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
-            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <thead><tr><th class="center">#</th><th>{esc(t(loc, "th_id"))}</th><th>{esc(t(loc, "th_title"))}</th>
+            <th>{esc(t(loc, "th_cat"))}</th><th class="center">{esc(t(loc, "th_format"))}</th>
+            <th class="center">{esc(t(loc, "th_duration"))}</th><th class="center">{esc(t(loc, "th_status"))}</th></tr></thead>
           <tbody>{''.join(items)}</tbody>
         </table>
       </div>
-      <p class="muted small"><strong>Pourquoi cet ordre :</strong> {esc(v.get('rationale', ''))}</p>
+      <p class="muted small"><strong>{esc(t(loc, "cal_why"))}</strong> {esc(vv.get('rationale', ''))}</p>
     </section>""")
 
     stat_cards = "".join(
         f'<div class="stat stat-light" style="--accent:{STATUS_DEFS.get(c, {}).get("color", "#64748b")}">'
         f'<span class="stat-num">{counts.get(c, 0)}</span>'
-        f'<span class="stat-label">{esc(STATUS_DEFS.get(c, {}).get("label", c))}</span></div>'
+        f'<span class="stat-label">{esc(status_label(loc, c))}</span></div>'
         for c in STATUS_ORDER)
 
-    return layout("Calendrier de tournage", 0, f"""
-  <p class="lead">Les {n} scripts dans leur ordre reel de production, regroupes en vagues.
-    Une vague ne demarre pas avant que la precedente soit montee : chaque film maitre alimente
-    ses derives. Le statut de chaque script est celui du fichier <code>{STATUS_FILENAME}</code>.</p>
+    return layout(loc, t(loc, "cal_title"), 0, "calendrier.html", f"""
+  <p class="lead">{esc(t(loc, "cal_lead", n=n))}</p>
 
   <div class="stats stats-light">{stat_cards}</div>
 
   <div class="panel export-panel">
-    <h3>Export pour l'equipe production</h3>
-    <p>Le calendrier complet (une ligne par script, dans l'ordre de tournage) est disponible en
-      CSV : separateur point-virgule, encodage UTF-8 avec BOM, ouvrable directement dans Excel
-      et LibreOffice sans manipulation d'import.</p>
+    <h3>{esc(t(loc, "cal_export_title"))}</h3>
+    <p>{esc(t(loc, "cal_export_desc"))}</p>
     <p class="export-actions">
-      <a class="btn-export" href="{CSV_FILENAME}" download="{CSV_FILENAME}">
-        Telecharger le calendrier (CSV)
+      <a class="btn-export" href="{site_href(loc, 0, CSV_FILENAME)}" download="{CSV_FILENAME}">
+        {esc(t(loc, "cal_download"))}
       </a>
-      <span class="muted small">{n} lignes &middot; {CSV_FILENAME}</span>
+      <span class="muted small">{n} &middot; {CSV_FILENAME}</span>
     </p>
   </div>
 
   <div class="panel">
-    <h3>Regle d'ordonnancement</h3>
+    <h3>{esc(t(loc, "cal_rule_title"))}</h3>
     <p>{esc(cal.get('note', ''))}</p>
   </div>
 
   {''.join(blocks)}
-""", "Ordre de production des videos de promotion, vague par vague.")
+""")
 
 
 def build_calendrier_csv() -> str:
@@ -569,71 +758,65 @@ def build_calendrier_csv() -> str:
             if not s:
                 continue
             n += 1
-            c = cat_of(s)
+            c = CAT_BY_SLUG.get(s["category"], {"name": s.get("category", "")})
             code = status_code(sid)
             st = status_of(sid)
             w.writerow([
-                n,
-                v.get("id", ""),
-                v.get("name", ""),
-                sid,
-                s.get("title", ""),
-                c.get("name", s.get("category", "")),
-                s.get("format", ""),
-                s.get("duration", ""),
-                code,
+                n, v.get("id", ""), v.get("name", ""), sid, s.get("title", ""),
+                c.get("name", s.get("category", "")), s.get("format", ""),
+                s.get("duration", ""), code,
                 STATUS_DEFS.get(code, {}).get("label", code),
-                s.get("audience", ""),
-                s.get("objective", ""),
-                s.get("cta", ""),
-                st.get("date_modification", ""),
-                st.get("auteur", ""),
+                s.get("audience", ""), s.get("objective", ""), s.get("cta", ""),
+                st.get("date_modification", ""), st.get("auteur", ""),
             ])
     return buf.getvalue()
 
 
-def page_recap() -> str:
+def page_recap(loc: str) -> str:
     rows = []
     for s in SCRIPTS:
-        c = cat_of(s)
+        title, _ = cfield(loc, s["id"], "title")
+        aud, aud_fb = cfield(loc, s["id"], "audience")
+        cta, _ = cfield(loc, s["id"], "cta")
         rows.append(f"""
         <tr data-cat="{esc(s['category'])}" data-format="{esc(s['format'])}" data-status="{esc(status_code(s['id']))}">
-          <td class="nowrap"><a class="uc-link" href="scripts/{vid_slug(s['id'])}.html">{esc(s['id'])}</a></td>
-          <td><a class="uc-link" href="scripts/{vid_slug(s['id'])}.html">{esc(s['title'])}</a></td>
-          <td>{esc(c['name'])}</td>
+          <td class="nowrap"><a class="uc-link" href="{href(loc, 0, f"scripts/{vid_slug(s['id'])}.html")}">{esc(s['id'])}</a></td>
+          <td><a class="uc-link" href="{href(loc, 0, f"scripts/{vid_slug(s['id'])}.html")}">{esc(title)}</a></td>
+          <td>{esc(ccat(loc, s['category'])['name'])}</td>
           <td class="center">{esc(s['format'])}</td>
           <td class="center nowrap">{esc(s['duration'])}</td>
-          <td class="center nowrap">{status_badge(s['id'])}</td>
-          <td>{esc(s['audience'])}</td>
-          <td>{esc(s['cta'])}</td>
+          <td class="center nowrap">{status_badge(loc, s['id'])}</td>
+          <td>{esc(aud)}{fr_badge(loc) if aud_fb else ''}</td>
+          <td>{esc(cta)}</td>
         </tr>""")
-    return layout("Recapitulatif des scripts", 0, f"""
-  <p class="lead">Vue unique de tous les scripts video : identifiant, categorie, format, duree,
-    audience et appel a l'action. Utilisez les filtres pour preparer un tournage ou une campagne.</p>
+    return layout(loc, t(loc, "recap_title"), 0, "recap.html", f"""
+  <p class="lead">{esc(t(loc, "recap_lead"))}</p>
   <div class="toolbar">
-    <input class="search" id="q" type="search" placeholder="Rechercher...">
+    <input class="search" id="q" type="search" placeholder="{esc(t(loc, "search_ph"))}">
     <select class="select" id="f-cat">
-      <option value="">Toutes les categories</option>
-      {''.join(f'<option value="{esc(c["slug"])}">{esc(c["name"])}</option>' for c in CATEGORIES)}
+      <option value="">{esc(t(loc, "all_cats"))}</option>
+      {''.join(f'<option value="{esc(c["slug"])}">{esc(ccat(loc, c["slug"])["name"])}</option>' for c in CATEGORIES)}
     </select>
     <select class="select" id="f-format">
-      <option value="">Tous les formats</option>
+      <option value="">{esc(t(loc, "all_formats"))}</option>
       <option value="16:9">16:9</option>
       <option value="9:16">9:16</option>
     </select>
     <select class="select" id="f-status">
-      <option value="">Tous les statuts</option>
-      {''.join(f'<option value="{esc(c)}">{esc(STATUS_DEFS.get(c, {}).get("label", c))}</option>' for c in STATUS_ORDER)}
+      <option value="">{esc(t(loc, "all_status"))}</option>
+      {''.join(f'<option value="{esc(c)}">{esc(status_label(loc, c))}</option>' for c in STATUS_ORDER)}
     </select>
   </div>
   <div class="table-wrap">
     <table class="data-table" id="tbl">
-      <thead><tr><th>ID</th><th>Titre</th><th>Categorie</th><th class="center">Format</th>
-        <th class="center">Duree</th><th class="center">Statut</th><th>Audience</th><th>CTA</th></tr></thead>
+      <thead><tr><th>{esc(t(loc, "th_id"))}</th><th>{esc(t(loc, "th_title"))}</th>
+        <th>{esc(t(loc, "th_cat"))}</th><th class="center">{esc(t(loc, "th_format"))}</th>
+        <th class="center">{esc(t(loc, "th_duration"))}</th><th class="center">{esc(t(loc, "th_status"))}</th>
+        <th>{esc(t(loc, "th_audience"))}</th><th>{esc(t(loc, "th_cta"))}</th></tr></thead>
       <tbody>{''.join(rows)}</tbody>
     </table>
   </div>
-  <p class="empty-hint" id="empty" hidden>Aucun script ne correspond a ce filtre.</p>
+  <p class="empty-hint" id="empty" hidden>{esc(t(loc, "empty_hint"))}</p>
 """)
 
 
@@ -642,7 +825,6 @@ def build_markdown() -> str:
              f"_{len(SCRIPTS)} scripts video, {len(CATEGORIES)} categories. "
              f"Source de verite : `{GITHUB_DATA_PATH}`._", ""]
 
-    # Calendrier de tournage en tete : c'est l'ordre de production.
     cal = META.get("calendrier") or {}
     if cal.get("vagues"):
         lines += ["## Calendrier de tournage", "", cal.get("note", ""), ""]
@@ -710,6 +892,13 @@ code{background:#eef2f7;padding:.1em .35em;border-radius:5px;font-size:.9em}
 .mainnav{display:flex;gap:4px;flex-wrap:wrap}
 .mainnav a{padding:8px 12px;border-radius:9px;color:#334155;font-size:14px;font-weight:500}
 .mainnav a:hover{background:#eef2f7;text-decoration:none}
+/* --- selecteur de langue --- */
+.langswitch{display:flex;gap:2px;background:#f1f5f9;border:1px solid var(--line);
+  border-radius:999px;padding:3px;flex-shrink:0}
+.lang-link{display:inline-block;padding:4px 9px;border-radius:999px;font-size:12px;
+  font-weight:700;color:#475569;letter-spacing:.02em}
+.lang-link:hover{background:#e2e8f0;text-decoration:none}
+.lang-link.is-current{background:var(--brand);color:#fff}
 main{padding:28px 20px 60px}
 .page-title{font-size:30px;line-height:1.2;margin:6px 0 4px;letter-spacing:-.02em}
 .page-sub{color:var(--muted);margin:0 0 22px}
@@ -747,6 +936,9 @@ main{padding:28px 20px 60px}
   border-radius:999px;padding:4px 11px;font-size:12.5px;color:#334155}
 .badge{display:inline-flex;align-items:center;gap:5px;border:1px solid transparent;border-radius:999px;
   padding:3px 10px;font-size:12px;font-weight:600}
+.fr-badge{display:inline-block;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;
+  border-radius:5px;padding:0 5px;font-size:10px;font-weight:800;vertical-align:middle;
+  letter-spacing:.04em;line-height:1.5}
 .table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
   box-shadow:var(--shadow)}
 .data-table{width:100%;border-collapse:collapse;font-size:14px}
@@ -779,7 +971,7 @@ main{padding:28px 20px 60px}
   font-weight:700;font-size:14px;text-decoration:none;border-radius:10px;padding:11px 18px;
   border:1px solid var(--brand);box-shadow:0 1px 2px rgba(15,23,42,.12)}
 .btn-export:hover{filter:brightness(1.08)}
-.btn-export::before{content:"\2b07";font-size:15px;line-height:1}
+.btn-export::before{content:"\\2b07";font-size:15px;line-height:1}
 .plain{margin:0;padding-left:18px}
 .plain li{margin:4px 0}
 .uc-head{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
@@ -823,6 +1015,18 @@ main{padding:28px 20px 60px}
 .btn-back:hover{background:#f8fafc;text-decoration:none}
 .footer{border-top:1px solid var(--line);background:#fff;padding:22px 0;margin-top:20px}
 .footer p{margin:0;color:var(--muted);font-size:13px}
+/* --- RTL (arabe) --- */
+body.loc-ar{direction:rtl}
+body.loc-ar .data-table th,body.loc-ar .data-table td{text-align:right}
+body.loc-ar .data-table .center{text-align:center}
+body.loc-ar .hook{padding-left:0;padding-right:14px;border-left:none;border-right:3px solid var(--brand)}
+body.loc-ar .plain{padding-left:0;padding-right:18px}
+body.loc-ar .profile-head{border-left:1px solid var(--line);border-right:4px solid var(--accent,var(--brand))}
+body.loc-ar .export-panel{border-left:1px solid var(--line);border-right:4px solid var(--brand)}
+body.loc-ar .status-panel{border-left:1px solid var(--line);border-right:4px solid var(--accent,var(--brand))}
+body.loc-ar .vague{border-left:1px solid var(--line)!important;border-right:4px solid var(--brand)}
+body.loc-ar .vague-head .hist-count-badge{margin-left:0;margin-right:auto}
+body.loc-ar .status-steps .step{padding:5px 6px 5px 13px}
 @media (max-width:820px){
   .two-col{grid-template-columns:1fr}
   .hero{padding:28px 22px}
@@ -830,6 +1034,7 @@ main{padding:28px 20px 60px}
   .page-title{font-size:24px}
   .topbar-inner{height:auto;padding:10px 0;flex-direction:column;align-items:flex-start}
   .mainnav{width:100%}
+  .langswitch{align-self:flex-start}
   /* Sur mobile, un tableau ne se comprime pas : il defile dans son conteneur.
      Sans cela les colonnes Titre/Categorie s'ecrasent en 5 lignes et la
      lecture devient penible (constate au test 390 px du 2026-11-26). */
@@ -849,7 +1054,7 @@ main{padding:28px 20px 60px}
   .vague-head .hist-count-badge{margin-left:0}
 }
 @media print{
-  .topbar,.footer,.toolbar,.uc-nav{display:none}
+  .topbar,.footer,.toolbar,.uc-nav,.langswitch{display:none}
   body{background:#fff}
   .card,.panel,.table-wrap{box-shadow:none}
 }
@@ -892,40 +1097,56 @@ JS = """
 # MAIN
 # ---------------------------------------------------------------------------
 
+def write_locale(out: Path, loc: str) -> int:
+    """Ecrit l'arborescence complete d'une locale. Retourne le nombre de pages."""
+    root = out if loc == DEFAULT_LOCALE else out / loc
+    (root / "categories").mkdir(parents=True, exist_ok=True)
+    (root / "scripts").mkdir(parents=True, exist_ok=True)
+    (root / "assets").mkdir(parents=True, exist_ok=True)
+
+    (root / "index.html").write_text(page_home(loc), encoding="utf-8")
+    (root / "recap.html").write_text(page_recap(loc), encoding="utf-8")
+    (root / "calendrier.html").write_text(page_calendrier(loc), encoding="utf-8")
+    (root / "categories" / "index.html").write_text(page_categories_index(loc), encoding="utf-8")
+    for c in CATEGORIES:
+        (root / "categories" / f"{c['slug']}.html").write_text(page_category(loc, c["slug"]), encoding="utf-8")
+    for s in SCRIPTS:
+        (root / "scripts" / f"{vid_slug(s['id'])}.html").write_text(page_script(loc, s), encoding="utf-8")
+
+    # Le CSV et le Markdown sont des livrables production : une seule copie, en
+    # francais, a la racine. Les autres locales y renvoient par un lien relatif.
+    if loc == DEFAULT_LOCALE:
+        (root / CSV_FILENAME).write_text("\ufeff" + build_calendrier_csv(),
+                                         encoding="utf-8", newline="")
+        (root / "scripts-video.md").write_text(build_markdown(), encoding="utf-8")
+
+    return 4 + len(CATEGORIES) + len(SCRIPTS)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", default=None, help="Dossier de sortie (defaut : dossier du script)")
     args = ap.parse_args()
     out = Path(args.out) if args.out else HERE
     out.mkdir(parents=True, exist_ok=True)
-    (out / "categories").mkdir(exist_ok=True)
-    (out / "scripts").mkdir(exist_ok=True)
     (out / "assets").mkdir(exist_ok=True)
 
-    (out / "index.html").write_text(page_home(), encoding="utf-8")
-    (out / "recap.html").write_text(page_recap(), encoding="utf-8")
-    (out / "calendrier.html").write_text(page_calendrier(), encoding="utf-8")
-    # BOM UTF-8 : sans lui, Excel en locale francaise lit "Tourne" en mojibake.
-    (out / CSV_FILENAME).write_text("\ufeff" + build_calendrier_csv(), encoding="utf-8", newline="")
-    (out / "categories" / "index.html").write_text(page_categories_index(), encoding="utf-8")
-    for c in CATEGORIES:
-        (out / "categories" / f"{c['slug']}.html").write_text(page_category(c["slug"]), encoding="utf-8")
-    for s in SCRIPTS:
-        (out / "scripts" / f"{vid_slug(s['id'])}.html").write_text(page_script(s), encoding="utf-8")
+    total = 0
+    for loc in LOCALES:
+        total += write_locale(out, loc)
+
     (out / "assets" / "marketing.css").write_text(CSS, encoding="utf-8")
     (out / "assets" / "marketing.js").write_text(JS, encoding="utf-8")
-    (out / "scripts-video.md").write_text(build_markdown(), encoding="utf-8")
 
-    # La source de verite n'est jamais ecrasee : on la recopie si la sortie differe.
-    dest_data = out / DATA_FILENAME
-    if dest_data.resolve() != (HERE / DATA_FILENAME).resolve():
-        shutil.copyfile(HERE / DATA_FILENAME, dest_data)
-    dest_status = out / STATUS_FILENAME
-    if dest_status.resolve() != (HERE / STATUS_FILENAME).resolve() and (HERE / STATUS_FILENAME).exists():
-        shutil.copyfile(HERE / STATUS_FILENAME, dest_status)
+    # Les sources de verite ne sont jamais ecrasees : on les recopie si la
+    # sortie differe du dossier du script.
+    for name in (DATA_FILENAME, STATUS_FILENAME):
+        dest = out / name
+        if dest.resolve() != (HERE / name).resolve() and (HERE / name).exists():
+            shutil.copyfile(HERE / name, dest)
 
-    n_pages = 4 + len(CATEGORIES) + len(SCRIPTS)
-    print(f"Espace scripts marketing genere dans {out} — {n_pages} pages HTML, "
+    print(f"Espace scripts marketing genere dans {out} — {total} pages HTML "
+          f"({len(LOCALES)} locales : {', '.join(LOCALES)}), "
           f"{len(SCRIPTS)} scripts, {len(CATEGORIES)} categories.")
 
 

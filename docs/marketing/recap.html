@@ -1,12 +1,17 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Recapitulatif des scripts — Scripts marketing Leopardo</title>
+<link rel="alternate" hreflang="fr" href="recap.html">
+<link rel="alternate" hreflang="en" href="en/recap.html">
+<link rel="alternate" hreflang="tr" href="tr/recap.html">
+<link rel="alternate" hreflang="ar" href="ar/recap.html">
+<link rel="alternate" hreflang="x-default" href="recap.html">
 <link rel="stylesheet" href="assets/marketing.css">
 </head>
-<body>
+<body class="loc-fr">
 <header class="topbar">
   <div class="wrap topbar-inner">
     <a class="brand" href="index.html">
@@ -21,16 +26,18 @@
       <a href="scripts-video.md">Markdown</a>
       <a href="../recette/index.html">Portail recette</a>
     </nav>
+    <div class="langswitch" role="group" aria-label="Langue">
+      <a class="lang-link is-current" href="recap.html" hreflang="fr" lang="fr" aria-current="true">FR</a><a class="lang-link" href="en/recap.html" hreflang="en" lang="en">EN</a><a class="lang-link" href="tr/recap.html" hreflang="tr" lang="tr">TR</a><a class="lang-link" href="ar/recap.html" hreflang="ar" lang="ar">AR</a>
+    </div>
   </div>
 </header>
 <main class="wrap">
   <h1 class="page-title">Recapitulatif des scripts</h1>
   
   
-  <p class="lead">Vue unique de tous les scripts video : identifiant, categorie, format, duree,
-    audience et appel a l'action. Utilisez les filtres pour preparer un tournage ou une campagne.</p>
+  <p class="lead">Vue unique de tous les scripts video : identifiant, categorie, format, duree, audience et appel a l&#x27;action. Utilisez les filtres pour preparer un tournage ou une campagne.</p>
   <div class="toolbar">
-    <input class="search" id="q" type="search" placeholder="Rechercher...">
+    <input class="search" id="q" type="search" placeholder="Rechercher un script, une verticale, un mot-cle...">
     <select class="select" id="f-cat">
       <option value="">Toutes les categories</option>
       <option value="presentation-solution">Presentation de la solution</option><option value="verticales">Verticales</option><option value="personas">Profils utilisateurs</option><option value="fonctionnalites">Fonctionnalites</option><option value="formats-courts">Formats courts &amp; social</option>
@@ -47,8 +54,10 @@
   </div>
   <div class="table-wrap">
     <table class="data-table" id="tbl">
-      <thead><tr><th>ID</th><th>Titre</th><th>Categorie</th><th class="center">Format</th>
-        <th class="center">Duree</th><th class="center">Statut</th><th>Audience</th><th>CTA</th></tr></thead>
+      <thead><tr><th>ID</th><th>Titre</th>
+        <th>Categorie</th><th class="center">Format</th>
+        <th class="center">Duree</th><th class="center">Statut</th>
+        <th>Audience</th><th>CTA</th></tr></thead>
       <tbody>
         <tr data-cat="presentation-solution" data-format="16:9" data-status="a_ecrire">
           <td class="nowrap"><a class="uc-link" href="scripts/vid-01.html">VID-01</a></td>
@@ -309,6 +318,26 @@
           <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
           <td>Restaurateurs, gerants de salle, chaines de restauration — TikTok, Reels, Shorts</td>
           <td>Film complet (16:9) en bio — essai 14 jours, sans carte.</td>
+        </tr>
+        <tr data-cat="formats-courts" data-format="9:16" data-status="a_ecrire">
+          <td class="nowrap"><a class="uc-link" href="scripts/vid-27.html">VID-27</a></td>
+          <td><a class="uc-link" href="scripts/vid-27.html">Pharmacie : le lot rappele, l&#x27;ordonnance (9:16 TikTok)</a></td>
+          <td>Formats courts &amp; social</td>
+          <td class="center">9:16</td>
+          <td class="center nowrap">35 s</td>
+          <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+          <td>Pharmaciens, prepares, groupements officinaux - TikTok, Reels, Shorts</td>
+          <td>Film complet (16:9) en bio - activer le pack PharmaManager, sans frais de pack.</td>
+        </tr>
+        <tr data-cat="formats-courts" data-format="9:16" data-status="a_ecrire">
+          <td class="nowrap"><a class="uc-link" href="scripts/vid-28.html">VID-28</a></td>
+          <td><a class="uc-link" href="scripts/vid-28.html">Hotellerie : la chambre, le bail, la marge (9:16 TikTok)</a></td>
+          <td>Formats courts &amp; social</td>
+          <td class="center">9:16</td>
+          <td class="center nowrap">35 s</td>
+          <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+          <td>Hoteliers, gestionnaires de residences et de locations longue duree - TikTok, Reels, Shorts</td>
+          <td>Film complet (16:9) en bio - activer le pack HospitalityManager, sans frais de pack.</td>
         </tr></tbody>
     </table>
   </div>
@@ -317,10 +346,9 @@
 </main>
 <footer class="footer">
   <div class="wrap">
-    <p>Espace <strong>Scripts marketing</strong> de <strong>leopardo-hr</strong> — depot
+    <p>Scripts marketing — <strong>leopardo-hr</strong> —
       <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
-      Source de verite : <a href="https://github.com/Kitokoh/leopardo-hr/blob/main/docs/marketing/scripts-video.json">docs/marketing/scripts-video.json</a>.
-      Chaque script porte un identifiant stable (VID-nn) : ne jamais le reutiliser pour un autre sujet.</p>
+      <a href="https://github.com/Kitokoh/leopardo-hr/blob/main/docs/marketing/scripts-video.json">docs/marketing/scripts-video.json</a>.</p>
   </div>
 </footer>
 <script src="assets/marketing.js"></script>
