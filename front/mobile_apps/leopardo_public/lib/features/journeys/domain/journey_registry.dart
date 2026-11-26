@@ -212,17 +212,14 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'travel',
     labelKey: 'journeyVerticalTravel',
     counterpartPath: '/billets',
-    mode: JourneyMode.blocked,
-    // Aucun provider `public.discoverable` : la surface existe côté API mais
-    // l'app ne peut pas y arriver depuis la découverte.
+    // #9943 — le contrat public marketplace existe et est appelé par la
+    // vitrine web `/billets` : recherche, détail, réservation, suivi et
+    // annulation sont servis sans compte ni jeton d'agence. Le blocage
+    // `entry` (aucun provider `public.discoverable`) est donc périmé : la
+    // verticale n'a pas besoin de la découverte, elle a sa propre recherche.
+    mode: JourneyMode.booking,
     discoveryType: null,
     contactTargetType: null,
-    blockers: [
-      JourneyBlocker(
-        capability: 'entry',
-        reasonKey: 'journeyBlockerTravelEntry',
-      ),
-    ],
   ),
   JourneyVertical(
     code: 'careers',

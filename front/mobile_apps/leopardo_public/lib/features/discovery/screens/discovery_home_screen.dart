@@ -8,6 +8,7 @@ import '../../../core/i18n/app_strings.dart';
 import '../../../core/location/public_location.dart';
 import '../../../core/providers/app_providers.dart';
 import '../../../core/widgets/state_widgets.dart';
+import '../../journeys/domain/journey_registry.dart';
 import '../models/discovery_category.dart';
 import '../models/discovery_item.dart';
 import '../providers/discovery_providers.dart';
@@ -161,6 +162,13 @@ class _DiscoveryHomeScreenState extends ConsumerState<DiscoveryHomeScreen> {
                 orElse: () => const SizedBox.shrink(),
               ),
 
+              // ── Raccourcis des verticales à parcours autonome ──
+              // Billets (#9943) n'a pas besoin d'une fiche commerce : sa
+              // recherche est sa propre porte d'entrée. Sans ce raccourci, la
+              // verticale serait implémentée mais inatteignable depuis
+              // l'accueil — exactement le défaut que le registre combat.
+              _VerticalShortcuts(strings: strings),
+
               // ── Bandeau hors ligne ──
               if (state.isOffline) OfflineBanner(strings: strings),
 
@@ -248,6 +256,56 @@ class _DiscoveryHomeScreenState extends ConsumerState<DiscoveryHomeScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Raccourcis vers les verticales dont le parcours est autonome.
+///
+/// ## Pourquoi ici et pas dans la fiche commerce
+///
+/// Une verticale à parcours autonome (Billets, Emploi) n'a pas de fiche
+/// commerce par laquelle entrer : sa recherche EST sa porte d'entrée. Sans ce
+/// raccourci, elle serait implémentée mais inatteignable — le défaut exact que
+/// le registre des parcours existe pour empêcher.
+///
+/// La liste est dérivée du registre, pas écrite en dur : une verticale qui
+/// gagne un parcours natif apparaît ici sans qu'on y touche.
+class _VerticalShortcuts extends StatelessWidget {
+  const _VerticalShortcuts({required this.strings});
+
+  final AppStrings strings;
+
+  /// Verticales à parcours autonome, avec leur route.
+  static const List<({String code, String route, IconData icon})> _entries = [
+    (code: 'travel', route: '/journey/travel', icon: Icons.directions_bus),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final visible = [
+      for (final entry in _entries)
+        if (journeyByCode(entry.code)?.mode != JourneyMode.blocked) entry,
+    ];
+
+    if (visible.isEmpty) return const SizedBox.shrink();
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          for (final entry in visible)
+            ActionChip(
+              avatar: Icon(entry.icon, size: 16),
+              label: Text(
+                strings.t(journeyByCode(entry.code)!.labelKey),
+              ),
+              onPressed: () => context.push(entry.route),
+            ),
+        ],
       ),
     );
   }

@@ -5,6 +5,7 @@ import '../data/contact_request_gateway.dart';
 import '../data/journey_http.dart';
 import '../data/retail_order_gateway.dart';
 import '../data/stay_reservation_gateway.dart';
+import '../data/travel_gateway.dart';
 
 /// Client HTTP des parcours — un seul par application, comme la découverte.
 final journeyApiProvider = Provider<JourneyApi>(
@@ -21,4 +22,9 @@ final stayReservationGatewayProvider = Provider<StayReservationGateway>(
 
 final contactRequestGatewayProvider = Provider<ContactRequestGateway>(
   (ref) => ContactRequestGateway(ref.watch(journeyApiProvider)),
+);
+
+/// Verticale Billets (travel) — marketplace inter-agences.
+final travelGatewayProvider = Provider<TravelGateway>(
+  (ref) => TravelGateway(ref.watch(journeyApiProvider)),
 );

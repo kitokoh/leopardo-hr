@@ -98,6 +98,14 @@ void main() {
       }
     });
 
+    test('travel n’est plus bloquée (#9943)', () {
+      final travel = journeyByCode('travel')!;
+      expect(travel.mode, JourneyMode.booking);
+      expect(travel.hasNativeBooking, isTrue);
+      expect(travel.blockers, isEmpty);
+      expect(travel.blockerFor('entry'), isNull);
+    });
+
     test('blockerFor rend null quand la capacité n’est pas bloquée', () {
       final retail = journeyByCode('retail')!;
       expect(retail.blockerFor('order'), isNull);
