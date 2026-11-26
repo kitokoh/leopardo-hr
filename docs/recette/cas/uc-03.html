@@ -73,8 +73,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">4/5</span></td>
-          <td class="obs">Kiosque servi par le pont local (<code>bridge.py</code>, port 8037) et piloté dans Chromium headless. Écran d&#x27;accueil chargé : titre « TechCorp Algerie SARL », « Entree principale », indicateur « Connection OK — auto sync active », sélecteur de langue (FR/EN/TR/AR), 5 onglets (Punch, Employee, Announcements, Leave, QR Code). Sélection d&#x27;un employé de démo (Karim Aouad, DZ-EMP-003) puis pointage via <code>POST /local/punch</code> → <strong>201</strong>, <code>sync_status=queued</code>, <code>external_event_id</code> généré. Matricule inconnu (<code>UNKNOWN-999</code>) → <strong>201</strong> mis en file (comportement *offline-first*). Bascule en <code>ar</code> → <code>document.documentElement.dir = &quot;rtl&quot;</code>, <code>lang=&quot;ar&quot;</code> (RTL effectif). Aucun plantage.</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : la borne <code>front/zkteco-kiosk/</code> existe (dont <code>desktop-bridge/</code>) et les routes kiosque sont déclarées dans <code>api/routes/modules/tracking.php</code> ; 77 fichiers de tests pointage/kiosque (<code>KioskMultiEventPunchTest</code>, <code>KioskRosterExtractionTest</code>, <code>KioskSyncSkippedEventsTest</code>, <code>WebKioskSessionGateTest</code>). Le rendu visuel de la borne et le formulaire de secours matricule n&#x27;ont pas pu être observés (API 503, pas de navigateur sur la borne). Note 3 = critère visuel non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-03"><span class="note-badge">0/5</span></td>
           <td class="human-cell" data-human-obs="UC-03">Non executable ici : le kiosque exige un boitier biometrique et une interface physique ; aucun endpoint kiosque sans parametre n&#x27;existe au route:list.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

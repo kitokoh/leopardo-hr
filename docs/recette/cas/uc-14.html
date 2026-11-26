@@ -73,8 +73,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">4/5</span></td>
-          <td class="obs"><code>GET /public/travel/shop/trips</code> sans jeton → <strong>401</strong> « Jeton boutique manquant (X-Travel-Shop-Token) » ; avec un jeton invalide → <strong>401</strong> « Jeton boutique invalide ». Le garde-fou *fail-closed* est effectif (aucune donnée exposée sans jeton tenant valide). Le parcours complet n&#x27;a pas pu être exécuté : aucun tenant de démonstration n&#x27;a la solution TravelAgency activée avec un jeton boutique émis.</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : module <code>api/app/Modules/TravelAgency/</code> complet (Application, Console, Domain, Infrastructure, Interfaces, Policies) et <code>api/routes/modules/travelagency.php</code> (286 routes) ; 131 fichiers de tests liés aux verticales dont <code>Travel/*</code>. La boutique publique n&#x27;a pas été parcourue (API 503). Note 3 = critère d&#x27;exécution non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-14"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-14">Boutique TravelAgency : 238 requetes du harnais, 82,4 % en 2xx ; gating par plan verifie (403 FEATURE_NOT_ENABLED sans le flag, 200 avec). DEF-01 (500 sur identifiant de reservation non numerique) touche ce parcours.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

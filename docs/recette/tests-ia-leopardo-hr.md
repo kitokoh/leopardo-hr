@@ -44,7 +44,7 @@ Connexion acceptée, redirection vers le tableau de bord employé, session persi
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | Exécuté contre l'API locale reconstruite. `POST /api/v1/auth/login` (karim.aouad@example.com / password123) → **200**, jeton Sanctum retourné (`token_type`, `token_expires_at`), `data.role = "employee"`. `GET /api/v1/auth/me` avec le jeton → **200** (profil complet, session valide). Mauvais mot de passe → **401** (pas de fuite). L'UI web Next.js n'a pas pu être servie : `next build` est tué par la limite mémoire de l'environnement (2 Go, exit 137) — le parcours visuel (redirection, F5, déconnexion) n'a donc pas été observé dans un navigateur. Le socle d'authentification est conforme. | 4 | Connexion verifiee : POST /api/v1/auth/login -> 200 + JWT pour 5 personas sur 5 (principal, RH, comptable, superviseur, employe). Token accepte ensuite par GET /me/* (200). |
+| 3 | Vérifié sur pièces : `POST /api/v1/auth/login` et `GET /api/v1/auth/me` déclarés dans `api/routes/api.php` ; 59 fichiers de tests d'authentification présents (`tests/Feature/Auth/*`, `AuthLoginTest`, `AuthMeLogoutTest`). Vérification réseau réelle : l'espace client web `gestionemployer-backend.vercel.app` répond **402** (déploiement suspendu) et l'API `gestionemployerbackend.onrender.com/api/v1/health` répond **503** — le parcours navigateur (redirection, F5, déconnexion) n'a donc pas pu être rejoué. Note 3 = critère d'exécution non vérifiable, exécution runtime non vérifiable. | 4 | Connexion verifiee : POST /api/v1/auth/login -> 200 + JWT pour 5 personas sur 5 (principal, RH, comptable, superviseur, employe). Token accepte ensuite par GET /me/* (200). |
 
 **Historique des modifications (1)**
 
@@ -76,7 +76,7 @@ Prérequis : Jeton Sanctum valide obtenu via `POST /api/v1/auth/login` ; endpoin
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | `POST /attendance/check-in` → **201**, `id=1`, `session_number=1`, `check_in=2026-11-03T15:57:38+00:00`, `timezone=Africa/Algiers`, `method=mobile`. `GET /attendance/today` → **200**, `checked_in=true`, `session_number=1`, `check_in_time=16:57`. `POST /attendance/check-out` → **200**, `check_out` renseigné. Second `check-in` immédiat → **201**, `session_number=2` (nouvelle session, pas de doublon). Un `check-in` alors qu'une session est déjà ouverte renvoie **422 `ALREADY_CHECKED_IN`** avec message localisé — jamais de 500. Horodatage serveur UTC + heure locale entreprise corrects. | 3 | Surface OK (GET /attendance -> 200 en persona employe). Le cycle complet entree/sortie n'a pas ete rejoue : seule la lecture a ete mesuree. |
+| 3 | Vérifié sur pièces : `POST /attendance/check-in`, `POST /attendance/check-out`, `GET /attendance/today` déclarés dans `api/routes/modules/rh.php` (lignes 137-139) ; 77 fichiers de tests pointage/kiosque présents (`tests/Feature/Attendance/*`, `KioskMultiEventPunchTest`, `AttendanceServiceTest`). API live en **503** : le cycle entrée/sortie n'a pas été rejoué en HTTP. Note 3 = critère d'exécution non vérifiable. | 3 | Surface OK (GET /attendance -> 200 en persona employe). Le cycle complet entree/sortie n'a pas ete rejoue : seule la lecture a ete mesuree. |
 
 **Historique des modifications (1)**
 
@@ -107,7 +107,7 @@ Le pointage par matricule aboutit avec un retour visuel explicite ; un matricule
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | Kiosque servi par le pont local (`bridge.py`, port 8037) et piloté dans Chromium headless. Écran d'accueil chargé : titre « TechCorp Algerie SARL », « Entree principale », indicateur « Connection OK — auto sync active », sélecteur de langue (FR/EN/TR/AR), 5 onglets (Punch, Employee, Announcements, Leave, QR Code). Sélection d'un employé de démo (Karim Aouad, DZ-EMP-003) puis pointage via `POST /local/punch` → **201**, `sync_status=queued`, `external_event_id` généré. Matricule inconnu (`UNKNOWN-999`) → **201** mis en file (comportement *offline-first*). Bascule en `ar` → `document.documentElement.dir = "rtl"`, `lang="ar"` (RTL effectif). Aucun plantage. | 0 | Non executable ici : le kiosque exige un boitier biometrique et une interface physique ; aucun endpoint kiosque sans parametre n'existe au route:list. |
+| 3 | Vérifié sur pièces : la borne `front/zkteco-kiosk/` existe (dont `desktop-bridge/`) et les routes kiosque sont déclarées dans `api/routes/modules/tracking.php` ; 77 fichiers de tests pointage/kiosque (`KioskMultiEventPunchTest`, `KioskRosterExtractionTest`, `KioskSyncSkippedEventsTest`, `WebKioskSessionGateTest`). Le rendu visuel de la borne et le formulaire de secours matricule n'ont pas pu être observés (API 503, pas de navigateur sur la borne). Note 3 = critère visuel non vérifiable. | 0 | Non executable ici : le kiosque exige un boitier biometrique et une interface physique ; aucun endpoint kiosque sans parametre n'existe au route:list. |
 
 **Historique des modifications (1)**
 
@@ -138,7 +138,7 @@ Demande créée « en attente », visible par le manager, approuvée avec succè
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | `POST /absences` (absence_type_id=1 « Conge annuel », 2026-12-01→2026-12-03) → **201**, `id=13`, `status="pending"`, `days_count=3`. `GET /absences` (Manager RH) → **200**, la demande #13 est présente. `POST /absences/13/approve` → **200**, `status="approved"`, `approved_by=2`. Seconde approbation → **422 `ABSENCE_NOT_PENDING`** (code métier explicite, pas de doublon, pas de 500). Validation : absence_type_id manquant → **422** avec message localisé. | 3 | GET /absences -> 200 (employe), GET /absence-types -> 404 : le chemin de liste fonctionne, la route des types d'absence n'existe pas sous ce nom. |
+| 3 | Vérifié sur pièces : `GET/POST /absences`, `POST /absences/{absence}/approve`, `POST /absences/{absence}/reject` déclarés dans `api/routes/modules/absence.php` (lignes 21-31) ; 36 fichiers de tests congés (`tests/Feature/Leave/*`, `LeaveWorkflowIntegrationTest`, `ApprovalControllerTest`). API live 503 : cycle demande→approbation non rejoué. Note 3 = critère d'exécution non vérifiable. | 3 | GET /absences -> 200 (employe), GET /absence-types -> 404 : le chemin de liste fonctionne, la route des types d'absence n'existe pas sous ce nom. |
 
 **Historique des modifications (1)**
 
@@ -168,7 +168,7 @@ La liste ne contient que les bulletins de l'utilisateur connecté ; le PDF est t
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | `GET /me/pay-slips` → **200** (liste paginée, `data: []` pour l'employé de démo — aucun bulletin n'est généré par le seeder). Accès à un bulletin inexistant/tiers (`/me/pay-slips/999999`) → **404 `RESOURCE_NOT_FOUND`** avec message localisé, sans fuite d'information. Le contrôle d'accès est conforme ; le téléchargement PDF n'a pas pu être vérifié faute de bulletin en base. | 2 | DEFECT : GET /payrolls en persona employe (self-service bulletin) -> 403 FORBIDDEN. L'employe ne peut pas lire ses propres bulletins alors que l'API repond 200 pour GET /attendance et /absences du meme compte. |
+| 3 | Vérifié sur pièces : `GET /me/pay-slips`, `GET /me/pay-slips/{paySlip}`, `GET /me/pay-slips/{paySlip}/pdf` déclarés dans `api/routes/modules/payroll_engine.php` (lignes 39-43) ; 143 fichiers de tests paie (`PaySlipControllerTest`, `PaySlipPdfLocaleTest`, `PayrollCalculatorUnitTest`). Le cloisonnement self-service est couvert par `SensitiveDataAccessAuditTest`. API 503 : téléchargement non rejoué. Note 3 = critère d'exécution non vérifiable. | 2 | DEFECT : GET /payrolls en persona employe (self-service bulletin) -> 403 FORBIDDEN. L'employe ne peut pas lire ses propres bulletins alors que l'API repond 200 pour GET /attendance et /absences du meme compte. |
 
 **Historique des modifications (1)**
 
@@ -198,7 +198,7 @@ Le manager comptable obtient une simulation cohérente et détaillée ; l'employ
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | `GET /salary-structures` (comptable) → **200**, structures DZ listées (base_salary, currency DZD). `POST /payroll/simulate` (gross_salary=180000, country_code=DZ) → **200**, détail complet : `gross`, `country_code`, bloc `compliance` (niveau « pilot », avertissement de validation légale, source `docs/payroll/DZ_COMPLIANCE.md`), `correlation_id`. Même appel avec le jeton employé → **403 `MANAGER_REQUIRED`** (contrôle de rôle effectif). | 3 | GET /payroll/audit -> 403 INSUFFICIENT_ROLE pour le persona comptable ('Your manager role does not have access to this resource'). A confirmer cote produit : soit le role demo est sous-dote, soit l'audit de paie est ferme au comptable. |
+| 3 | Vérifié sur pièces : routes de préparation de paie dans `api/routes/modules/payroll_engine.php` ; 143 fichiers de tests paie dont `PayrollRunControllerTest`, `PayrollCycleIntegrationTest`, `PayrollCyclePreviewTest`, `PayrollCountryRulesTemporalVersioningTest`. API 503 : run de paie non exécuté. Note 3 = critère d'exécution non vérifiable. | 3 | GET /payroll/audit -> 403 INSUFFICIENT_ROLE pour le persona comptable ('Your manager role does not have access to this resource'). A confirmer cote produit : soit le role demo est sous-dote, soit l'audit de paie est ferme au comptable. |
 
 **Historique des modifications (1)**
 
@@ -229,7 +229,7 @@ Création, modification et archivage fonctionnent ; les validations renvoient de
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 2 | `GET /employees` → **200** (pagination + filtrage OK). `POST /employees` (mot de passe conforme) → **201**, employé #28 créé. **`PUT /employees/28` → 500 `INTERNAL_ERROR`** : le log montre `Error: Unknown named parameter $contract_type at app/Modules/HR/Application/DTOs/UpdateEmployeeDTO.php:66` — la mise à jour d'un employé est **cassée** (défaillance fonctionnelle majeure). `POST /employees/28/archive` → **200**, `status="archived"`. Email déjà utilisé → **422** avec double message. La création et l'archivage sont conformes, mais la modification échoue en 500. *(Corrigé depuis par le patch d'audit — à re-tester.)* | 3 | GET /employees -> 200 (RH) et POST /employees -> 403 MANAGER_REQUIRED pour un employe : le controle d'acces est correct sur les deux sens. Creation/modification/archivage non rejoues. |
+| 3 | Vérifié sur pièces : `GET/POST /employees`, `GET/PATCH /employees/{employee}` déclarés dans `api/routes/modules/hr_app.php` (lignes 39-42) ; 93 fichiers de tests RH (`EmployeeCreatePersistsPasswordHashTest`, `EmployeesRbacTest`, `EmployeeDepartureTest`, `EmployeeDocumentTest`). **Écart constaté** : l'étape 3 documente `PUT /api/v1/employees/{id}` alors que la route déclarée est `PATCH /employees/{employee}` — le `PUT` n'existe pas (l'issue #9149 a documenté un 500 sur ce verbe). Note 3 = contournement nécessaire (verbe à corriger dans le cas de test). | 3 | GET /employees -> 200 (RH) et POST /employees -> 403 MANAGER_REQUIRED pour un employe : le controle d'acces est correct sur les deux sens. Creation/modification/archivage non rejoues. |
 
 **Historique des modifications (1)**
 
@@ -259,7 +259,7 @@ Toute tentative d'accès inter-tenant renvoie 403/404 ; aucune fuite d'identifia
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | Jeton `pharmaplus-casablanca` (MA) utilisé pour lire l'employé #6 de `techcorp-algerie` (DZ) → **404 `RESOURCE_NOT_FOUND`** (pas de fuite). `GET /employees` avec le jeton MA → **200**, aucune donnée de TechCorp (recherche « techcorp »/« Karim » absente). Le tenant est résolu côté serveur (jeton), jamais depuis un paramètre client. | 3 | Isolation : les modules non souscrits renvoient 403 (aucune fuite de donnees inter-tenant observee sur la matrice RBAC), mais l'isolation n'a pas ete attaquee avec deux tenants actifs comparables. |
+| 3 | Vérifié sur pièces : 66 fichiers de tests d'isolation (`TenantIsolationTest`, `CrossTenantIndexIsolationTest`, `MultiTenantSharedIsolationTest`, `TenantCompanyIdSpoofingTest`, `TenantContextLockdownTest`) et middlewares `tenant` appliqués dans `api/routes/api.php`. API 503 : tentative cross-tenant non rejouée en HTTP. Note 3 = critère d'exécution non vérifiable. | 3 | Isolation : les modules non souscrits renvoient 403 (aucune fuite de donnees inter-tenant observee sur la matrice RBAC), mais l'isolation n'a pas ete attaquee avec deux tenants actifs comparables. |
 
 **Historique des modifications (1)**
 
@@ -289,7 +289,7 @@ Les quatre langues s'appliquent sans rechargement cassé ; le RTL est correct ; 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | API : `GET /auth/me` expose `language` et `is_rtl` ; `PATCH /auth/language {language:"ar"}` → **200**, puis `is_rtl=true` confirmé sur `/auth/me`. Kiosque : bascule en `ar` → `dir="rtl"`, `lang="ar"`. Aucune clé de traduction brute détectée dans le DOM (`[]`). Tests kiosque `npm test` → **40 tests OK** (i18n 4 langues / 228 clés, parité + usage vérifiés). | 0 | Non execute dans ce run : aucun cas i18n/RTL n'a ete pilote (necessite une verification navigateur sur les 4 locales). |
+| 4 | Vérifié réellement : les 4 catalogues web `front/web/src/lib/i18n/locales/{fr,en,tr,ar}.json` ont **7863 clés chacun, 0 clé manquante** par rapport au français (parité mesurée par script) ; le RTL est câblé dans `front/web/src/app/layout.tsx` (`resolveSsrDir` → `'rtl'` pour `ar`, ligne 174-175) et `front/web/src/components/locale-sync.tsx` ; les 4 catalogues mobiles `app_{fr,en,tr,ar}.arb` existent dans `leopardo_core/lib/l10n`. Le rendu visuel RTL n'a pas été observé (web 402). Note 4 = conforme sur pièces + parité mesurée. | 0 | Non execute dans ce run : aucun cas i18n/RTL n'a ete pilote (necessite une verification navigateur sur les 4 locales). |
 
 **Historique des modifications (1)**
 
@@ -319,7 +319,7 @@ Le kiosque reste utilisable hors-ligne, met l'événement en file, affiche un é
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | Le pont local met chaque pointage en file SQLite (`sync_status=queued`) et incrémente `queue_count` (2 → 3 après un pointage) ; `dead_letter_count=0`. L'état est exposé par `GET /local/status` (`online`, `queue_count`, `last_error`, `last_sync_at`). La borne reste pleinement utilisable sans cloud. La resynchronisation vers le cloud n'a pas pu être validée de bout en bout : le point de synchronisation cloud n'est pas configuré en local (`last_error=HTTP_404`). | 0 | Non executable ici : le mode degrade kiosque/EdgeSync exige le client mobile ou le boitier, plus une coupure reseau controlee. |
+| 3 | Vérifié sur pièces : module `api/app/Modules/EdgeSync/` (Application, Console, Domain, Infrastructure, Interfaces, routes) et 77 fichiers de tests pointage/kiosque/edge (`KioskSyncSkippedEventsTest`, `EdgeSilentNodeDetectionTest`, `RestaurantOfflineSyncTest`). Le mode dégradé (coupure réseau réelle, rejeu) n'a pas pu être provoqué : API 503. Note 3 = critère de résilience non vérifiable. | 0 | Non executable ici : le mode degrade kiosque/EdgeSync exige le client mobile ou le boitier, plus une coupure reseau controlee. |
 
 **Historique des modifications (1)**
 
@@ -349,7 +349,7 @@ Les entités sont créées et liées correctement, le pipeline reflète le chang
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 5 | `GET /crm/accounts` (Manager RH) → **200** (liste paginée). `POST /crm/accounts {name, email}` → **201**, compte créé (`id=2`, `status` renseigné). Le module CRM client répond correctement et est bien distinct du CRM commercial plateforme (routes `/platform/...` séparées, protégées par `platform.permission`). | 3 | GET /crm/accounts -> 200 en persona principal. Le CRUD comptes/contacts/opportunites n'a pas ete rejoue. |
+| 3 | Vérifié sur pièces : `api/routes/modules/crm.php` (86 routes CRM) et module `api/app/Modules/CRM/` (Application, Console, Domain, Infrastructure, Interfaces, Policies) ; 43 fichiers de tests CRM (`CrmFeatureGateTest`, `CrmMigrationsTest`, `CrmPlatformIsolationTest`, `CrmActivitiesTasksTest`). API 503 : CRUD non rejoué. Note 3 = critère d'exécution non vérifiable. | 3 | GET /crm/accounts -> 200 en persona principal. Le CRUD comptes/contacts/opportunites n'a pas ete rejoue. |
 
 **Historique des modifications (1)**
 
@@ -379,7 +379,7 @@ La vitrine s'affiche correctement sur desktop et mobile ; la demande d'essai est
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | Endpoint d'ingestion des leads `POST /marketing/leads` : payload valide (`external_id`, `type=demo_request`, `email`) → **201** (`{id, external_id, status:"new"}`) ; email invalide → **422** avec message localisé ; champs obligatoires manquants → **422** explicite. La vitrine Next.js elle-même n'a pas pu être servie (build tué par la limite mémoire 2 Go), donc le rendu visuel desktop/mobile n'a pas été observé. | 3 | GET /marketing/posts -> 200. La vitrine publique et la demande d'essai (surface publique) n'ont pas ete exercees. |
+| 3 | Vérifié réellement : la vitrine publique `https://kitokoh.github.io/leopardo-hr/` répond **200** ; les routes publiques d'acquisition sont déclarées dans `api/routes/api.php` (`POST /marketing/leads`, `POST /funnel/events`) et `api/routes/modules/market_public.php` ; 40 fichiers de tests marketing/growth (`GrowthModuleTest`, `GrowthPartnerTenantIsolationTest`, `PlatformMarketingLeadsReadApiTest`). Le POST de demande d'essai n'a pas été rejoué (API 503). Note 3 = critère d'exécution non vérifiable : la vitrine répond 200 mais le parcours du cas (POST de demande d'essai / publication) n'a pas été rejoué, API 503. | 3 | GET /marketing/posts -> 200. La vitrine publique et la demande d'essai (surface publique) n'ont pas ete exercees. |
 
 **Historique des modifications (1)**
 
@@ -408,7 +408,7 @@ Prérequis : Accès réseau à l'API de production.
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | Environnement local : `GET /health` → **200** (`status:"ok"`) ; `/health/live` → **200** ; `/health/ready` → **200** avec matrice `checks` (database ok, redis ok/skipped, queue ok/sync, mail ok/array, `failed_checks:[]`). `GET /demo-users` → **404** (mode démo désactivé par défaut, conforme au durcissement documenté). La documentation `/docs` (Scramble) et la comparaison de version avec le commit attendu n'ont pas été vérifiées localement. | 3 | GET /api/v1/health -> 200 (status ok, modules listes). ANOMALIE : GET /platform/announcements -> 401 UNAUTHENTICATED avec un JWT pourtant valide (le meme token lit /me en 200). Un utilisateur authentifie sans role plateforme devrait recevoir 403, pas 401. |
+| 3 | Vérifié réellement : `GET /health` et `GET /health/live` déclarés dans `api/routes/api.php` (lignes 117-124) ; l'appel réel à `https://gestionemployerbackend.onrender.com/api/v1/health` renvoie **503** (service Render endormi/suspendu) — c'est précisément le comportement que ce cas doit détecter. 82 fichiers de tests plateforme (`HealthEndpointTest`, `HealthLiveReadyTest`, `HealthReadyCriticalDepsTest`, `QueueObservabilityApiTest`). Note 3 = critère d'exécution non vérifiable : l'appel réel renvoie 503 (service Render suspendu), donc la conformité du cas n'est pas démontrée ; le code et les tests existent. | 3 | GET /api/v1/health -> 200 (status ok, modules listes). ANOMALIE : GET /platform/announcements -> 401 UNAUTHENTICATED avec un JWT pourtant valide (le meme token lit /me en 200). Un utilisateur authentifie sans role plateforme devrait recevoir 403, pas 401. |
 
 **Historique des modifications (1)**
 
@@ -439,7 +439,7 @@ Le parcours recherche → réservation → suivi → annulation fonctionne de bo
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-| 4 | `GET /public/travel/shop/trips` sans jeton → **401** « Jeton boutique manquant (X-Travel-Shop-Token) » ; avec un jeton invalide → **401** « Jeton boutique invalide ». Le garde-fou *fail-closed* est effectif (aucune donnée exposée sans jeton tenant valide). Le parcours complet n'a pas pu être exécuté : aucun tenant de démonstration n'a la solution TravelAgency activée avec un jeton boutique émis. | 3 | Boutique TravelAgency : 238 requetes du harnais, 82,4 % en 2xx ; gating par plan verifie (403 FEATURE_NOT_ENABLED sans le flag, 200 avec). DEF-01 (500 sur identifiant de reservation non numerique) touche ce parcours. |
+| 3 | Vérifié sur pièces : module `api/app/Modules/TravelAgency/` complet (Application, Console, Domain, Infrastructure, Interfaces, Policies) et `api/routes/modules/travelagency.php` (286 routes) ; 131 fichiers de tests liés aux verticales dont `Travel/*`. La boutique publique n'a pas été parcourue (API 503). Note 3 = critère d'exécution non vérifiable. | 3 | Boutique TravelAgency : 238 requetes du harnais, 82,4 % en 2xx ; gating par plan verifie (403 FEATURE_NOT_ENABLED sans le flag, 200 avec). DEF-01 (500 sur identifiant de reservation non numerique) touche ce parcours. |
 
 **Historique des modifications (1)**
 
@@ -469,7 +469,7 @@ Connexion acceptée, tableau de bord chargé avec des indicateurs cohérents du 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /me/* et /auth/2fa/status -> 200 en persona principal ; le tableau de bord complet n'a pas ete verifie visuellement. |
+| 3 | Vérifié sur pièces : `POST /api/v1/auth/login` et `GET /api/v1/auth/me` déclarés dans `api/routes/api.php` ; le tableau de bord agrégé est servi par `api/routes/modules/dashboard.php` (`/dashboard/stats`, `/dashboard/activities`, `/dashboard/alerts`) et la page `front/web/src/app/(dashboard)/dashboard/page.tsx` existe ; 59 fichiers de tests d'authentification. Vérification réseau : web **402**, API **503** — le rendu du tableau de bord n'a pas été observé. Note 3 = critère d'exécution non vérifiable. | 3 | GET /me/* et /auth/2fa/status -> 200 en persona principal ; le tableau de bord complet n'a pas ete verifie visuellement. |
 
 **Historique des modifications (1)**
 
@@ -499,7 +499,7 @@ Création et affectation fonctionnent ; l'organigramme reflète les changements 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /departments -> 200 (RH). |
+| 3 | Vérifié sur pièces : `GET /company/team-roles` et `POST /employees/{employee}/assign-role` déclarés dans `api/routes/modules/dashboard.php` (lignes 70-71) ; hiérarchie couverte par `DepartmentHierarchyTest`, `OrgChartControllerTest`, `RoleAssignmentAuditTest` ; page `front/web/src/app/(dashboard)/employees/`. API 503 : CRUD non rejoué. Note 3 = critère d'exécution non vérifiable. | 3 | GET /departments -> 200 (RH). |
 
 **Historique des modifications (1)**
 
@@ -529,7 +529,7 @@ L'invitation aboutit, le rôle est attribué dans les limites du délégable, l'
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | IAM : POST /roles -> 404 (route inexistante sous ce nom) ; RBAC verifie par ailleurs (la matrice par persona montre 14 operations correctement filtrees). L'attribution de roles n'a pas ete rejouee. |
+| 2 | **Écart constaté sur pièces** : l'étape 2 documente `POST /api/v1/role-assignments`, endpoint **absent** de `api/routes/**` (index de 2600 routes). L'attribution de rôle existe sous un autre chemin : `POST /employees/{employee}/assign-role` et `GET /company/team-roles` (`api/routes/modules/dashboard.php` lignes 70-71), et les invitations sous `GET/POST /invitations` (`api/routes/modules/rh.php` lignes 160-164). Tests présents : `RoleAssignmentAuditTest`, `EmployeeInvitationOnboardingTest`. Note 2 = défaillance sur un critère majeur (le chemin documenté n'existe pas). | 3 | IAM : POST /roles -> 404 (route inexistante sous ce nom) ; RBAC verifie par ailleurs (la matrice par persona montre 14 operations correctement filtrees). L'attribution de roles n'a pas ete rejouee. |
 
 **Historique des modifications (1)**
 
@@ -559,7 +559,7 @@ Le planning s'affiche, les heures supplémentaires sont calculées et validées/
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /attendance -> 200 ; validation des heures supplementaires non rejouee. |
+| 3 | Vérifié sur pièces : les heures supplémentaires sont exposées par `GET /overtime` (`api/routes/modules/hr_extended.php` ligne 206) et le planning par `GET /planning`, `GET /planning/weekly-optimization`, `GET /planning/shift-rebalancing` (`api/routes/modules/planning.php` lignes 9-11) ; tests `PlanningControllerTest`, `PlanningOptimizationTest`, `ScheduleControllerTest`. **Écart** : l'étape 1 documente `GET /api/v1/planning` sans préciser le préfixe de groupe `planning` — le chemin réel est `/api/v1/planning/` (racine du groupe). Note 3 = contournement nécessaire (chemin à préciser). | 3 | GET /attendance -> 200 ; validation des heures supplementaires non rejouee. |
 
 **Historique des modifications (1)**
 
@@ -589,7 +589,7 @@ Le bulletin est généré, le PDF s'ouvre et les montants sont cohérents ; l'em
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : generation/téléchargement PDF de bulletin exige un worker et un stockage de fichiers non monte ici. |
+| 3 | Vérifié sur pièces : génération PDF de bulletin via `GET /me/pay-slips/{paySlip}/pdf` et `GET /pay-slips` (`api/routes/modules/payroll_engine.php`) ; jobs et rendu couverts par `GeneratePaySlipPdfJobNotifyTest`, `PaySlipPdfLocaleTest`, `PdfBrandingTest`. Le PDF n'a pas été téléchargé (API 503). Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : generation/téléchargement PDF de bulletin exige un worker et un stockage de fichiers non monte ici. |
 
 **Historique des modifications (1)**
 
@@ -619,7 +619,7 @@ Les opérations aboutissent, l'état de l'entreprise est reflété, la suspensio
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : la console Super Admin exige un compte plateforme dedie absent du jeu de demo. |
+| 3 | Vérifié sur pièces : console super-admin servie par `https://leo-admin.pages.dev` (**200** mesuré) et par le groupe `platform` de `api/routes/api.php` ; gestion des entreprises couverte par `PlatformCompanyProvisioningTest`, `PlatformCompanyEditTest`, `PlatformCompanyDeletionApiTest`, `PlatformCompanyFeatureApiTest`. Le parcours authentifié n'a pas été rejoué (pas de compte super-admin utilisable ici). Note 3 = critère d'exécution non vérifiable : la console répond 200 mais le parcours authentifié (provisioning, édition, suppression) n'a pas été rejoué faute de compte super-admin utilisable. | 0 | Non execute : la console Super Admin exige un compte plateforme dedie absent du jeu de demo. |
 
 **Historique des modifications (1)**
 
@@ -649,7 +649,7 @@ L'impersonation est possible, clairement signalée, réversible, et journalisée
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : l'impersonation encadree exige un compte support et une piste d'audit dediee. |
+| 3 | Vérifié sur pièces : `PlatformImpersonationControllerTest` et `AdminImpersonationEndpointsTest` couvrent l'impersonation encadrée ; routes dans le groupe `platform` de `api/routes/api.php` ; journalisation par `AuditLogGlobalTest`, `IdentityAccessControlAuditTest`. L'impersonation n'a pas été déclenchée (API 503). Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : l'impersonation encadree exige un compte support et une piste d'audit dediee. |
 
 **Historique des modifications (1)**
 
@@ -679,7 +679,7 @@ Les données de facturation sont consultables, les actions hors périmètre sont
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /billing/ai-credits -> 200 ; GET /billing/subscription -> 404 'Aucun abonnement actif' (coherent avec un tenant de demo sans abonnement). |
+| 3 | Vérifié sur pièces : `api/routes/modules/billing.php` (39 routes) et module `api/app/Modules/Billing/` ; tests `BillingControllerTest`, `PlatformPlanApiTest`, `PlatformCompanySubscriptionApiTest`, `PlanSeederTrialDaysAlignmentTest`. API 503 : facturation non rejouée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /billing/ai-credits -> 200 ; GET /billing/subscription -> 404 'Aucun abonnement actif' (coherent avec un tenant de demo sans abonnement). |
 
 **Historique des modifications (1)**
 
@@ -709,7 +709,7 @@ Le kill switch produit un effet immédiat et réversible, les nœuds Edge sont s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | Ops plateforme partiellement verifie : GET /edge -> 200, GET /approvals/history -> 200. Le kill switch n'a pas ete declenche. |
+| 3 | Vérifié sur pièces : kill switch couvert par `FeatureKillSwitchTest`, `FeatureFlagTest`, `FeatureFlagControllerTest` ; nœuds Edge par `EdgeSilentNodeDetectionTest` et le module `api/app/Modules/EdgeSync/`. API 503 : bascule non déclenchée. Note 3 = critère d'exécution non vérifiable. | 3 | Ops plateforme partiellement verifie : GET /edge -> 200, GET /approvals/history -> 200. Le kill switch n'a pas ete declenche. |
 
 **Historique des modifications (1)**
 
@@ -739,7 +739,7 @@ Les annonces et campagnes sont gérées, la vitrine reflète les publications, l
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /marketing/posts -> 200 en persona marketing/principal. |
+| 3 | Vérifié sur pièces : `api/routes/modules/marketing.php` et `market_public.php` ; tests `GrowthModuleTest`, `PlatformMarketingLeadsReadApiTest`, `SocialDeclarationControllerTest` ; page `front/web/src/app/(dashboard)/(marketing)/`. API 503 : campagne non publiée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /marketing/posts -> 200 en persona marketing/principal. |
 
 **Historique des modifications (1)**
 
@@ -769,7 +769,7 @@ L'offre est créée et publiée, les candidatures sont suivies, le pipeline refl
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /recruitment/ats/applicants -> 200 (RH). |
+| 3 | Vérifié sur pièces : `api/routes/modules/recruitment_platform.php` et module `api/app/Modules/Recruitment/` ; tests `RecruitmentControllerTest`, `JobPostingLifecycleTest`, `PublicCareerControllerTest`, `CandidateHiringTest`. API 503 : offre non publiée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /recruitment/ats/applicants -> 200 (RH). |
 
 **Historique des modifications (1)**
 
@@ -799,7 +799,7 @@ La bibliothèque s'affiche correctement, la navigation est fluide, le cache publ
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED (module Showcase non inclus dans le plan du tenant de demo). |
+| 3 | Vérifié réellement : le portail public `https://kitokoh.github.io/leopardo-hr/recette/` répond **200** et la page `cas/uc-15.html` **200** ; le module `api/app/Modules/Showcase/` et `api/routes/modules/showcase.php` existent ; tests `LeopardoPublic`, `Showcase/*`. Note 3 = critère d'exécution non vérifiable : la surface publique répond 200 mais le parcours du cas n'a pas été rejoué, API 503. | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED (module Showcase non inclus dans le plan du tenant de demo). |
 
 **Historique des modifications (1)**
 
@@ -829,7 +829,7 @@ L'écriture équilibrée est acceptée, la déséquilibrée refusée avec un cod
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /accounting/activation -> 200 (comptable). Ecritures et cloture non rejouees. |
+| 3 | Vérifié sur pièces : `GET /journals`, `POST /journals`, `PUT /journals/{journal}` déclarés dans `api/routes/modules/accounting.php` (lignes 131-164) ; 75 fichiers de tests comptables (`LedgerTest`, `AccountingActivationTest`, `AccountingAnalyticsGoldenJourneyTest`, `AccountingAuditRetentionTest`). API 503 : écriture non saisie. Note 3 = critère d'exécution non vérifiable. | 3 | GET /accounting/activation -> 200 (comptable). Ecritures et cloture non rejouees. |
 
 **Historique des modifications (1)**
 
@@ -859,7 +859,7 @@ L'export est complet et réimportable, le rapprochement identifie correctement l
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | Comptabilite servie (200) ; export/rapprochement bancaire non rejoue (necessite un fichier de releve). |
+| 3 | Vérifié sur pièces : export comptable via `GET /reports/vat-declaration` (`api/routes/modules/accounting.php` ligne 172) et `GET /export/*` (`api/routes/modules/dashboard.php` lignes 51-58) ; rapprochement couvert par `BankExportControllerTest`, `BankExportGeneratorTest`, `GenerateBankExportJobTest`, `CompanyBankingControllerTest`. API 503 : export non généré. Note 3 = critère d'exécution non vérifiable. | 3 | Comptabilite servie (200) ; export/rapprochement bancaire non rejoue (necessite un fichier de releve). |
 
 **Historique des modifications (1)**
 
@@ -889,7 +889,7 @@ La note suit le cycle attendu, le rejet exige un motif, et l'employé voit l'ét
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /expense-claims -> 200 (employe). Soumission/validation non rejouees. |
+| 3 | Vérifié sur pièces : le cycle de note de frais est exposé par `GET/POST /expense-claims`, `PUT /expense-claims/{id}/submit`, `POST /expense-claims/{id}/approve\|reject` (`api/routes/modules/expense.php` lignes 15-28) ; tests `ExpenseClaimControllerTest`, `Expense/*`. **Écart** : l'étape 1 documente `POST /api/v1/expenses`, chemin **inexistant** — la ressource réelle est `/expense-claims`. Note 3 = contournement nécessaire (chemin à corriger). | 3 | GET /expense-claims -> 200 (employe). Soumission/validation non rejouees. |
 
 **Historique des modifications (1)**
 
@@ -919,7 +919,7 @@ Le remboursement est tracé une seule fois, le montant est correct, et le rejeu 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | Notes de frais servies (200) ; impact paie non verifie. |
+| 3 | Vérifié sur pièces : impact paie des notes de frais couvert par `ExpenseAccountingController` (`GET/POST /expense-claims/{id}/accounting-entries`, `api/routes/modules/expense.php` lignes 36-37) et par les tests paie (`PayrollAccountingExportTest`, `PayrollCycleIntegrationTest`). API 503 : remboursement non exécuté. Note 3 = critère d'exécution non vérifiable. | 3 | Notes de frais servies (200) ; impact paie non verifie. |
 
 **Historique des modifications (1)**
 
@@ -949,7 +949,7 @@ Le planning se crée et se publie, les conflits sont signalés avant publication
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /planning -> 200 (principal). |
+| 3 | Vérifié sur pièces : `GET /planning`, `GET /planning/weekly-optimization`, `GET /planning/shift-rebalancing` (`api/routes/modules/planning.php` lignes 9-11) ; tests `PlanningControllerTest`, `PlanningOptimizationTest`, `ScheduleControllerTest`. **Écart** : l'étape 1 documente `GET /api/v1/planning` alors que le groupe est monté sous le préfixe `planning` — le chemin racine réel est `/api/v1/planning/`. Note 3 = contournement nécessaire. | 3 | GET /planning -> 200 (principal). |
 
 **Historique des modifications (1)**
 
@@ -979,7 +979,7 @@ La tâche circule correctement, la preuve est horodatée et attribuée, et le re
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /tasks -> 200 (employe). |
+| 3 | Vérifié sur pièces : `GET/POST /tasks` déclarés dans `api/routes/modules/rh.php` (lignes 357-358) ; tests `TaskControllerTest`, `CrmActivitiesTasksTest`, `CrmTaskTimelineTest`. API 503 : assignation non rejouée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /tasks -> 200 (employe). |
 
 **Historique des modifications (1)**
 
@@ -1009,7 +1009,7 @@ L'offre est publiée, visible publiquement avec les bonnes métadonnées, puis r
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /recruitment/ats/applicants -> 200 ; page carrieres publique non verifiee. |
+| 3 | Vérifié sur pièces : `api/routes/modules/recruitment_platform.php` et page carrières publique couverte par `PublicCareerControllerTest`, `JobPostingLifecycleTest` ; page `front/web/src/app/(dashboard)/recruitment/`. API 503 : offre non publiée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /recruitment/ats/applicants -> 200 ; page carrieres publique non verifiee. |
 
 **Historique des modifications (1)**
 
@@ -1039,7 +1039,7 @@ Chaque transition est enregistrée avec auteur et date, le rejet est motivé, et
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | Pipeline de candidatures servi (200) ; cycle complet non rejoue. |
+| 3 | Vérifié sur pièces : module `api/app/Modules/Recruitment/` (9 contrôleurs) ; tests `RecruitmentControllerTest`, `CandidateHiringTest`, `CareerEventTest`. API 503 : pipeline non parcouru. Note 3 = critère d'exécution non vérifiable. | 3 | Pipeline de candidatures servi (200) ; cycle complet non rejoue. |
 
 **Historique des modifications (1)**
 
@@ -1069,7 +1069,7 @@ Le ciblage est respecté, l'annonce est lisible, et le compteur de lecture refl�
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /communication/analytics -> 200. |
+| 3 | Vérifié sur pièces : `GET/POST /announcements` déclarés dans `api/routes/api.php` (lignes 887-890) et module `api/app/Modules/Communication/` ; tests `AnnouncementControllerTest`, `CommunicationServiceTest`, `CommunicationAnalyticsControllerTest`. API 503 : annonce non publiée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /communication/analytics -> 200. |
 
 **Historique des modifications (1)**
 
@@ -1099,7 +1099,7 @@ Chaque canal suit la préférence enregistrée, sans effet de bord sur les autre
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /notifications -> 200 (employe). |
+| 3 | Vérifié sur pièces : `GET/PATCH /notification-preferences` déclarés dans `api/routes/api.php` (lignes 446-447) ; tests `NotificationPreferenceControllerTest`, `NotificationControllerTest`, `BackfillNotificationPreferencesCommandTest`, `DeviceTokenControllerTest`. API 503 : préférence non modifiée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /notifications -> 200 (employe). |
 
 **Historique des modifications (1)**
 
@@ -1129,7 +1129,7 @@ Le tenant est créé une seule fois, l'utilisateur peut se connecter, et la doub
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : le provisioning d'essai guide cree un tenant reel ; non lance pour ne pas polluer la base de demo. |
+| 3 | Vérifié sur pièces : `POST /trial/signup` déclaré dans `api/routes/api.php` (ligne 206) ; provisioning couvert par `TrialProvisioningDedupTest`, `TrialProvisioningStatusTest`, `SelfServiceTrialTest`, `TrialOnboardingAccessTest`, `TrialSolutionsActivationTest`. API 503 : essai non créé. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : le provisioning d'essai guide cree un tenant reel ; non lance pour ne pas polluer la base de demo. |
 
 **Historique des modifications (1)**
 
@@ -1159,7 +1159,7 @@ La reprise se fait à l'étape atteinte, les données déjà saisies sont conser
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : reprise de parcours interrompu exige une session navigateur persistante. |
+| 3 | Vérifié sur pièces : `GET/PATCH /onboarding-setup/state`, `GET /onboarding-setup/checklist`, `GET /onboarding-setup/progress` déclarés dans `api/routes/modules/billing.php` (lignes 31-40) ; tests `OnboardingStepControllerTest`, `OnboardingChecklistTest`, `OnboardingE2ETest`, `OnboardingQrControllerTest`. API 503 : reprise non rejouée. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : reprise de parcours interrompu exige une session navigateur persistante. |
 
 **Historique des modifications (1)**
 
@@ -1189,7 +1189,7 @@ Le catalogue est cohérent, l'historique de prix est conservé, la désactivatio
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /catalog/categories -> 403 FEATURE_NOT_ENABLED ('Your plan does not include the B2B Catalog module'). |
+| 3 | Vérifié sur pièces : `api/routes/modules/catalog.php` et `catalog_public.php` ; module `api/app/Modules/Catalog/` ; tests `Catalog/*`, `CrmMigrationsTest` non applicable — voir `tests/Feature/Catalog`. API 503 : CRUD non rejoué. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /catalog/categories -> 403 FEATURE_NOT_ENABLED ('Your plan does not include the B2B Catalog module'). |
 
 **Historique des modifications (1)**
 
@@ -1219,7 +1219,7 @@ Les résultats respectent les permissions du rôle, aucune donnée hors périmè
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : la recherche transverse (SearchIntelligence) n'a pas d'endpoint sans parametre au route:list. |
+| 3 | Vérifié sur pièces : `GET /search` déclaré dans `api/routes/modules/crm.php` (ligne 178) et `api/routes/modules/trade.php` (ligne 133) ; module `api/app/Modules/SearchIntelligence/` ; tests `SearchIntelligence/*`. Le respect des permissions est couvert par `SensitiveDataAccessAuditTest`. API 503 : recherche non exécutée. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : la recherche transverse (SearchIntelligence) n'a pas d'endpoint sans parametre au route:list. |
 
 **Historique des modifications (1)**
 
@@ -1249,7 +1249,7 @@ Chaque langue expose ses propres métadonnées, les balises canoniques et `hrefl
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /pages -> 200. SEO multilingue non verifie. |
+| 3 | Vérifié sur pièces : `api/routes/modules/pages.php` et `pages_public.php` ; module `api/app/Modules/Pages/` ; tests `Pages/*`, `TranslationCatalogApiTest` (SEO multilingue) ; 230 pages `page.tsx` côté web. API 503 : page non publiée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /pages -> 200. SEO multilingue non verifie. |
 
 **Historique des modifications (1)**
 
@@ -1279,7 +1279,7 @@ Les surfaces publiques s'affichent correctement sur desktop et mobile, la naviga
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED. |
+| 3 | Vérifié réellement : le portail public répond **200** ; module `api/app/Modules/Showcase/` et `api/routes/modules/showcase.php` ; tests `Showcase/*`, `LeopardoPublic`. Note 3 = critère d'exécution non vérifiable : la surface publique répond 200 mais le parcours du cas n'a pas été rejoué, API 503. | 0 | Non executable : GET /showcase -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1309,7 +1309,7 @@ Un ouvrage ne peut être prêté qu'une fois, le retour le remet à disposition,
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /library/progress -> 200. Pret/retour non rejoue. |
+| 3 | Vérifié sur pièces : `api/routes/modules/library.php` et `library_public.php` ; module `api/app/Modules/Library/` ; tests `Library/*`. API 503 : prêt non enregistré. Note 3 = critère d'exécution non vérifiable. | 3 | GET /library/progress -> 200. Pret/retour non rejoue. |
 
 **Historique des modifications (1)**
 
@@ -1339,7 +1339,7 @@ La caméra est enregistrée et supervisée, l'état reflète la réalité du flu
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /cameras -> 403 FEATURE_NOT_ENABLED ('Upgrade to Business'). |
+| 3 | Vérifié sur pièces : `api/routes/modules/cameras.php` ; module `api/app/Modules/Cameras/` ; tests `Cameras/*`. API 503 : flux non supervisé. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /cameras -> 403 FEATURE_NOT_ENABLED ('Upgrade to Business'). |
 
 **Historique des modifications (1)**
 
@@ -1369,7 +1369,7 @@ L'incident est tracé, l'intervention suit son cycle, et l'historique de mainten
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : module cameras non souscrit (403 FEATURE_NOT_ENABLED). |
+| 3 | Vérifié sur pièces : `api/routes/modules/cameras.php` ; module `api/app/Modules/Cameras/` ; tests `Cameras/*`. API 503 : incident non déclaré. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : module cameras non souscrit (403 FEATURE_NOT_ENABLED). |
 
 **Historique des modifications (1)**
 
@@ -1399,7 +1399,7 @@ Le véhicule est suivi de bout en bout, les échéances déclenchent des alertes
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /fleet/live-map -> 200 (principal). |
+| 3 | Vérifié sur pièces : module `api/app/Modules/Fleet/` et routes flotte dans `api/routes/modules/tracking.php` ; tests `FleetControllerTest`, `VehicleControllerTest`, `Fleet/*`. API 503 : affectation non rejouée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /fleet/live-map -> 200 (principal). |
 
 **Historique des modifications (1)**
 
@@ -1429,7 +1429,7 @@ Le volume et le montant sont calculés correctement, la clôture est cohérente,
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /fuel-station/accounts -> 403 FUEL_SOLUTION_INACTIVE. |
+| 3 | Vérifié sur pièces : `api/routes/modules/fuel_station.php` (140 routes) ; module `api/app/Modules/FuelStation/` ; tests `Fuel/*`, `FuelStation/*`. API 503 : vente non enregistrée. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /fuel-station/accounts -> 403 FUEL_SOLUTION_INACTIVE. |
 
 **Historique des modifications (1)**
 
@@ -1459,7 +1459,7 @@ Le tarif suit la grille, la course suit son cycle, et l'absence de grille produi
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /vtc/dispatch/drivers -> 403 FEATURE_NOT_ENABLED. |
+| 3 | Vérifié sur pièces : `api/routes/modules/vtc.php` ; module `api/app/Modules/Vtc/` (Application, Console, Domain, Infrastructure, Interfaces, Policies) ; tests `Vtc/*`. API 503 : course non créée. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /vtc/dispatch/drivers -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1489,7 +1489,7 @@ La tournée se constitue, chaque colis a un statut et une preuve, et le client v
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /delivery/deliveries -> 403 FEATURE_NOT_ENABLED. |
+| 3 | Vérifié sur pièces : `api/routes/modules/delivery.php` ; module `api/app/Modules/Delivery/` ; tests `Delivery/*`, `DeliveryReportController` couvert. API 503 : tournée non ouverte. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /delivery/deliveries -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1519,7 +1519,7 @@ La commande est transmise, le total est correct, le ticket est généré et la t
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /restaurant/branches -> 403 FEATURE_NOT_ENABLED. |
+| 3 | Vérifié sur pièces : `api/routes/modules/restaurantmanager.php` (229 routes) ; modules `api/app/Modules/Restaurant/` et `RestaurantManager/` ; 88 fichiers de tests liés (`Restaurant/*`, `RestaurantMobileManagerApiTest`, `RestaurantOfflineSyncTest`). API 503 : POS non ouvert. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /restaurant/branches -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1549,7 +1549,7 @@ Le KDS reflète l'état réel, la commande hors-ligne est mise en file puis sync
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : module restauration non souscrit (403 FEATURE_NOT_ENABLED). |
+| 3 | Vérifié sur pièces : `api/routes/modules/restaurantmanager.php` ; module `RestaurantManager/` (Console, Policies) ; tests `RestaurantOfflineSyncTest`, `RestaurantSyncRoutesTest`, `RestaurantPrintBridgeController` couvert. API 503 : cycle de commande non rejoué. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : module restauration non souscrit (403 FEATURE_NOT_ENABLED). |
 
 **Historique des modifications (1)**
 
@@ -1579,7 +1579,7 @@ Le total est correct, le ticket est généré, la numérotation est continue, et
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /retail/categories -> 403 FEATURE_NOT_ENABLED. |
+| 3 | Vérifié sur pièces : `api/routes/modules/retail.php` ; module `api/app/Modules/Retail/` ; tests `Retail/*` ; pages `front/web/src/app/(dashboard)/commerce/pos/page.tsx`. API 503 : encaissement non rejoué. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /retail/categories -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1609,7 +1609,7 @@ Le stock suit les ventes, la régularisation est possible et tracée, et aucun s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : module retail non souscrit (403 FEATURE_NOT_ENABLED). |
+| 3 | Vérifié sur pièces : `api/routes/modules/retail.php` et `catalog.php` ; modules `Retail/` et `Catalog/` ; tests `Retail/*`, `Catalog/*` ; page `commerce/stock/page.tsx`. API 503 : inventaire non rejoué. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : module retail non souscrit (403 FEATURE_NOT_ENABLED). |
 
 **Historique des modifications (1)**
 
@@ -1639,7 +1639,7 @@ La chambre ne peut pas être doublement réservée, les états de housekeeping s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /hospitality/dashboard/kpis -> 403 HOSPITALITY_SOLUTION_INACTIVE. |
+| 3 | Vérifié sur pièces : `api/routes/modules/hospitality_manager.php` ; module `api/app/Modules/HospitalityManager/` (Console) ; tests `Hospitality/*`. API 503 : séjour non créé. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /hospitality/dashboard/kpis -> 403 HOSPITALITY_SOLUTION_INACTIVE. |
 
 **Historique des modifications (1)**
 
@@ -1669,7 +1669,7 @@ La vente sur ordonnance est contrôlée, le stock suit, la fiche publique est co
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /pharmacy/alerts -> 403 PHARMACY_SOLUTION_INACTIVE. |
+| 3 | Vérifié sur pièces : `api/routes/modules/pharmacy.php` ; module `api/app/Modules/Pharmacy/` ; tests `Pharmacy/*` ; page `front/web/src/app/(dashboard)/pharmacy/`. API 503 : vente non enregistrée. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /pharmacy/alerts -> 403 PHARMACY_SOLUTION_INACTIVE. |
 
 **Historique des modifications (1)**
 
@@ -1699,7 +1699,7 @@ Les créneaux ne se chevauchent pas, l'accès au dossier est restreint et tracé
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /health-manager/admissions -> 403 HEALTH_SOLUTION_INACTIVE. |
+| 3 | Vérifié sur pièces : `api/routes/modules/health_manager.php` (63 routes) ; module `api/app/Modules/HealthManager/` ; 8 fichiers de tests rattachés (`tests/Feature/HealthManager/*`). La couverture automatisée est nettement plus faible que les autres verticales et le dossier patient (données de santé) n'a pas pu être exercé (API 503). Note 3 = critère de sécurité non vérifiable. | 0 | Non executable : GET /health-manager/admissions -> 403 HEALTH_SOLUTION_INACTIVE. |
 
 **Historique des modifications (1)**
 
@@ -1729,7 +1729,7 @@ L'appel est enregistré, les moyennes sont calculées correctement, et les notes
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /edu-manager/academic-years -> 403 EDU_SOLUTION_INACTIVE. |
+| 3 | Vérifié sur pièces : `api/routes/modules/edu_manager.php` (111 routes) ; module `api/app/Modules/EduManager/` (Console, Policies) ; tests `EduManager/*`, `TrainingControllerTest`. API 503 : classe non créée. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /edu-manager/academic-years -> 403 EDU_SOLUTION_INACTIVE. |
 
 **Historique des modifications (1)**
 
@@ -1759,7 +1759,7 @@ La facture est émise et visible du seul parent concerné, le solde suit les pai
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : module edu inactif (403 EDU_SOLUTION_INACTIVE). |
+| 3 | Vérifié sur pièces : `api/routes/modules/edu_manager.php` et `billing.php` ; modules `EduManager/` et `Billing/` ; tests `EduManager/*`, `BillingControllerTest`, `PlanSeederTrialDaysAlignmentTest`. API 503 : facture non émise. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : module edu inactif (403 EDU_SOLUTION_INACTIVE). |
 
 **Historique des modifications (1)**
 
@@ -1789,7 +1789,7 @@ La parcelle conserve son historique complet, le rendement est calculé, et les s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 1 | DEFECT : GET /farm/apps/catalogue -> 403 COMPANY_NOT_FOUND, alors que l'utilisateur a une entreprise (les autres modules verticaux renvoient FEATURE_NOT_ENABLED / *_SOLUTION_INACTIVE). Code d'erreur incoherent et message trompeur. |
+| 3 | Vérifié sur pièces : `api/routes/modules/farm_os.php` (83 routes) ; module `api/app/Modules/FarmOs/` ; tests `Farm/*`. API 503 : parcelle non créée. Note 3 = critère d'exécution non vérifiable. | 1 | DEFECT : GET /farm/apps/catalogue -> 403 COMPANY_NOT_FOUND, alors que l'utilisateur a une entreprise (les autres modules verticaux renvoient FEATURE_NOT_ENABLED / *_SOLUTION_INACTIVE). Code d'erreur incoherent et message trompeur. |
 
 **Historique des modifications (1)**
 
@@ -1819,7 +1819,7 @@ La campagne est publique et lisible, le don met à jour la progression, le reçu
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /fundraising/fundraisers -> 403 FEATURE_NOT_ENABLED. |
+| 3 | Vérifié sur pièces : `api/routes/modules/fundraising.php` ; module `api/app/Modules/Fundraising/` ; tests `Fundraising/*`, `MobileMoneyProviderAdaptersTest`. API 503 : don non enregistré. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /fundraising/fundraisers -> 403 FEATURE_NOT_ENABLED. |
 
 **Historique des modifications (1)**
 
@@ -1849,7 +1849,7 @@ Le cabinet ne voit que son portefeuille, l'accès hors portefeuille est refusé 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /cabinet/documents -> 200 (comptable). |
+| 3 | Vérifié sur pièces : `api/routes/modules/cabinet.php` ; module `api/app/Modules/Cabinet/` ; tests `Cabinet/*` ; isolation couverte par `TenantIsolationTest`. API 503 : portefeuille non parcouru. Note 3 = critère d'exécution non vérifiable. | 3 | GET /cabinet/documents -> 200 (comptable). |
 
 **Historique des modifications (1)**
 
@@ -1879,7 +1879,7 @@ L'intention est conservée jusqu'au devis, les totaux sont exacts, et l'absence 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : GET /trade/cost-estimates -> 403 FEATURE_NOT_ENABLED (verticale Trade non activee sur le tenant de demo). |
+| 3 | Vérifié sur pièces : `api/routes/modules/trade.php` (42 routes) ; module `api/app/Modules/Trade/` (Console) ; tests `Trade/*`. API 503 : devis non créé. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : GET /trade/cost-estimates -> 403 FEATURE_NOT_ENABLED (verticale Trade non activee sur le tenant de demo). |
 
 **Historique des modifications (1)**
 
@@ -1909,7 +1909,7 @@ La marque s'applique sur la surface publique, le contraste reste lisible, et la 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : branding/surfaces publiques non pilotes. |
+| 3 | Vérifié sur pièces : `api/routes/modules/branding.php` et `branding_public.php` ; module `api/app/Modules/Branding/` (Console) ; tests `Branding/*`, `PdfBrandingTest`, `CompanyBrandingControllerTest`. API 503 : enseigne non publiée. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : branding/surfaces publiques non pilotes. |
 
 **Historique des modifications (1)**
 
@@ -1939,7 +1939,7 @@ L'essai, l'activation, la facture et le renouvellement sont cohérents, et l'exp
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /billing/ai-credits -> 200 ; /billing/subscription -> 404 'Aucun abonnement actif' (coherent, tenant de demo sans abonnement). |
+| 3 | Vérifié sur pièces : `api/routes/modules/billing.php` ; module `api/app/Modules/Billing/` ; tests `BillingControllerTest`, `PlatformPlanApiTest`, `PlanSeederTrialDaysAlignmentTest`, `TrialProvisioningStatusTest`. API 503 : abonnement non souscrit. Note 3 = critère d'exécution non vérifiable. | 3 | GET /billing/ai-credits -> 200 ; /billing/subscription -> 404 'Aucun abonnement actif' (coherent, tenant de demo sans abonnement). |
 
 **Historique des modifications (1)**
 
@@ -1969,7 +1969,7 @@ Seuls les webhooks signés sont acceptés, le rejeu est idempotent, l'état de p
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : encaissement et webhooks de paiement exigent un fournisseur externe (Stripe) non configure. |
+| 3 | Vérifié sur pièces : `api/routes/modules/paiements.php` et webhooks `POST /webhooks/stripe`, `POST /webhooks/chargily` (`api/routes/api.php` lignes 313-314) ; tests `PaymentWebhookControllerTest`, `PaymentWebhookFailClosedTest`, `OutboundWebhookSignatureUnificationTest`, `WebhookDeadLetterTest`, `WebhookRetryAndDeactivationTest`. API 503 : webhook non rejoué. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : encaissement et webhooks de paiement exigent un fournisseur externe (Stripe) non configure. |
 
 **Historique des modifications (1)**
 
@@ -1999,7 +1999,7 @@ Les événements sont mis en file, rejoués une seule fois, et la file se vide s
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /edge -> 200 (EdgeSync repond). La file hors-ligne et le rejeu idempotent n'ont pas ete exerces. |
+| 3 | Vérifié sur pièces : module `api/app/Modules/EdgeSync/` (Application, Console, Domain, Infrastructure, Interfaces, routes) ; tests `EdgeSync/*`, `RestaurantOfflineSyncTest`, `KioskSyncSkippedEventsTest`, `WriteIdempotencyTest`. API 503 : rejeu non provoqué. Note 3 = critère d'exécution non vérifiable. | 3 | GET /edge -> 200 (EdgeSync repond). La file hors-ligne et le rejeu idempotent n'ont pas ete exerces. |
 
 **Historique des modifications (1)**
 
@@ -2029,7 +2029,7 @@ Le pointage dans la zone est accepté avec preuve, le pointage hors zone est ref
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : preuve de presence geolocalisee exige une position GPS et un client mobile. |
+| 3 | Vérifié sur pièces : `api/routes/modules/geo.php` et `tracking.php` ; module `api/app/Modules/Geo/` (Console, Policies) ; tests `Geo/*`, `AttendanceGeofenceServiceTest`, `AttendanceGeofenceServiceTest` (Unit). API 503 : preuve de présence non produite. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : preuve de presence geolocalisee exige une position GPS et un client mobile. |
 
 **Historique des modifications (1)**
 
@@ -2059,7 +2059,7 @@ Le contrat est accessible et versionné, la clé respecte son périmètre, la r�
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | API : GET /api-tokens -> 200, GET /webhooks -> 200. CONSTANT : GET /openapi.json -> 404, aucune specification OpenAPI publiee a cette adresse. |
+| 3 | Vérifié réellement : `api/openapi.yaml` existe (3,09 Mo, **1983 chemins** déclarés) ; tests `OpenApiDocsTest`, `ApiErrorContractTest`, `FrontendApiContractTest`, `RouteControllerMethodContractTest`, `WebhookRoutesUniquenessTest`. Le contrat n'a pas été servi en ligne (`/docs` → **503**). Note 3 = critère d'exécution non vérifiable : le fichier `api/openapi.yaml` est mesuré (1983 chemins) mais le contrat n'est pas servi en ligne (`/docs` → 503). | 3 | API : GET /api-tokens -> 200, GET /webhooks -> 200. CONSTANT : GET /openapi.json -> 404, aucune specification OpenAPI publiee a cette adresse. |
 
 **Historique des modifications (1)**
 
@@ -2089,7 +2089,7 @@ L'analyse et le build passent, l'APK s'installe, et l'application démarre jusqu
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : build mobile Flutter exige une chaine Android/iOS absente du sandbox. |
+| 3 | Vérifié sur pièces : **13** dossiers d'applications Flutter dans `front/mobile_apps/` (dont `leopardo_core` partagé) ; workflows `.github/workflows/mobile-distribute.yml` et `mobile-distribute-main.yml` ; tests `Contracts/MobilePayloadContractTest`, `MobileMoneyProviderAdaptersTest`. Aucun build APK n'a été produit ici (pas de SDK Android dans cet environnement). Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : build mobile Flutter exige une chaine Android/iOS absente du sandbox. |
 
 **Historique des modifications (1)**
 
@@ -2119,7 +2119,7 @@ L'application démarre, affiche sa version réelle, détecte la mise à jour et 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : client desktop non monte. |
+| 2 | **Écart constaté sur pièces** : le scaffolding desktop existe (`front/mobile_apps/*/windows`, `*/macos` pour 6 apps) et le workflow `.github/workflows/desktop-ci.yml` est présent, mais `docs/desktop/README.md` indique explicitement « chaîne de build/distribution : ❌ aucune » pour 5 apps sur 7, et **aucun test automatisé** n'est rattaché au desktop (0 fichier). La mise à jour applicative (auto-update) n'est pas implémentée. Note 2 = défaillance sur un critère majeur (distribution et mise à jour absentes). | 0 | Non executable : client desktop non monte. |
 
 **Historique des modifications (1)**
 
@@ -2149,7 +2149,7 @@ La fiche est complète et lisible, l'état ouvert/fermé est correct, les action
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : fiche commerce publique non verifiee. |
+| 3 | Vérifié sur pièces : `api/routes/modules/trade_public.php`, `catalog_public.php`, `market_public.php` (fiches publiques sans auth) ; app `front/mobile_apps/leopardo_public/` ; **un seul** test rattaché (`PublicCareerControllerTest`, qui ne couvre pas la fiche commerce). La fiche commerce publique n'a pas été ouverte (API 503). Note 3 = critère non vérifiable et couverture de test insuffisante. | 0 | Non execute : fiche commerce publique non verifiee. |
 
 **Historique des modifications (1)**
 
@@ -2179,7 +2179,7 @@ Chaque étape est visible et horodatée, l'échec est diagnosticable sans accès
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | Plateforme partiellement verifiee : GET /health -> 200, GET /approvals/history -> 200. Provisionnement et diagnostic non rejoues. |
+| 3 | Vérifié sur pièces : provisioning couvert par `PlatformCompanyProvisioningTest`, `PlatformCompanyRequestProvisioningTest`, `TrialProvisioningDedupTest`, `TrialProvisioningStatusTest` ; diagnostic par `PlatformCompanyHealthApiTest`, `HealthReadyCriticalDepsTest`, `LaunchReadinessControllerTest`. API 503 : provisioning non déclenché. Note 3 = critère d'exécution non vérifiable. | 3 | Plateforme partiellement verifiee : GET /health -> 200, GET /approvals/history -> 200. Provisionnement et diagnostic non rejoues. |
 
 **Historique des modifications (1)**
 
@@ -2209,7 +2209,7 @@ L'accès inter-établissement est refusé, aucune donnée de A n'apparaît dans 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | Isolation par etablissement non attaquee ; l'isolation par tenant est coherente (403 systematique hors souscription). |
+| 3 | Vérifié sur pièces : 66 fichiers de tests d'isolation (`TenantIsolationTest`, `TenantCompanyIdSpoofingTest`, `TenantContextLockdownTest`, `CrossTenantIndexIsolationTest`, `MultiTenantSharedIsolationTest`) ; middleware `tenant` dans `api/routes/api.php`. API 503 : tentative cross-tenant non rejouée. Note 3 = critère d'exécution non vérifiable. | 3 | Isolation par etablissement non attaquee ; l'isolation par tenant est coherente (403 systematique hors souscription). |
 
 **Historique des modifications (1)**
 
@@ -2239,7 +2239,7 @@ La connexion SSO aboutit avec le bon rôle, une configuration invalide produit u
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /sso/providers -> 200. Le flux SSO SAML/OIDC complet exige un IdP externe. |
+| 3 | Vérifié sur pièces : `api/routes/modules/sso.php` et `integrations.php` ; tests `SSOControllerTest`, `SSOOidcFlowTest`, `OidcIdTokenValidatorHardeningTest`, `SsoCallbackThrottleTest`, `SsoConfigureSsrfGuardTest`, `GoogleSsoTwoFactorSchemaTest`. API 503 : flux SSO non rejoué. Note 3 = critère d'exécution non vérifiable. | 3 | GET /sso/providers -> 200. Le flux SSO SAML/OIDC complet exige un IdP externe. |
 
 **Historique des modifications (1)**
 
@@ -2269,7 +2269,7 @@ Le registre est à jour, l'export est complet, la suppression est effective ou a
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /audit-logs -> 200 (principal). Registre RGPD partiellement verifie. |
+| 3 | Vérifié sur pièces : `docs/RGPD_REGISTRE_TRAITEMENTS.md` présent ; tests `GdprAnonymizeEmployeeTest`, `PrivacyControllerTest`, `PiiFieldRegistryTest`, `SensitiveDataEncryptorTest`, `SensitiveDataAccessAuditTest`, `PurgeAuditLogsCommandTest`. API 503 : demande d'accès non exercée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /audit-logs -> 200 (principal). Registre RGPD partiellement verifie. |
 
 **Historique des modifications (1)**
 
@@ -2299,7 +2299,7 @@ Les objectifs sont partagés, le check-in est tracé, la revue est clôturée, e
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /evaluations -> 200. |
+| 3 | Vérifié sur pièces : module `api/app/Modules/HR/` et `api/routes/modules/hr_extended.php` ; tests `Evaluations/*`, `HrReportControllerTest`, `ProfileFunctionalReadinessTest`. API 503 : évaluation non créée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /evaluations -> 200. |
 
 **Historique des modifications (1)**
 
@@ -2329,7 +2329,7 @@ Le document est accessible au seul ayant droit, l'échéance déclenche une aler
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : le coffre-fort documentaire n'a pas d'endpoint de liste sans parametre (employee-documents porte sur un employe donne). |
+| 3 | Vérifié sur pièces : documents employé couverts par `EmployeeDocumentTest`, `ContractController` (`GET /contracts/expiring`, `api/routes/modules/hr_extended.php` ligne 93) et `EmployeeDocumentTest` ; coffre-fort et échéances côté HR. API 503 : document non déposé. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : le coffre-fort documentaire n'a pas d'endpoint de liste sans parametre (employee-documents porte sur un employe donne). |
 
 **Historique des modifications (1)**
 
@@ -2359,7 +2359,7 @@ L'enchaînement des validations est respecté, un rejet arrête le circuit, et l
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /approvals/history -> 200. Validation multi-niveaux non rejouee. |
+| 3 | Vérifié sur pièces : validations multi-niveaux couvertes par `ApprovalControllerTest`, `LeaveWorkflowIntegrationTest`, `PlanningControllerTest`, `ExpenseClaimControllerTest` (approve/reject) ; routes dans `absence.php`, `expense.php`, `planning.php`. API 503 : workflow non déclenché. Note 3 = critère d'exécution non vérifiable. | 3 | GET /approvals/history -> 200. Validation multi-niveaux non rejouee. |
 
 **Historique des modifications (1)**
 
@@ -2389,7 +2389,7 @@ Chaque indicateur correspond aux données réelles du module source, la période
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : tableau de bord consolide plateforme exige un compte plateforme dedie. |
+| 3 | Vérifié sur pièces : `GET /dashboard/stats`, `/dashboard/activities`, `/dashboard/alerts` (`api/routes/api.php` lignes 953-956) ; tests `DashboardControllerTest`, `PlatformMetricsOverviewApiTest`, `WeeklyManagerDigestTest`. API 503 : tableau de bord non chargé. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : tableau de bord consolide plateforme exige un compte plateforme dedie. |
 
 **Historique des modifications (1)**
 
@@ -2419,7 +2419,7 @@ Le ticket est traité, l'impersonation est signalée, réversible et journalisé
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : support/tickets et impersonation encadree exigent un compte support. |
+| 3 | Vérifié sur pièces : `PlatformSupportTicketControllerTest`, `SupportTicketEmailNotificationTest`, `PlatformImpersonationControllerTest`, `AdminImpersonationEndpointsTest` ; routes dans le groupe `platform` de `api/routes/api.php` ; page `front/web/src/app/(dashboard)/support/`. API 503 : ticket non créé. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : support/tickets et impersonation encadree exigent un compte support. |
 
 **Historique des modifications (1)**
 
@@ -2449,7 +2449,7 @@ Les métriques correspondent aux abonnements réels, le revenu récurrent est ca
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : metriques d'abonnement/revenus exigent des donnees de facturation reelles. |
+| 3 | Vérifié sur pièces : `api/routes/modules/billing.php` ; tests `PlatformMetricsOverviewApiTest`, `BillingControllerTest`, `PlatformCompanySubscriptionApiTest`, `GrowthPartnerTenantIsolationTest`. API 503 : métriques non lues. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : metriques d'abonnement/revenus exigent des donnees de facturation reelles. |
 
 **Historique des modifications (1)**
 
@@ -2479,7 +2479,7 @@ L'état des nœuds est fidèle, le kill switch agit immédiatement et de façon 
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /edge -> 200 ; GET /approvals/history -> 200. Kill switch non declenche. |
+| 3 | Vérifié sur pièces : module `api/app/Modules/EdgeSync/` et `Platform/` ; tests `FeatureKillSwitchTest`, `FeatureFlagTest`, `EdgeSilentNodeDetectionTest`, `QueueObservabilityApiTest`. API 503 : kill switch non actionné. Note 3 = critère d'exécution non vérifiable. | 3 | GET /edge -> 200 ; GET /approvals/history -> 200. Kill switch non declenche. |
 
 **Historique des modifications (1)**
 
@@ -2509,7 +2509,7 @@ Le post est publié à l'heure prévue, les statistiques remontent, et la décon
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | GET /marketing/posts -> 200. Publication sociale et statistiques non exercees (pas de compte social connecte). |
+| 3 | Vérifié sur pièces : `api/routes/modules/marketing.php` ; module `api/app/Modules/Marketing/` ; tests `GrowthModuleTest`, `SocialDeclarationControllerTest`, `PublishScheduledSocialPostsCommandTest`, `PublishScheduledPostJobTest`. API 503 : publication non déclenchée. Note 3 = critère d'exécution non vérifiable. | 3 | GET /marketing/posts -> 200. Publication sociale et statistiques non exercees (pas de compte social connecte). |
 
 **Historique des modifications (1)**
 
@@ -2539,7 +2539,7 @@ Le dossier est créé, l'invitation aboutit, l'employé accède uniquement à so
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : onboarding d'un nouvel employe modifie l'etat du tenant de demo. |
+| 3 | Vérifié sur pièces : `POST /employees` (`api/routes/modules/hr_app.php` ligne 40) et `GET/PATCH /onboarding-setup/*` (`api/routes/modules/billing.php`) ; tests `EmployeeInvitationOnboardingTest`, `OnboardingE2ETest`, `OnboardingChecklistTest`, `EmployeeCreatePersistsPasswordHashTest`. API 503 : onboarding non rejoué. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : onboarding d'un nouvel employe modifie l'etat du tenant de demo. |
 
 **Historique des modifications (1)**
 
@@ -2571,7 +2571,7 @@ La campagne et l'idée sont créées dans le seul tenant ciblé, la promotion pr
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : Marketing OS admin exige les endpoints /admin/companies/{company}/marketing-os/* avec un compte plateforme. |
+| 3 | Vérifié sur pièces : `api/routes/modules/marketing.php` ; module `api/app/Modules/Marketing/` ; tests `GrowthModuleTest`, `SocialDeclarationControllerTest`, `PublishScheduledSocialPostsCommandTest`. API 503 : promotion non publiée. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : Marketing OS admin exige les endpoints /admin/companies/{company}/marketing-os/* avec un compte plateforme. |
 
 **Historique des modifications (1)**
 
@@ -2603,7 +2603,7 @@ Le post est publié à l'heure prévue avec son URL réelle, les statistiques ab
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non execute : publication sociale reelle impossible sans compte social connecte. |
+| 3 | Vérifié sur pièces : `api/routes/modules/marketing.php` et `market_public.php` ; tests `GrowthModuleTest`, `SocialDeclarationControllerTest`, `PlatformMarketingLeadsReadApiTest` ; vitrine publique joignable (**200**). API 503 : publication assistée non déclenchée. Note 3 = critère d'exécution non vérifiable. | 0 | Non execute : publication sociale reelle impossible sans compte social connecte. |
 
 **Historique des modifications (1)**
 
@@ -2635,7 +2635,7 @@ La RFQ est émise et diffusée, le devis est produit par le seul rôle vendeur a
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). |
+| 3 | Vérifié sur pièces : `api/routes/modules/trade.php` (42 routes) ; module `api/app/Modules/Trade/` ; tests `Trade/*`. API 503 : RFQ non créé. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). |
 
 **Historique des modifications (1)**
 
@@ -2667,7 +2667,7 @@ Le coût total rendu est exact en arithmétique entière, les postes indisponibl
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). |
+| 3 | Vérifié sur pièces : `GET/POST /cost-estimates`, `GET /customs/checklist` déclarés dans `api/routes/modules/trade.php` (lignes 105-109) ; profil vitrine via `trade_public.php` ; tests `Trade/*`. API 503 : estimation non calculée. Note 3 = critère d'exécution non vérifiable. | 0 | Non executable : verticale Trade non activee (403 FEATURE_NOT_ENABLED sur /trade/*). |
 
 **Historique des modifications (1)**
 
@@ -2700,7 +2700,7 @@ Le catalogue est consultable et exempt de secrets, la connexion aboutit à un é
 
 | Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
 | :---: | :--- | :---: | :--- |
-|  | Non exécuté — à réaliser par le testeur IA. | 3 | NOUVEAU (comble un trou de couverture) : le module Connectors est servi par l'API mais n'avait AUCUN cas d'usage au portail. GET /connectors/catalog -> 200 avec un catalogue reel (Stripe, categories payment, audience both, docs_url). Cycle de connexion OAuth non rejoue. |
+| 3 | Vérifié sur pièces : `GET /catalog`, `GET/POST /connections`, `PATCH /connections/{id}/status`, `DELETE /connections/{id}` déclarés dans `api/routes/modules/connectors.php` (lignes 26-42) ; module `api/app/Modules/Connectors/` ; tests `Connectors/*`, `ConnectorSchemaValidatorTest`, `OutboundWebhookSignatureUnificationTest`. API 503 : connexion non établie. Note 3 = critère d'exécution non vérifiable. | 3 | NOUVEAU (comble un trou de couverture) : le module Connectors est servi par l'API mais n'avait AUCUN cas d'usage au portail. GET /connectors/catalog -> 200 avec un catalogue reel (Stripe, categories payment, audience both, docs_url). Cycle de connexion OAuth non rejoue. |
 
 **Historique des modifications (1)**
 
@@ -2710,101 +2710,297 @@ Le catalogue est consultable et exempt de secrets, la connexion aboutit à un é
 
 ---
 
+## UC-90 — Assistant IA — chat, proposition d'action et confirmation
+
+**Profil(s) :** Manager Principal, Manager RH · **Module(s) :** Assistant IA · **Type :** Sécurité · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier que l'assistant IA répond, propose des actions d'écriture sans les exécuter, et n'agit qu'après confirmation explicite.  
+Prérequis : Compte manager ; routes `api/routes/ai.php` (`POST /api/v1/ai/chat`, `POST /api/v1/ai/actions/propose`, `POST /api/v1/ai/actions/{id}/confirm`).
+
+**Étapes de test**
+1. Envoyer un message de lecture (`POST /api/v1/ai/chat`) et vérifier la réponse et l'historique (`GET /api/v1/ai/chat/history`).
+2. Demander une action d'écriture et vérifier qu'elle revient en proposition (`POST /api/v1/ai/actions/propose`) sans effet en base.
+3. Confirmer la proposition (`POST /api/v1/ai/actions/{pendingActionId}/confirm`) et vérifier l'effet réel.
+4. Rejouer la même confirmation et vérifier l'idempotence (aucun doublon).
+5. Rejeter une proposition (`POST /api/v1/ai/actions/{pendingActionId}/reject`) et vérifier l'absence d'effet.
+6. Vérifier qu'un rôle sans droit d'écriture reçoit un refus explicite, jamais une 500.
+
+**Résultat attendu**  
+Le chat répond, toute écriture passe par une proposition confirmée, la confirmation est idempotente, le rejet n'a aucun effet et les rôles non autorisés sont refusés proprement.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+| 3 | Vérifié sur pièces : `api/routes/ai.php` déclare 26 routes (chat, historique, propositions, confirmation/rejet, outils, exports, voix, analytics) ; 28 fichiers de tests dans `tests/Feature/AI/` dont `AIActionProposalHttpTest`, `WriteIdempotencyTest`, `ToolPermissionMatrixTest`, `AIToolExecutionAuditTest`, `AiGoldenJourneyTest`. API live 503 : le chat n'a pas été rejoué en HTTP. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
+
+---
+
+## UC-91 — Contrats — modèle pays, signature et alerte d'expiration
+
+**Profil(s) :** Manager RH, Employé · **Module(s) :** Contrats, Dossier employé (HR) · **Type :** Fonctionnel · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier la création d'un contrat depuis un modèle pays, sa signature et la remontée des échéances.  
+Prérequis : Compte Manager RH ; routes `GET/POST /api/v1/contracts`, `GET /api/v1/contracts/templates`, `GET /api/v1/contracts/expiring`, `POST /api/v1/contracts/{id}/sign`.
+
+**Étapes de test**
+1. Lister les modèles disponibles (`GET /api/v1/contracts/templates`) et vérifier la variante pays.
+2. Créer un contrat pour un employé (`POST /api/v1/contracts`) et vérifier le statut initial.
+3. Signer le contrat (`POST /api/v1/contracts/{contract}/sign`) et vérifier la transition d'état.
+4. Consulter les contrats à échéance (`GET /api/v1/contracts/expiring`) et vérifier la présence du contrat créé.
+5. Vérifier que l'employé voit son contrat en self-service (`GET /api/v1/me/contracts`).
+6. Tenter une signature par un rôle non autorisé et vérifier le 403.
+
+**Résultat attendu**  
+Le modèle pays est proposé, le contrat suit son cycle jusqu'à la signature, l'échéance remonte dans la liste dédiée, l'employé voit son contrat et les rôles non autorisés sont refusés.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+| 3 | Vérifié sur pièces : `GET/POST /contracts`, `GET /contracts/templates`, `GET /contracts/expiring`, `POST /contracts/{contract}/sign` déclarés dans `api/routes/modules/hr_extended.php` (lignes 91-96) et `GET /me/contracts` (ligne 42) ; tests `ContractLifecycleTest`, `ContractWorkflowTest`, `ContractByCountryTest`, `ContractCountryTemplatesTest`, `ExpiringContractsAlertTest`, `ContractPdfAliasTest`. API 503 : signature non rejouée. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
+
+---
+
+## UC-92 — Audit — journal global, accès aux données sensibles et export
+
+**Profil(s) :** Super Admin plateforme, Administrateur plateforme · **Module(s) :** Audit & conformité, Multi-tenant & sécurité · **Type :** Sécurité · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier que les actions sensibles sont journalisées, consultables et exportables, sans fuite inter-tenant.  
+Prérequis : Compte disposant du droit d'audit ; routes `GET /api/v1/audit-logs`, `GET /api/v1/audit-logs/{id}`, `GET /api/v1/audit-logs/export`.
+
+**Étapes de test**
+1. Provoquer une action sensible (attribution de rôle, accès à un dossier employé).
+2. Lister le journal (`GET /api/v1/audit-logs`) et vérifier la présence de l'entrée avec acteur, cible et horodatage.
+3. Ouvrir le détail d'une entrée (`GET /api/v1/audit-logs/{id}`).
+4. Exporter le journal (`GET /api/v1/audit-logs/export`) et vérifier l'intégralité de la période.
+5. Vérifier qu'aucune entrée d'un autre tenant n'apparaît.
+6. Vérifier qu'un rôle sans droit d'audit reçoit un 403.
+
+**Résultat attendu**  
+Chaque action sensible produit une entrée horodatée et attribuée, le détail et l'export sont complets, l'isolation inter-tenant est respectée et l'accès non autorisé est refusé.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+| 3 | Vérifié sur pièces : `GET /audit-logs`, `GET /audit-logs/{id}`, `GET /audit-logs/export` déclarés dans `api/routes/api.php` (lignes 492-494) ; tests `AuditLogGlobalTest`, `AuditLogExportTest`, `IdentityAccessControlAuditTest`, `SensitiveDataAccessAuditTest`, `PurgeAuditLogsCommandTest`, `AuditLoggerListenerTest`. API 503 : entrée non provoquée. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
+
+---
+
+## UC-93 — Exports — employés, pointage, bulletins, absences et rapports RH
+
+**Profil(s) :** Manager RH, Manager Comptable · **Module(s) :** Exports & rapports, Dossier employé (HR) · **Type :** Fonctionnel · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier que chaque export produit un fichier complet, filtré sur le tenant et la période demandée.  
+Prérequis : Compte Manager RH ; routes `GET /api/v1/export/{employees,attendance,attendance/monthly,pay-slips,absences,contracts,vehicles,training}`.
+
+**Étapes de test**
+1. Exporter les employés (`GET /api/v1/export/employees`) et vérifier le nombre de lignes.
+2. Exporter le pointage mensuel (`GET /api/v1/export/attendance/monthly`) sur une période bornée.
+3. Exporter les bulletins (`GET /api/v1/export/pay-slips`) et vérifier la présence de chaque bulletin de la période.
+4. Exporter les absences et les contrats, puis vérifier l'encodage et les en-têtes.
+5. Vérifier qu'aucune ligne d'un autre tenant n'apparaît dans aucun export.
+6. Demander un export sur une période vide et vérifier un fichier d'en-tête seul, sans erreur 500.
+
+**Résultat attendu**  
+Chaque export est complet sur la période demandée, correctement encodé, isolé par tenant, et une période vide produit un fichier valide plutôt qu'une erreur.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+| 3 | Vérifié sur pièces : `GET /export/employees`, `/export/attendance`, `/export/attendance/monthly`, `/export/pay-slips`, `/export/absences`, `/export/training`, `/export/contracts`, `/export/vehicles` déclarés dans `api/routes/modules/dashboard.php` (lignes 51-58) ; tests `ExportControllerTest`, `AttendanceMonthlyExportTest`, `AuditLogExportTest`, `PayrollAccountingExportTest`, `BankExportControllerTest`. API 503 : export non généré. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
+
+---
+
+## UC-94 — Partenaires — candidature, taux de commission et reversement
+
+**Profil(s) :** Marketing, Finance · **Module(s) :** Programme partenaires, Abonnements & facturation · **Type :** Fonctionnel · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier le cycle d'un partenaire apporteur d'affaires : candidature, taux, suivi des gains et reversement.  
+Prérequis : Compte disposant du droit facturation ; routes `GET /api/v1/partners`, `PATCH /api/v1/partners/{partner}/rate`, `PATCH /api/v1/partners/{partner}/application`.
+
+**Étapes de test**
+1. Lister les partenaires (`GET /api/v1/partners`) et vérifier les états.
+2. Soumettre une candidature partenaire et vérifier son entrée en attente.
+3. Accepter la candidature (`PATCH /api/v1/partners/{partner}/application`) et vérifier le changement d'état.
+4. Modifier le taux de commission (`PATCH /api/v1/partners/{partner}/rate`) et vérifier la prise en compte.
+5. Vérifier que les gains d'un partenaire n'exposent aucune donnée d'un autre tenant.
+6. Vérifier qu'un rôle sans droit facturation reçoit un 403.
+
+**Résultat attendu**  
+La candidature suit son cycle, le taux est modifiable et appliqué, les gains restent isolés par tenant et l'accès non autorisé est refusé.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+| 3 | Vérifié sur pièces : `GET /partners`, `PATCH /partners/{partner}/rate`, `PATCH /partners/{partner}/application` déclarés dans `api/routes/modules/billing.php` (lignes 150-152) ; tests `GrowthModuleTest`, `GrowthPartnerTenantIsolationTest`, `PlatformCompanySubscriptionApiTest`. API 503 : candidature non soumise. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
+
+---
+
+## UC-95 — Formation — cours, sessions et inscriptions
+
+**Profil(s) :** École / Formation, Administrateur plateforme · **Module(s) :** Formation, École & formation · **Type :** Fonctionnel · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier la gestion des cours, des sessions et des inscriptions, côté plateforme et côté tenant.  
+Prérequis : Compte formateur / administrateur ; routes `GET /api/v1/training/courses`, `GET /api/v1/training/sessions`, `GET /api/v1/training/enrollments`.
+
+**Étapes de test**
+1. Lister les cours (`GET /api/v1/training/courses`) et vérifier la pagination.
+2. Créer une session rattachée à un cours et vérifier ses dates et sa capacité.
+3. Inscrire un apprenant et vérifier l'inscription (`GET /api/v1/training/enrollments`).
+4. Tenter une inscription au-delà de la capacité et vérifier le refus métier.
+5. Vérifier qu'un apprenant ne voit que ses propres inscriptions.
+6. Vérifier qu'un rôle non autorisé reçoit un 403 sur la création de session.
+
+**Résultat attendu**  
+Cours, sessions et inscriptions sont cohérents, la capacité est respectée, chaque apprenant ne voit que ses inscriptions et les rôles non autorisés sont refusés.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+| 3 | Vérifié sur pièces : `GET /training/courses`, `GET /training/sessions`, `GET /training/enrollments` déclarés dans `api/routes/api.php` (lignes 1077-1079) ; module `api/app/Modules/EduManager/` ; tests `TrainingControllerTest`, `TrainingGlobalListTest`, `TrainingModuleRegistryTest`. API 503 : session non créée. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
+
+---
+
+## UC-96 — Sécurité — double authentification (2FA) et MFA plateforme
+
+**Profil(s) :** Employé, Super Admin plateforme · **Module(s) :** Authentification & IAM · **Type :** Sécurité · **Statut :** à exécuter
+
+**Description / préconditions**  
+Vérifier l'enrôlement, la vérification et la désactivation du second facteur, côté tenant et côté plateforme.  
+Prérequis : Compte employé et compte super-admin ; routes `GET /api/v1/auth/2fa/status`, `POST /api/v1/auth/2fa/enroll`, `POST /api/v1/auth/2fa/confirm`, `POST /api/v1/auth/2fa/verify`, `POST /api/v1/auth/2fa/disable`.
+
+**Étapes de test**
+1. Consulter l'état du 2FA (`GET /api/v1/auth/2fa/status`) et vérifier qu'il est désactivé au départ.
+2. Lancer l'enrôlement (`POST /api/v1/auth/2fa/enroll`) et vérifier le secret/QR retourné une seule fois.
+3. Confirmer avec un code valide (`POST /api/v1/auth/2fa/confirm`) et vérifier l'activation.
+4. Se reconnecter et vérifier l'exigence du code (`POST /api/v1/auth/2fa/verify`), puis un code invalide → refus.
+5. Désactiver le 2FA (`POST /api/v1/auth/2fa/disable`) et vérifier le retour à l'état initial.
+6. Vérifier que le MFA plateforme est bien exigé sur les routes super-admin.
+
+**Résultat attendu**  
+L'enrôlement n'expose le secret qu'une fois, la confirmation active le 2FA, un code invalide est refusé, la désactivation est effective et le MFA plateforme est obligatoire.
+
+| Note IA (/5) | Observation IA | Note humaine (/5) | Observation humaine |
+| :---: | :--- | :---: | :--- |
+| 3 | Vérifié sur pièces : `GET /auth/2fa/status`, `POST /auth/2fa/enroll\|confirm\|verify\|disable` déclarés dans `api/routes/api.php` (lignes 144, 432-435) ; middleware `platform.mfa` appliqué au groupe `platform` ; tests `PlatformWebAuth2faTest`, `PlatformWebAuthSecurityTest`, `SsoTwoFactorGuardTest`, `GoogleSsoTwoFactorSchemaTest`. API 503 : enrôlement non rejoué. Note 3 = critère d'exécution non vérifiable (API 503). |  |  |
+
+_Aucune modification humaine enregistrée pour ce cas._
+
+---
+
 ## Tableau récapitulatif
 
 | ID | Cas d'utilisation | Type | Statut | Note IA (/5) | Note humaine (/5) |
 | :--- | :--- | :--- | :--- | :---: | :---: |
-| UC-01 | Connexion d'un employé à l'espace client web | Fonctionnel | exécuté | 4 | 4 |
-| UC-02 | Pointage entrée / sortie (API, employé) | API | exécuté | 5 | 3 |
-| UC-03 | Pointage au kiosque biométrique (mode secours matricule) | UI/UX | exécuté | 4 | 0 |
-| UC-04 | Demande d'absence et approbation manager | Fonctionnel | exécuté | 5 | 3 |
-| UC-05 | Consultation du bulletin de paie (self-service employé) | Sécurité | exécuté | 4 | 2 |
-| UC-06 | Préparation de paie (Manager Comptable) | Fonctionnel | exécuté | 5 | 3 |
-| UC-07 | Gestion du dossier employé (création, modification, archivage) | Fonctionnel | exécuté | 2 | 3 |
-| UC-08 | Isolation multi-tenant | Sécurité | exécuté | 5 | 3 |
-| UC-09 | Multilingue et RTL (fr / en / tr / ar) | UI/UX | exécuté | 5 | 0 |
-| UC-10 | Kiosque en mode dégradé / synchronisation Edge | Résilience | exécuté | 4 | 0 |
-| UC-11 | CRM client (comptes, contacts, opportunités) | Fonctionnel | exécuté | 5 | 3 |
-| UC-12 | Vitrine publique et demande d'essai | Fonctionnel | exécuté | 4 | 3 |
-| UC-13 | Observabilité et santé de la plateforme | API | exécuté | 4 | 3 |
-| UC-14 | Solution verticale « Agence de voyage » (boutique publique) | Sécurité | exécuté | 4 | 3 |
-| UC-15 | Connexion Manager Principal et tableau de bord | Fonctionnel | à exécuter |  | 3 |
-| UC-16 | Gestion des départements et des équipes | Fonctionnel | à exécuter |  | 3 |
-| UC-17 | Attribution de rôles et invitations | Sécurité | à exécuter |  | 3 |
-| UC-18 | Validation des heures supplémentaires et du planning | Fonctionnel | à exécuter |  | 3 |
-| UC-19 | Génération et téléchargement d'un bulletin PDF | Fonctionnel | à exécuter |  | 0 |
-| UC-20 | Console Super Admin — gestion des entreprises | Fonctionnel | à exécuter |  | 0 |
-| UC-21 | Impersonation encadrée (Support) | Sécurité | à exécuter |  | 0 |
-| UC-22 | Facturation et abonnements (Finance) | Fonctionnel | à exécuter |  | 3 |
-| UC-23 | Kill switch et nœuds Edge (Ops) | Résilience | à exécuter |  | 3 |
-| UC-24 | Campagnes et vitrine (Marketing) | Fonctionnel | à exécuter |  | 3 |
-| UC-25 | Recrutement et offres d'emploi | Fonctionnel | à exécuter |  | 3 |
-| UC-26 | Bibliothèque / Showcase public | UI/UX | à exécuter |  | 0 |
-| UC-27 | Comptabilité — écritures et clôture mensuelle | Fonctionnel | à exécuter |  | 3 |
-| UC-28 | Comptabilité — export et rapprochement bancaire | Fonctionnel | à exécuter |  | 3 |
-| UC-29 | Notes de frais — soumission et validation | Fonctionnel | à exécuter |  | 3 |
-| UC-30 | Notes de frais — remboursement et impact paie | Fonctionnel | à exécuter |  | 3 |
-| UC-31 | Planning — shifts et affectations | Fonctionnel | à exécuter |  | 3 |
-| UC-32 | Tâches — assignation et preuve d'exécution | Fonctionnel | à exécuter |  | 3 |
-| UC-33 | Recrutement — offre d'emploi et page carrières | Fonctionnel | à exécuter |  | 3 |
-| UC-34 | Recrutement — pipeline de candidatures | Fonctionnel | à exécuter |  | 3 |
-| UC-35 | Communication — annonce interne et accusés de lecture | Fonctionnel | à exécuter |  | 3 |
-| UC-36 | Notifications — préférences et multi-canal | Fonctionnel | à exécuter |  | 3 |
-| UC-37 | Onboarding — provisioning d'un essai guidé | Fonctionnel | à exécuter |  | 0 |
-| UC-38 | Onboarding — reprise d'un parcours interrompu | Résilience | à exécuter |  | 0 |
-| UC-39 | Catalogue — produits, services et tarifs | Fonctionnel | à exécuter |  | 0 |
-| UC-40 | Recherche — recherche transverse et permissions | Sécurité | à exécuter |  | 0 |
-| UC-41 | Pages — pages publiques et SEO multilingue | UI/UX | à exécuter |  | 3 |
-| UC-42 | Showcase — vitrine publique et bibliothèque | UI/UX | à exécuter |  | 0 |
-| UC-43 | Bibliothèque — prêt et retour d'ouvrages | Fonctionnel | à exécuter |  | 3 |
-| UC-44 | Caméras — parc et supervision des flux | Fonctionnel | à exécuter |  | 0 |
-| UC-45 | Caméras — incident et maintenance | Fonctionnel | à exécuter |  | 0 |
-| UC-46 | Flotte — véhicules, affectations et entretien | Fonctionnel | à exécuter |  | 3 |
-| UC-47 | Station-service — index pompes et ventes carburant | Fonctionnel | à exécuter |  | 0 |
-| UC-48 | VTC — course et tarification | Fonctionnel | à exécuter |  | 0 |
-| UC-49 | Livraison — tournée et preuve de livraison | Fonctionnel | à exécuter |  | 0 |
-| UC-50 | Restauration — POS et plan de salle | Fonctionnel | à exécuter |  | 0 |
-| UC-51 | Restauration — KDS et cycle de commande | Résilience | à exécuter |  | 0 |
-| UC-52 | Retail — POS et encaissement | Fonctionnel | à exécuter |  | 0 |
-| UC-53 | Retail — stock et inventaire | Fonctionnel | à exécuter |  | 0 |
-| UC-54 | Hôtellerie — chambres, séjours et housekeeping | Fonctionnel | à exécuter |  | 0 |
-| UC-55 | Pharmacie — stock, ordonnance et profil public | Fonctionnel | à exécuter |  | 0 |
-| UC-56 | Santé — patients, rendez-vous et dossier | Sécurité | à exécuter |  | 0 |
-| UC-57 | École — classes, notes et présences | Fonctionnel | à exécuter |  | 0 |
-| UC-58 | École — facturation scolaire et espace parents | Fonctionnel | à exécuter |  | 0 |
-| UC-59 | Agriculture — parcelles, cultures et récoltes | Fonctionnel | à exécuter |  | 1 |
-| UC-60 | Cagnottes — campagne de collecte et dons | Fonctionnel | à exécuter |  | 0 |
-| UC-61 | Cabinet comptable — portefeuille clients | Sécurité | à exécuter |  | 3 |
-| UC-62 | Négoce — intention, sous-profil et devis | Fonctionnel | à exécuter |  | 0 |
-| UC-63 | Marque — branding tenant et surfaces publiques | UI/UX | à exécuter |  | 0 |
-| UC-64 | Abonnements — plan, essai et facturation | Fonctionnel | à exécuter |  | 3 |
-| UC-65 | Paiements — encaissement et webhooks | Sécurité | à exécuter |  | 0 |
-| UC-66 | EdgeSync — file hors-ligne et rejeu idempotent | Résilience | à exécuter |  | 3 |
-| UC-67 | Géolocalisation — preuve de présence | Sécurité | à exécuter |  | 0 |
-| UC-68 | API — contrat OpenAPI, webhooks et clés | API | à exécuter |  | 3 |
-| UC-69 | Mobile — build et distribution des applications | Résilience | à exécuter |  | 0 |
-| UC-70 | Desktop — poste de travail et mise à jour | Fonctionnel | à exécuter |  | 0 |
-| UC-71 | Public — fiche commerce (leopardo_public) | UI/UX | à exécuter |  | 0 |
-| UC-72 | Plateforme — provisionnement et diagnostic | Fonctionnel | à exécuter |  | 3 |
-| UC-73 | Tenant — isolation par établissement | Sécurité | à exécuter |  | 3 |
-| UC-74 | IAM — connexion SSO (SAML / OIDC) | Sécurité | à exécuter |  | 3 |
-| UC-75 | RGPD — registre des traitements et droits | Sécurité | à exécuter |  | 3 |
-| UC-76 | Performance — objectifs et évaluations | Fonctionnel | à exécuter |  | 3 |
-| UC-77 | Documents — coffre-fort et échéances | Fonctionnel | à exécuter |  | 0 |
-| UC-78 | Workflows — validations multi-niveaux | Fonctionnel | à exécuter |  | 3 |
-| UC-79 | Plateforme — tableau de bord consolidé | Fonctionnel | à exécuter |  | 0 |
-| UC-80 | Support — tickets et impersonation encadrée | Sécurité | à exécuter |  | 0 |
-| UC-81 | Finance — métriques d'abonnement et revenus | Fonctionnel | à exécuter |  | 0 |
-| UC-82 | Ops — nœuds Edge et kill switch | Résilience | à exécuter |  | 3 |
-| UC-83 | Marketing OS — publication sociale et statistiques | Fonctionnel | à exécuter |  | 3 |
-| UC-84 | RH — onboarding d'un nouvel employé | Fonctionnel | à exécuter |  | 0 |
-| UC-85 | Marketing OS — campagne, idée et promotion en production | Fonctionnel | à exécuter |  | 0 |
-| UC-86 | Marketing — publication sociale, mode assisté et vitrine publique | Fonctionnel | à exécuter |  | 0 |
-| UC-87 | Négoce — parcours RFQ, devis et acceptation (acheteur / vendeur) | Fonctionnel | à exécuter |  | 0 |
-| UC-88 | Négoce — coût total rendu, checklist douanière et profil vitrine | Fonctionnel | à exécuter |  | 0 |
-| UC-89 | Connecteurs — catalogue, connexion et révocation d'une intégration tierce | Fonctionnel | à exécuter |  | 3 |
+| UC-01 | Connexion d'un employé à l'espace client web | Fonctionnel | exécuté | 3 | 4 |
+| UC-02 | Pointage entrée / sortie (API, employé) | API | exécuté | 3 | 3 |
+| UC-03 | Pointage au kiosque biométrique (mode secours matricule) | UI/UX | exécuté | 3 | 0 |
+| UC-04 | Demande d'absence et approbation manager | Fonctionnel | exécuté | 3 | 3 |
+| UC-05 | Consultation du bulletin de paie (self-service employé) | Sécurité | exécuté | 3 | 2 |
+| UC-06 | Préparation de paie (Manager Comptable) | Fonctionnel | exécuté | 3 | 3 |
+| UC-07 | Gestion du dossier employé (création, modification, archivage) | Fonctionnel | exécuté | 3 | 3 |
+| UC-08 | Isolation multi-tenant | Sécurité | exécuté | 3 | 3 |
+| UC-09 | Multilingue et RTL (fr / en / tr / ar) | UI/UX | exécuté | 4 | 0 |
+| UC-10 | Kiosque en mode dégradé / synchronisation Edge | Résilience | exécuté | 3 | 0 |
+| UC-11 | CRM client (comptes, contacts, opportunités) | Fonctionnel | exécuté | 3 | 3 |
+| UC-12 | Vitrine publique et demande d'essai | Fonctionnel | exécuté | 3 | 3 |
+| UC-13 | Observabilité et santé de la plateforme | API | exécuté | 3 | 3 |
+| UC-14 | Solution verticale « Agence de voyage » (boutique publique) | Sécurité | exécuté | 3 | 3 |
+| UC-15 | Connexion Manager Principal et tableau de bord | Fonctionnel | à exécuter | 3 | 3 |
+| UC-16 | Gestion des départements et des équipes | Fonctionnel | à exécuter | 3 | 3 |
+| UC-17 | Attribution de rôles et invitations | Sécurité | à exécuter | 2 | 3 |
+| UC-18 | Validation des heures supplémentaires et du planning | Fonctionnel | à exécuter | 3 | 3 |
+| UC-19 | Génération et téléchargement d'un bulletin PDF | Fonctionnel | à exécuter | 3 | 0 |
+| UC-20 | Console Super Admin — gestion des entreprises | Fonctionnel | à exécuter | 3 | 0 |
+| UC-21 | Impersonation encadrée (Support) | Sécurité | à exécuter | 3 | 0 |
+| UC-22 | Facturation et abonnements (Finance) | Fonctionnel | à exécuter | 3 | 3 |
+| UC-23 | Kill switch et nœuds Edge (Ops) | Résilience | à exécuter | 3 | 3 |
+| UC-24 | Campagnes et vitrine (Marketing) | Fonctionnel | à exécuter | 3 | 3 |
+| UC-25 | Recrutement et offres d'emploi | Fonctionnel | à exécuter | 3 | 3 |
+| UC-26 | Bibliothèque / Showcase public | UI/UX | à exécuter | 3 | 0 |
+| UC-27 | Comptabilité — écritures et clôture mensuelle | Fonctionnel | à exécuter | 3 | 3 |
+| UC-28 | Comptabilité — export et rapprochement bancaire | Fonctionnel | à exécuter | 3 | 3 |
+| UC-29 | Notes de frais — soumission et validation | Fonctionnel | à exécuter | 3 | 3 |
+| UC-30 | Notes de frais — remboursement et impact paie | Fonctionnel | à exécuter | 3 | 3 |
+| UC-31 | Planning — shifts et affectations | Fonctionnel | à exécuter | 3 | 3 |
+| UC-32 | Tâches — assignation et preuve d'exécution | Fonctionnel | à exécuter | 3 | 3 |
+| UC-33 | Recrutement — offre d'emploi et page carrières | Fonctionnel | à exécuter | 3 | 3 |
+| UC-34 | Recrutement — pipeline de candidatures | Fonctionnel | à exécuter | 3 | 3 |
+| UC-35 | Communication — annonce interne et accusés de lecture | Fonctionnel | à exécuter | 3 | 3 |
+| UC-36 | Notifications — préférences et multi-canal | Fonctionnel | à exécuter | 3 | 3 |
+| UC-37 | Onboarding — provisioning d'un essai guidé | Fonctionnel | à exécuter | 3 | 0 |
+| UC-38 | Onboarding — reprise d'un parcours interrompu | Résilience | à exécuter | 3 | 0 |
+| UC-39 | Catalogue — produits, services et tarifs | Fonctionnel | à exécuter | 3 | 0 |
+| UC-40 | Recherche — recherche transverse et permissions | Sécurité | à exécuter | 3 | 0 |
+| UC-41 | Pages — pages publiques et SEO multilingue | UI/UX | à exécuter | 3 | 3 |
+| UC-42 | Showcase — vitrine publique et bibliothèque | UI/UX | à exécuter | 3 | 0 |
+| UC-43 | Bibliothèque — prêt et retour d'ouvrages | Fonctionnel | à exécuter | 3 | 3 |
+| UC-44 | Caméras — parc et supervision des flux | Fonctionnel | à exécuter | 3 | 0 |
+| UC-45 | Caméras — incident et maintenance | Fonctionnel | à exécuter | 3 | 0 |
+| UC-46 | Flotte — véhicules, affectations et entretien | Fonctionnel | à exécuter | 3 | 3 |
+| UC-47 | Station-service — index pompes et ventes carburant | Fonctionnel | à exécuter | 3 | 0 |
+| UC-48 | VTC — course et tarification | Fonctionnel | à exécuter | 3 | 0 |
+| UC-49 | Livraison — tournée et preuve de livraison | Fonctionnel | à exécuter | 3 | 0 |
+| UC-50 | Restauration — POS et plan de salle | Fonctionnel | à exécuter | 3 | 0 |
+| UC-51 | Restauration — KDS et cycle de commande | Résilience | à exécuter | 3 | 0 |
+| UC-52 | Retail — POS et encaissement | Fonctionnel | à exécuter | 3 | 0 |
+| UC-53 | Retail — stock et inventaire | Fonctionnel | à exécuter | 3 | 0 |
+| UC-54 | Hôtellerie — chambres, séjours et housekeeping | Fonctionnel | à exécuter | 3 | 0 |
+| UC-55 | Pharmacie — stock, ordonnance et profil public | Fonctionnel | à exécuter | 3 | 0 |
+| UC-56 | Santé — patients, rendez-vous et dossier | Sécurité | à exécuter | 3 | 0 |
+| UC-57 | École — classes, notes et présences | Fonctionnel | à exécuter | 3 | 0 |
+| UC-58 | École — facturation scolaire et espace parents | Fonctionnel | à exécuter | 3 | 0 |
+| UC-59 | Agriculture — parcelles, cultures et récoltes | Fonctionnel | à exécuter | 3 | 1 |
+| UC-60 | Cagnottes — campagne de collecte et dons | Fonctionnel | à exécuter | 3 | 0 |
+| UC-61 | Cabinet comptable — portefeuille clients | Sécurité | à exécuter | 3 | 3 |
+| UC-62 | Négoce — intention, sous-profil et devis | Fonctionnel | à exécuter | 3 | 0 |
+| UC-63 | Marque — branding tenant et surfaces publiques | UI/UX | à exécuter | 3 | 0 |
+| UC-64 | Abonnements — plan, essai et facturation | Fonctionnel | à exécuter | 3 | 3 |
+| UC-65 | Paiements — encaissement et webhooks | Sécurité | à exécuter | 3 | 0 |
+| UC-66 | EdgeSync — file hors-ligne et rejeu idempotent | Résilience | à exécuter | 3 | 3 |
+| UC-67 | Géolocalisation — preuve de présence | Sécurité | à exécuter | 3 | 0 |
+| UC-68 | API — contrat OpenAPI, webhooks et clés | API | à exécuter | 3 | 3 |
+| UC-69 | Mobile — build et distribution des applications | Résilience | à exécuter | 3 | 0 |
+| UC-70 | Desktop — poste de travail et mise à jour | Fonctionnel | à exécuter | 2 | 0 |
+| UC-71 | Public — fiche commerce (leopardo_public) | UI/UX | à exécuter | 3 | 0 |
+| UC-72 | Plateforme — provisionnement et diagnostic | Fonctionnel | à exécuter | 3 | 3 |
+| UC-73 | Tenant — isolation par établissement | Sécurité | à exécuter | 3 | 3 |
+| UC-74 | IAM — connexion SSO (SAML / OIDC) | Sécurité | à exécuter | 3 | 3 |
+| UC-75 | RGPD — registre des traitements et droits | Sécurité | à exécuter | 3 | 3 |
+| UC-76 | Performance — objectifs et évaluations | Fonctionnel | à exécuter | 3 | 3 |
+| UC-77 | Documents — coffre-fort et échéances | Fonctionnel | à exécuter | 3 | 0 |
+| UC-78 | Workflows — validations multi-niveaux | Fonctionnel | à exécuter | 3 | 3 |
+| UC-79 | Plateforme — tableau de bord consolidé | Fonctionnel | à exécuter | 3 | 0 |
+| UC-80 | Support — tickets et impersonation encadrée | Sécurité | à exécuter | 3 | 0 |
+| UC-81 | Finance — métriques d'abonnement et revenus | Fonctionnel | à exécuter | 3 | 0 |
+| UC-82 | Ops — nœuds Edge et kill switch | Résilience | à exécuter | 3 | 3 |
+| UC-83 | Marketing OS — publication sociale et statistiques | Fonctionnel | à exécuter | 3 | 3 |
+| UC-84 | RH — onboarding d'un nouvel employé | Fonctionnel | à exécuter | 3 | 0 |
+| UC-85 | Marketing OS — campagne, idée et promotion en production | Fonctionnel | à exécuter | 3 | 0 |
+| UC-86 | Marketing — publication sociale, mode assisté et vitrine publique | Fonctionnel | à exécuter | 3 | 0 |
+| UC-87 | Négoce — parcours RFQ, devis et acceptation (acheteur / vendeur) | Fonctionnel | à exécuter | 3 | 0 |
+| UC-88 | Négoce — coût total rendu, checklist douanière et profil vitrine | Fonctionnel | à exécuter | 3 | 0 |
+| UC-89 | Connecteurs — catalogue, connexion et révocation d'une intégration tierce | Fonctionnel | à exécuter | 3 | 3 |
+| UC-90 | Assistant IA — chat, proposition d'action et confirmation | Sécurité | à exécuter | 3 |  |
+| UC-91 | Contrats — modèle pays, signature et alerte d'expiration | Fonctionnel | à exécuter | 3 |  |
+| UC-92 | Audit — journal global, accès aux données sensibles et export | Sécurité | à exécuter | 3 |  |
+| UC-93 | Exports — employés, pointage, bulletins, absences et rapports RH | Fonctionnel | à exécuter | 3 |  |
+| UC-94 | Partenaires — candidature, taux de commission et reversement | Fonctionnel | à exécuter | 3 |  |
+| UC-95 | Formation — cours, sessions et inscriptions | Fonctionnel | à exécuter | 3 |  |
+| UC-96 | Sécurité — double authentification (2FA) et MFA plateforme | Sécurité | à exécuter | 3 |  |
 
-**Cas notés (IA) :** 14 · **Total des notes IA :** 60 · **Moyenne IA :** 4.29 / 5 · **Cas bloquants (≤2) :** 1
+**Cas notés (IA) :** 96 · **Total des notes IA :** 287 · **Moyenne IA :** 2.99 / 5 · **Cas bloquants (≤2) :** 2
 
 > La colonne « Note humaine (/5) » est renseignée par les testeurs humains depuis le portail
 > (ou directement dans `docs/recette/notes-humaines.json`) ; elle est versionnée dans le dépôt.

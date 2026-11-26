@@ -73,8 +73,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">4/5</span></td>
-          <td class="obs">Le pont local met chaque pointage en file SQLite (<code>sync_status=queued</code>) et incrémente <code>queue_count</code> (2 → 3 après un pointage) ; <code>dead_letter_count=0</code>. L&#x27;état est exposé par <code>GET /local/status</code> (<code>online</code>, <code>queue_count</code>, <code>last_error</code>, <code>last_sync_at</code>). La borne reste pleinement utilisable sans cloud. La resynchronisation vers le cloud n&#x27;a pas pu être validée de bout en bout : le point de synchronisation cloud n&#x27;est pas configuré en local (<code>last_error=HTTP_404</code>).</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : module <code>api/app/Modules/EdgeSync/</code> (Application, Console, Domain, Infrastructure, Interfaces, routes) et 77 fichiers de tests pointage/kiosque/edge (<code>KioskSyncSkippedEventsTest</code>, <code>EdgeSilentNodeDetectionTest</code>, <code>RestaurantOfflineSyncTest</code>). Le mode dégradé (coupure réseau réelle, rejeu) n&#x27;a pas pu être provoqué : API 503. Note 3 = critère de résilience non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-10"><span class="note-badge">0/5</span></td>
           <td class="human-cell" data-human-obs="UC-10">Non executable ici : le mode degrade kiosque/EdgeSync exige le client mobile ou le boitier, plus une coupure reseau controlee.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

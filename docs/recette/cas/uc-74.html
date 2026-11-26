@@ -73,8 +73,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-empty">—</span></td>
-          <td class="obs"><span class="muted">Non exécuté — à réaliser par le testeur IA.</span></td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : <code>api/routes/modules/sso.php</code> et <code>integrations.php</code> ; tests <code>SSOControllerTest</code>, <code>SSOOidcFlowTest</code>, <code>OidcIdTokenValidatorHardeningTest</code>, <code>SsoCallbackThrottleTest</code>, <code>SsoConfigureSsrfGuardTest</code>, <code>GoogleSsoTwoFactorSchemaTest</code>. API 503 : flux SSO non rejoué. Note 3 = critère d&#x27;exécution non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-74"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-74">GET /sso/providers -&gt; 200. Le flux SSO SAML/OIDC complet exige un IdP externe.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

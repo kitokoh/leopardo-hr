@@ -73,8 +73,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-good">5/5</span></td>
-          <td class="obs"><code>GET /crm/accounts</code> (Manager RH) → <strong>200</strong> (liste paginée). <code>POST /crm/accounts {name, email}</code> → <strong>201</strong>, compte créé (<code>id=2</code>, <code>status</code> renseigné). Le module CRM client répond correctement et est bien distinct du CRM commercial plateforme (routes <code>/platform/...</code> séparées, protégées par <code>platform.permission</code>).</td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : <code>api/routes/modules/crm.php</code> (86 routes CRM) et module <code>api/app/Modules/CRM/</code> (Application, Console, Domain, Infrastructure, Interfaces, Policies) ; 43 fichiers de tests CRM (<code>CrmFeatureGateTest</code>, <code>CrmMigrationsTest</code>, <code>CrmPlatformIsolationTest</code>, <code>CrmActivitiesTasksTest</code>). API 503 : CRUD non rejoué. Note 3 = critère d&#x27;exécution non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-11"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-11">GET /crm/accounts -&gt; 200 en persona principal. Le CRUD comptes/contacts/opportunites n&#x27;a pas ete rejoue.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

@@ -73,8 +73,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-empty">—</span></td>
-          <td class="obs"><span class="muted">Non exécuté — à réaliser par le testeur IA.</span></td>
+          <td class="center"><span class="note note-bad">2/5</span></td>
+          <td class="obs"><strong>Écart constaté sur pièces</strong> : le scaffolding desktop existe (<code>front/mobile_apps/*/windows</code>, <code>*/macos</code> pour 6 apps) et le workflow <code>.github/workflows/desktop-ci.yml</code> est présent, mais <code>docs/desktop/README.md</code> indique explicitement « chaîne de build/distribution : ❌ aucune » pour 5 apps sur 7, et <strong>aucun test automatisé</strong> n&#x27;est rattaché au desktop (0 fichier). La mise à jour applicative (auto-update) n&#x27;est pas implémentée. Note 2 = défaillance sur un critère majeur (distribution et mise à jour absentes).</td>
           <td class="center human-cell" data-human-note="UC-70"><span class="note-badge">0/5</span></td>
           <td class="human-cell" data-human-obs="UC-70">Non executable : client desktop non monte.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

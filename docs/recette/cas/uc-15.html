@@ -73,8 +73,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-empty">—</span></td>
-          <td class="obs"><span class="muted">Non exécuté — à réaliser par le testeur IA.</span></td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : <code>POST /api/v1/auth/login</code> et <code>GET /api/v1/auth/me</code> déclarés dans <code>api/routes/api.php</code> ; le tableau de bord agrégé est servi par <code>api/routes/modules/dashboard.php</code> (<code>/dashboard/stats</code>, <code>/dashboard/activities</code>, <code>/dashboard/alerts</code>) et la page <code>front/web/src/app/(dashboard)/dashboard/page.tsx</code> existe ; 59 fichiers de tests d&#x27;authentification. Vérification réseau : web <strong>402</strong>, API <strong>503</strong> — le rendu du tableau de bord n&#x27;a pas été observé. Note 3 = critère d&#x27;exécution non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-15"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-15">GET /me/* et /auth/2fa/status -&gt; 200 en persona principal ; le tableau de bord complet n&#x27;a pas ete verifie visuellement.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

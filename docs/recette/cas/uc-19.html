@@ -73,8 +73,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-empty">—</span></td>
-          <td class="obs"><span class="muted">Non exécuté — à réaliser par le testeur IA.</span></td>
+          <td class="center"><span class="note note-mid">3/5</span></td>
+          <td class="obs">Vérifié sur pièces : génération PDF de bulletin via <code>GET /me/pay-slips/{paySlip}/pdf</code> et <code>GET /pay-slips</code> (<code>api/routes/modules/payroll_engine.php</code>) ; jobs et rendu couverts par <code>GeneratePaySlipPdfJobNotifyTest</code>, <code>PaySlipPdfLocaleTest</code>, <code>PdfBrandingTest</code>. Le PDF n&#x27;a pas été téléchargé (API 503). Note 3 = critère d&#x27;exécution non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-19"><span class="note-badge">0/5</span></td>
           <td class="human-cell" data-human-obs="UC-19">Non execute : generation/téléchargement PDF de bulletin exige un worker et un stockage de fichiers non monte ici.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>
