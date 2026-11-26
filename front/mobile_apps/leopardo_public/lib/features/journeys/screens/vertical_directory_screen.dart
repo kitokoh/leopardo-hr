@@ -9,6 +9,7 @@ import '../domain/journey_registry.dart';
 import '../domain/vertical_directory_models.dart';
 import '../providers/journey_providers.dart';
 import '../widgets/journey_widgets.dart';
+import 'contact_request_screen.dart';
 
 /// Annuaire d'une verticale grand public — #9948.
 ///

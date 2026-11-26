@@ -5,6 +5,7 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 
 import '../../../core/i18n/app_strings.dart';
 import '../../../core/providers/app_providers.dart';
+import '../domain/journey_models.dart';
 import '../domain/vertical_directory_models.dart';
 import '../providers/journey_providers.dart';
 import '../widgets/journey_widgets.dart';
