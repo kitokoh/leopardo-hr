@@ -87,3 +87,20 @@ Chaque BC documente dans sa fiche (registre MAT-001) au minimum :
 Exemples : BC-06 Leave → alerte sur `leave:accrue` échoué ; BC-07 Payroll →
 alerte sur jobs `payroll` en dead-letter ; BC-08 Accounting → alerte sur
 `accounting:purge-expired-shares` échoué.
+
+---
+
+## SLO — engagements de service
+
+Les cibles ci-dessus sont des **objectifs d'ingénierie par endpoint**. Les
+engagements mesurés, avec budget d'erreur et règle de décision, sont définis
+dans [`SLO.md`](./SLO.md) (audit architecture 2026-11-26, issue #9983) :
+
+| SLO | Objectif | État de la mesure |
+|---|---|---|
+| SLO-1 Disponibilité API | 99,5 % / 30 j | ⚠️ données présentes, agrégateur absent |
+| SLO-2 Latence parcours critiques | p95 < 400 ms, p99 < 1 200 ms | ⚠️ données présentes, agrégateur absent |
+| SLO-3 Fraîcheur du scheduler | < 2× l'intervalle | ❌ non mesuré |
+
+Un SLO déclaré mais non mesuré n'est pas un SLO : c'est une intention. L'état
+réel de chaque mesure est tenu à jour dans `SLO.md` §5.
