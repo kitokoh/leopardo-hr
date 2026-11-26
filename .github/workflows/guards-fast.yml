@@ -103,6 +103,10 @@ on:
       - "api/routes/**"
       - "api/bootstrap/**"
       - "dev-hub/tools/check-no-env-in-seeders.py"
+      # --- rls-coverage-parity-guard (audit architecture 2026-11) ---
+      - "api/app/Console/Commands/TenantRlsStatusCommand.php"
+      - "api/database/migrations/tenant/**"
+      - "dev-hub/tools/check-rls-coverage-parity.py"
       # --- le workflow lui-même ---
       - ".github/workflows/guards-fast.yml"
   push:
@@ -137,6 +141,9 @@ on:
       - "api/app/**"
       - "api/database/**"
       - "dev-hub/tools/check-no-env-in-seeders.py"
+      - "api/app/Console/Commands/TenantRlsStatusCommand.php"
+      - "api/database/migrations/tenant/**"
+      - "dev-hub/tools/check-rls-coverage-parity.py"
       - ".github/workflows/guards-fast.yml"
   workflow_dispatch:
     inputs:
@@ -185,6 +192,7 @@ jobs:
       front_scripts: ${{ steps.filter.outputs.front_scripts }}
       config_keys: ${{ steps.filter.outputs.config_keys }}
       env_hygiene: ${{ steps.filter.outputs.env_hygiene }}
+      rls_parity: ${{ steps.filter.outputs.rls_parity }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -281,6 +289,11 @@ jobs:
               - "api/routes/**"
               - "api/bootstrap/**"
               - "dev-hub/tools/check-no-env-in-seeders.py"
+              - ".github/workflows/guards-fast.yml"
+            rls_parity:
+              - "api/app/Console/Commands/TenantRlsStatusCommand.php"
+              - "api/database/migrations/tenant/**"
+              - "dev-hub/tools/check-rls-coverage-parity.py"
               - ".github/workflows/guards-fast.yml"
 
   # ---------------------------------------------------------------------------
@@ -625,3 +638,43 @@ jobs:
       - name: Vérifier app/, database/, routes/, bootstrap/
         shell: bash
         run: python3 dev-hub/tools/check-no-env-in-seeders.py --verbose
+
+  # ---------------------------------------------------------------------------
+  # 13/13 — Sonde RLS et migrations décrivent les mêmes tables (audit 2026-11)
+  #
+  # `tenant:rls-status` (ADR-9879, #9896) est la seule chose qui rend l'état de
+  # RLS mesurable. Il compare PostgreSQL à une liste `EXPECTED_TABLES` écrite en
+  # dur — une SECONDE source de vérité face aux migrations, que rien n'obligeait
+  # à rester d'accord.
+  #
+  # C'est la classe de défaut de #9896 : la migration #9879 avait tourné avant
+  # la création de `bulk_payment_claims`, son garde `schemaTableExists()` l'a
+  # ignorée en silence, et la table est restée avec ENABLE+FORCE mais AUCUNE
+  # politique. La sonde l'a révélé ; rien ne garantissait qu'elle continuerait.
+  #
+  # Deux dérives silencieuses sont désormais impossibles :
+  #   - une migration couvre une table que la sonde ne vérifie pas
+  #     → annoncée protégée sans être mesurée ;
+  #   - la sonde attend une table qu'aucune migration ne couvre
+  #     → code 2 pour toujours, et un rouge permanent ne signale plus rien.
+  # ---------------------------------------------------------------------------
+  rls-coverage-parity:
+    name: Sonde RLS ↔ migrations cohérentes
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.rls_parity == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Auto-test de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-rls-coverage-parity.py --self-test
+      - name: Comparer EXPECTED_TABLES aux migrations RLS
+        shell: bash
+        run: python3 dev-hub/tools/check-rls-coverage-parity.py --verbose
