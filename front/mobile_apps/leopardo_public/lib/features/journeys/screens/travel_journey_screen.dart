@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -6,6 +8,7 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 import '../../../core/i18n/app_strings.dart';
 import '../../../core/providers/app_providers.dart';
 import '../domain/journey_models.dart';
+import '../domain/payment_polling.dart';
 import '../domain/travel_models.dart';
 import '../providers/journey_providers.dart';
 import '../widgets/journey_widgets.dart';
@@ -72,6 +75,20 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
   TravelPaymentInitiation? _payment;
   String? _paymentIdempotencyKey;
 
+  // ── Suivi du paiement (#9958) ──
+  //
+  // Après initiation, le statut n'est pas figé : un callback de mobile money
+  // peut le faire passer à `paid` quelques secondes plus tard. On interroge donc
+  // la réservation, avec un budget borné (`PaymentPollPlan`) et un arrêt net sur
+  // statut terminal, sur erreur, et dans `dispose()`.
+  static final PaymentPollPlan _pollPlan = PaymentPollPlan();
+  Timer? _pollTimer;
+  int _pollAttempt = 0;
+  bool _polling = false;
+  String? _livePaymentStatus;
+  bool _pollExhausted = false;
+  Object? _pollError;
+
   @override
   void initState() {
     super.initState();
@@ -85,6 +102,10 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
 
   @override
   void dispose() {
+    // Sans cette annulation, le timer survivrait à l'écran et interrogerait
+    // l'API pour une réservation que plus personne ne regarde.
+    _pollTimer?.cancel();
+    _pollTimer = null;
     _origin.dispose();
     _destination.dispose();
     _date.dispose();
@@ -592,6 +613,9 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
         _payment = payment;
         _paying = false;
       });
+
+      // #9958 — le paiement est initié, pas réglé. On suit son statut.
+      _startPaymentPolling();
     } catch (error) {
       if (!mounted) return;
       setState(() {
@@ -599,6 +623,94 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
         _paying = false;
       });
     }
+  }
+
+  /// Démarre le suivi du statut de paiement — #9958.
+  ///
+  /// Le premier tour part immédiatement : si le fournisseur a déjà confirmé
+  /// (paiement synchrone), attendre 5 s pour l'apprendre serait une latence
+  /// gratuite.
+  void _startPaymentPolling() {
+    final confirmation = _confirmation;
+    if (confirmation == null) return;
+
+    _pollTimer?.cancel();
+    _pollAttempt = 0;
+    _pollExhausted = false;
+    _pollError = null;
+
+    setState(() {
+      _polling = true;
+      _livePaymentStatus = _payment?.status ?? confirmation.paymentStatus;
+    });
+
+    _pollOnce();
+  }
+
+  /// Un tour d'interrogation, puis replanification si nécessaire.
+  ///
+  /// ## Pourquoi on rejoue `initiate` et non `track`
+  ///
+  /// `GET …/bookings/{reference}?code=` exige le **code de validation d'un
+  /// billet**, et un billet n'est émis qu'ensuite, par un agent
+  /// (`IssueTicketsAction`). Juste après le paiement, le voyageur n'a donc
+  /// aucun code : interroger `track` renverrait 422 puis 404 en boucle.
+  ///
+  /// `POST …/payments/initiate` est en revanche **idempotent sur
+  /// `idempotency_key`** : le contrôleur relit le paiement existant et rend son
+  /// statut courant. Rejouer avec la MÊME clé est donc exactement la bonne
+  /// sonde — elle ne crée jamais de transaction et ne demande aucun secret.
+  Future<void> _pollOnce() async {
+    final confirmation = _confirmation;
+    final key = _paymentIdempotencyKey;
+    if (confirmation == null || key == null || !mounted) return;
+
+    _pollAttempt++;
+
+    String? status;
+    Object? error;
+
+    try {
+      final payment = await ref.read(travelGatewayProvider).initiatePayment(
+            bookingReference: confirmation.reference,
+            provider: _paymentProvider,
+            idempotencyKey: key,
+          );
+      status = payment.status;
+    } catch (e) {
+      error = e;
+    }
+
+    if (!mounted) return;
+
+    final decision = _pollPlan.decide(
+      attempt: _pollAttempt,
+      status: status,
+      hasError: error != null,
+    );
+
+    setState(() {
+      if (status != null) _livePaymentStatus = status;
+      if (error != null) _pollError = error;
+      _polling = decision == PaymentPollDecision.poll;
+      _pollExhausted = decision == PaymentPollDecision.stopExhausted;
+    });
+
+    if (decision != PaymentPollDecision.poll) {
+      _pollTimer?.cancel();
+      _pollTimer = null;
+      return;
+    }
+
+    _pollTimer?.cancel();
+    _pollTimer = Timer(_pollPlan.interval, () {
+      if (mounted) _pollOnce();
+    });
+  }
+
+  /// Relance manuelle après épuisement du budget.
+  void _retryPolling() {
+    _startPaymentPolling();
   }
 
   Widget _paymentView(AppStrings strings) {
@@ -639,19 +751,66 @@ class _TravelJourneyScreenState extends ConsumerState<TravelJourneyScreen> {
             label: strings.t('travelPaymentReference'),
             value: payment.reference,
           ),
+          // #9958 — le statut affiché est celui du DERNIER tour de polling,
+          // jamais celui figé à l'initiation : c'est tout l'intérêt du suivi.
           _KeyValue(
             label: strings.t('journeyPaymentStatus'),
-            value: payment.status,
+            value: _livePaymentStatus ?? payment.status,
           ),
           if (payment.providerReference != null)
             _KeyValue(
               label: strings.t('travelPaymentProviderReference'),
               value: payment.providerReference!,
             ),
-          JourneyNotice(
-            text: strings.t('travelPaymentPendingNotice'),
-            color: AppColors.warning,
-          ),
+
+          // #9958 — état du suivi, dit explicitement.
+          if (_polling) ...[
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    strings.t('travelPaymentWatching'),
+                    style: AppTypography.bodySmall,
+                  ),
+                ),
+              ],
+            ),
+          ] else if (isTerminalPaymentStatus(_livePaymentStatus)) ...[
+            JourneyNotice(
+              text: strings.t('travelPaymentSettled'),
+              color: AppColors.success,
+              icon: Icons.verified_outlined,
+            ),
+          ] else if (_pollExhausted) ...[
+            // Budget épuisé : on ne laisse pas croire que ça tourne encore.
+            JourneyNotice(
+              text: strings.t('travelPaymentWatchStopped'),
+              color: AppColors.warning,
+            ),
+            OutlinedButton.icon(
+              onPressed: _retryPolling,
+              icon: const Icon(Icons.refresh, size: 18),
+              label: Text(strings.t('travelPaymentWatchRetry')),
+            ),
+          ] else if (_pollError != null) ...[
+            JourneyErrorView(strings: strings, error: _pollError!),
+            OutlinedButton.icon(
+              onPressed: _retryPolling,
+              icon: const Icon(Icons.refresh, size: 18),
+              label: Text(strings.t('travelPaymentWatchRetry')),
+            ),
+          ] else
+            JourneyNotice(
+              text: strings.t('travelPaymentPendingNotice'),
+              color: AppColors.warning,
+            ),
         ] else ...[
           JourneySectionTitle(text: strings.t('travelPaymentMethod')),
           Wrap(

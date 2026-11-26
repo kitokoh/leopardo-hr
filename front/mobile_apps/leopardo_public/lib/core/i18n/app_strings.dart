@@ -412,6 +412,12 @@ class AppStrings {
       'travelPaymentProviderReference': 'Référence opérateur',
       'travelPaymentPendingNotice':
           'Le paiement est en attente de confirmation. Conservez la référence du paiement : elle permet de le retrouver.',
+      'travelPaymentWatching':
+          'Suivi du paiement en cours… le statut se met à jour automatiquement.',
+      'travelPaymentSettled': 'Paiement confirmé.',
+      'travelPaymentWatchStopped':
+          'Le suivi automatique s\'est arrêté sans confirmation. Le paiement peut encore aboutir : vérifiez plus tard.',
+      'travelPaymentWatchRetry': 'Vérifier à nouveau',
 
       // ── Verticale Emploi (careers) — #9944 ──
       'careersDirectoryNotice':
@@ -806,6 +812,12 @@ class AppStrings {
       'travelPaymentProviderReference': 'Operator reference',
       'travelPaymentPendingNotice':
           'The payment is awaiting confirmation. Keep the payment reference: it is how you find it again.',
+      'travelPaymentWatching':
+          'Watching the payment… the status updates automatically.',
+      'travelPaymentSettled': 'Payment confirmed.',
+      'travelPaymentWatchStopped':
+          'Automatic tracking stopped without confirmation. The payment may still go through: check again later.',
+      'travelPaymentWatchRetry': 'Check again',
 
       // ── Careers vertical — #9944 ──
       'careersDirectoryNotice':
@@ -1183,6 +1195,12 @@ class AppStrings {
       'travelPaymentProviderReference': 'مرجع المشغّل',
       'travelPaymentPendingNotice':
           'الدفع في انتظار التأكيد. احتفظ بمرجع الدفع للعثور عليه لاحقًا.',
+      'travelPaymentWatching':
+          'جارٍ متابعة الدفع… تتحدّث الحالة تلقائيًا.',
+      'travelPaymentSettled': 'تم تأكيد الدفع.',
+      'travelPaymentWatchStopped':
+          'توقّفت المتابعة التلقائية دون تأكيد. قد يكتمل الدفع: تحقّق لاحقًا.',
+      'travelPaymentWatchRetry': 'تحقّق مرة أخرى',
 
       // ── قطاع التوظيف (careers) — #9944 ──
       'careersDirectoryNotice':
@@ -1572,6 +1590,12 @@ class AppStrings {
       'travelPaymentProviderReference': 'Operatör referansı',
       'travelPaymentPendingNotice':
           'Ödeme onay bekliyor. Ödeme referansını saklayın: onu bulmanın yolu budur.',
+      'travelPaymentWatching':
+          'Ödeme izleniyor… durum otomatik olarak güncellenir.',
+      'travelPaymentSettled': 'Ödeme onaylandı.',
+      'travelPaymentWatchStopped':
+          'Otomatik izleme onay olmadan durdu. Ödeme yine de tamamlanabilir: daha sonra kontrol edin.',
+      'travelPaymentWatchRetry': 'Yeniden kontrol et'
 
       // ── İşe alım dikeyi (careers) — #9944 ──
       'careersDirectoryNotice':
