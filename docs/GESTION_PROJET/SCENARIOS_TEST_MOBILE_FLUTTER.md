@@ -495,3 +495,20 @@ L'application tablette `leopardo_pos_restaurant` intègre la clôture de session
 - Scénario de test : ouverture de caisse -> prise de commande -> encaissement multi-moyens -> clôture avec saisie du montant compté et vérification de la réinitialisation de l'état local.
 
 
+
+## Marketing 2026-11-26 — route `/post/:id` et socle de tests (#9963)
+
+L'application `leopardo_marketing` n'avait **aucun** dossier `test/`. C'était la seule des 12 apps mobiles dans ce cas : l'étape CI `Run app test suite` est écrite `if [ -d test ]; then flutter test; else echo "::warning::…"`, et un warning ne fait pas échouer le job — la suite de cette app était donc silencieusement sautée.
+
+**Le défaut trouvé en écrivant les tests** : `social_posts_screen.dart` poussait `/post/${post.id}` depuis la carte de liste, alors qu'**aucune route `/post/:id` n'était enregistrée** dans le `GoRouter` de `main.dart`. C'est le défaut #3293 sous sa forme exacte : une cible de navigation déclarée dans l'UI mais absente du routeur → `GoException` au tap, écran figé. L'app compilait et s'analysait parfaitement.
+
+**Livré** : `social_post_detail_screen.dart` (détail en lecture seule, `GET /social-posts/{id}`), la route `/post/:id` (repli sur la liste si l'id n'est pas numérique), et la correction de `SocialPost.fromJson` qui levait une `TypeError` dès que l'id arrivait en chaîne.
+
+**Scénario à vérifier à la main** (en plus des 11 tests automatisés) :
+
+1. se connecter, ouvrir `/posts` ;
+2. taper une carte de publication → l'écran de détail s'ouvre avec le statut, les plateformes et le contenu (aucune `GoException`, aucun écran figé) ;
+3. revenir (`back`) → on retrouve la liste à sa position ;
+4. naviguer directement vers `/post/abc` → repli sur la liste, jamais un « Publication #null ».
+
+**Invariant verrouillé** : `test/navigation/marketing_router_test.dart` vérifie que **toute** chaîne littérale passée à `context.push(...)` / `context.go(...)` correspond à une route déclarée, par analyse du source — il couvre donc aussi les écrans ajoutés plus tard, sans qu'il faille y penser.
