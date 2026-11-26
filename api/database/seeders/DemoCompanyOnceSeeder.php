@@ -22,12 +22,15 @@ class DemoCompanyOnceSeeder extends Seeder
 
     public function run(): void
     {
-        $disabled = filter_var(env('DISABLE_DEMO_SEEDING', false), FILTER_VALIDATE_BOOLEAN);
+        $disabled = (bool) config('deployment.demo.disabled', false);
         // #7648 : le tier dev Render est passé en APP_ENV=staging — le critère
         // « jamais de démo en prod » est désormais aussi porté par le TIER
         // (DEPLOY_TIER=prod, #7647), en PLUS d'APP_ENV=production (conservé,
         // additive : protège la prod même si son APP_ENV changeait un jour).
-        $isProduction = app()->environment('production') || env('DEPLOY_TIER') === 'prod';
+        //
+        // Audit architecture 2026-11-26 : `config()` et non `env()` — voir
+        // config/deployment.php (config:cache précède db:seed).
+        $isProduction = app()->environment('production') || config('deployment.tier') === 'prod';
 
         DB::statement('SET search_path TO public');
 
@@ -336,7 +339,7 @@ class DemoCompanyOnceSeeder extends Seeder
             return;
         }
 
-        $email = config('demo.super_admin_email', env('SUPER_ADMIN_EMAIL', 'admin@leopardo-rh.com'));
+        $email = config('demo.super_admin_email', 'admin@leopardo-rh.com');
         $superAdmin = DB::table('super_admins')->where('email', $email)->first();
 
         if (! $superAdmin) {

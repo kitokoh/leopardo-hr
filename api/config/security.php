@@ -47,13 +47,6 @@ return [
         // derrière un NAT ne doivent pas partager le quota IP du bucket api).
         'zkteco_per_minute' => (int) env('RATE_LIMIT_ZKTECO_PER_MINUTE', 120),
         'kiosk_show_per_minute' => (int) env('RATE_LIMIT_KIOSK_SHOW_PER_MINUTE', 120),
-        // Issue #6555 : bucket dedie par serial_number pour les devices
-        // ZKTeco (plusieurs devices derriere un NAT partagent l'IP).
-        'zkteco_device_per_minute' => (int) env('RATE_LIMIT_ZKTECO_DEVICE_PER_MINUTE', 120),
-        // Public careers portal (job listing, job detail, XML feed, and
-        // candidate application submission) is unauthenticated by design,
-        // so it gets its own dedicated throttle bucket keyed by IP.
-        'public_careers_per_minute' => (int) env('RATE_LIMIT_PUBLIC_CAREERS_PER_MINUTE', 60),
         // #8750 [BOS-CHAT] — anti-spam de la messagerie horizontale.
         //
         // Deux dimensions, car un quota unique laisserait passer le cas gênant :
