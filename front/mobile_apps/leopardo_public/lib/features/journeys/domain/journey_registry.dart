@@ -178,16 +178,19 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'pharmacy',
     labelKey: 'journeyVerticalPharmacy',
     counterpartPath: '/pharmacies',
+    // #9945 — le blocage `catalog` est périmé : `PharmacyDiscoverableProvider`
+    // (tagué `public.discoverable`, #9592) sert réellement les officines
+    // opt-in via `GET /public/discover?type=pharmacy`. La vitrine web
+    // `/pharmacies` est alimentée par ce même contrat.
+    //
+    // Le mode reste `blocked` pour le CONTACT, et c'est légitime :
+    // `PublicProfileLocator::types()` ne contient pas `pharmacy`, donc
+    // `POST /public/contact-requests` répondrait 422. L'annuaire est
+    // consultable, la prise de contact ne l'est pas.
     mode: JourneyMode.blocked,
     discoveryType: 'pharmacy',
-    // `PublicProfileLocator::types()` ne contient pas `pharmacy` : une demande
-    // serait refusée en 422. Ce n'est PAS un oubli côté app.
     contactTargetType: null,
     blockers: [
-      JourneyBlocker(
-        capability: 'catalog',
-        reasonKey: 'journeyBlockerPharmacyCatalog',
-      ),
       JourneyBlocker(
         capability: 'contact',
         reasonKey: 'journeyBlockerPharmacyContact',
@@ -212,31 +215,28 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'travel',
     labelKey: 'journeyVerticalTravel',
     counterpartPath: '/billets',
-    mode: JourneyMode.blocked,
-    // Aucun provider `public.discoverable` : la surface existe côté API mais
-    // l'app ne peut pas y arriver depuis la découverte.
+    // #9943 — le contrat public marketplace existe et est appelé par la
+    // vitrine web `/billets` : recherche, détail, réservation, suivi et
+    // annulation sont servis sans compte ni jeton d'agence. Le blocage
+    // `entry` (aucun provider `public.discoverable`) est donc périmé : la
+    // verticale n'a pas besoin de la découverte, elle a sa propre recherche.
+    mode: JourneyMode.booking,
     discoveryType: null,
     contactTargetType: null,
-    blockers: [
-      JourneyBlocker(
-        capability: 'entry',
-        reasonKey: 'journeyBlockerTravelEntry',
-      ),
-    ],
   ),
   JourneyVertical(
     code: 'careers',
     labelKey: 'journeyVerticalCareers',
     counterpartPath: '/emploi',
-    mode: JourneyMode.blocked,
+    // #9944 — le contrat public ATS existe et est appelé par la vitrine web
+    // `/emploi` : annuaire, portail, offre, candidature et suivi par e-mail
+    // sont servis sans compte. Le blocage `entry` est donc périmé.
+    mode: JourneyMode.request,
     discoveryType: null,
+    // Aucun resolver public `careers` dans `PublicProfileLocator::types()` :
+    // la candidature passe par la route ATS dédiée, pas par
+    // `POST /public/contact-requests`.
     contactTargetType: null,
-    blockers: [
-      JourneyBlocker(
-        capability: 'entry',
-        reasonKey: 'journeyBlockerCareersEntry',
-      ),
-    ],
   ),
 ];
 
