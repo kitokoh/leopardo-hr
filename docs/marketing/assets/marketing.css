@@ -74,6 +74,14 @@ main{padding:28px 20px 60px}
   letter-spacing:.04em;line-height:1.5}
 .table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
   box-shadow:var(--shadow)}
+/* Indicateur de defilement : pose par le JS sur tout conteneur dont le tableau
+   depasse reellement. Regle GLOBALE (hors media query) : mesure du 2026-11-26,
+   a 1024x768 la classe etait posee mais la regle vivait dans la media query
+   820 px, donc 10 px de la colonne CTA restaient caches sans aucun indice. */
+.table-wrap.is-scrollable{position:relative}
+.table-wrap.is-scrollable::after{content:"\2194";position:absolute;top:6px;right:8px;
+  font-size:12px;color:var(--muted);background:var(--surface);padding:0 4px;
+  border-radius:4px;pointer-events:none;z-index:2}
 .data-table{width:100%;border-collapse:collapse;font-size:14px}
 .data-table th,.data-table td{padding:11px 13px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
 .data-table thead th{background:#f8fafc;font-size:12px;text-transform:uppercase;
@@ -179,13 +187,6 @@ body.loc-ar .status-steps .step{padding:5px 6px 5px 13px}
   .table-wrap{-webkit-overflow-scrolling:touch;scrollbar-width:thin}
   .table-wrap::-webkit-scrollbar{height:8px}
   .table-wrap::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:4px}
-  /* Indicateur de defilement : ajoute par le JS quand le tableau depasse
-     reellement son conteneur, pour qu'une colonne hors ecran ne soit jamais
-     silencieuse. */
-  .table-wrap.is-scrollable{position:relative}
-  .table-wrap.is-scrollable::after{content:"94";position:absolute;top:6px;right:8px;
-    font-size:12px;color:var(--muted);background:var(--surface);padding:0 4px;
-    border-radius:4px;pointer-events:none}
   /* Calendrier : sur mobile, les colonnes secondaires sont masquees pour que
      # / ID / Titre / Statut tiennent sans defilement horizontal. Mesure du
      2026-11-26 a 390 px : tableau 760 px dans un conteneur de 288 px, la
@@ -198,10 +199,24 @@ body.loc-ar .status-steps .step{padding:5px 6px 5px 13px}
   .vague .data-table th, .vague .data-table td{padding-left:8px;padding-right:8px;font-size:12.5px}
   .vague-head{flex-wrap:wrap}
   .vague-head .hist-count-badge{margin-left:0}
+  /* Recapitulatif : sur tablette, les deux colonnes de texte long (Audience,
+     CTA) sont masquees pour que # / Titre / Categorie / Format / Duree /
+     Statut tiennent sans defilement. Mesure du 2026-11-26 : a 768 px le
+     tableau faisait 855 px dans un conteneur de 711 px, soit 144 px de
+     colonnes hors ecran. Les valeurs restent accessibles sur la fiche du
+     script, liee depuis la colonne Titre. */
+  #tbl th:nth-child(7), #tbl td:nth-child(7),
+  #tbl th:nth-child(8), #tbl td:nth-child(8){display:none}
 }
 /* Sous 560 px, un tableau a 4 colonnes ne peut plus se comprimer lisiblement :
    on retablit le defilement horizontal dans le conteneur (jamais sur la page),
    avec l'indicateur ajoute par le JS. Constat du test 390 px du 2026-11-26. */
+/* Recapitulatif en paysage tablette (821-1100 px) : 8 colonnes ne tenaient
+   pas de 10 px (mesure 2026-11-26 a 1024x768 : tableau 977 px, conteneur
+   969 px). On resserre les cellules plutot que de masquer une colonne. */
+@media (min-width:821px) and (max-width:1100px){
+  #tbl th,#tbl td{padding-left:9px;padding-right:9px}
+}
 @media (max-width:560px){
   .data-table{min-width:760px}
   .vague .data-table{min-width:0}

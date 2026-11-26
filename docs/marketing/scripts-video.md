@@ -1,6 +1,6 @@
 # Scripts marketing — leopardo-hr
 
-_30 scripts video, 5 categories. Source de verite : `docs/marketing/scripts-video.json`._
+_32 scripts video, 5 categories. Source de verite : `docs/marketing/scripts-video.json`._
 
 ## Calendrier de tournage
 
@@ -87,6 +87,8 @@ Alimenter TikTok, Reels, Shorts et LinkedIn avec des formats verticaux.
 | 28 | VID-28 | Hotellerie : la chambre, le bail, la marge (9:16 TikTok) | A ecrire |
 | 29 | VID-29 | Ecole : la note, l'absence, l'appel des parents (9:16 TikTok) | A ecrire |
 | 30 | VID-30 | Station-service : la nuit, le poste, la marge (9:16 TikTok) | A ecrire |
+| 31 | VID-31 | Sante : le dossier, le rendez-vous, la facture (9:16 TikTok) | A ecrire |
+| 32 | VID-32 | VTC : la course, le chauffeur le plus proche, la marge (9:16 TikTok) | A ecrire |
 
 **Pourquoi cet ordre :** Les hooks 9:16 se calibrent sur les performances des vagues precedentes. Le temoignage client exige un client d'accord pour etre filme : a planifier en dernier.
 
@@ -729,4 +731,46 @@ Vertical 9:16 : hooks, temoignages et onboarding, pour TikTok, Reels, Shorts et 
 **Son :** Basse continue, ambiance nocturne, aucun effet de sirene.
 
 **Notes :** Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-11 : reutiliser les rushes de station de nuit et les captures d'ecran, ne pas re-tourner. Ne jamais afficher de prix de carburant : ils varient par pays et par jour. Verticale pilote terrain (BC-15 FUEL) : ne pas presenter le pack comme disponible partout.
+
+### VID-31 — Sante : le dossier, le rendez-vous, la facture (9:16 TikTok)
+
+- **Format :** 9:16 · **Duree :** 35 s · **Audience :** Cliniques privees, centres de soins, cabinets de groupe - TikTok, Reels, Shorts
+- **Statut de production :** A ecrire
+- **Objectif :** Decliner la verticale Sante en format vertical natif : le dossier patient, le rendez-vous et la facture des soins, sans demonstration produit longue. Renvoi vers le film 16:9 VID-09 pour la version complete.
+- **Hook :** « Le dossier du patient arrive toujours apres le patient. »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:05 | Le dossier du patient arrive toujours apres le patient. | Plan serre : une pochette de dossier papier posee sur un comptoir d'accueil, une salle d'attente floue derriere. | Le dossier arrive en dernier. |
+| 0:05-0:12 | L'accueil note l'heure. Le soignant note le soin. La facturation recompose tout de memoire. | Cut rapide : main qui ecrit sur un registre, ecran de logiciel different, tampon sur une feuille. | 3 endroits. 1 patient. |
+| 0:12-0:20 | Leopardo ouvre un dossier patient unique, partage entre l'accueil, le soin et la facturation. | Capture verticale : dossier patient, onglets identite, sejours, factures. | Un dossier patient |
+| 0:20-0:28 | Le rendez-vous se replanifie sans rappeler le patient trois fois. La facture suit le soin. | Capture verticale : agenda qui se decale, puis facture de soins generee depuis le sejour. | Rendez-vous & facture |
+| 0:28-0:35 | Sante : du couloir a la facture. Le film complet est en bio. | Retour sur le comptoir d'accueil vide, logo Leopardo, CTA en bas de cadre. | Film complet en bio |
+
+**CTA :** Film complet (16:9) en bio - activer le pack HealthManager, sans frais de pack.
+
+**Son :** Nappe douce, aucune urgence sonore. Percussion discrete sur les cuts.
+
+**Notes :** Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-09 : reutiliser les rushes de couloir et les captures d'ecran, ne pas re-tourner. Ne jamais montrer de donnee patient reelle, de nom lisible ni de visage identifiable : donnees de demonstration uniquement, tout nom propre floute. Aucune allegation de conformite reglementaire (RGPD, certification, agrement) que le produit ne certifie pas.
+
+### VID-32 — VTC : la course, le chauffeur le plus proche, la marge (9:16 TikTok)
+
+- **Format :** 9:16 · **Duree :** 35 s · **Audience :** Flottes VTC et taxi, plateformes locales de mobilite - TikTok, Reels, Shorts
+- **Statut de production :** A ecrire
+- **Objectif :** Decliner la verticale VTC en format vertical natif : la reservation, le dispatch au plus proche et le suivi de course, sans demonstration produit longue. Renvoi vers le film 16:9 VID-12 pour la version complete.
+- **Hook :** « Le client appelle. Vous cherchez qui est le plus proche. A la main. »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:05 | Le client appelle. Vous cherchez qui est le plus proche. A la main. | Plan serre : standard telephonique, carte papier annotee au feutre, deux telephones qui sonnent. | Le dispatch a la main. |
+| 0:05-0:12 | Trois appels pour une course. Et le chauffeur d'a cote attend toujours. | Cut rapide : doigt sur la carte, message vocal, chauffeur au volant qui hausse les epaules. | Une course, trois appels. |
+| 0:12-0:20 | Leopardo prend la reservation et dispatche au chauffeur le plus proche, calcule par le core geospatial. | Capture verticale : reservation, carte, attribution automatique du chauffeur. | Dispatch au plus proche |
+| 0:20-0:28 | Le tarif s'applique selon la course, et le suivi reste visible jusqu'a la fin. | Capture verticale : tarification, puis suivi de course sur la carte. | Tarif & suivi |
+| 0:28-0:35 | VTC : de l'appel a la course. Le film complet est en bio. | Retour sur la carte papier froissee, logo Leopardo, CTA en bas de cadre. | Film complet en bio |
+
+**CTA :** Film complet (16:9) en bio - activer le pack VTC, sans frais de pack.
+
+**Son :** Rythme urbain, 120 BPM, coupe nette sur le CTA.
+
+**Notes :** Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-12 : reutiliser les rushes de standard et les captures d'ecran, ne pas re-tourner. Le pack VTC requiert le core geospatial `geo` (PostGIS) : ne pas promettre de dispatch temps reel si l'environnement de demonstration ne l'a pas active. Aucun nom de chauffeur ni plaque d'immatriculation reelle a l'ecran.
 
