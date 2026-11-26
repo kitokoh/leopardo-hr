@@ -1,12 +1,17 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Calendrier de tournage — Scripts marketing Leopardo</title>
+<link rel="alternate" hreflang="fr" href="calendrier.html">
+<link rel="alternate" hreflang="en" href="en/calendrier.html">
+<link rel="alternate" hreflang="tr" href="tr/calendrier.html">
+<link rel="alternate" hreflang="ar" href="ar/calendrier.html">
+<link rel="alternate" hreflang="x-default" href="calendrier.html">
 <link rel="stylesheet" href="assets/marketing.css">
 </head>
-<body>
+<body class="loc-fr">
 <header class="topbar">
   <div class="wrap topbar-inner">
     <a class="brand" href="index.html">
@@ -21,33 +26,32 @@
       <a href="scripts-video.md">Markdown</a>
       <a href="../recette/index.html">Portail recette</a>
     </nav>
+    <div class="langswitch" role="group" aria-label="Langue">
+      <a class="lang-link is-current" href="calendrier.html" hreflang="fr" lang="fr" aria-current="true">FR</a><a class="lang-link" href="en/calendrier.html" hreflang="en" lang="en">EN</a><a class="lang-link" href="tr/calendrier.html" hreflang="tr" lang="tr">TR</a><a class="lang-link" href="ar/calendrier.html" hreflang="ar" lang="ar">AR</a>
+    </div>
   </div>
 </header>
 <main class="wrap">
   <h1 class="page-title">Calendrier de tournage</h1>
-  <p class="page-sub">Ordre de production des videos de promotion, vague par vague.</p>
   
-  <p class="lead">Les 26 scripts dans leur ordre reel de production, regroupes en vagues.
-    Une vague ne demarre pas avant que la precedente soit montee : chaque film maitre alimente
-    ses derives. Le statut de chaque script est celui du fichier <code>statuts-tournage.json</code>.</p>
+  
+  <p class="lead">Les 28 scripts dans leur ordre reel de production, regroupes en vagues. Une vague ne demarre pas avant que la precedente soit montee : chaque film maitre alimente ses derives. Le statut de chaque script est celui du fichier statuts-tournage.json.</p>
 
-  <div class="stats stats-light"><div class="stat stat-light" style="--accent:#64748b"><span class="stat-num">26</span><span class="stat-label">A ecrire</span></div><div class="stat stat-light" style="--accent:#b45309"><span class="stat-num">0</span><span class="stat-label">Tourne</span></div><div class="stat stat-light" style="--accent:#2563eb"><span class="stat-num">0</span><span class="stat-label">Monte</span></div><div class="stat stat-light" style="--accent:#0f766e"><span class="stat-num">0</span><span class="stat-label">Publie</span></div></div>
+  <div class="stats stats-light"><div class="stat stat-light" style="--accent:#64748b"><span class="stat-num">28</span><span class="stat-label">A ecrire</span></div><div class="stat stat-light" style="--accent:#b45309"><span class="stat-num">0</span><span class="stat-label">Tourne</span></div><div class="stat stat-light" style="--accent:#2563eb"><span class="stat-num">0</span><span class="stat-label">Monte</span></div><div class="stat stat-light" style="--accent:#0f766e"><span class="stat-num">0</span><span class="stat-label">Publie</span></div></div>
 
   <div class="panel export-panel">
-    <h3>Export pour l'equipe production</h3>
-    <p>Le calendrier complet (une ligne par script, dans l'ordre de tournage) est disponible en
-      CSV : separateur point-virgule, encodage UTF-8 avec BOM, ouvrable directement dans Excel
-      et LibreOffice sans manipulation d'import.</p>
+    <h3>Export pour l&#x27;equipe production</h3>
+    <p>Le calendrier complet (une ligne par script, dans l&#x27;ordre de tournage) est disponible en CSV : separateur point-virgule, encodage UTF-8 avec BOM, ouvrable directement dans Excel et LibreOffice sans manipulation d&#x27;import.</p>
     <p class="export-actions">
       <a class="btn-export" href="calendrier-tournage.csv" download="calendrier-tournage.csv">
         Telecharger le calendrier (CSV)
       </a>
-      <span class="muted small">26 lignes &middot; calendrier-tournage.csv</span>
+      <span class="muted small">28 &middot; calendrier-tournage.csv</span>
     </p>
   </div>
 
   <div class="panel">
-    <h3>Regle d'ordonnancement</h3>
+    <h3>Regle d&#x27;ordonnancement</h3>
     <p>Ordre de production des videos. Une vague se tourne dans l&#x27;ordre de ses etapes ; une vague ne demarre pas avant que la precedente soit montee. Les derives (cuts, formats courts) se tournent pendant le montage de leur film source, avec les memes rushes.</p>
   </div>
 
@@ -63,8 +67,9 @@
       </div>
       <div class="table-wrap">
         <table class="data-table">
-          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
-            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th>
+            <th>Categorie</th><th class="center">Format</th>
+            <th class="center">Duree</th><th class="center">Statut</th></tr></thead>
           <tbody>
             <tr data-status="a_ecrire">
               <td class="center nowrap"><strong>1</strong></td>
@@ -117,8 +122,9 @@
       </div>
       <div class="table-wrap">
         <table class="data-table">
-          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
-            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th>
+            <th>Categorie</th><th class="center">Format</th>
+            <th class="center">Duree</th><th class="center">Statut</th></tr></thead>
           <tbody>
             <tr data-status="a_ecrire">
               <td class="center nowrap"><strong>5</strong></td>
@@ -171,8 +177,9 @@
       </div>
       <div class="table-wrap">
         <table class="data-table">
-          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
-            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th>
+            <th>Categorie</th><th class="center">Format</th>
+            <th class="center">Duree</th><th class="center">Statut</th></tr></thead>
           <tbody>
             <tr data-status="a_ecrire">
               <td class="center nowrap"><strong>9</strong></td>
@@ -243,8 +250,9 @@
       </div>
       <div class="table-wrap">
         <table class="data-table">
-          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
-            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th>
+            <th>Categorie</th><th class="center">Format</th>
+            <th class="center">Duree</th><th class="center">Statut</th></tr></thead>
           <tbody>
             <tr data-status="a_ecrire">
               <td class="center nowrap"><strong>15</strong></td>
@@ -297,8 +305,9 @@
       </div>
       <div class="table-wrap">
         <table class="data-table">
-          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
-            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th>
+            <th>Categorie</th><th class="center">Format</th>
+            <th class="center">Duree</th><th class="center">Statut</th></tr></thead>
           <tbody>
             <tr data-status="a_ecrire">
               <td class="center nowrap"><strong>19</strong></td>
@@ -347,12 +356,13 @@
           <h3>Formats courts et social</h3>
           <p class="muted small">Alimenter TikTok, Reels, Shorts et LinkedIn avec des formats verticaux.</p>
         </div>
-        <span class="hist-count-badge">4</span>
+        <span class="hist-count-badge">6</span>
       </div>
       <div class="table-wrap">
         <table class="data-table">
-          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th><th>Categorie</th>
-            <th class="center">Format</th><th class="center">Duree</th><th class="center">Statut</th></tr></thead>
+          <thead><tr><th class="center">#</th><th>ID</th><th>Titre</th>
+            <th>Categorie</th><th class="center">Format</th>
+            <th class="center">Duree</th><th class="center">Statut</th></tr></thead>
           <tbody>
             <tr data-status="a_ecrire">
               <td class="center nowrap"><strong>23</strong></td>
@@ -389,6 +399,24 @@
               <td class="center"><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">9:16</span></td>
               <td class="center nowrap">35 s</td>
               <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>27</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-27.html">VID-27</a></td>
+              <td><a class="uc-link" href="scripts/vid-27.html">Pharmacie : le lot rappele, l&#x27;ordonnance (9:16 TikTok)</a></td>
+              <td><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">📱 Formats courts &amp; social</span></td>
+              <td class="center"><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">9:16</span></td>
+              <td class="center nowrap">35 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
+            </tr>
+            <tr data-status="a_ecrire">
+              <td class="center nowrap"><strong>28</strong></td>
+              <td class="nowrap"><a class="uc-link" href="scripts/vid-28.html">VID-28</a></td>
+              <td><a class="uc-link" href="scripts/vid-28.html">Hotellerie : la chambre, le bail, la marge (9:16 TikTok)</a></td>
+              <td><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">📱 Formats courts &amp; social</span></td>
+              <td class="center"><span class="badge" style="background:#db27771a;color:#db2777;border-color:#db277733">9:16</span></td>
+              <td class="center nowrap">35 s</td>
+              <td class="center nowrap"><span class="badge status-badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">A ecrire</span></td>
             </tr></tbody>
         </table>
       </div>
@@ -398,10 +426,9 @@
 </main>
 <footer class="footer">
   <div class="wrap">
-    <p>Espace <strong>Scripts marketing</strong> de <strong>leopardo-hr</strong> — depot
+    <p>Scripts marketing — <strong>leopardo-hr</strong> —
       <a href="https://github.com/Kitokoh/leopardo-hr" target="_blank" rel="noopener">Kitokoh/leopardo-hr</a>.
-      Source de verite : <a href="https://github.com/Kitokoh/leopardo-hr/blob/main/docs/marketing/scripts-video.json">docs/marketing/scripts-video.json</a>.
-      Chaque script porte un identifiant stable (VID-nn) : ne jamais le reutiliser pour un autre sujet.</p>
+      <a href="https://github.com/Kitokoh/leopardo-hr/blob/main/docs/marketing/scripts-video.json">docs/marketing/scripts-video.json</a>.</p>
   </div>
 </footer>
 <script src="assets/marketing.js"></script>

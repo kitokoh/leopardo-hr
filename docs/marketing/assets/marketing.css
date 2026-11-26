@@ -25,6 +25,13 @@ code{background:#eef2f7;padding:.1em .35em;border-radius:5px;font-size:.9em}
 .mainnav{display:flex;gap:4px;flex-wrap:wrap}
 .mainnav a{padding:8px 12px;border-radius:9px;color:#334155;font-size:14px;font-weight:500}
 .mainnav a:hover{background:#eef2f7;text-decoration:none}
+/* --- selecteur de langue --- */
+.langswitch{display:flex;gap:2px;background:#f1f5f9;border:1px solid var(--line);
+  border-radius:999px;padding:3px;flex-shrink:0}
+.lang-link{display:inline-block;padding:4px 9px;border-radius:999px;font-size:12px;
+  font-weight:700;color:#475569;letter-spacing:.02em}
+.lang-link:hover{background:#e2e8f0;text-decoration:none}
+.lang-link.is-current{background:var(--brand);color:#fff}
 main{padding:28px 20px 60px}
 .page-title{font-size:30px;line-height:1.2;margin:6px 0 4px;letter-spacing:-.02em}
 .page-sub{color:var(--muted);margin:0 0 22px}
@@ -62,6 +69,9 @@ main{padding:28px 20px 60px}
   border-radius:999px;padding:4px 11px;font-size:12.5px;color:#334155}
 .badge{display:inline-flex;align-items:center;gap:5px;border:1px solid transparent;border-radius:999px;
   padding:3px 10px;font-size:12px;font-weight:600}
+.fr-badge{display:inline-block;background:#fef3c7;color:#92400e;border:1px solid #fcd34d;
+  border-radius:5px;padding:0 5px;font-size:10px;font-weight:800;vertical-align:middle;
+  letter-spacing:.04em;line-height:1.5}
 .table-wrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
   box-shadow:var(--shadow)}
 .data-table{width:100%;border-collapse:collapse;font-size:14px}
@@ -94,7 +104,7 @@ main{padding:28px 20px 60px}
   font-weight:700;font-size:14px;text-decoration:none;border-radius:10px;padding:11px 18px;
   border:1px solid var(--brand);box-shadow:0 1px 2px rgba(15,23,42,.12)}
 .btn-export:hover{filter:brightness(1.08)}
-.btn-export::before{content:"b07";font-size:15px;line-height:1}
+.btn-export::before{content:"\2b07";font-size:15px;line-height:1}
 .plain{margin:0;padding-left:18px}
 .plain li{margin:4px 0}
 .uc-head{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
@@ -138,6 +148,18 @@ main{padding:28px 20px 60px}
 .btn-back:hover{background:#f8fafc;text-decoration:none}
 .footer{border-top:1px solid var(--line);background:#fff;padding:22px 0;margin-top:20px}
 .footer p{margin:0;color:var(--muted);font-size:13px}
+/* --- RTL (arabe) --- */
+body.loc-ar{direction:rtl}
+body.loc-ar .data-table th,body.loc-ar .data-table td{text-align:right}
+body.loc-ar .data-table .center{text-align:center}
+body.loc-ar .hook{padding-left:0;padding-right:14px;border-left:none;border-right:3px solid var(--brand)}
+body.loc-ar .plain{padding-left:0;padding-right:18px}
+body.loc-ar .profile-head{border-left:1px solid var(--line);border-right:4px solid var(--accent,var(--brand))}
+body.loc-ar .export-panel{border-left:1px solid var(--line);border-right:4px solid var(--brand)}
+body.loc-ar .status-panel{border-left:1px solid var(--line);border-right:4px solid var(--accent,var(--brand))}
+body.loc-ar .vague{border-left:1px solid var(--line)!important;border-right:4px solid var(--brand)}
+body.loc-ar .vague-head .hist-count-badge{margin-left:0;margin-right:auto}
+body.loc-ar .status-steps .step{padding:5px 6px 5px 13px}
 @media (max-width:820px){
   .two-col{grid-template-columns:1fr}
   .hero{padding:28px 22px}
@@ -145,6 +167,7 @@ main{padding:28px 20px 60px}
   .page-title{font-size:24px}
   .topbar-inner{height:auto;padding:10px 0;flex-direction:column;align-items:flex-start}
   .mainnav{width:100%}
+  .langswitch{align-self:flex-start}
   /* Sur mobile, un tableau ne se comprime pas : il defile dans son conteneur.
      Sans cela les colonnes Titre/Categorie s'ecrasent en 5 lignes et la
      lecture devient penible (constate au test 390 px du 2026-11-26). */
@@ -164,7 +187,7 @@ main{padding:28px 20px 60px}
   .vague-head .hist-count-badge{margin-left:0}
 }
 @media print{
-  .topbar,.footer,.toolbar,.uc-nav{display:none}
+  .topbar,.footer,.toolbar,.uc-nav,.langswitch{display:none}
   body{background:#fff}
   .card,.panel,.table-wrap{box-shadow:none}
 }
