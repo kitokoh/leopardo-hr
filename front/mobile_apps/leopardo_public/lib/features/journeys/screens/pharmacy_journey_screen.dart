@@ -5,6 +5,7 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 
 import '../../../core/i18n/app_strings.dart';
 import '../../../core/providers/app_providers.dart';
+import '../data/pharmacy_gateway.dart';
 import '../domain/pharmacy_models.dart';
 import '../providers/journey_providers.dart';
 import '../widgets/journey_widgets.dart';
