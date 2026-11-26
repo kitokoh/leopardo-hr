@@ -129,18 +129,18 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'restaurant',
     labelKey: 'journeyVerticalRestaurant',
     counterpartPath: '/restaurants',
-    mode: JourneyMode.request,
+    // #9959 — le blocage `order` est PÉRIMÉ. Il décrivait RESTO-805 (#6226),
+    // la boutique à jeton `X-Restaurant-Shop-Token`. Depuis RESTO-902 (#7747)
+    // une surface publique PAR SLUG existe et ne demande aucun jeton :
+    //   GET  /public/restaurants/{slug}            → profil + menu
+    //   POST /public/restaurants/{slug}/orders     → commande
+    //   GET  /public/restaurants/{slug}/orders/{ref}?secret= → suivi
+    //   POST /public/restaurants/{slug}/orders/{ref}/pay     → paiement
+    // C'est exactement ce que consomme la vitrine web `/restaurants/{slug}`
+    // (`RestaurantOrderPanel.tsx`). Le parcours natif est donc complet.
+    mode: JourneyMode.order,
     discoveryType: 'restaurant',
     contactTargetType: 'restaurant',
-    blockers: [
-      // La boutique publique existe (`/public/restaurant/shop/*`) mais exige
-      // `X-Restaurant-Shop-Token`, un jeton par tenant émis au back-office :
-      // l'exposer au grand public est une décision de sécurité serveur.
-      JourneyBlocker(
-        capability: 'order',
-        reasonKey: 'journeyBlockerRestaurantOrder',
-      ),
-    ],
   ),
   JourneyVertical(
     code: 'retail',
@@ -162,6 +162,8 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'trade',
     labelKey: 'journeyVerticalTrade',
     counterpartPath: '/entreprises',
+    // #9948 — annuaire et fiche natifs ajoutés (`VerticalDirectoryScreen`),
+    // en parité avec la vitrine web `/entreprises`.
     mode: JourneyMode.request,
     discoveryType: 'trade_company',
     contactTargetType: 'trade_company',
@@ -178,16 +180,19 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'pharmacy',
     labelKey: 'journeyVerticalPharmacy',
     counterpartPath: '/pharmacies',
+    // #9945 — le blocage `catalog` est périmé : `PharmacyDiscoverableProvider`
+    // (tagué `public.discoverable`, #9592) sert réellement les officines
+    // opt-in via `GET /public/discover?type=pharmacy`. La vitrine web
+    // `/pharmacies` est alimentée par ce même contrat.
+    //
+    // Le mode reste `blocked` pour le CONTACT, et c'est légitime :
+    // `PublicProfileLocator::types()` ne contient pas `pharmacy`, donc
+    // `POST /public/contact-requests` répondrait 422. L'annuaire est
+    // consultable, la prise de contact ne l'est pas.
     mode: JourneyMode.blocked,
     discoveryType: 'pharmacy',
-    // `PublicProfileLocator::types()` ne contient pas `pharmacy` : une demande
-    // serait refusée en 422. Ce n'est PAS un oubli côté app.
     contactTargetType: null,
     blockers: [
-      JourneyBlocker(
-        capability: 'catalog',
-        reasonKey: 'journeyBlockerPharmacyCatalog',
-      ),
       JourneyBlocker(
         capability: 'contact',
         reasonKey: 'journeyBlockerPharmacyContact',
@@ -198,45 +203,41 @@ const List<JourneyVertical> journeyVerticals = [
     code: 'vtc',
     labelKey: 'journeyVerticalVtc',
     counterpartPath: '/operateurs',
-    mode: JourneyMode.request,
+    // #9948 — le blocage `ride` est périmé. La vitrine web ne géocode pas
+    // davantage que l'app : elle demande des coordonnées « lat,lng »
+    // (`parsePoint` dans `RideRequestSurface.tsx`). L'app fait exactement
+    // pareil, puis appelle `estimate` et `rides`. Le parcours invité complet
+    // (annuaire → devis → course → suivi) est donc natif.
+    mode: JourneyMode.booking,
     discoveryType: 'vtc_operator',
     contactTargetType: 'vtc_operator',
-    blockers: [
-      // `POST /public/vtc/marketplace/rides` exige `pickup.lat/lng` ET
-      // `dropoff.lat/lng` : sans recherche d'adresse ni géocodage dans l'app,
-      // un devis serait géographiquement faux.
-      JourneyBlocker(capability: 'ride', reasonKey: 'journeyBlockerVtcRide'),
-    ],
   ),
   JourneyVertical(
     code: 'travel',
     labelKey: 'journeyVerticalTravel',
     counterpartPath: '/billets',
-    mode: JourneyMode.blocked,
-    // Aucun provider `public.discoverable` : la surface existe côté API mais
-    // l'app ne peut pas y arriver depuis la découverte.
+    // #9943 — le contrat public marketplace existe et est appelé par la
+    // vitrine web `/billets` : recherche, détail, réservation, suivi et
+    // annulation sont servis sans compte ni jeton d'agence. Le blocage
+    // `entry` (aucun provider `public.discoverable`) est donc périmé : la
+    // verticale n'a pas besoin de la découverte, elle a sa propre recherche.
+    mode: JourneyMode.booking,
     discoveryType: null,
     contactTargetType: null,
-    blockers: [
-      JourneyBlocker(
-        capability: 'entry',
-        reasonKey: 'journeyBlockerTravelEntry',
-      ),
-    ],
   ),
   JourneyVertical(
     code: 'careers',
     labelKey: 'journeyVerticalCareers',
     counterpartPath: '/emploi',
-    mode: JourneyMode.blocked,
+    // #9944 — le contrat public ATS existe et est appelé par la vitrine web
+    // `/emploi` : annuaire, portail, offre, candidature et suivi par e-mail
+    // sont servis sans compte. Le blocage `entry` est donc périmé.
+    mode: JourneyMode.request,
     discoveryType: null,
+    // Aucun resolver public `careers` dans `PublicProfileLocator::types()` :
+    // la candidature passe par la route ATS dédiée, pas par
+    // `POST /public/contact-requests`.
     contactTargetType: null,
-    blockers: [
-      JourneyBlocker(
-        capability: 'entry',
-        reasonKey: 'journeyBlockerCareersEntry',
-      ),
-    ],
   ),
 ];
 

@@ -40,6 +40,26 @@ runs:
         flutter-version: ${{ inputs.flutter-version }}
         cache: true
 
+    # #9950 — cache du PUB_CACHE lui-meme.
+    #
+    # `subosito/flutter-action` avec `cache: true` ne met en cache que le SDK
+    # Flutter, PAS `~/.pub-cache` : chaque job re-telechargeait donc ses
+    # dependances pub. Sur une chaine de 12 apps, cela represente 12
+    # resolutions reseau par run.
+    #
+    # La cle porte la version Flutter epinglee ET le hash des `pubspec.lock`,
+    # donc un bump de dependance invalide le cache — un cache qui servirait
+    # d'anciennes versions apres un changement de pin masquerait exactement le
+    # genre d'ecart que #9949 vient de corriger.
+    #
+    # `restore-keys` est volontairement ABSENT : un cache partiel ramenerait
+    # un etat intermediaire de resolution, ce qui est pire que pas de cache.
+    - name: Cache pub (deps Dart) — #9950
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6
+      with:
+        path: ~/.pub-cache
+        key: pub-cache-${{ runner.os }}-${{ inputs.flutter-version }}-${{ hashFiles('front/mobile_apps/*/pubspec.lock') }}
+
     # Les apps mobiles compilent en compileSdk 37 depuis #9465 : les AAR de
     # flutter_local_notifications 23 et androidx.core 1.19 declarent
     # `minCompileSdk 37` et `:app:checkDebugAarMetadata` refuse sinon.

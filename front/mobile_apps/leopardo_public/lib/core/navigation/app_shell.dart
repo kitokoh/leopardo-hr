@@ -10,6 +10,11 @@ import '../../features/activity/screens/activity_tab.dart';
 import '../../features/journeys/screens/contact_request_screen.dart';
 import '../../features/journeys/screens/retail_order_screen.dart';
 import '../../features/journeys/screens/stay_reservation_screen.dart';
+import '../../features/journeys/screens/travel_journey_screen.dart';
+import '../../features/journeys/screens/careers_journey_screen.dart';
+import '../../features/journeys/screens/pharmacy_journey_screen.dart';
+import '../../features/journeys/screens/vertical_directory_screen.dart';
+import '../../features/journeys/screens/vtc_journey_screen.dart';
 import '../../features/tabs/secondary_tabs.dart';
 
 /// Coque à 4 onglets.
@@ -167,6 +172,48 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           type: state.pathParameters['type'] ?? '',
           slug: state.pathParameters['slug'] ?? '',
         ),
+      ),
+      // Verticale Billets (#9943) : la recherche est autonome (elle n'a pas
+      // besoin d'une fiche commerce), donc la route ne porte pas de slug.
+      // `trip` en query permet d'ouvrir directement une fiche depuis un lien.
+      GoRoute(
+        path: '/journey/travel',
+        builder: (context, state) => TravelJourneyScreen(
+          initialTripId: int.tryParse(state.uri.queryParameters['trip'] ?? ''),
+        ),
+      ),
+      // Verticale Emploi (#9944) : l'annuaire des portails est la porte
+      // d'entrée ; `company` en query ouvre directement un portail.
+      GoRoute(
+        path: '/journey/careers',
+        builder: (context, state) => CareersJourneyScreen(
+          initialCompanySlug: state.uri.queryParameters['company'],
+        ),
+      ),
+      // Verticale Pharmacie (#9945) : annuaire en lecture seule. `slug` en
+      // query ouvre directement une fiche.
+      GoRoute(
+        path: '/journey/pharmacy',
+        builder: (context, state) => PharmacyJourneyScreen(
+          initialSlug: state.uri.queryParameters['slug'],
+        ),
+      ),
+      // Verticales d'annuaire (#9948) : restaurant, retail, hospitality et
+      // trade partagent le même contrat de lecture
+      // (`GET /public/discover?type=…`) et donc le même écran. Le code de
+      // verticale est validé par le registre — un code inconnu affiche un
+      // message, jamais une liste vide trompeuse.
+      GoRoute(
+        path: '/journey/directory/:vertical',
+        builder: (context, state) => VerticalDirectoryScreen(
+          verticalCode: state.pathParameters['vertical'] ?? '',
+        ),
+      ),
+      // Verticale Mobilité (#9948) : parcours autonome (annuaire opérateurs →
+      // devis → course → suivi), donc la route ne porte pas de slug.
+      GoRoute(
+        path: '/journey/vtc',
+        builder: (context, state) => const VtcJourneyScreen(),
       ),
 
       // Toute route inconnue : 404 présenté comme une information (voir
