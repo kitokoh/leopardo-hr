@@ -9,18 +9,18 @@
 | Mesure | Valeur |
 |---|---|
 | Tables `shared_tenants` portant `company_id` | **523** |
-| Tables couvertes par RLS avant l'audit | **8** (ADR-9879) + 4 (#9924) = **12** |
-| Tables couvertes après ce lot | **32** |
-| Couverture | **6,1 %** |
+| Tables couvertes par RLS avant ce lot | **8** (ADR-9879, #9896-9897) + 4 (#9924) = **12** |
+| Tables couvertes après ce lot | **28** |
+| Couverture | **5,4 %** |
 
-**Ce que 6 % ne veut pas dire.** Ce n'est pas « 94 % des données sont
+**Ce que 5,4 % ne veut pas dire.** Ce n'est pas « 94,6 % des données sont
 exposées ». L'isolation réelle repose sur deux filets : le scope Eloquent
 `BelongsToCompany` (fail-closed sur la surface API tenant, #3727) et RLS. Le
 premier couvre la quasi-totalité des modèles ; RLS est le **filet de dernier
 recours**, celui qui attrape un `DB::table()` oublié, un job de console, une
 requête brute.
 
-**Ce que 6 % veut dire.** Sur 511 tables, si le scope applicatif est contourné
+**Ce que 5,4 % veut dire.** Sur 495 tables, si le scope applicatif est contourné
 — un `withoutGlobalScopes()` mal justifié, un rapport SQL écrit à la main, un
 job qui itère les tenants — **rien** ne rattrape la fuite. C'est exactement le
 scénario que l'ADR-9879 existe pour couvrir.
