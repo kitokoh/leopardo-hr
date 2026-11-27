@@ -1,0 +1,14 @@
+# Documents déclarés OBSOLÈTES par un humain (#9981).
+#
+# Une ligne = un chemin relatif à la racine. `#` = commentaire.
+#
+# Cette liste est un RATCHET : elle ne doit pas croître. Un document ajouté ici
+# est un document qu'on assume de ne plus maintenir — l'archiver dans
+# `docs/archive/` (avec une bannière « non maintenu ») est presque toujours
+# préférable, car il préserve le contexte que l'audit cherche à conserver.
+#
+# La suppression effective est une décision du PM : cet outil ne supprime rien.
+#
+# Vide au 2026-11-27 : l'inventaire n'a pas identifié de document dont
+# l'obsolescence soit démontrable sans jugement humain. C'est un résultat
+# honnête — la catégorie existe pour être utilisée, pas pour être remplie.

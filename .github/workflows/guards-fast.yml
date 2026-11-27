@@ -202,6 +202,7 @@ jobs:
       rls_parity: ${{ steps.filter.outputs.rls_parity }}
       rls_role_script: ${{ steps.filter.outputs.rls_role_script }}
       ci_workflows: ${{ steps.filter.outputs.ci_workflows }}
+      docs_budget: ${{ steps.filter.outputs.docs_budget }}
       env_parity: ${{ steps.filter.outputs.env_parity }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -309,6 +310,11 @@ jobs:
               - "api/database/scripts/rls/**"
               - "dev-hub/tools/check-rls-role-script.py"
               - ".github/workflows/guards-fast.yml"
+            docs_budget:
+              - "**/*.md"
+              - "dev-hub/tools/check-docs-inventory.py"
+              - "dev-hub/governance/docs-budget.json"
+              - "dev-hub/governance/docs-stale-allowlist.txt"
             ci_workflows:
               - ".github/workflows/**"
               - "dev-hub/tools/check-ci-workflow-budget.py"
@@ -816,3 +822,39 @@ jobs:
       - name: Vérifier le budget et l'atteignabilité des checks requis
         shell: bash
         run: python3 dev-hub/tools/check-ci-workflow-budget.py
+
+  # ---------------------------------------------------------------------------
+  # 17/17 — Budget documentaire (#9981)
+  #
+  # 1 922 fichiers .md pour ~452 000 lignes de PHP : un document pour 235
+  # lignes de code. Le volume n'est pas le défaut — le défaut est que la doc
+  # devient une source de vérité CONCURRENTE. Preuve : le canonique machine et
+  # BRANCH_PROTECTION_REQUIRED.md déclaraient 4 checks requis quand la réalité
+  # en avait 6, et « rejouer le canonique » aurait supprimé deux checks
+  # délibérés.
+  #
+  # Cette garde gèle le compte et interdit la croissance. Elle ne supprime
+  # rien : la catégorie `stale` est une liste déclarée par un humain, parce
+  # qu'une heuristique de contenu flaggait SECURITY.md (où « placeholder »
+  # désigne <REDACTED>).
+  # ---------------------------------------------------------------------------
+  docs-budget:
+    name: Budget documentaire
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.docs_budget == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Auto-test de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-docs-inventory.py --self-test
+      - name: Vérifier le budget documentaire
+        shell: bash
+        run: python3 dev-hub/tools/check-docs-inventory.py --check

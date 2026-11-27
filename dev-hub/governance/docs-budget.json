@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "title": "Budget documentaire (#9981)",
+    "description": "Gelé sur la mesure du 2026-11-27 : 1 922 fichiers .md pour ~452 000 lignes de PHP (1 doc / 235 lignes de code). Le budget ne peut que descendre. Un document ajouté doit remplacer ou archiver un document existant.",
+    "guard": "dev-hub/tools/check-docs-inventory.py",
+    "measured_on": "2026-11-27",
+    "measured": {
+      "total_markdown": 1922,
+      "verified": 276,
+      "living": 1487,
+      "archived": 159,
+      "stale": 0
+    },
+    "target_markdown_files": 1500,
+    "target_note": "Archiver les 159 déjà historiques + consolider les 201 specs et 157 docs/architecture : 1922 → ~1500 sans perdre de contexte."
+  },
+  "max_markdown_files": 1922,
+  "max_stale_documents": 0
+}
