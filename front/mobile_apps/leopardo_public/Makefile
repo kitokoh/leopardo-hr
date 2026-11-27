@@ -6,7 +6,8 @@
 # espaces. Le fichier utilisait 8 espaces sur plusieurs cibles : `make` refuse
 # alors la cible entière avec « missing separator ». Normalisé ici.
 
-.PHONY: help deps run-dev run-staging build-staging build-prod build-web clean
+.PHONY: help deps run-dev run-staging build-staging build-prod build-web clean \
+        e2e-restaurant e2e-restaurant-smoke e2e-check
 
 API_BASE_URL ?= https://api.leopardo.africa/api/v1
 
@@ -19,6 +20,8 @@ help: ## Afficher l'aide
 	@echo "  make build-staging  → Compiler APK pour testeurs (Render)"
 	@echo "  make build-prod     → Compiler AAB pour Play Store"
 	@echo "  make build-web      → Compiler la cible web grand public"
+	@echo "  make e2e-restaurant → Tests E2E Maestro du parcours commande"
+	@echo "  make e2e-check      → Vérifier que Maestro est installé"
 	@echo "  make clean          → Nettoyer le projet"
 	@echo "  make deps           → Installer les dépendances"
 	@echo ""
@@ -71,6 +74,7 @@ build-web: deps ## Compiler la cible web grand public (build/web)
 	flutter build web --release \
 		--base-href=/ \
 		--pwa-strategy=none \
+		--no-wasm-dry-run \
 		--dart-define=API_BASE_URL=$(API_BASE_URL) \
 		--build-name=$(shell sed -n 's/^version:[[:space:]]*\([^+]*\).*/\1/p' pubspec.yaml | head -1) \
 		--build-number=$(shell sed -n 's/^version:[[:space:]]*[^+]*+\([0-9]*\).*/\1/p' pubspec.yaml | head -1)
@@ -87,3 +91,40 @@ clean: ## Nettoyer le projet Flutter
 	flutter clean
 	flutter pub get
 	@echo "✅ Projet nettoyé"
+
+# ── Tests E2E Maestro (parcours commande restaurant) ──
+#
+# Ces cibles pilotent l'app INSTALLÉE sur un émulateur ou un appareil branché.
+# Elles ne remplacent pas `flutter test` : les tests widget vérifient la logique
+# avec un serveur simulé, Maestro vérifie ce que voit le client (clavier qui
+# masque un bouton, liste qui ne défile pas jusqu'au champ).
+#
+# `RESTO_SLUG` et `RESTO_PRODUCT_CODE` sont passés en variables d'environnement
+# Maestro : aucun identifiant d'établissement n'est codé dans les flows, sinon
+# ils casseraient au premier changement de la base de démonstration.
+RESTO_SLUG ?= le-bistrot
+RESTO_PRODUCT_CODE ?= demo-1
+MAESTRO ?= maestro
+
+e2e-check: ## Vérifier que Maestro est installé
+	@command -v $(MAESTRO) >/dev/null 2>&1 || { \
+		echo "❌ Maestro introuvable."; \
+		echo "   Installer : curl -Ls \"https://get.maestro.mobile.dev\" | bash"; \
+		echo "   Puis : export PATH=\"\$$PATH:\$$HOME/.maestro/bin\""; \
+		exit 1; \
+	}
+	@$(MAESTRO) --version
+
+e2e-restaurant: e2e-check ## Tests E2E Maestro — parcours commande restaurant
+	@echo "🧪 Parcours commande restaurant (slug=$(RESTO_SLUG))..."
+	RESTO_SLUG=$(RESTO_SLUG) \
+	RESTO_PRODUCT_CODE=$(RESTO_PRODUCT_CODE) \
+		$(MAESTRO) test maestro/restaurant/
+	@echo "✅ Parcours restaurant vert"
+
+e2e-restaurant-smoke: e2e-check ## Tests E2E Maestro — parcours nominal seulement
+	@echo "🧪 Parcours nominal restaurant (slug=$(RESTO_SLUG))..."
+	RESTO_SLUG=$(RESTO_SLUG) \
+	RESTO_PRODUCT_CODE=$(RESTO_PRODUCT_CODE) \
+		$(MAESTRO) test --include-tags smoke maestro/restaurant/
+	@echo "✅ Parcours nominal vert"

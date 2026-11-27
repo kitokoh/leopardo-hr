@@ -74,3 +74,48 @@ crée jamais de doublon** (critère d'acceptation, testé par
   seront intégrées aux apps existantes (leopardo_manager / nouvelles vagues)
   une fois le gate J60 levé, ou via exception fondateur.
 - La synchronisation offline repose sur la file idempotente (804).
+
+## Tests E2E Maestro — parcours commande grand public (#9996)
+
+Le parcours de commande de `leopardo_public` (`RestaurantOrderScreen`) est
+couvert par trois flows Maestro, sous
+`front/mobile_apps/leopardo_public/maestro/restaurant/` :
+
+| Fichier | Parcours |
+|---|---|
+| `01_fiche_et_menu.yaml` | Ouverture par lien profond, en-tête, menu, recherche, filtre catégorie |
+| `02_panier_et_commande.yaml` | Ajout au panier, quantités, saisie client, validation |
+| `03_paiement_et_suivi.yaml` | Choix du mode de paiement, paiement, suivi du statut |
+
+**Pourquoi Maestro en plus des tests widget.** Les tests widget simulent le
+serveur : ils ne voient ni le clavier logiciel qui masque le bouton de
+validation, ni le défilement réel jusqu'au champ téléphone. Maestro pilote
+l'app installée et voit ce que voit le client.
+
+**Sélecteurs.** Aucun flow ne vise un texte traduit : tous utilisent les
+`ValueKey` de `lib/features/journeys/domain/restaurant_test_keys.dart`. Un
+libellé change de langue, une clé ne change pas. La garde
+`test/maestro_flow_keys_test.dart` refuse un `id:` absent de cette classe, une
+clé du parcours plus exercée, ou un tap sur un texte littéral — un renommage
+casse donc `flutter test`, pas un émulateur dix minutes plus tard.
+
+**Exécution.**
+
+```bash
+cd front/mobile_apps/leopardo_public
+make e2e-check            # vérifie que Maestro est installé
+make e2e-restaurant       # les 3 flows
+make e2e-restaurant-smoke # parcours nominal seulement
+```
+
+Aucun identifiant d'établissement n'est codé dans les flows : `RESTO_SLUG` et
+`RESTO_PRODUCT_CODE` viennent de l'environnement (défauts `le-bistrot` /
+`demo-1`).
+
+**CI.** Job `maestro-restaurant-e2e` dans `mobile-apps-ci.yml`, **non
+bloquant** : un émulateur met 3 à 6 minutes à démarrer et le parcours dépend
+d'un backend de démonstration joignable. En faire un check requis bloquerait
+toutes les PR sur une infrastructure instable — l'incident que #9979 documente
+(checks requis ABSENTS, aucune PR mergeable). Le budget de 89 workflows est
+respecté : le job rejoint la chaîne mobile existante au lieu de créer un
+fichier.

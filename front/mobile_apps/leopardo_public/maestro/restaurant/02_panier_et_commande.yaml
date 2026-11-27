@@ -1,0 +1,83 @@
+# Parcours 2/3 — panier, quantités, saisie client, validation de la commande.
+#
+# ## Ce que ce flow prouve et que les tests widget ne peuvent pas prouver
+#
+# Le formulaire client est en bas d'un `ListView` : sur un écran de 5 pouces,
+# le clavier logiciel peut masquer le bouton de validation. Un test widget ne
+# voit pas le clavier ; Maestro, si. C'est la raison d'être de ce flow.
+appId: com.leopardo.publicapp
+name: Restaurant — panier et commande
+tags:
+  - restaurant
+  - smoke
+---
+- launchApp:
+    clearState: true
+
+- openLink: leopardo://public/restaurants/${RESTO_SLUG}
+
+- extendedWaitUntil:
+    visible:
+      id: restaurant-menu-search
+    timeout: 30000
+
+# ── Ajout au panier ─────────────────────────────────────────────────────
+# Le bouton d'ajout porte le CODE produit, pas son nom : le code vient du
+# catalogue et ne change pas quand le restaurateur renomme un plat.
+- tapOn:
+    id: restaurant-product-add-${RESTO_PRODUCT_CODE}
+
+# Le bouton « Voir le panier » n'apparaît qu'avec au moins un article : sa
+# présence est la preuve que l'ajout a bien modifié l'état.
+- extendedWaitUntil:
+    visible:
+      id: restaurant-go-to-cart
+    timeout: 15000
+
+# ── Quantité ────────────────────────────────────────────────────────────
+# Deuxième ajout du même produit : la quantité passe à 2 sans créer de ligne.
+- tapOn:
+    id: restaurant-product-add-${RESTO_PRODUCT_CODE}
+
+- scrollUntilVisible:
+    element:
+      id: restaurant-go-to-cart
+    direction: DOWN
+    timeout: 15000
+
+- tapOn:
+    id: restaurant-go-to-cart
+
+# ── Formulaire client ───────────────────────────────────────────────────
+- extendedWaitUntil:
+    visible:
+      id: restaurant-customer-name
+    timeout: 15000
+
+- tapOn:
+    id: restaurant-customer-name
+- inputText: Client Test
+
+- tapOn:
+    id: restaurant-customer-phone
+- inputText: "0612345678"
+
+# Le clavier peut couvrir le bouton : on le referme avant de valider.
+- hideKeyboard
+
+# ── Validation ──────────────────────────────────────────────────────────
+- scrollUntilVisible:
+    element:
+      id: restaurant-submit-order
+    direction: DOWN
+    timeout: 15000
+
+- tapOn:
+    id: restaurant-submit-order
+
+# La confirmation n'apparaît qu'après un 201 du serveur : c'est l'assertion
+# qui distingue « le bouton a été cliqué » de « la commande existe ».
+- extendedWaitUntil:
+    visible:
+      id: restaurant-confirmation
+    timeout: 45000

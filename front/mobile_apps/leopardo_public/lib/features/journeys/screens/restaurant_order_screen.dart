@@ -10,6 +10,7 @@ import '../../../core/providers/app_providers.dart';
 import '../../discovery/data/public_discovery_repository.dart';
 import '../domain/journey_models.dart';
 import '../domain/restaurant_order_models.dart';
+import '../domain/restaurant_test_keys.dart';
 import '../providers/journey_providers.dart';
 import '../widgets/journey_widgets.dart';
 
@@ -591,6 +592,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
         // Recherche dans la carte : sur 100 produits, c'est le seul moyen
         // d'atteindre un plat sans tout faire défiler.
         TextField(
+          key: const ValueKey(RestaurantTestKeys.menuSearch),
           controller: _menuQuery,
           onChanged: (_) => setState(() {}),
           decoration: InputDecoration(
@@ -620,6 +622,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
               Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: ChoiceChip(
+                  key: const ValueKey(RestaurantTestKeys.categoryAll),
                   label: Text(strings.t('restaurantMenuAll')),
                   selected: _activeCategory == null,
                   onSelected: (_) => setState(() => _activeCategory = null),
@@ -629,6 +632,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
                 Padding(
                   padding: const EdgeInsets.only(right: 8),
                   child: ChoiceChip(
+                    key: ValueKey(RestaurantTestKeys.category(category.name)),
                     label: Text(category.name),
                     selected: _activeCategory == category.name,
                     onSelected: (_) => setState(
@@ -665,6 +669,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
         const SizedBox(height: 16),
         if (_cartCount > 0)
           FilledButton.icon(
+            key: const ValueKey(RestaurantTestKeys.goToCart),
             onPressed: () => setState(() => _step = _RestaurantStep.cart),
             icon: const Icon(Icons.shopping_cart_outlined, size: 18),
             label: Text('${strings.t('restaurantGoToCart')} · $_cartCount'),
@@ -753,6 +758,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
           // `customer_name` et `customer_phone` sont REQUIS par le contrat :
           // sans eux le serveur répond 422, autant le dire tout de suite.
           JourneyField(
+            key: const ValueKey(RestaurantTestKeys.customerName),
             controller: _customerName,
             label: strings.t('journeyCustomerName'),
             validator: (value) => (value == null || value.trim().isEmpty)
@@ -760,6 +766,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
                 : null,
           ),
           JourneyField(
+            key: const ValueKey(RestaurantTestKeys.customerPhone),
             controller: _customerPhone,
             label: strings.t('journeyCustomerPhone'),
             keyboardType: TextInputType.phone,
@@ -777,6 +784,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
             JourneyErrorView(strings: strings, error: _submitError!),
 
           FilledButton(
+            key: const ValueKey(RestaurantTestKeys.submitOrder),
             onPressed: _submitting ? null : _submit,
             child: Text(
               _submitting
@@ -809,6 +817,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
       padding: const EdgeInsets.all(16),
       children: [
         JourneyNotice(
+          key: const ValueKey(RestaurantTestKeys.confirmation),
           text: strings.t('journeyConfirmationSent'),
           color: AppColors.success,
           icon: Icons.check_circle_outline,
@@ -879,6 +888,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
           if (_payError != null)
             JourneyErrorView(strings: strings, error: _payError!),
           FilledButton.icon(
+            key: const ValueKey(RestaurantTestKeys.payAction),
             onPressed: _paying ? null : _pay,
             icon: const Icon(Icons.payments_outlined, size: 18),
             label: Text(
@@ -908,6 +918,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
           label: strings.t('restaurantTrackingSecret'),
         ),
         OutlinedButton.icon(
+          key: const ValueKey(RestaurantTestKeys.track),
           onPressed: _tracking ? null : _track,
           icon: const Icon(Icons.travel_explore_outlined, size: 18),
           label: Text(strings.t('journeyTrack')),
@@ -930,6 +941,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 12),
             child: JourneyStatusView(
+              key: const ValueKey(RestaurantTestKeys.trackingStatus),
               strings: strings,
               report: JourneyStatusReport(
                 reference: _trackingResult!.reference,
@@ -1301,6 +1313,7 @@ class _ProductTile extends StatelessWidget {
       ),
       trailing: quantity == 0
           ? IconButton(
+              key: ValueKey(RestaurantTestKeys.productAdd(product.code)),
               onPressed: onAdd,
               icon: const Icon(Icons.add_circle_outline),
             )
@@ -1308,11 +1321,13 @@ class _ProductTile extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
+                  key: ValueKey(RestaurantTestKeys.productRemove(product.code)),
                   onPressed: onRemove,
                   icon: const Icon(Icons.remove_circle_outline, size: 20),
                 ),
                 Text('$quantity'),
                 IconButton(
+                  key: ValueKey(RestaurantTestKeys.productAdd(product.code)),
                   onPressed: onAdd,
                   icon: const Icon(Icons.add_circle_outline, size: 20),
                 ),
