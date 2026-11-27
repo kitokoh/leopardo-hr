@@ -53,10 +53,17 @@ class PaySlipLineTenantInheritanceTest extends TestCase
     {
         $employee = Employee::factory()->create(['company_id' => $company->id]);
 
+        // Période RELATIVE à now() : une date littérale deviendrait « passée »
+        // au fil du temps et la garde #8396 la refuserait (bombe à retardement
+        // exactement décrite par cette issue). Le mois courant est aussi ce
+        // qu'un vrai bulletin utilise.
+        $periodStart = now()->startOfMonth()->toDateString();
+        $periodEnd = now()->endOfMonth()->toDateString();
+
         $run = PayrollRun::create([
             'company_id' => $company->id,
-            'period_start' => '2026-07-01',
-            'period_end' => '2026-07-31',
+            'period_start' => $periodStart,
+            'period_end' => $periodEnd,
             'country_code' => 'DZ',
             'status' => 'calculated',
             'total_gross' => 0,
@@ -68,8 +75,8 @@ class PaySlipLineTenantInheritanceTest extends TestCase
             'payroll_run_id' => $run->id,
             'company_id' => $company->id,
             'employee_id' => $employee->id,
-            'period_start' => '2026-07-01',
-            'period_end' => '2026-07-31',
+            'period_start' => $periodStart,
+            'period_end' => $periodEnd,
             'gross_salary' => 1000.0,
             'total_deductions' => 0.0,
             'net_salary' => 1000.0,
