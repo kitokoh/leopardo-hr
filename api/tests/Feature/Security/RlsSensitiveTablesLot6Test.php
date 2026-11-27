@@ -279,7 +279,7 @@ final class RlsSensitiveTablesLot6Test extends TestCase
             if ($backfill !== null) {
                 DB::statement(
                     "UPDATE shared_tenants.{$table} AS child "
-                    ."SET company_id = parent.company_id "
+                    .'SET company_id = parent.company_id '
                     ."FROM shared_tenants.{$backfill[0]} AS parent "
                     ."WHERE child.{$backfill[1]} = parent.id "
                     .'AND child.company_id IS NULL AND parent.company_id IS NOT NULL'

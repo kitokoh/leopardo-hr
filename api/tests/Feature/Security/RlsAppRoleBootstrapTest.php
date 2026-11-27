@@ -145,7 +145,7 @@ final class RlsAppRoleBootstrapTest extends TestCase
         // Écriture hors tenant : refusée par le WITH CHECK.
         $affected = $this->updateAsApp(
             self::TENANT_B,
-            "UPDATE shared_tenants.".self::TABLE." SET label = 'hijacked' WHERE company_id = '".self::TENANT_A."'"
+            'UPDATE shared_tenants.'.self::TABLE." SET label = 'hijacked' WHERE company_id = '".self::TENANT_A."'"
         );
         expect($affected)->toBe(0, 'RLS doit empêcher une écriture hors du tenant courant.');
     }
