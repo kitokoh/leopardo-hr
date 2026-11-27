@@ -1,11 +1,11 @@
 # Inventaire documentaire
 
-Total `.md` : **1921**
+Total `.md` : **1922**
 
 | Catégorie | Nombre | Sens |
 |---|---:|---|
 | `verified` | 275 | vivant, couvert par une garde de parité |
-| `living` | 1487 | vivant, non vérifié |
+| `living` | 1488 | vivant, non vérifié |
 | `archived` | 159 | historique, non maintenu |
 | `stale` | 0 | candidat à la suppression (décision PM) |
 
