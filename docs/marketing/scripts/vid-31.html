@@ -143,6 +143,58 @@
     <p class="muted small">Source : <code>statuts-tournage.json</code></p>
   </div>
 
+  
+  <div class="panel prompt-panel">
+    <h3>Prompt pour agent IA de production</h3>
+    <p class="prompt-lead">A coller tel quel dans un agent de production video. Le script est deja ecrit : l&#x27;agent produit, il n&#x27;improvise pas.</p>
+    <pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-31 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-31 - &quot;Sante : le dossier, le rendez-vous, la facture (9:16 TikTok)&quot;
+- Format 9:16, duree cible 35 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Nappe douce, aucune urgence sonore. Percussion discrete sur les cuts ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Cliniques privees, centres de soins, cabinets de groupe - TikTok, Reels, Shorts
+OBJECTIF : Decliner la verticale Sante en format vertical natif : le dossier patient, le rendez-vous et la facture des soins, sans demonstration produit longue. Renvoi vers le film 16:9 VID-09 pour la version complete.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Le dossier du patient arrive toujours apres le patient.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:05 | Le dossier du patient arrive toujours apres le patient. | Plan serre : une pochette de dossier papier posee sur un comptoir d&#x27;accueil, une salle d&#x27;attente floue derriere. | Le dossier arrive en dernier. |
+| 0:05-0:12 | L&#x27;accueil note l&#x27;heure. Le soignant note le soin. La facturation recompose tout de memoire. | Cut rapide : main qui ecrit sur un registre, ecran de logiciel different, tampon sur une feuille. | 3 endroits. 1 patient. |
+| 0:12-0:20 | Leopardo ouvre un dossier patient unique, partage entre l&#x27;accueil, le soin et la facturation. | Capture verticale : dossier patient, onglets identite, sejours, factures. | Un dossier patient |
+| 0:20-0:28 | Le rendez-vous se replanifie sans rappeler le patient trois fois. La facture suit le soin. | Capture verticale : agenda qui se decale, puis facture de soins generee depuis le sejour. | Rendez-vous &amp; facture |
+| 0:28-0:35 | Sante : du couloir a la facture. Le film complet est en bio. | Retour sur le comptoir d&#x27;accueil vide, logo Leopardo, CTA en bas de cadre. | Film complet en bio |
+
+CTA FINAL : Film complet (16:9) en bio - activer le pack HealthManager, sans frais de pack.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-09 : reutiliser les rushes de couloir et les captures d&#x27;ecran, ne pas re-tourner. Ne jamais montrer de donnee patient reelle, de nom lisible ni de visage identifiable : donnees de demonstration uniquement, tout nom propre floute. Aucune allegation de conformite reglementaire (RGPD, certification, agrement) que le produit ne certifie pas.
+
+SORTIES ATTENDUES :
+- leopardo_vid31_{lang}_9x16_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid31_{lang}_9x16_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 35 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre>
+  </div>
+
+
   <div class="uc-nav"><a class="btn-back" href="../scripts/vid-30.html">← VID-30</a><a class="btn-back" href="../categories/formats-courts.html">Toute la categorie</a><a class="btn-back" href="../scripts/vid-32.html">VID-32 →</a></div>
 
 </main>

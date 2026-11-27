@@ -846,7 +846,7 @@ AUTO-CONTROLE
 |---|---|---|
 | 0-4 s | Lieu | Salle pleine, service en cours, une commande prise debout sur un carnet |
 | 4-10 s | Situation | « Pendant le coup de feu, chaque saisie retire une seconde au service. » |
-| 10-24 s | 3 plans produit | Plan de salle par zone et par table (session ouverte, fermee, annulee) · Ecran cuisine : la commande passe de « a preparer » a « en cours » a « prete » · Ticket : bon cuisine et recu client imprimes separement |
+| 10-24 s | 3 plans produit | Plan de salle par zone et par table (session ouverte, fermee, annulee) · Ecran cuisine : la commande passe de « ouverte » a « en preparation » a « prete » a « servie » · Ticket : bon cuisine et recu client imprimes separement |
 | 24-30 s | Signature | « Leopardo, pour la restauration. » + CTA |
 
 **Note de montage :** le module couvre les types de commande (sur place, a emporter, livraison) et les sources (caisse, web, telephone, application de livraison, en ligne, borne). L'ecran cuisine est un vrai ecran : il fait avancer la commande, il ne l'affiche pas seulement. Ne jamais montrer de chiffre d'affaires, de marge ni de nombre de couverts.
@@ -870,7 +870,7 @@ CONTRAINTES NON NEGOCIABLES
 4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
 5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
 6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
-7. La salle se montre par zones et tables avec une session de table (ouverte, fermee, annulee). L'ecran cuisine est un poste de travail : la commande y change d'etat (a preparer, en cours, prete). Ne jamais afficher de ticket portant un montant total reel ni de marge : le film montre le flux, pas le chiffre.
+7. La salle se montre par zones et tables avec une session de table (ouverte, fermee, annulee). L'ecran cuisine est un poste de travail : la commande y change d'etat selon la machine a etats du module — brouillon, ouverte, en preparation, prete, servie, payee, cloturee, annulee, remboursee ; ne pas inventer d'autre etat. Ne jamais afficher de ticket portant un montant total reel ni de marge : le film montre le flux, pas le chiffre.
 
 SORTIES
 - leopardo_d1_restauration_{lang}_{ratio}_v1.mp4 / .srt / .vtt
@@ -1233,7 +1233,7 @@ AUTO-CONTROLE
 | 10-24 s | 3 plans produit | Parcelle : superficie, source de la superficie, culture et cycle cultural · Intrants : stock, seuil d'alerte, lots · Recolte : lot de recolte, quantite recoltee, qualite, destination de stockage |
 | 24-30 s | Signature | « Leopardo, pour l'agriculture. » + CTA |
 
-**Note de montage :** Farm OS affiche des **libelles, jamais un rendement ni une marge chiffree** (ADR-FARM-0003, honnetete des donnees). Chaque superficie porte sa source (declaree, mesuree, importee) : c'est ce qui distingue un chiffre d'une estimation. Une recolte cree un seul lot de stock, et ce lot garde sa tracabilite jusqu'a la vente.
+**Note de montage :** Farm OS enregistre des rendements **déclarés** par l'exploitant (attendus et réels, portés par le cycle cultural), mais ne les **estime jamais** automatiquement — c'est la règle écrite dans `FarmProductionType` (« aucune estimation automatique de rendement »). Ne jamais montrer de rendement calculé par le système, ni de marge. Chaque superficie porte sa source (déclarée, mesurée, importée) : c'est ce qui distingue un chiffre d'une estimation. Une récolte crée un seul lot de stock, et ce lot garde sa traçabilité jusqu'à la vente.
 
 #### Prompt pour agent IA de production — D11
 
@@ -1254,7 +1254,7 @@ CONTRAINTES NON NEGOCIABLES
 4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
 5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
 6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
-7. Farm OS affiche des libelles, jamais un rendement ni une marge chiffree (ADR-FARM-0003). Chaque superficie porte sa source (declaree, mesuree, importee) : ne jamais afficher une superficie sans sa source. Une recolte cree un seul lot de stock qui garde sa tracabilite jusqu'a la vente : ne pas montrer de lot sans lien vers la parcelle.
+7. Farm OS enregistre des rendements declares par l'exploitant (attendus et reels) mais ne les estime jamais automatiquement : ne jamais montrer de rendement calcule par le systeme, ni de marge. Chaque superficie porte sa source (declaree, mesuree, importee) : ne jamais afficher une superficie sans sa source. Une recolte cree un seul lot de stock qui garde sa tracabilite jusqu'a la parcelle : ne pas montrer de lot sans lien vers la parcelle.
 
 SORTIES
 - leopardo_d11_agriculture_{lang}_{ratio}_v1.mp4 / .srt / .vtt
@@ -1263,7 +1263,7 @@ SORTIES
 AUTO-CONTROLE
 - duree conforme au script a +/- 2 %
 - 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
-- 0 occurrence de « rendement », « marge », « rentabilite garantie »
+- 0 occurrence de « rendement estime », « rendement calcule », « marge », « rentabilite garantie »
 - chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
 - CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
 ```
@@ -1590,7 +1590,7 @@ Les **15 verticales** du §6 ont leur ligne au gabarit **et** un script détaill
 | D8 — VTC | §6.13 | Prix = estimation, distance calculée par le noyau géospatial |
 | D9 — Livraison | §6.1 | Preuve de livraison, pas de promesse |
 | D10 — Agence de voyage | §6.14 | Consentement aux notifications enregistré |
-| D11 — Agriculture | §6.15 | Superficie toujours avec sa source ; aucun rendement chiffré |
+| D11 — Agriculture | §6.15 | Superficie toujours avec sa source ; rendement **déclaré**, jamais estimé par le système |
 | D12 — Bibliothèque | §6.2 | Ressources numériques, pas de prêt papier |
 | D13 — Cagnottes solidaires | §6.5 | Pas de reçu fiscal automatique |
 | D14 — Flotte & caméras | §6.3 | Alertes par type d'événement, jamais par identité |
@@ -1602,6 +1602,18 @@ Les **15 verticales** du §6 ont leur ligne au gabarit **et** un script détaill
 > - **D8 VTC** — le module ne calcule aucune distance : il interroge le noyau géospatial, et la distance routière est une estimation. Le prix affiché avant le départ est donc une estimation dès que la grille tarifaire n'est pas configurée — le script l'impose à l'écran.
 
 > **Aucun environnement livré n'est annoncé sans film.** Les trois solutions qui n'avaient aucun script (Retail, Cagnottes solidaires, Cabinet comptable) ont désormais le leur : VID-36, VID-37 et VID-38 dans `docs/marketing/scripts-video.json`.
+
+#### 10.1.1 Briefs de tournage des 15 verticales
+
+Chaque verticale détaillée a un **brief de tournage rempli**, généré depuis son script §6.x — pas un gabarit vide :
+
+```bash
+python3 docs/DISTRIBUTION/scripts/generate-video-brief.py --vertical-all --cible youtube
+```
+
+Les 9 briefs sont dans `docs/DISTRIBUTION/VIDEOS/briefs/verticale__<objet>__<cible>.md`. Ils contiennent le plan minuté, la note de montage, les preuves à l'écran, les UTM et le **prompt de production** — les mêmes contraintes que le script, plus une contrainte propre au module. Seuls les `[A COMPLETER]` de tournage (lieu, date, `utm_content`) restent à renseigner : ce sont des données de plateau, pas des données produit.
+
+> **Correction de véracité du 2026-11-28.** Le brief D11 affirmait que Farm OS « n'affiche jamais de rendement chiffré ». C'est faux : `CropCycle` porte `expected_yield_value` / `actual_yield_value`. La règle réelle, écrite dans `FarmProductionType`, est que Farm OS **n'estime jamais** un rendement automatiquement — l'exploitant le **déclare**. Le brief et le script disent désormais cela, et interdisent seulement le rendement *calculé par le système*.
 
 ---
 
