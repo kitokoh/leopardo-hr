@@ -4,6 +4,21 @@
 > ligne **datée** dans ce registre. Toute métrique publiée doit être mesurable/reproductible
 > avec la méthode indiquée. Les valeurs sont vérifiées sur `main` à la date de mesure.
 
+## Mesures au 2026-11-28
+
+| Métrique | Valeur | Mesuré le | Source / méthode de mesure |
+|---|---|---|---|
+| Modules DDD (`api/app/Modules/*`) | 42 | 2026-11-28 | `ls -d api/app/Modules/*/ \| wc -l` |
+| Chemins dans `api/openapi.yaml` | 1984 | 2026-11-28 | `grep -c '^  /' api/openapi.yaml` |
+| Opérations OpenAPI (get/post/put/delete/patch) | 2605 | 2026-11-28 | `grep -cE '^    (get\|post\|put\|delete\|patch):' api/openapi.yaml` |
+| Apps mobiles Flutter | 11 apps + `leopardo_core` | 2026-11-27 | `ls -d front/mobile_apps/leopardo_*/` (canonique : `front/mobile_apps/README.md`) |
+| Modules activables (catalogue) | 39 | 2026-11-28 | `docs/GOTO_MARKET/PACK_LANCEMENT/04_PAGE_VENTE_PAIE_POINTAGE_DZ.md` §6 |
+| Pays supportés (API) | 21 | 2026-09-09 | `GET /api/v1/supported-countries` (instance de référence — non re-mesuré au 2026-11-28) |
+
+> **Écart constaté le 2026-11-28** : les scripts vidéo annonçaient « 994 endpoints » (mesure de septembre).
+> La valeur mesurée est **1 984 chemins** / 2 605 opérations. Les scripts ont été alignés.
+> Toute métrique publiée doit citer sa date de mesure.
+
 ## Mesures au 2026-09-18
 
 | Métrique | Valeur | Mesuré le | Source / méthode de mesure |

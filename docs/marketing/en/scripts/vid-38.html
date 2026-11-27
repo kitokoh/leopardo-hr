@@ -67,25 +67,25 @@
         <tr>
           <td class="nowrap"><strong>0:00-0:08</strong></td>
           <td>Every client has their own export format. Every month end starts with a hunt for documents.</td>
-          <td>Bureau d&#x27;expert-comptable : plusieurs dossiers papier empiles, une boite mail ouverte, des pieces jointes en desordre. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></td>
+          <td>Bureau d&#x27;expert-comptable : plusieurs dossiers papier empilés, une boite mail ouverte, des pièces jointes en désordre. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></td>
           <td><span class="ontext">The month starts with a document hunt.</span></td>
         </tr>
         <tr>
           <td class="nowrap"><strong>0:08-0:22</strong></td>
           <td>Accounting documents are shared through a time-limited link. The recipient opens the document, and nothing else.</td>
-          <td>Capture partage : choix du document, destinataire, duree d&#x27;expiration, lien genere, portail public de consultation. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></td>
+          <td>Capture partage : choix du document, destinataire, durée d&#x27;expiration, lien généré, portail public de consultation. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></td>
           <td><span class="ontext">Time-limited sharing</span></td>
         </tr>
         <tr>
           <td class="nowrap"><strong>0:22-0:36</strong></td>
           <td>Invoices, credit notes, quotes, delivery notes: every document has its status, from draft to paid, with its payments attached.</td>
-          <td>Capture documents : liste des pieces par type, statut (brouillon, envoye, partiellement paye, paye, en retard), reglements. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></td>
+          <td>Capture documents : liste des pièces par type, statut (brouillon, envoyé, partiellement paye, paye, en retard), reglements. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></td>
           <td><span class="ontext">Documents &amp; statuses</span></td>
         </tr>
         <tr>
           <td class="nowrap"><strong>0:36-0:50</strong></td>
           <td>Entries are lettered inside the tool, with a trace of who reconciled what. The FEC export comes out in the format the firm expects.</td>
-          <td>Capture lettrage (rapprochement des ecritures, trace), puis export FEC de la periode. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></td>
+          <td>Capture lettrage (rapprochement des écritures, trace), puis export FEC de la periode. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></td>
           <td><span class="ontext">Lettering &amp; FEC export</span></td>
         </tr>
         <tr>
@@ -105,14 +105,14 @@
     </div>
     <div class="panel">
       <h3>Sound &amp; music</h3>
-      <p>Neutre, precis, metronomique, 96 BPM. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></p>
+      <p>Neutre, précis, métronomique, 96 BPM. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></p>
     </div>
   </div>
 
   <div class="panel">
     <h3>Production notes</h3>
-    <p>Le parcours cabinet s&#x27;appuie sur le module Accounting (api/app/Modules/Accounting), PAS sur le module Cabinet (api/app/Modules/Cabinet) : ce dernier est un placard personnel de documents (dossiers, upload, partage par token), pas un outil d&#x27;expertise comptable. Accounting : AccountingDocument (DocumentType invoice, proforma, quote, credit_note, delivery_note, receipt, purchase_invoice, purchase_credit_note ; DocumentStatus draft, sent, partially_paid, paid, cancelled, overdue), AccountingJournal (JournalType sale, purchase, bank, cash, payroll, misc, opening), lettrage (LetteringService, erreurs LETTERING_UNBALANCED / LETTERING_INVALID / LETTERING_ALREADY_USED), export FEC (norme DGFiP, 13 colonnes CSV UTF-8, nom de fichier SIRENFECAAAAMMJJ pour un tenant francais), AccountingFiscalYear et AccountingClosedPeriod (cloture d&#x27;exercice, periode verrouillee), partage de document par token (DocumentShareService, TTL par defaut 14 jours, borne 1 a 365 jours). Le role &#x27;comptable&#x27; existe dans le RBAC (manager_role). Ne pas afficher de montants reels ni de taux : ils dependent du pays et de l&#x27;annee. Le FEC est un format francais : preciser le pays si le film est diffuse hors France. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></p>
-    <div class="chips"><span class="chip">#cabinet</span><span class="chip">#comptabilite</span><span class="chip">#expert-comptable</span><span class="chip">#fec</span><span class="chip">#lettrage</span><span class="chip">#verticale</span></div>
+    <p>Le parcours cabinet s&#x27;appuie sur le module Accounting (api/app/Modules/Accounting), PAS sur le module Cabinet (api/app/Modules/Cabinet) : ce dernier est un placard personnel de documents (dossiers, upload, partage par token), pas un outil d&#x27;expertise comptable. Accounting : AccountingDocument (DocumentType invoice, proforma, quote, credit_note, delivery_note, receipt, purchase_invoice, purchase_credit_note ; DocumentStatus draft, sent, partially_paid, paid, cancelled, overdue), AccountingJournal (JournalType sale, purchase, bank, cash, payroll, misc, opening), lettrage (LetteringService, erreurs LETTERING_UNBALANCED / LETTERING_INVALID / LETTERING_ALREADY_USED), export FEC (norme DGFiP, 13 colonnes CSV UTF-8, nom de fichier SIRENFECAAAAMMJJ pour un tenant français), AccountingFiscalYear et AccountingClosedPeriod (cloture d&#x27;exercice, periode verrouillee), partage de document par token (DocumentShareService, TTL par defaut 14 jours, borne 1 a 365 jours). Le rôle &#x27;comptable&#x27; existe dans le RBAC (manager_rôle). Ne pas afficher de montants reels ni de taux : ils dépendent du pays et de l&#x27;année. Le FEC est un format français : préciser le pays si le film est diffusé hors France. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></p>
+    <div class="chips"><span class="chip">#cabinet</span><span class="chip">#comptabilité</span><span class="chip">#expert-comptable</span><span class="chip">#fec</span><span class="chip">#lettrage</span><span class="chip">#verticale</span></div>
   </div>
 
   
