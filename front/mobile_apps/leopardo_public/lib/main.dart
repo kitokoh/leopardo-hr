@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:material_ui/material_ui.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
     show GlobalCupertinoLocalizations;
@@ -10,6 +11,10 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
+// Web uniquement : la stratégie d'URL « path ». Importée inconditionnellement
+// car `url_strategy` est un paquet multi-plateforme dont l'implémentation non
+// web est un no-op — `kIsWeb` garde l'appel, pas l'import.
+import 'package:url_strategy/url_strategy.dart';
 
 import 'core/navigation/app_shell.dart';
 import 'core/providers/app_providers.dart';
@@ -33,8 +38,27 @@ import 'core/theme/public_theme.dart';
 /// `StartupGate`, qui applique un timeout et continue en mode dégradé plutôt que
 /// de laisser un écran noir. C'est le patron des autres apps du dépôt
 /// (`leopardo_travel_agent/lib/main.dart:27-45`).
+///
+/// ## Pourquoi la stratégie d'URL est posée AVANT `runApp`
+///
+/// Par défaut, Flutter web rend chaque route en `/#/restaurants/le-bistrot` :
+/// le fragment n'est jamais envoyé au serveur, donc **aucun crawler** ne voit
+/// l'URL, et le lien n'est pas partageable de façon canonique. `usePathUrlStrategy`
+/// fait lire/écrire `/restaurants/le-bistrot` dans `location.pathname`, ce qui
+/// est la condition pour que la verticale restaurant soit indexable — la raison
+/// même de la cible web.
+///
+/// L'appel précède `runApp` : un `GoRouter` construit avec l'ancienne
+/// stratégie garderait des `#` même après le changement.
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+
+  if (kIsWeb) {
+    // `/restaurants/{slug}` et non `/#/restaurants/{slug}`.
+    // `url_strategy` 0.3.0 expose `setPathUrlStrategy` (le nom
+    // `usePathUrlStrategy` n'existe pas dans ce paquet).
+    setPathUrlStrategy();
+  }
 
   FlutterError.onError = (details) {
     FlutterError.presentError(details);

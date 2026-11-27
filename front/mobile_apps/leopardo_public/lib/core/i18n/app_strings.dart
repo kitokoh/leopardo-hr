@@ -443,6 +443,49 @@ class AppStrings {
           'Cette commande existait déjà : le code de suivi est celui obtenu à la première création.',
       'restaurantTrackingSecret': 'Code de suivi',
 
+      // ── Verticale Restaurant — parité web (#9991..#9994) ──
+      'restaurantMenuSearch': 'Rechercher dans la carte',
+      'restaurantMenuSearchHint': 'Un plat, une boisson…',
+      'restaurantMenuAll': 'Tout',
+      'restaurantMenuNoMatch':
+          'Aucun produit ne correspond à cette recherche. Essayez un autre mot ou choisissez « Tout ».',
+      'restaurantOpenNow': 'Ouvert maintenant',
+      'restaurantClosedNow': 'Fermé actuellement',
+      'restaurantHoursTitle': 'Horaires',
+      'restaurantClosedDay': 'Fermé',
+      'restaurantCuisinesLabel': 'Cuisines',
+      'restaurantReviewsTitle': 'Avis clients',
+      'restaurantReviewsEmpty':
+          'Aucun avis publié pour le moment. Les avis sont publiés après modération par l’établissement.',
+      'restaurantReviewsLoadMore': 'Afficher plus d’avis',
+      'restaurantReviewYourRating': 'Votre note',
+      'restaurantReviewComment': 'Votre commentaire (facultatif)',
+      'restaurantReviewSubmit': 'Publier mon avis',
+      'restaurantReviewSent':
+          'Merci ! Votre avis sera visible après modération par l’établissement.',
+      'restaurantReviewAlready':
+          'Un avis a déjà été déposé pour cette commande. Un seul avis par commande est accepté.',
+      'restaurantReviewNotEligible':
+          'Cette commande n’est pas encore servie : l’avis sera possible une fois la commande terminée.',
+      'restaurantReviewOrderRef': 'Référence de commande',
+      'restaurantReviewReplyFrom': 'Réponse de l’établissement',
+      'restaurantPayTitle': 'Paiement',
+      'restaurantPayCash': 'Espèces à réception',
+      'restaurantPayMobileMoney': 'Mobile money',
+      'restaurantPayAction': 'Payer la commande',
+      'restaurantPayDone': 'Paiement enregistré.',
+      'restaurantPayCardUnavailable':
+          'Le paiement par carte n’est pas encore ouvert pour cette commande.',
+      'restaurantTrackAuto': 'Le suivi se met à jour automatiquement.',
+      'restaurantTrackStopped': 'Commande terminée : le suivi est à jour.',
+      'journeyDayMonday': 'Lundi',
+      'journeyDayTuesday': 'Mardi',
+      'journeyDayWednesday': 'Mercredi',
+      'journeyDayThursday': 'Jeudi',
+      'journeyDayFriday': 'Vendredi',
+      'journeyDaySaturday': 'Samedi',
+      'journeyDaySunday': 'Dimanche',
+
       // ── Verticale Emploi (careers) — #9944 ──
       'careersDirectoryNotice':
           'Les offres viennent des entreprises qui publient sur la plateforme. Certaines offres sont agrégées de partenaires : la candidature se fait alors chez eux.',
@@ -867,6 +910,49 @@ class AppStrings {
           'This order already existed: the tracking code is the one from the first creation.',
       'restaurantTrackingSecret': 'Tracking code',
 
+      // ── Restaurant vertical — web parity (#9991..#9994) ──
+      'restaurantMenuSearch': 'Search the menu',
+      'restaurantMenuSearchHint': 'A dish, a drink…',
+      'restaurantMenuAll': 'All',
+      'restaurantMenuNoMatch':
+          'No product matches this search. Try another word or pick “All”.',
+      'restaurantOpenNow': 'Open now',
+      'restaurantClosedNow': 'Currently closed',
+      'restaurantHoursTitle': 'Opening hours',
+      'restaurantClosedDay': 'Closed',
+      'restaurantCuisinesLabel': 'Cuisines',
+      'restaurantReviewsTitle': 'Customer reviews',
+      'restaurantReviewsEmpty':
+          'No published review yet. Reviews appear after the establishment moderates them.',
+      'restaurantReviewsLoadMore': 'Show more reviews',
+      'restaurantReviewYourRating': 'Your rating',
+      'restaurantReviewComment': 'Your comment (optional)',
+      'restaurantReviewSubmit': 'Publish my review',
+      'restaurantReviewSent':
+          'Thank you! Your review will be visible after the establishment moderates it.',
+      'restaurantReviewAlready':
+          'A review has already been submitted for this order. One review per order is accepted.',
+      'restaurantReviewNotEligible':
+          'This order has not been served yet: you can review it once the order is complete.',
+      'restaurantReviewOrderRef': 'Order reference',
+      'restaurantReviewReplyFrom': 'Reply from the establishment',
+      'restaurantPayTitle': 'Payment',
+      'restaurantPayCash': 'Cash on delivery',
+      'restaurantPayMobileMoney': 'Mobile money',
+      'restaurantPayAction': 'Pay the order',
+      'restaurantPayDone': 'Payment recorded.',
+      'restaurantPayCardUnavailable':
+          'Card payment is not open yet for this order.',
+      'restaurantTrackAuto': 'Tracking updates automatically.',
+      'restaurantTrackStopped': 'Order complete: tracking is up to date.',
+      'journeyDayMonday': 'Monday',
+      'journeyDayTuesday': 'Tuesday',
+      'journeyDayWednesday': 'Wednesday',
+      'journeyDayThursday': 'Thursday',
+      'journeyDayFriday': 'Friday',
+      'journeyDaySaturday': 'Saturday',
+      'journeyDaySunday': 'Sunday',
+
       // ── Careers vertical — #9944 ──
       'careersDirectoryNotice':
           'Jobs come from companies publishing on the platform. Some offers are aggregated from partners: you then apply on their site.',
@@ -1272,6 +1358,47 @@ class AppStrings {
       'restaurantReplayNotice':
           'هذا الطلب موجود مسبقًا: رمز التتبع هو نفسه من الإنشاء الأول.',
       'restaurantTrackingSecret': 'رمز التتبع',
+
+      // ── قطاع المطاعم — تكافؤ مع الويب (#9991..#9994) ──
+      'restaurantMenuSearch': 'ابحث في القائمة',
+      'restaurantMenuSearchHint': 'طبق، مشروب…',
+      'restaurantMenuAll': 'الكل',
+      'restaurantMenuNoMatch':
+          'لا يوجد منتج يطابق هذا البحث. جرّب كلمة أخرى أو اختر «الكل».',
+      'restaurantOpenNow': 'مفتوح الآن',
+      'restaurantClosedNow': 'مغلق حاليًا',
+      'restaurantHoursTitle': 'أوقات العمل',
+      'restaurantClosedDay': 'مغلق',
+      'restaurantCuisinesLabel': 'المطابخ',
+      'restaurantReviewsTitle': 'تقييمات العملاء',
+      'restaurantReviewsEmpty':
+          'لا توجد تقييمات منشورة بعد. تُنشر التقييمات بعد مراجعة المطعم لها.',
+      'restaurantReviewsLoadMore': 'عرض المزيد من التقييمات',
+      'restaurantReviewYourRating': 'تقييمك',
+      'restaurantReviewComment': 'تعليقك (اختياري)',
+      'restaurantReviewSubmit': 'نشر تقييمي',
+      'restaurantReviewSent': 'شكرًا! سيظهر تقييمك بعد مراجعة المطعم له.',
+      'restaurantReviewAlready':
+          'تم إرسال تقييم لهذا الطلب من قبل. يُقبل تقييم واحد لكل طلب.',
+      'restaurantReviewNotEligible':
+          'لم يتم تقديم هذا الطلب بعد: يمكنك التقييم بعد اكتمال الطلب.',
+      'restaurantReviewOrderRef': 'مرجع الطلب',
+      'restaurantReviewReplyFrom': 'رد المطعم',
+      'restaurantPayTitle': 'الدفع',
+      'restaurantPayCash': 'نقدًا عند الاستلام',
+      'restaurantPayMobileMoney': 'المحفظة الإلكترونية',
+      'restaurantPayAction': 'دفع الطلب',
+      'restaurantPayDone': 'تم تسجيل الدفع.',
+      'restaurantPayCardUnavailable': 'الدفع بالبطاقة غير متاح بعد لهذا الطلب.',
+      'restaurantTrackAuto': 'يتحدّث التتبع تلقائيًا.',
+      'restaurantTrackStopped': 'اكتمل الطلب: التتبع محدّث.',
+      'journeyDayMonday': 'الاثنين',
+      'journeyDayTuesday': 'الثلاثاء',
+      'journeyDayWednesday': 'الأربعاء',
+      'journeyDayThursday': 'الخميس',
+      'journeyDayFriday': 'الجمعة',
+      'journeyDaySaturday': 'السبت',
+      'journeyDaySunday': 'الأحد',
 
       // ── قطاع التوظيف (careers) — #9944 ──
       'careersDirectoryNotice':
@@ -1691,6 +1818,49 @@ class AppStrings {
       'restaurantReplayNotice':
           'Bu sipariş zaten vardı: takip kodu ilk oluşturmadaki koddur.',
       'restaurantTrackingSecret': 'Takip kodu',
+
+      // ── Restoran dikeyi — web ile eşlik (#9991..#9994) ──
+      'restaurantMenuSearch': 'Menüde ara',
+      'restaurantMenuSearchHint': 'Bir yemek, bir içecek…',
+      'restaurantMenuAll': 'Tümü',
+      'restaurantMenuNoMatch':
+          'Bu aramayla eşleşen ürün yok. Başka bir kelime deneyin veya «Tümü»nü seçin.',
+      'restaurantOpenNow': 'Şu anda açık',
+      'restaurantClosedNow': 'Şu anda kapalı',
+      'restaurantHoursTitle': 'Çalışma saatleri',
+      'restaurantClosedDay': 'Kapalı',
+      'restaurantCuisinesLabel': 'Mutfaklar',
+      'restaurantReviewsTitle': 'Müşteri yorumları',
+      'restaurantReviewsEmpty':
+          'Henüz yayınlanmış yorum yok. Yorumlar işletmenin denetiminden sonra yayınlanır.',
+      'restaurantReviewsLoadMore': 'Daha fazla yorum göster',
+      'restaurantReviewYourRating': 'Puanınız',
+      'restaurantReviewComment': 'Yorumunuz (isteğe bağlı)',
+      'restaurantReviewSubmit': 'Yorumumu yayınla',
+      'restaurantReviewSent':
+          'Teşekkürler! Yorumunuz işletmenin denetiminden sonra görünür olacak.',
+      'restaurantReviewAlready':
+          'Bu sipariş için zaten bir yorum gönderildi. Sipariş başına bir yorum kabul edilir.',
+      'restaurantReviewNotEligible':
+          'Bu sipariş henüz servis edilmedi: sipariş tamamlandığında yorum yapabilirsiniz.',
+      'restaurantReviewOrderRef': 'Sipariş referansı',
+      'restaurantReviewReplyFrom': 'İşletmenin yanıtı',
+      'restaurantPayTitle': 'Ödeme',
+      'restaurantPayCash': 'Teslimatta nakit',
+      'restaurantPayMobileMoney': 'Mobil ödeme',
+      'restaurantPayAction': 'Siparişi öde',
+      'restaurantPayDone': 'Ödeme kaydedildi.',
+      'restaurantPayCardUnavailable':
+          'Bu sipariş için kartla ödeme henüz açık değil.',
+      'restaurantTrackAuto': 'Takip otomatik olarak güncellenir.',
+      'restaurantTrackStopped': 'Sipariş tamamlandı: takip güncel.',
+      'journeyDayMonday': 'Pazartesi',
+      'journeyDayTuesday': 'Salı',
+      'journeyDayWednesday': 'Çarşamba',
+      'journeyDayThursday': 'Perşembe',
+      'journeyDayFriday': 'Cuma',
+      'journeyDaySaturday': 'Cumartesi',
+      'journeyDaySunday': 'Pazar',
 
       // ── İşe alım dikeyi (careers) — #9944 ──
       'careersDirectoryNotice':

@@ -479,3 +479,89 @@ jobs:
           path: ${{ matrix.project.path }}/build/app/outputs/flutter-apk/app-debug.apk
           if-no-files-found: error
           retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Cible WEB grand public (mission parité web ↔ mobile, verticale restaurant).
+  #
+  # `leopardo_public` est la seule app du dépôt qui vise le grand public sur le
+  # web : `flutter build web` est le SEUL contrôle qui prouve que cette cible
+  # existe. `flutter test` tourne sur la VM Dart et ne compile jamais en
+  # JavaScript — une dépendance non web-compatible (dart:io, dart:ffi) ne se
+  # voit qu'ici. Le job est volontairement séparé de `flutter-build-debug`
+  # (APK) : la cible web n'a besoin ni du SDK Android ni de Java, et payer
+  # ~10 min de setup Android par build web serait du gaspillage pur.
+  #
+  # Il vit DANS ce workflow (et non dans un fichier dédié) parce que le budget
+  # CI du dépôt est gelé à 89 workflows (#9979) : un fichier de plus le
+  # dépasserait. `mobile-apps-ci.yml` couvre déjà `leopardo_public` en analyze
+  # et en test — le build web est le maillon manquant de la même chaîne.
+  # ---------------------------------------------------------------------------
+  flutter-build-web:
+    needs: [changes, flutter-analyze]
+    if: needs.changes.outputs.mobile == 'true'
+    timeout-minutes: 30
+    name: Build web (leopardo_public)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2 # v2.23.0
+        with:
+          channel: stable
+          flutter-version: '3.50.0'
+          cache: true
+
+      - name: Install dependencies
+        working-directory: front/mobile_apps/leopardo_public
+        run: flutter pub get
+
+      - name: Regenerate shared localizations
+        # #6590 : les fichiers générés (lib/l10n/generated/*) ne sont plus
+        # commités — sans cette étape, `AppLocalizations` est introuvable et le
+        # build web échoue sur `leopardo_core/lib/l10n/l10n.dart`.
+        working-directory: front/mobile_apps/leopardo_core
+        run: flutter gen-l10n
+
+      - name: Build web (release)
+        working-directory: front/mobile_apps/leopardo_public
+        run: |
+          flutter build web --release \
+            --base-href=/ \
+            --pwa-strategy=none \
+            --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}
+
+      # Vérifie que les marqueurs de la cible web sont bien dans l'artefact :
+      # un `index.html` resté au placeholder Flutter, ou un `main.dart.js`
+      # absent, signifierait que le build n'a pas produit ce qu'on croit.
+      - name: Vérifier l'artefact web
+        working-directory: front/mobile_apps/leopardo_public
+        run: |
+          set -euo pipefail
+
+          test -f build/web/index.html || { echo "::error::build/web/index.html absent"; exit 1; }
+          test -f build/web/main.dart.js || { echo "::error::build/web/main.dart.js absent"; exit 1; }
+          test -f build/web/restaurant_web_bootstrap.js || { echo "::error::restaurant_web_bootstrap.js absent"; exit 1; }
+
+          grep -q 'og:title' build/web/index.html || { echo "::error::balises Open Graph absentes de index.html"; exit 1; }
+          grep -q 'restaurant_web_bootstrap.js' build/web/index.html || { echo "::error::bootstrap restaurant non référencé"; exit 1; }
+
+          # Le placeholder Flutter ne doit plus être le titre de la page.
+          if grep -q 'A new Flutter project' build/web/index.html; then
+            echo "::error::index.html porte encore le placeholder Flutter"
+            exit 1
+          fi
+
+          echo "✅ Artefact web conforme (index.html, main.dart.js, bootstrap restaurant)"
+
+      - name: Publier l'artefact web
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: leopardo-public-web
+          path: front/mobile_apps/leopardo_public/build/web
+          if-no-files-found: error
+          retention-days: 14

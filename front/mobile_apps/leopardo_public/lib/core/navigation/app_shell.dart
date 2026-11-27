@@ -8,6 +8,7 @@ import '../../features/business_profile/screens/business_profile_route.dart';
 import '../../features/discovery/screens/discovery_home_screen.dart';
 import '../../features/activity/screens/activity_tab.dart';
 import '../../features/journeys/screens/contact_request_screen.dart';
+import '../../features/journeys/screens/restaurant_order_screen.dart';
 import '../../features/journeys/screens/retail_order_screen.dart';
 import '../../features/journeys/screens/stay_reservation_screen.dart';
 import '../../features/journeys/screens/travel_journey_screen.dart';
@@ -160,6 +161,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/journey/order/:slug',
         builder: (context, state) =>
             RetailOrderScreen(sellerSlug: state.pathParameters['slug'] ?? ''),
+      ),
+      // Verticale Restaurant (#9959 + mission parité web).
+      //
+      // DEUX chemins pour un écran, et c'est voulu :
+      // - `/restaurants/:slug` est l'URL PUBLIQUE, celle qu'on partage, qu'on
+      //   met dans un QR code, et que la cible web expose en `location.pathname`
+      //   (donc indexable) ;
+      // - `/journey/restaurant/:slug` reste le chemin interne cohérent avec
+      //   `/journey/order/:slug`, `/journey/stay/:slug`...
+      // Une seule route aurait obligé à choisir entre une URL publique propre et
+      // la convention interne du dépôt. Deux routes, un écran, zéro duplication.
+      GoRoute(
+        path: '/restaurants/:slug',
+        builder: (context, state) => RestaurantOrderScreen(
+          slug: state.pathParameters['slug'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/journey/restaurant/:slug',
+        builder: (context, state) => RestaurantOrderScreen(
+          slug: state.pathParameters['slug'] ?? '',
+        ),
       ),
       GoRoute(
         path: '/journey/stay/:slug',

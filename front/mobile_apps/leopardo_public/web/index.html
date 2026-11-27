@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
   <!--
     If you are serving your web app in a path other than the root, change the
@@ -18,19 +18,54 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="Trouvez les commerces autour de vous, parlez-leur, retrouvez vos commandes et vos favoris.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <!--
+    SEO de la cible web grand public.
+
+    Le placeholder Flutter par défaut titrait « Leopardo — Trouver près de toi »
+    et ne disait rien de la verticale restaurant : un lien `/restaurants/{slug}`
+    partagé sur WhatsApp ou indexé par Google arrivait sans titre, sans
+    description et sans carte sociale. Ces balises sont la version statique,
+    servie AVANT que Flutter ne démarre — donc la seule que voient les robots
+    qui n'exécutent pas JavaScript.
+
+    `restaurant_web_bootstrap.js` remplace ensuite `og:title` / `og:description`
+    / `document.title` par le nom réel de l'établissement quand la route porte
+    un slug (voir ce fichier pour le pourquoi).
+  -->
+  <meta name="description" content="Commandez en ligne dans les restaurants près de vous : carte, prix, avis clients, à emporter ou en livraison. Sans compte, sans installation.">
+  <meta name="theme-color" content="#10B981">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Leopardo Restaurants">
+  <meta name="format-detection" content="telephone=no">
+
+  <!-- Open Graph : ce que montre WhatsApp / Facebook / LinkedIn sur un lien partagé -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Leopardo">
+  <meta property="og:title" content="Commander dans les restaurants près de vous — Leopardo">
+  <meta property="og:description" content="Carte, prix, avis clients : commandez à emporter ou en livraison, sans installer d'application.">
+  <meta property="og:locale" content="fr_FR">
+
+  <!-- Twitter card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Commander dans les restaurants près de vous — Leopardo">
+  <meta name="twitter:description" content="Carte, prix, avis clients : commandez à emporter ou en livraison.">
 
   <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Leopardo">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>Leopardo — Trouver près de toi</title>
+  <title>Commander dans les restaurants près de vous — Leopardo</title>
   <link rel="manifest" href="manifest.json">
+
+  <!--
+    Enrichissement dynamique par slug. Chargé en `defer` : il ne retarde jamais
+    le premier rendu de Flutter, et un échec de ce script laisse simplement les
+    balises statiques ci-dessus.
+  -->
+  <script src="restaurant_web_bootstrap.js" defer></script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>
