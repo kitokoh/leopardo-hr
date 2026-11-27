@@ -41,19 +41,31 @@ CODEOWNERS = ROOT / "CODEOWNERS"
 
 # Surfaces qui DOIVENT être couvertes par une entrée explicite (pas par `*`).
 # Chaque entrée est une décision : « modifier ceci sans revue est inacceptable ».
+#
+# ⚠️ Granularité : l'unité de propriété d'un module est le MODULE, pas le
+# fichier — c'est ce que MAT-001 (`check-bounded-context-registry.sh`) impose :
+# toute ligne CODEOWNERS sous `api/app/Modules/` doit correspondre à un bounded
+# context ACTIF du registre. Une entrée au fichier isolé ferait échouer MAT-001.
+#
+# Ce n'est pas un contournement : `/api/app/Modules/Platform/` protège aussi les
+# sondes qui SERONT ajoutées, ce qu'une liste de deux fichiers ne ferait pas.
+# Les surfaces hors modules (config, workflows, blueprints, gardes) restent,
+# elles, à la granularité du fichier — il n'y a pas de BC pour les porter.
+#
+# Les deux gardes se contredisaient ; MAT-001 est la source de vérité sur le
+# découpage, donc c'est celle-ci qui s'aligne (mesuré en CI : 2 violations).
 REQUIRED_SURFACES = {
     "/api/database/migrations/": "le schéma EST l'isolation (RLS, index inter-tenant)",
     "/api/database/scripts/": "scripts de bascule RLS (#9974)",
     "/api/app/Core/Tenant/": "global scope tenant — premier filet d'isolation",
     "/api/app/Core/Auth/": "authentification",
     "/api/app/Shared/Traits/BelongsToCompany.php": "trait d'isolation tenant",
-    "/api/app/Console/Commands/TenantRlsStatusCommand.php": "sonde RLS (gate de déploiement)",
+    "/api/app/Console/": "commandes artisan (sonde RLS = gate de déploiement)",
     "/api/app/Modules/Payroll/": "paie — incident RGPD/financier",
     "/api/app/Modules/Billing/": "facturation",
     "/api/app/Modules/Paiements/": "socle de paiement",
     "/api/app/Modules/HealthManager/": "données de santé",
-    "/api/app/Modules/Platform/Infrastructure/Services/HealthProbeService.php": "sondes — une sonde modifiée masque une panne",
-    "/api/app/Modules/Platform/Interfaces/Api/V1/Controllers/HealthController.php": "exposition des sondes",
+    "/api/app/Modules/Platform/": "sondes health — une sonde modifiée masque une panne (#9976)",
     "/api/config/": "configuration et secrets",
     "/api/app/Http/Middleware/": "middleware (tenant, auth, rate limit)",
     "/api/app/Policies/": "autorisation",
@@ -243,6 +255,7 @@ def self_test() -> int:
     expect("dernier match gagne", effective_owner(ents, "/api/config/app.php")[0] == "*")
     expect("motif large insuffisant", not is_specific_enough("/api/", "/api/database/migrations/"))
     expect("motif exact suffisant", is_specific_enough("/api/database/migrations/", "/api/database/migrations/"))
+    expect("module couvre ses fichiers", is_specific_enough("/api/app/Modules/Platform/", "/api/app/Modules/Platform/"))
     expect("fichier exact suffisant", is_specific_enough("/render.yaml", "/render.yaml"))
     expect("glob jamais suffisant", not is_specific_enough("*", "/render.yaml"))
 
@@ -255,7 +268,7 @@ def self_test() -> int:
     if failures:
         print(f"❌ self-test : {failures} échec(s).")
         return 1
-    print("✅ self-test : 13/13.")
+    print("✅ self-test : 14/14.")
     return 0
 
 

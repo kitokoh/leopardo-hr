@@ -159,7 +159,7 @@
 # filet d'isolation (le second étant RLS, #9974/#9975).
 /api/app/Shared/Traits/BelongsToCompany.php @kitokoh
 /api/app/Core/Tenant/           @kitokoh
-/api/app/Console/Commands/TenantRlsStatusCommand.php @kitokoh
+/api/app/Console/ @kitokoh
 
 # Gardes de gouvernance : modifier une garde, c'est pouvoir désactiver un
 # contrôle. Elles sont donc aussi sensibles que le code qu'elles gardent.
@@ -179,8 +179,12 @@
 
 # Health / sondes : une sonde modifiée peut masquer une panne (précédent
 # #9976 : un scheduler mort restait vert).
-/api/app/Modules/Platform/Infrastructure/Services/HealthProbeService.php @kitokoh
-/api/app/Modules/Platform/Interfaces/Api/V1/Controllers/HealthController.php @kitokoh
+#
+# Dossier de module, pas fichiers : MAT-001 exige qu'une ligne CODEOWNERS
+# corresponde à un bounded context ACTIF du registre. Un fichier isolé n'est pas
+# un BC — la garde l'a signalé, et c'est elle qui avait raison : couvrir le
+# module entier protège aussi les sondes qui seront ajoutées.
+/api/app/Modules/Platform/ @kitokoh
 
 # Blueprints de déploiement : topologie, plans, gates de démarrage.
 /render.yaml                    @kitokoh
