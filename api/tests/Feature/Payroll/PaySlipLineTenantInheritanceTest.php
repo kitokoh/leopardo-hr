@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Payroll;
 
+use App\Core\Auth\Domain\Models\Employee;
 use App\Core\Tenant\Domain\Models\Company;
+use App\Modules\Payroll\Domain\Models\PayrollRun;
 use App\Modules\Payroll\Domain\Models\PaySlip;
 use App\Modules\Payroll\Domain\Models\PaySlipLine;
 use Tests\RefreshTenantDatabase;
@@ -39,10 +41,39 @@ class PaySlipLineTenantInheritanceTest extends TestCase
 {
     use RefreshTenantDatabase;
 
+    /**
+     * Construit un bulletin réellement persistable.
+     *
+     * `pay_slips` exige `payroll_run_id` et `employee_id` en NOT NULL : un
+     * `PaySlip::factory()` n'existe pas (le modèle n'utilise pas `HasFactory`),
+     * et un `create()` partiel échouerait sur les clés étrangères. On construit
+     * donc la chaîne minimale réelle, comme les autres tests de paie.
+     */
     private function makeSlip(Company $company): PaySlip
     {
-        return PaySlip::factory()->create([
+        $employee = Employee::factory()->create(['company_id' => $company->id]);
+
+        $run = PayrollRun::create([
             'company_id' => $company->id,
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+            'country_code' => 'DZ',
+            'status' => 'calculated',
+            'total_gross' => 0,
+            'total_net' => 0,
+            'employee_count' => 1,
+        ]);
+
+        return PaySlip::create([
+            'payroll_run_id' => $run->id,
+            'company_id' => $company->id,
+            'employee_id' => $employee->id,
+            'period_start' => '2026-07-01',
+            'period_end' => '2026-07-31',
+            'gross_salary' => 1000.0,
+            'total_deductions' => 0.0,
+            'net_salary' => 1000.0,
+            'status' => 'calculated',
         ]);
     }
 

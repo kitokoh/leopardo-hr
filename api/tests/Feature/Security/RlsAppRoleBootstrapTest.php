@@ -50,8 +50,6 @@ final class RlsAppRoleBootstrapTest extends TestCase
 
     private const TABLE = 'rls_bootstrap_probe';
 
-    private bool $roleCreated = false;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -174,8 +172,6 @@ final class RlsAppRoleBootstrapTest extends TestCase
 
         exec($command, $output, $exit);
 
-        $this->roleCreated = true;
-
         expect($exit)->toBe(0, "le script de bascule doit s'exécuter sans erreur.\n".implode("\n", $output));
     }
 
@@ -287,8 +283,17 @@ final class RlsAppRoleBootstrapTest extends TestCase
 
     private function dropRole(): void
     {
+        // `DROP OWNED BY` lève 42704 si le rôle n'existe pas — et c'est le cas
+        // NORMAL au premier `setUp()` d'un worker frais. Sans cette garde, le
+        // test échouait avant même d'avoir testé quoi que ce soit (mesuré en CI :
+        // 3 échecs `role "leopardo_app" does not exist`).
+        $exists = DB::selectOne('SELECT 1 AS present FROM pg_roles WHERE rolname = ?', [self::ROLE]);
+
+        if ($exists === null) {
+            return;
+        }
+
         DB::statement('DROP OWNED BY '.self::ROLE.' CASCADE');
         DB::statement('DROP ROLE IF EXISTS '.self::ROLE);
-        $this->roleCreated = false;
     }
 }

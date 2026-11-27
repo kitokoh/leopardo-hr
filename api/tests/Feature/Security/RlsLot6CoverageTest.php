@@ -182,7 +182,11 @@ final class RlsLot6CoverageTest extends TestCase
         preg_match('/EXPECTED_TABLES\s*=\s*\[(.*?)\];/s', (string) $command, $m);
         expect($m[1] ?? null)->not->toBeNull('EXPECTED_TABLES introuvable.');
 
-        preg_match_all("/'([a-z_]+)'\s*=>/", $m[1], $keys);
+        // `$m[1]` est garanti non-null par l'assertion ci-dessus, mais PHPStan
+        // ne le sait pas : on le matérialise pour que l'accès soit typé.
+        $block = (string) ($m[1] ?? '');
+
+        preg_match_all("/'([a-z_]+)'\s*=>/", $block, $keys);
         $expected = array_unique($keys[1]);
 
         $lot6 = array_keys(self::TABLES);

@@ -211,11 +211,9 @@ final class RlsSensitiveTablesLot6Test extends TestCase
         DB::statement('CREATE TABLE shared_tenants.employees (id serial PRIMARY KEY, company_id uuid NOT NULL)');
         DB::statement('CREATE TABLE shared_tenants.pay_slips (id bigserial PRIMARY KEY, company_id uuid NOT NULL)');
 
+        // `employees` et `pay_slips` sont créées ci-dessus comme tables parentes :
+        // elles ne figurent pas dans `TABLES`, donc aucune garde n'est nécessaire.
         foreach (self::TABLES as $table => $backfill) {
-            if (in_array($table, ['employees', 'pay_slips'], true)) {
-                continue;
-            }
-
             // `pay_slip_lines` n'a RÉELLEMENT pas de colonne company_id dans le
             // schéma de production (mesuré : la première version de la migration
             // échouait en `column child.company_id does not exist`). Le schéma de
@@ -240,8 +238,16 @@ final class RlsSensitiveTablesLot6Test extends TestCase
 
     private function dropProbeObjects(): void
     {
-        DB::statement('DROP OWNED BY '.self::ROLE.' CASCADE');
-        DB::statement('DROP ROLE IF EXISTS '.self::ROLE);
+        // `DROP OWNED BY` lève 42704 si le rôle n'existe pas — cas NORMAL au
+        // premier `setUp()` d'un worker frais. Sans cette garde, le test échouait
+        // avant d'avoir testé quoi que ce soit (mesuré en CI : 4 échecs
+        // `role "leopardo_lot6_probe" does not exist`).
+        $exists = DB::selectOne('SELECT 1 AS present FROM pg_roles WHERE rolname = ?', [self::ROLE]);
+
+        if ($exists !== null) {
+            DB::statement('DROP OWNED BY '.self::ROLE.' CASCADE');
+            DB::statement('DROP ROLE IF EXISTS '.self::ROLE);
+        }
 
         foreach (array_keys(self::TABLES) as $table) {
             DB::statement("DROP TABLE IF EXISTS shared_tenants.{$table} CASCADE");
@@ -263,10 +269,6 @@ final class RlsSensitiveTablesLot6Test extends TestCase
         ]);
 
         foreach (self::TABLES as $table => $backfill) {
-            if (in_array($table, ['employees', 'pay_slips'], true)) {
-                continue;
-            }
-
             if ($backfill !== null) {
                 // Ligne rattachée à la table parente : le backfill fera le reste.
                 // `pay_slip_lines` n'a pas la colonne — c'est la migration qui
