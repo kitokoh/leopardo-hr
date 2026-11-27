@@ -161,6 +161,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             RetailOrderScreen(sellerSlug: state.pathParameters['slug'] ?? ''),
       ),
+      // Verticale Restaurant (#9959 + mission parité web).
+      //
+      // DEUX chemins pour un écran, et c'est voulu :
+      // - `/restaurants/:slug` est l'URL PUBLIQUE, celle qu'on partage, qu'on
+      //   met dans un QR code, et que la cible web expose en `location.pathname`
+      //   (donc indexable) ;
+      // - `/journey/restaurant/:slug` reste le chemin interne cohérent avec
+      //   `/journey/order/:slug`, `/journey/stay/:slug`...
+      // Une seule route aurait obligé à choisir entre une URL publique propre et
+      // la convention interne du dépôt. Deux routes, un écran, zéro duplication.
+      GoRoute(
+        path: '/restaurants/:slug',
+        builder: (context, state) => RestaurantOrderScreen(
+          slug: state.pathParameters['slug'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/journey/restaurant/:slug',
+        builder: (context, state) => RestaurantOrderScreen(
+          slug: state.pathParameters['slug'] ?? '',
+        ),
+      ),
       GoRoute(
         path: '/journey/stay/:slug',
         builder: (context, state) =>

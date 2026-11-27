@@ -219,4 +219,83 @@ class RestaurantOrderGateway {
       },
     );
   }
+
+  /// Avis PUBLIÉS d'un restaurant (`GET …/reviews`).
+  ///
+  /// Le serveur ne rend que les avis modérés (`status = published`) : un avis
+  /// en attente n'apparaît pas, et l'écran ne doit pas laisser croire qu'il a
+  /// été publié immédiatement après l'envoi.
+  Future<RestaurantReviewPage> reviews(
+    String slug, {
+    int page = 1,
+    int perPage = 20,
+  }) async {
+    final json = await _api.get(
+      '${profilePath(slug)}/reviews',
+      query: {'page': page, 'per_page': perPage},
+    );
+
+    return RestaurantReviewPage.tryParse(json) ??
+        const RestaurantReviewPage(items: []);
+  }
+
+  /// Corps EXACT de `StoreRestaurantPublicReviewRequest`.
+  ///
+  /// `order_ref` est la **preuve d'achat** : le serveur refuse (404) une
+  /// référence qui n'appartient pas à cette branche, et (422) une commande qui
+  /// n'est pas encore servie. Ces contrôles locaux évitent d'envoyer une
+  /// requête qu'on sait déjà invalide.
+  static Map<String, dynamic> buildReviewPayload({
+    required String orderRef,
+    required int rating,
+    required String authorName,
+    String? comment,
+  }) {
+    final reference = orderRef.trim();
+    if (reference.isEmpty) {
+      throw ArgumentError.value(orderRef, 'orderRef', 'Référence requise');
+    }
+
+    if (rating < 1 || rating > 5) {
+      throw ArgumentError.value(rating, 'rating', 'Note 1..5');
+    }
+
+    final author = authorName.trim();
+    if (author.isEmpty) {
+      throw ArgumentError.value(authorName, 'authorName', 'Nom requis');
+    }
+
+    final trimmed = comment?.trim() ?? '';
+
+    return {
+      'order_ref': reference,
+      'rating': rating,
+      'author_name': author,
+      if (trimmed.isNotEmpty) 'comment': trimmed,
+    };
+  }
+
+  /// Dépose un avis après une commande servie.
+  ///
+  /// Les deux refus métier sont distingués par l'appelant :
+  /// - **409** : un avis existe déjà pour cette commande ;
+  /// - **422** : la commande n'est pas dans un statut terminal servi/livré.
+  /// Les confondre afficherait « erreur réseau » sur une règle métier.
+  Future<void> submitReview({
+    required String slug,
+    required String orderRef,
+    required int rating,
+    required String authorName,
+    String? comment,
+  }) async {
+    await _api.post(
+      '${profilePath(slug)}/reviews',
+      buildReviewPayload(
+        orderRef: orderRef,
+        rating: rating,
+        authorName: authorName,
+        comment: comment,
+      ),
+    );
+  }
 }

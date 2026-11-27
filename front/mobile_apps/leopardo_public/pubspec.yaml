@@ -26,6 +26,10 @@ dependencies:
   flutter_riverpod: ^3.4.2
   go_router: ^18.0.1
   dio: ^5.11.0
+  # Cible web grand public : `usePathUrlStrategy` remplace les `#/` de
+  # Flutter web par de vraies URL (`/restaurants/{slug}`), seules indexables
+  # et partageables. Paquet officiel Flutter, no-op hors web.
+  url_strategy: ^0.3.0
   # Le jeton de session public ne vit QUE dans le Keystore/Keychain
   # (flutter_secure_storage) — jamais dans une préférence en clair.
   flutter_secure_storage: ^11.2.0

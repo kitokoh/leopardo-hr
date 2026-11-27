@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:leopardo_core/core/theme/app_colors.dart';
@@ -5,12 +7,13 @@ import 'package:leopardo_core/core/theme/app_typography.dart';
 
 import '../../../core/i18n/app_strings.dart';
 import '../../../core/providers/app_providers.dart';
+import '../../discovery/data/public_discovery_repository.dart';
 import '../domain/journey_models.dart';
 import '../domain/restaurant_order_models.dart';
 import '../providers/journey_providers.dart';
 import '../widgets/journey_widgets.dart';
 
-/// Commande en ligne d'un restaurant public — #9959.
+/// Commande en ligne d'un restaurant public — #9959, parité web #9991..#9994.
 ///
 /// ## Pourquoi ce parcours existe
 ///
@@ -20,11 +23,21 @@ import '../widgets/journey_widgets.dart';
 /// (#7747), `POST /public/restaurants/{slug}/orders` sert la commande sans
 /// aucun jeton, et c'est ce que consomme la vitrine web `/restaurants/{slug}`.
 ///
-/// ## Trois étapes, un seul écran
+/// ## Parité avec la vitrine web
 ///
-/// Menu → panier → confirmation. Le même raisonnement que `TravelJourneyScreen`
-/// et `RetailOrderScreen` : des écrans séparés perdraient le panier au retour
-/// arrière, et chaque transition coûterait un rechargement du menu.
+/// La vitrine web (`RestaurantOrderPanel.tsx`) offre quatre choses que cet
+/// écran n'avait pas, et qui sont ici rattrapées :
+///
+/// 1. **Recherche dans la carte + puces de catégories** — un restaurant publie
+///    couramment 60 à 120 produits ; un `ListView` plat oblige à tout faire
+///    défiler pour trouver « tiramisu ».
+/// 2. **Avis clients** — lecture des avis publiés et dépôt d'un avis après une
+///    commande servie (`order_ref` = preuve d'achat).
+/// 3. **Paiement** — `RestaurantOrderGateway.pay()` existait mais n'était
+///    appelé par aucun écran : la commande restait `pending` sans moyen de la
+///    régler.
+/// 4. **Suivi automatique** — le web interroge le statut toutes les 15 s ; ici
+///    le suivi est relancé tant que le statut n'est pas terminal.
 ///
 /// ## Ce que l'écran n'invente pas
 ///
@@ -35,6 +48,8 @@ import '../widgets/journey_widgets.dart';
 ///   sera confirmé, et il ne compte pas dans l'estimation.
 /// - Le `tracking_secret` n'est rendu qu'à la création réelle : au rejeu
 ///   idempotent l'écran dit que le suivi se fait avec le secret déjà obtenu.
+/// - Aucun état « payé » optimiste : le badge de paiement ne change qu'après
+///   la réponse serveur.
 class RestaurantOrderScreen extends ConsumerStatefulWidget {
   const RestaurantOrderScreen({super.key, required this.slug});
 
@@ -70,12 +85,36 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
   RestaurantOrderResult? _order;
   String? _idempotencyKey;
 
-  // Suivi
+  // ── Menu : recherche + catégorie active ──
+  final TextEditingController _menuQuery = TextEditingController();
+  String? _activeCategory;
+
+  // ── Suivi ──
   final TextEditingController _trackReference = TextEditingController();
   final TextEditingController _trackSecret = TextEditingController();
   bool _tracking = false;
   Object? _trackError;
   RestaurantOrderTracking? _trackingResult;
+  Timer? _trackTimer;
+
+  // ── Paiement ──
+  RestaurantPaymentMethod _paymentMethod = RestaurantPaymentMethod.cashOnDelivery;
+  bool _paying = false;
+  Object? _payError;
+  bool _paid = false;
+  String? _payIdempotencyKey;
+
+  // ── Avis ──
+  RestaurantReviewPage? _reviews;
+  bool _reviewsLoading = false;
+  Object? _reviewsError;
+  final TextEditingController _reviewAuthor = TextEditingController();
+  final TextEditingController _reviewComment = TextEditingController();
+  final TextEditingController _reviewOrderRef = TextEditingController();
+  int _reviewRating = 5;
+  bool _reviewSubmitting = false;
+  Object? _reviewError;
+  bool _reviewSent = false;
 
   @override
   void initState() {
@@ -85,11 +124,16 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
 
   @override
   void dispose() {
+    _trackTimer?.cancel();
     _customerName.dispose();
     _customerPhone.dispose();
     _note.dispose();
     _trackReference.dispose();
     _trackSecret.dispose();
+    _menuQuery.dispose();
+    _reviewAuthor.dispose();
+    _reviewComment.dispose();
+    _reviewOrderRef.dispose();
     super.dispose();
   }
 
@@ -107,6 +151,12 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
         _profile = profile;
         _loading = false;
       });
+
+      if (profile != null) {
+        // Les avis ne bloquent pas l'affichage de la carte : une panne sur les
+        // avis ne doit pas empêcher de commander.
+        unawaited(_loadReviews());
+      }
     } catch (error) {
       if (!mounted) return;
       setState(() {
@@ -114,6 +164,97 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
         _loading = false;
       });
     }
+  }
+
+  // ── Avis ──
+
+  Future<void> _loadReviews({bool append = false}) async {
+    if (_reviewsLoading) return;
+
+    setState(() {
+      _reviewsLoading = true;
+      _reviewsError = null;
+    });
+
+    try {
+      final page = await ref.read(restaurantOrderGatewayProvider).reviews(
+            widget.slug,
+            page: append ? (_reviews?.currentPage ?? 1) + 1 : 1,
+          );
+      if (!mounted) return;
+      setState(() {
+        _reviews = append && _reviews != null
+            ? RestaurantReviewPage(
+                items: [..._reviews!.items, ...page.items],
+                total: page.total,
+                currentPage: page.currentPage,
+                perPage: page.perPage,
+              )
+            : page;
+        _reviewsLoading = false;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _reviewsError = error;
+        _reviewsLoading = false;
+      });
+    }
+  }
+
+  Future<void> _submitReview() async {
+    final reference = _reviewOrderRef.text.trim();
+    final author = _reviewAuthor.text.trim();
+    final strings = ref.read(appStringsProvider);
+
+    if (reference.isEmpty || author.isEmpty) {
+      setState(() {
+        _reviewError = JourneyLocalFailure(
+          strings.t('restaurantReviewOrderRef'),
+        );
+      });
+      return;
+    }
+
+    setState(() {
+      _reviewSubmitting = true;
+      _reviewError = null;
+    });
+
+    try {
+      await ref.read(restaurantOrderGatewayProvider).submitReview(
+            slug: widget.slug,
+            orderRef: reference,
+            rating: _reviewRating,
+            authorName: author,
+            comment: _reviewComment.text,
+          );
+      if (!mounted) return;
+      setState(() {
+        _reviewSubmitting = false;
+        _reviewSent = true;
+      });
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _reviewError = error;
+        _reviewSubmitting = false;
+      });
+    }
+  }
+
+  /// Message d'un refus d'avis : 409 et 422 sont deux règles métier distinctes.
+  String _reviewErrorText(AppStrings strings, Object error) {
+    if (error is PublicApiFailure) {
+      if (error.statusCode == 409) return strings.t('restaurantReviewAlready');
+      if (error.statusCode == 422) {
+        return strings.t('restaurantReviewNotEligible');
+      }
+    }
+    if (error is JourneyLocalFailure) {
+      return error.message;
+    }
+    return strings.t('stateErrorBody');
   }
 
   // ── Panier ──
@@ -213,6 +354,13 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
       if (_trackReference.text.isEmpty) {
         _trackReference.text = order.reference;
       }
+      if (_reviewOrderRef.text.isEmpty) {
+        _reviewOrderRef.text = order.reference;
+      }
+
+      // Le suivi démarre tout seul : le client vient de commander, il attend
+      // un statut, pas un bouton à trouver.
+      unawaited(_track());
     } catch (error) {
       if (!mounted) return;
       setState(() {
@@ -243,6 +391,8 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
         _trackingResult = result;
         _tracking = false;
       });
+
+      _scheduleNextTrack(result.status);
     } catch (error) {
       if (!mounted) return;
       setState(() {
@@ -252,21 +402,127 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
     }
   }
 
+  /// Relance le suivi tant que la commande n'est pas terminale.
+  ///
+  /// 15 s est la cadence de la vitrine web : assez réactif pour un service en
+  /// salle, assez lent pour ne pas marteler une route publique limitée en
+  /// débit. Le timer est annulé au `dispose()` — un `Timer` qui survit à
+  /// l'écran appelle `setState` sur un widget démonté.
+  void _scheduleNextTrack(String? status) {
+    _trackTimer?.cancel();
+    if (isRestaurantTerminalStatus(status)) return;
+
+    _trackTimer = Timer(const Duration(seconds: 15), () {
+      if (!mounted) return;
+      unawaited(_track());
+    });
+  }
+
+  // ── Paiement ──
+
+  Future<void> _pay() async {
+    final order = _order;
+    if (order == null || _paying || _paid) return;
+
+    // Clé stable par tentative : un double tap ou un retry réseau ne débite
+    // pas deux fois.
+    _payIdempotencyKey ??= newJourneyIdempotencyKey();
+
+    setState(() {
+      _paying = true;
+      _payError = null;
+    });
+
+    try {
+      await ref.read(restaurantOrderGatewayProvider).pay(
+            slug: widget.slug,
+            reference: order.reference,
+            method: _paymentMethod,
+            idempotencyKey: _payIdempotencyKey!,
+          );
+      if (!mounted) return;
+      setState(() {
+        _paying = false;
+        _paid = true;
+      });
+      unawaited(_track());
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _payError = error;
+        _paying = false;
+      });
+    }
+  }
+
+  // ── Menu filtré ──
+
+  /// Catégories visibles selon la recherche et la puce active.
+  ///
+  /// Le filtrage est fait ici, pas dans le widget : il doit rester testable
+  /// sans monter d'arbre, et il ne doit jamais toucher au panier (les
+  /// quantités survivent à un changement de filtre).
+  List<RestaurantMenuCategory> _visibleCategories(RestaurantPublicProfile profile) {
+    final needle = _normalize(_menuQuery.text);
+    final active = _activeCategory;
+
+    final result = <RestaurantMenuCategory>[];
+
+    for (final category in profile.menu) {
+      if (active != null && category.name != active) continue;
+
+      if (needle.isEmpty) {
+        result.add(category);
+        continue;
+      }
+
+      final categoryMatches = _normalize(category.name).contains(needle);
+      final products = category.products
+          .where((product) =>
+              categoryMatches ||
+              _normalize(product.name).contains(needle) ||
+              _normalize(product.description ?? '').contains(needle))
+          .toList();
+
+      if (products.isNotEmpty) {
+        result.add(RestaurantMenuCategory(name: category.name, products: products));
+      }
+    }
+
+    return result;
+  }
+
+  /// Minuscules sans accents — « Crème brûlée » doit répondre à « creme ».
+  static String _normalize(String value) {
+    const from = 'àáâãäåçèéêëìíîïñòóôõöùúûüýÿœæ';
+    const to = 'aaaaaaceeeeiiiinooooouuuuyyoa';
+
+    final buffer = StringBuffer();
+    for (final rune in value.toLowerCase().runes) {
+      final char = String.fromCharCode(rune);
+      final index = from.indexOf(char);
+      buffer.write(index >= 0 ? to[index] : char);
+    }
+    return buffer.toString().trim();
+  }
+
   @override
   Widget build(BuildContext context) {
     final strings = ref.watch(appStringsProvider);
 
     if (_loading) {
-      return Scaffold(
-        appBar: AppBar(title: Text(strings.t('restaurantOrderTitle'))),
-        body: const Center(child: CircularProgressIndicator()),
+      return JourneyScaffold(
+        strings: strings,
+        title: strings.t('restaurantOrderTitle'),
+        child: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_loadError != null) {
-      return Scaffold(
-        appBar: AppBar(title: Text(strings.t('restaurantOrderTitle'))),
-        body: Padding(
+      return JourneyScaffold(
+        strings: strings,
+        title: strings.t('restaurantOrderTitle'),
+        child: Padding(
           padding: const EdgeInsets.all(16),
           child: JourneyErrorView(
             strings: strings,
@@ -281,9 +537,10 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
     if (profile == null) {
       // 404 : l'établissement n'est pas publié. C'est une information, pas une
       // panne — et on ne propose pas « réessayer », qui ne changerait rien.
-      return Scaffold(
-        appBar: AppBar(title: Text(strings.t('restaurantOrderTitle'))),
-        body: Padding(
+      return JourneyScaffold(
+        strings: strings,
+        title: strings.t('restaurantOrderTitle'),
+        child: Padding(
           padding: const EdgeInsets.all(16),
           child: JourneyMessageView(
             icon: Icons.storefront_outlined,
@@ -294,23 +551,10 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
       );
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(profile.name),
-        actions: [
-          if (_step == _RestaurantStep.menu && _cartCount > 0)
-            Padding(
-              padding: const EdgeInsets.only(right: 12),
-              child: Center(
-                child: Text(
-                  '${strings.t('restaurantCart')} · $_cartCount',
-                  style: AppTypography.bodySmall,
-                ),
-              ),
-            ),
-        ],
-      ),
-      body: switch (_step) {
+    return JourneyScaffold(
+      strings: strings,
+      title: profile.name,
+      child: switch (_step) {
         _RestaurantStep.menu => _menuView(strings, profile),
         _RestaurantStep.cart => _cartView(strings, profile),
         _RestaurantStep.confirmation => _confirmationView(strings),
@@ -331,45 +575,106 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
       );
     }
 
+    final visible = _visibleCategories(profile);
+    final isFiltering =
+        _menuQuery.text.trim().isNotEmpty || _activeCategory != null;
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        if (profile.description != null) ...[
-          Text(profile.description!, style: AppTypography.bodySmall),
-          const SizedBox(height: 12),
-        ],
-        if (profile.address != null || profile.city != null)
-          _KeyValue(
-            label: strings.t('journeyDirectoryCity'),
-            value:
-                [profile.address, profile.city].whereType<String>().join(', '),
-          ),
-        if (profile.ratingAvg != null && (profile.reviewsCount ?? 0) > 0)
-          _KeyValue(
-            label: strings.t('journeyDirectoryRating'),
-            value:
-                '★ ${profile.ratingAvg!.toStringAsFixed(1)} (${profile.reviewsCount})',
-          ),
+        _ProfileHeader(strings: strings, profile: profile),
         const Divider(height: 28),
-        for (final category in profile.menu) ...[
-          JourneySectionTitle(text: category.name),
-          for (final product in category.products)
-            _ProductTile(
-              product: product,
-              quantity: _cart[product.code]?.quantity ?? 0,
-              onAdd: () => _add(product),
-              onRemove: () => _remove(product),
-            ),
-        ],
+
+        // Recherche dans la carte : sur 100 produits, c'est le seul moyen
+        // d'atteindre un plat sans tout faire défiler.
+        TextField(
+          controller: _menuQuery,
+          onChanged: (_) => setState(() {}),
+          decoration: InputDecoration(
+            labelText: strings.t('restaurantMenuSearch'),
+            hintText: strings.t('restaurantMenuSearchHint'),
+            prefixIcon: const Icon(Icons.search, size: 20),
+            suffixIcon: _menuQuery.text.isEmpty
+                ? null
+                : IconButton(
+                    icon: const Icon(Icons.close, size: 18),
+                    onPressed: () {
+                      _menuQuery.clear();
+                      setState(() {});
+                    },
+                  ),
+            isDense: true,
+          ),
+        ),
+        const SizedBox(height: 10),
+
+        // Puces de catégories : sélection unique + « Tout ».
+        SizedBox(
+          height: 40,
+          child: ListView(
+            scrollDirection: Axis.horizontal,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: ChoiceChip(
+                  label: Text(strings.t('restaurantMenuAll')),
+                  selected: _activeCategory == null,
+                  onSelected: (_) => setState(() => _activeCategory = null),
+                ),
+              ),
+              for (final category in profile.menu)
+                Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ChoiceChip(
+                    label: Text(category.name),
+                    selected: _activeCategory == category.name,
+                    onSelected: (_) => setState(
+                      () => _activeCategory =
+                          _activeCategory == category.name ? null : category.name,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        if (visible.isEmpty && isFiltering)
+          // Un filtre sans résultat n'est PAS un menu vide : deux messages
+          // différents, sinon le client croit que la carte a disparu.
+          JourneyNotice(
+            text: strings.t('restaurantMenuNoMatch'),
+            color: AppColors.info,
+          )
+        else
+          for (final category in visible) ...[
+            JourneySectionTitle(text: category.name),
+            for (final product in category.products)
+              _ProductTile(
+                product: product,
+                quantity: _cart[product.code]?.quantity ?? 0,
+                onAdd: () => _add(product),
+                onRemove: () => _remove(product),
+              ),
+          ],
+
         const SizedBox(height: 16),
         if (_cartCount > 0)
           FilledButton.icon(
             onPressed: () => setState(() => _step = _RestaurantStep.cart),
             icon: const Icon(Icons.shopping_cart_outlined, size: 18),
-            label: Text(
-              '${strings.t('restaurantGoToCart')} · $_cartCount',
-            ),
+            label: Text('${strings.t('restaurantGoToCart')} · $_cartCount'),
           ),
+
+        const Divider(height: 36),
+        _ReviewsSection(
+          strings: strings,
+          page: _reviews,
+          loading: _reviewsLoading,
+          error: _reviewsError,
+          onRetry: () => _loadReviews(),
+          onLoadMore: () => _loadReviews(append: true),
+        ),
       ],
     );
   }
@@ -493,6 +798,9 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
       return JourneyErrorView(strings: strings, error: _loadError ?? '');
     }
 
+    final status = _trackingResult?.status ?? order.status;
+    final terminal = isRestaurantTerminalStatus(status);
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -512,7 +820,7 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
         ),
         _KeyValue(
           label: strings.t('journeyTrackStatus'),
-          value: order.status,
+          value: status,
         ),
 
         // Le secret n'est rendu qu'à la création réelle. Au rejeu idempotent il
@@ -529,7 +837,64 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
           ),
 
         const Divider(height: 32),
+
+        // ── Paiement ──
+        JourneySectionTitle(text: strings.t('restaurantPayTitle')),
+        if (_paid)
+          JourneyNotice(
+            text: strings.t('restaurantPayDone'),
+            color: AppColors.success,
+            icon: Icons.paid_outlined,
+          )
+        else ...[
+          Wrap(
+            spacing: 8,
+            children: [
+              for (final method in RestaurantPaymentMethod.values)
+                ChoiceChip(
+                  label: Text(
+                    method == RestaurantPaymentMethod.cashOnDelivery
+                        ? strings.t('restaurantPayCash')
+                        : strings.t('restaurantPayMobileMoney'),
+                  ),
+                  selected: _paymentMethod == method,
+                  onSelected: (_) => setState(() => _paymentMethod = method),
+                ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          // La carte n'est pas proposée : le contrôleur ne l'ouvre pas, et un
+          // bouton qui enverrait une valeur refusée serait un mensonge.
+          Text(
+            strings.t('restaurantPayCardUnavailable'),
+            style: AppTypography.caption.copyWith(
+              color: AppColors.textSecondaryFor(context),
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (_payError != null)
+            JourneyErrorView(strings: strings, error: _payError!),
+          FilledButton.icon(
+            onPressed: _paying ? null : _pay,
+            icon: const Icon(Icons.payments_outlined, size: 18),
+            label: Text(
+              _paying
+                  ? strings.t('stateLoading')
+                  : strings.t('restaurantPayAction'),
+            ),
+          ),
+        ],
+
+        const Divider(height: 32),
+
+        // ── Suivi ──
         JourneySectionTitle(text: strings.t('journeyTrackTitle')),
+        JourneyNotice(
+          text: terminal
+              ? strings.t('restaurantTrackStopped')
+              : strings.t('restaurantTrackAuto'),
+          color: terminal ? AppColors.success : AppColors.info,
+        ),
         JourneyField(
           controller: _trackReference,
           label: strings.t('journeyConfirmationReference'),
@@ -577,6 +942,319 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
                 ],
               ),
             ),
+          ),
+
+        const Divider(height: 32),
+
+        // ── Avis post-commande ──
+        JourneySectionTitle(text: strings.t('restaurantReviewsTitle')),
+        if (_reviewSent)
+          JourneyNotice(
+            text: strings.t('restaurantReviewSent'),
+            color: AppColors.success,
+            icon: Icons.rate_review_outlined,
+          )
+        else ...[
+          Text(
+            strings.t('restaurantReviewYourRating'),
+            style: AppTypography.bodySmall,
+          ),
+          Row(
+            children: [
+              for (var value = 1; value <= 5; value++)
+                IconButton(
+                  onPressed: () => setState(() => _reviewRating = value),
+                  icon: Icon(
+                    value <= _reviewRating ? Icons.star : Icons.star_border,
+                    color: AppColors.warning,
+                    size: 22,
+                  ),
+                ),
+            ],
+          ),
+          JourneyField(
+            controller: _reviewOrderRef,
+            label: strings.t('restaurantReviewOrderRef'),
+          ),
+          JourneyField(
+            controller: _reviewAuthor,
+            label: strings.t('journeyCustomerName'),
+          ),
+          JourneyField(
+            controller: _reviewComment,
+            label: strings.t('restaurantReviewComment'),
+            maxLines: 3,
+          ),
+          if (_reviewError != null)
+            JourneyNotice(
+              text: _reviewErrorText(strings, _reviewError!),
+              color: AppColors.warning,
+            ),
+          OutlinedButton.icon(
+            onPressed: _reviewSubmitting ? null : _submitReview,
+            icon: const Icon(Icons.rate_review_outlined, size: 18),
+            label: Text(
+              _reviewSubmitting
+                  ? strings.t('stateLoading')
+                  : strings.t('restaurantReviewSubmit'),
+            ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+/// En-tête de fiche : type, cuisines, note, adresse, état d'ouverture.
+///
+/// Ces informations venaient du contrat public mais n'étaient pas parsées :
+/// la fiche mobile perdait le type d'établissement, les cuisines et les
+/// horaires que la vitrine web affiche.
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader({required this.strings, required this.profile});
+
+  final AppStrings strings;
+  final RestaurantPublicProfile profile;
+
+  @override
+  Widget build(BuildContext context) {
+    final open = profile.isOpenAt(DateTime.now());
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (profile.description != null) ...[
+          Text(profile.description!, style: AppTypography.bodySmall),
+          const SizedBox(height: 10),
+        ],
+
+        if (profile.establishmentType != null || profile.cuisineTypes.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 6),
+            child: Text(
+              [
+                if (profile.establishmentType != null) profile.establishmentType!,
+                if (profile.cuisineTypes.isNotEmpty)
+                  '${strings.t('restaurantCuisinesLabel')} : '
+                      '${profile.cuisineTypes.join(', ')}',
+              ].join(' · '),
+              style: AppTypography.caption.copyWith(
+                color: AppColors.textSecondaryFor(context),
+              ),
+            ),
+          ),
+
+        if (profile.address != null || profile.city != null)
+          _KeyValue(
+            label: strings.t('journeyDirectoryCity'),
+            value:
+                [profile.address, profile.city].whereType<String>().join(', '),
+          ),
+
+        if (profile.ratingAvg != null && (profile.reviewsCount ?? 0) > 0)
+          _KeyValue(
+            label: strings.t('journeyDirectoryRating'),
+            value:
+                '★ ${profile.ratingAvg!.toStringAsFixed(1)} (${profile.reviewsCount})',
+          ),
+
+        // `null` = aucun horaire publié : on n'annonce pas un état d'ouverture
+        // qu'on ne connaît pas.
+        if (open != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 4),
+            child: Row(
+              children: [
+                Icon(
+                  open ? Icons.schedule : Icons.lock_clock,
+                  size: 16,
+                  color: open ? AppColors.success : AppColors.warning,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  open
+                      ? strings.t('restaurantOpenNow')
+                      : strings.t('restaurantClosedNow'),
+                  style: AppTypography.caption.copyWith(
+                    color: open ? AppColors.success : AppColors.warning,
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+        if (profile.hours.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          JourneySectionTitle(text: strings.t('restaurantHoursTitle')),
+          _HoursTable(strings: strings, profile: profile),
+        ],
+      ],
+    );
+  }
+}
+
+/// Horaires jour par jour, jour courant mis en avant.
+class _HoursTable extends StatelessWidget {
+  const _HoursTable({required this.strings, required this.profile});
+
+  final AppStrings strings;
+  final RestaurantPublicProfile profile;
+
+  static const List<String> _dayKeys = [
+    'journeyDayMonday',
+    'journeyDayTuesday',
+    'journeyDayWednesday',
+    'journeyDayThursday',
+    'journeyDayFriday',
+    'journeyDaySaturday',
+    'journeyDaySunday',
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    final today = (DateTime.now().weekday - 1) % 7;
+
+    return Column(
+      children: [
+        for (final hour in profile.sortedHours)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 2),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    strings.t(_dayKeys[hour.dayOfWeek]),
+                    style: AppTypography.bodySmall.copyWith(
+                      fontWeight:
+                          hour.dayOfWeek == today ? FontWeight.w700 : null,
+                      color: hour.dayOfWeek == today
+                          ? AppColors.textPrimaryFor(context)
+                          : AppColors.textSecondaryFor(context),
+                    ),
+                  ),
+                ),
+                Text(
+                  hour.isServed
+                      ? '${hour.opensAt} – ${hour.closesAt}'
+                      : strings.t('restaurantClosedDay'),
+                  style: AppTypography.bodySmall.copyWith(
+                    color: hour.isServed
+                        ? AppColors.textPrimaryFor(context)
+                        : AppColors.textSecondaryFor(context),
+                  ),
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+/// Liste des avis publiés, avec pagination explicite.
+class _ReviewsSection extends StatelessWidget {
+  const _ReviewsSection({
+    required this.strings,
+    required this.page,
+    required this.loading,
+    required this.error,
+    required this.onRetry,
+    required this.onLoadMore,
+  });
+
+  final AppStrings strings;
+  final RestaurantReviewPage? page;
+  final bool loading;
+  final Object? error;
+  final VoidCallback onRetry;
+  final VoidCallback onLoadMore;
+
+  @override
+  Widget build(BuildContext context) {
+    final reviews = page?.items ?? const <RestaurantReview>[];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        JourneySectionTitle(text: strings.t('restaurantReviewsTitle')),
+
+        if (loading && reviews.isEmpty)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (error != null && reviews.isEmpty)
+          JourneyErrorView(strings: strings, error: error!, onRetry: onRetry)
+        else if (reviews.isEmpty)
+          JourneyNotice(
+            text: strings.t('restaurantReviewsEmpty'),
+            color: AppColors.info,
+          )
+        else
+          for (final review in reviews)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          review.authorName,
+                          style: AppTypography.bodySmall.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        '★ ${review.rating}/5',
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.warning,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (review.comment != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        review.comment!,
+                        style: AppTypography.bodySmall,
+                      ),
+                    ),
+                  if (review.hasReply)
+                    Container(
+                      margin: const EdgeInsets.only(top: 6),
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: AppColors.tint(
+                          context,
+                          AppColors.textSecondaryFor(context),
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            strings.t('restaurantReviewReplyFrom'),
+                            style: AppTypography.caption.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          Text(review.reply!, style: AppTypography.caption),
+                        ],
+                      ),
+                    ),
+                ],
+              ),
+            ),
+
+        if (page?.hasMore == true)
+          OutlinedButton(
+            onPressed: loading ? null : onLoadMore,
+            child: Text(strings.t('restaurantReviewsLoadMore')),
           ),
       ],
     );
