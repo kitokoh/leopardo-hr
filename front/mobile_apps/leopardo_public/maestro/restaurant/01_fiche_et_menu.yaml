@@ -1,13 +1,17 @@
 # Parcours 1/3 — fiche restaurant, menu, recherche, filtre catégorie.
 #
-# ## Pourquoi ce flow ouvre par un lien profond et pas par l'accueil
+# ## Pourquoi ce flow ouvre par un LIEN PROFOND et pas par l'accueil
 #
 # Le client arrive sur cette fiche par un QR code collé sur la table ou par un
 # lien partagé sur WhatsApp — jamais en tapant « Accueil → catégorie →
-# restaurant ». Ouvrir par `-e` reproduit donc le vrai point d'entrée, et
-# vérifie du même coup que la route `/restaurants/{slug}` existe : c'est
-# exactement l'URL que la cible web expose en `location.pathname`.
-appId: com.leopardo.public
+# restaurant ». Ouvrir par `openLink` reproduit donc le vrai point d'entrée, et
+# vérifie du même coup que le deep link déclaré dans AndroidManifest.xml
+# (`leopardo://public/<route>`) mène réellement à la fiche.
+#
+# Les variables viennent de l'ENVIRONNEMENT, jamais du flow : Makefile et CI
+# passent RESTO_SLUG. Une valeur codée en dur casse dès que la base de
+# démonstration change.
+appId: com.leopardo.publicapp
 name: Restaurant — fiche et menu
 tags:
   - restaurant
@@ -15,9 +19,9 @@ tags:
 ---
 - launchApp:
     clearState: true
-    arguments:
-      # Route profonde : l'app doit ouvrir directement la fiche.
-      route: /restaurants/${RESTO_SLUG || 'le-bistrot'}
+
+# Deep link : `leopardo://public/restaurants/<slug>` → GoRouter `/restaurants/:slug`.
+- openLink: leopardo://public/restaurants/${RESTO_SLUG}
 
 # ── La fiche est chargée ────────────────────────────────────────────────
 # Le champ de recherche n'existe que dans la vue « menu », donc sa présence
@@ -27,18 +31,18 @@ tags:
 - extendedWaitUntil:
     visible:
       id: restaurant-menu-search
-    timeout: 20000
+    timeout: 30000
 
 # ── Recherche dans la carte ─────────────────────────────────────────────
 - tapOn:
     id: restaurant-menu-search
-- inputText: ${RESTO_SEARCH_TERM || 'poulet'}
+# `inputText` tape la chaîne littérale : Maestro ne résout pas `${}` ici.
+- inputText: poulet
 - assertVisible:
     id: restaurant-menu-search
 
-# Effacer la recherche : le bouton « croix » n'a pas de clé (icône standard),
-# donc on vide par le clavier — `eraseText` est déterministe et ne dépend
-# d'aucun libellé.
+# Effacer la recherche : `eraseText` est déterministe et ne dépend d'aucun
+# libellé (le bouton « croix » n'a pas de clé, c'est une icône standard).
 - eraseText: 20
 
 # ── Filtre par catégorie ────────────────────────────────────────────────

@@ -127,6 +127,47 @@ void main() {
     );
   });
 
+  test('chaque flow déclare le bon appId', () {
+    // `com.leopardo.public` n'existe pas : l'applicationId réel est
+    // `com.leopardo.publicapp` (android/app/build.gradle). Un appId faux fait
+    // échouer `launchApp` sur « app not installed » — un message qui ne dit
+    // pas que la cause est une faute de frappe dans le YAML.
+    final flows = flowsDir
+        .listSync()
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.yaml'));
+
+    for (final flow in flows) {
+      expect(
+        flow.readAsStringSync(),
+        contains('appId: com.leopardo.publicapp'),
+        reason: '${flow.path} ne déclare pas `appId: com.leopardo.publicapp`. '
+            'L\'applicationId réel est dans android/app/build.gradle.',
+      );
+    }
+  });
+
+  test('chaque flow ouvre la fiche par le deep link déclaré', () {
+    // Le manifest déclare `leopardo://public` (AndroidManifest.xml). Un flow
+    // qui ouvrirait `leopardo://restaurants/...` ne résoudrait aucun
+    // intent-filter : l'app ne se lancerait pas du tout.
+    final flows = flowsDir
+        .listSync()
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.yaml'));
+
+    for (final flow in flows) {
+      final content = flow.readAsStringSync();
+      expect(
+        content,
+        contains('openLink: leopardo://public/'),
+        reason:
+            '${flow.path} n\'ouvre pas la fiche par `leopardo://public/...`. '
+            'C\'est le seul scheme/host déclaré dans AndroidManifest.xml.',
+      );
+    }
+  });
+
   test('aucun flow ne sélectionne un élément par texte traduit', () {
     // Un `tapOn: "Valider"` casse dès qu'on change de locale ou qu'on retouche
     // un libellé. Les flows doivent viser des `id:`.

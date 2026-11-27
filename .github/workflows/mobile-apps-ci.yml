@@ -655,22 +655,48 @@ jobs:
           flutter build apk --debug \
             --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}
 
+      # ── Maestro ──────────────────────────────────────────────────────────
+      # Installé AVANT l'étape émulateur : `android-emulator-runner` exécute son
+      # `script` dans un shell qui hérite du PATH du job, donc le binaire doit
+      # déjà être là et sur le PATH.
       - name: Install Maestro
         run: |
           set -euo pipefail
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
-      - name: Run Maestro flows (restaurant)
-        working-directory: front/mobile_apps/leopardo_public
+      # ── Émulateur ────────────────────────────────────────────────────────
+      # Sans cette étape, `maestro test` n'a AUCUN appareil à piloter et échoue
+      # sur « no devices connected ». C'était le défaut de la première version
+      # de ce job : l'APK était construit, Maestro installé, et le run échouait
+      # faute de cible.
+      #
+      # `reactivecircus/android-emulator-runner` démarre l'AVD ET exécute la
+      # commande passée dans `script` sur cet émulateur — c'est le seul moyen
+      # fiable de garder l'émulateur vivant pendant les tests.
+      - name: Run Maestro flows on emulator
+        uses: reactivecircus/android-emulator-runner@b530d96654c385303d652368551fb075bc2f0b6b # v2.35.0
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          disable-animations: true
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          script: |
+            set -euo pipefail
+            cd front/mobile_apps/leopardo_public
+
+            # L'APK doit être installé AVANT Maestro : `launchApp` ne
+            # télécharge rien, il lance un package déjà présent.
+            adb install -r build/app/outputs/flutter-apk/app-debug.apk
+
+            maestro test maestro/restaurant/ \
+              --format junit \
+              --output maestro-report.xml
         env:
           RESTO_SLUG: ${{ vars.E2E_RESTO_SLUG || 'le-bistrot' }}
           RESTO_PRODUCT_CODE: ${{ vars.E2E_RESTO_PRODUCT_CODE || 'demo-1' }}
-        run: |
-          set -euo pipefail
-          maestro test maestro/restaurant/ \
-            --format junit \
-            --output maestro-report.xml
 
       - name: Publier le rapport Maestro
         if: always()

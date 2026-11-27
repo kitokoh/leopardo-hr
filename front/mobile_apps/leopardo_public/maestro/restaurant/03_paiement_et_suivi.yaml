@@ -5,51 +5,57 @@
 # Ce sont deux contrats serveur distincts (`POST …/orders` puis
 # `POST …/orders/{ref}/pay`) et deux clés d'idempotence distinctes. Un flow qui
 # les enchaîne sans frontière ne dit pas lequel des deux a échoué quand il
-# casse. Ici le parcours reprend après la confirmation, donc un échec de ce
-# fichier désigne le paiement ou le suivi, jamais la création.
-appId: com.leopardo.public
+# casse. Ici un échec de ce fichier désigne le paiement ou le suivi, jamais la
+# création.
+appId: com.leopardo.publicapp
 name: Restaurant — paiement et suivi
 tags:
   - restaurant
 ---
 - launchApp:
     clearState: true
-    arguments:
-      route: /restaurants/${RESTO_SLUG || 'le-bistrot'}
+
+- openLink: leopardo://public/restaurants/${RESTO_SLUG}
 
 - extendedWaitUntil:
     visible:
       id: restaurant-menu-search
-    timeout: 20000
+    timeout: 30000
 
 # ── Commande minimale pour atteindre l'écran de confirmation ────────────
 - tapOn:
-    id: restaurant-product-add-${RESTO_PRODUCT_CODE || 'demo-1'}
+    id: restaurant-product-add-${RESTO_PRODUCT_CODE}
 - extendedWaitUntil:
     visible:
       id: restaurant-go-to-cart
-    timeout: 10000
+    timeout: 15000
 - tapOn:
     id: restaurant-go-to-cart
 
 - extendedWaitUntil:
     visible:
       id: restaurant-customer-name
-    timeout: 10000
+    timeout: 15000
 - tapOn:
     id: restaurant-customer-name
-- inputText: ${RESTO_CUSTOMER_NAME || 'Client Test'}
+- inputText: Client Test
 - tapOn:
     id: restaurant-customer-phone
-- inputText: ${RESTO_CUSTOMER_PHONE || '0612345678'}
+- inputText: "0612345678"
 - hideKeyboard
+
+- scrollUntilVisible:
+    element:
+      id: restaurant-submit-order
+    direction: DOWN
+    timeout: 15000
 - tapOn:
     id: restaurant-submit-order
 
 - extendedWaitUntil:
     visible:
       id: restaurant-confirmation
-    timeout: 30000
+    timeout: 45000
 
 # ── Paiement ────────────────────────────────────────────────────────────
 # Le mode par défaut est « espèces à la livraison » : il ne demande aucune
