@@ -412,10 +412,9 @@ void main() {
       expect(gradle.existsSync(), isTrue, reason: 'gradle absent');
 
       final kts = gradle.readAsStringSync();
-      final hasAppId =
-          kts.contains('applicationId = "{app_id}"');
-      final hasNamespace =
-          kts.contains('namespace = "{app_id}"');
+      const appId = '{app_id}';
+      final hasAppId = kts.contains('applicationId = "$appId"');
+      final hasNamespace = kts.contains('namespace = "$appId"');
 
       expect(hasAppId, isTrue, reason: 'applicationId incorrect');
       expect(hasNamespace, isTrue, reason: 'namespace incorrect');
