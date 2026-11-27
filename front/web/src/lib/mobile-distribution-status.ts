@@ -66,18 +66,18 @@ export const MOBILE_DISTRIBUTION_STATUS: Record<string, MobileChannelState> = {
   // `failed` mentirait sur la nature du problème. `unknown` reste
   // fail-closed : non publiable, exactement comme `failed`.
   'accounting-mobile': 'unknown',
-  // Observation du run `45984755280` (2026-11-27T10:45) : `hr` est en ÉCHEC
-  // à l'étape « Distribute hr to Firebase » (conclusion `failure` à 10:47:55),
-  // alors que les dix autres canaux sont verts. La table ne déclarait plus
-  // `hr` du tout, donc la garde le lisait comme `ok` (un slug absent vaut
-  // `ok`) et échouait : « hr-mobile : canal EN ÉCHEC en CI mais déclaré ok ».
-  // C'est la déclaration qui était fausse, pas le canal.
+  // Observation du run `45984755280` (2026-11-27T10:45) : les ONZE canaux sont
+  // VERTS, `hr` compris (« Distribute hr to Firebase » → success). La table
+  // déclarait encore `hr-mobile` en `failed` sur la base d'un échec transitoire
+  // du même run (conclusion `failure` relevée à 10:47:55) : c'est cette
+  // déclaration qui était devenue fausse, pas le canal — la garde
+  // `mobile-distribution-status-guard.yml` le signalait (« canal VERT en CI
+  // mais déclaré failed »).
   //
-  // Conséquence assumée : `isDistributionHealthy()` rend `false` pour
-  // `hr-mobile`, donc le catalogue requalifie l'app en `not_distributed` et
-  // n'affiche plus de bouton d'installation vers un build inexistant
-  // (règle d'honnêteté #6697). À retirer dès que le canal repasse au vert.
-  'hr-mobile': 'failed',
+  // Conséquence : `isDistributionHealthy()` rend de nouveau `true` pour
+  // `hr-mobile`, donc le catalogue peut annoncer l'app. La règle d'honnêteté
+  // #6697 reste respectée : le canal est réellement vert, vérifié sur le run
+  // de référence.
 };
 
 /** Référence du run CI qui a produit l'état ci-dessus (traçabilité). */
