@@ -29,6 +29,44 @@
   apply();
 })();
 
+/* Onglet « Profils & modules » : filtre texte + type (profil / module).
+   Les deux sections restent visibles ; une section dont aucune carte ne
+   passe le filtre est masquee, et le message « aucun resultat » apparait
+   seulement si les deux sont vides. */
+(function(){
+  var q = document.getElementById('pm-q');
+  var kind = document.getElementById('pm-kind');
+  var empty = document.getElementById('pm-empty');
+  var profGrid = document.getElementById('pm-profiles');
+  var modGrid = document.getElementById('pm-modules');
+  if(!profGrid && !modGrid) return;
+  function apply(){
+    var term = (q && q.value || '').toLowerCase().trim();
+    var want = kind && kind.value || '';
+    var total = 0;
+    [[profGrid, 'profile'], [modGrid, 'module']].forEach(function(pair){
+      var grid = pair[0], type = pair[1];
+      if(!grid) return;
+      var cards = grid.querySelectorAll('.pm-card');
+      var shown = 0;
+      for(var i=0;i<cards.length;i++){
+        var c = cards[i];
+        var ok = true;
+        if(want && want !== type) ok = false;
+        if(term && (c.getAttribute('data-search')||'').indexOf(term) === -1) ok = false;
+        c.hidden = !ok;
+        if(ok) shown++;
+      }
+      var section = grid.closest('.section');
+      if(section) section.hidden = shown === 0;
+      total += shown;
+    });
+    if(empty) empty.hidden = total !== 0;
+  }
+  [q, kind].forEach(function(el){ if(el) el.addEventListener('input', apply); });
+  apply();
+})();
+
 /* Indicateur de defilement des tableaux.
    Un tableau plus large que son conteneur cache des colonnes : sans indice,
    l'utilisateur croit que la donnee s'arrete la. On marque donc chaque

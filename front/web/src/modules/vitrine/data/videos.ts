@@ -68,7 +68,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
           category: 'Tutoriel',
         },
         {
-          title: 'Paie multi-pays : Algérie, Maroc, France',
+          title: 'Paie multi-pays : 21 pays couverts',
           description:
             'Générer des bulletins de paie conformes pour plusieurs pays depuis une seule interface.',
           category: 'Tutoriel',
@@ -129,7 +129,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
           category: 'Tutorial',
         },
         {
-          title: 'Multi-country payroll: Algeria, Morocco, France',
+          title: 'Multi-country payroll: 21 countries covered',
           description:
             'Generate payslips for several countries from a single interface.',
           category: 'Tutorial',
@@ -190,7 +190,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
           category: 'Eğitim',
         },
         {
-          title: 'Çok ülkeli maaş: Cezayir, Fas, Fransa',
+          title: 'Çok ülkeli maaş: 21 ülke kapsanıyor',
           description:
             'Tek bir arayüzden birden fazla ülke için uyumlu maaş bordroları oluşturun.',
           category: 'Eğitim',
@@ -226,15 +226,15 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
     hero: {
       badge: 'فيديو',
       headline: 'فيديو وعروض توضيحية',
-      subheadline: 'اكتشف ليوناردو RH في العمل من خلال عرضنا التوضيحي ودروسنا',
+      subheadline: 'اكتشف ليوباردو في العمل من خلال عرضنا التوضيحي ودروسنا',
       ctaPrimary: 'اطلب عرضًا مباشرًا',
       ctaSecondary: 'تجربة مجانية',
     },
     demo: {
-      title: 'جولة شاملة في ليوناردو RH',
+      title: 'جولة شاملة في ليوباردو',
       description:
         'نظرة عامة على المنصة — الحضور، الرواتب، الإجازات، الجوال والكشك.',
-      ariaLabel: 'فيديو تقديمي لليوناردو RH',
+      ariaLabel: 'فيديو تقديمي لليوباردو',
       fallback: 'متصفحك لا يدعم تشغيل فيديو HTML5.',
     },
     upcoming: {
@@ -245,11 +245,11 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
       videos: [
         {
           title: 'إعداد الحضور ZKTeco',
-          description: 'قم بتوصيل وتهيئة أجهزة ZKTeco البيومترية مع ليوناردو RH.',
+          description: 'قم بتوصيل وتهيئة أجهزة ZKTeco البيومترية مع ليوباردو.',
           category: 'درس',
         },
         {
-          title: 'رواتب متعددة الدول: الجزائر، المغرب، فرنسا',
+          title: 'رواتب متعددة الدول: 21 دولة مغطاة',
           description:
             'أنشئ كشوف رواتب متوافقة لعدة دول من واجهة واحدة.',
           category: 'درس',
@@ -263,7 +263,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
         {
           title: 'دمج API وWebhooks',
           description:
-            'اربط ليوناردو RH بأدواتك الحالية عبر REST API وWebhooks.',
+            'اربط ليوباردو بأدواتك الحالية عبر REST API وWebhooks.',
           category: 'دمج',
         },
         {
@@ -275,7 +275,7 @@ export const videosPageCopy: Record<AppLocale, VideosContent> = {
       ],
     },
     cta: {
-      title: 'هل أنت مستعد لرؤية ليوناردو RH؟',
+      title: 'هل أنت مستعد لرؤية ليوباردو؟',
       description: 'احجز عرضًا مخصصًا مع فريقنا',
       primary: 'احجز عرضي',
       secondary: 'اطلع على الأسعار',

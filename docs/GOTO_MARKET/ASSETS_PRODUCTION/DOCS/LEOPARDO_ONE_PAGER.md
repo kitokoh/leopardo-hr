@@ -1,7 +1,7 @@
 # LEOPARDO — Mobile-First Company OS
 ## One Pager Commercial
 
-_Ticket: `PA2-STR-002` (Issue #1012). Depend de `PA2-STR-001` (positionnement final, deja livre — voir `docs/GOTO_MARKET/2026_MARKET_LAUNCH_COMPANY_OS/02_POSITIONNEMENT_ET_MESSAGING.md`). Ce document remplace la version brouillon precedente (temoignages placeholder, coordonnees fictives, sans pricing chiffre) par une version alignee sur les sources de verite du produit : `docs/dossierdeConception/03_modele_economique/03_MODELE_ECONOMIQUE.md` (plans/prix) et `docs/GOTO_MARKET/2026_MARKET_LAUNCH_COMPANY_OS/` (positionnement/objections)._
+_Ticket: `PA2-STR-002` (Issue #1012). Depend de `PA2-STR-001` (positionnement final, deja livre — voir `docs/GOTO_MARKET/REPOSITIONNEMENT_2026.md`). Ce document remplace la version brouillon precedente (temoignages placeholder, coordonnees fictives, sans pricing chiffre) par une version alignee sur les sources de verite du produit : `docs/dossierdeConception/03_modele_economique/03_MODELE_ECONOMIQUE.md` (plans/prix) et `docs/GOTO_MARKET/REPOSITIONNEMENT_2026.md` (positionnement/objections)._
 
 ---
 

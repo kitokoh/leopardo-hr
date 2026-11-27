@@ -11,7 +11,7 @@
 
 **Version :** 1.1
 **Dernière mise à jour :** 2026-09-18
-**Statut :** dossier de travail GTM — aucun statut « prêt pour lancement commercial » n'est sourcé à ce jour (voir `GOTO_MARKET_AUDIT.md` et `PILOTAGE.md`)
+**Statut :** dossier de travail GTM — aucun statut « prêt pour lancement commercial » n'est sourcé à ce jour (voir `docs/archive/GOTO_MARKET_AUDIT.md` et `PILOTAGE.md`)
 
 ---
 
@@ -37,14 +37,14 @@ docs/GOTO_MARKET/
 ├── 01_PRODUCT          # Vision, positionnement, fonctionnalités cœur
 ├── 2026_MARKET_LAUNCH_COMPANY_OS/  # Audit marché et positionnement actualisé (2026)
 ├── ASSETS_PRODUCTION/   # Specs et scripts pour assets marketing (landing, brochure, pitch deck, vidéos)
-└── GOTO_MARKET_AUDIT.md # Audit go-to-market
+└── REPOSITIONNEMENT_2026.md # Décision de périmètre et de lancement (2026-11-27)
 ```
 
 > ⚠️ Seuls `01_PRODUCT/`, `2026_MARKET_LAUNCH_COMPANY_OS/` et `ASSETS_PRODUCTION/` existent
 > réellement dans ce dossier aujourd'hui. Les sections numérotées 02 à 14 et 99 décrites
 > dans les versions antérieures de ce README (marché, ventes, pricing, technologie,
 > concurrence, croissance, investisseurs, sécurité, executive summary, etc.) ne sont pas
-> encore créées. Voir `GOTO_MARKET_AUDIT.md` pour l'état réel du contenu commercial et
+> encore créées. Voir `docs/archive/GOTO_MARKET_AUDIT.md` pour l'état réel du contenu commercial et
 > `PILOTAGE.md` (racine du repo) pour les priorités actives avant d'investir du temps à
 > les rédiger.
 
@@ -71,7 +71,7 @@ Permettre à **n'importe quelle partie prenante** de comprendre en moins de 30 m
 | Positionnement | [`01_PRODUCT/POSITIONING.md`](01_PRODUCT/POSITIONING.md) |
 | Fonctionnalités cœur | [`01_PRODUCT/CORE_FEATURES.md`](01_PRODUCT/CORE_FEATURES.md) |
 | Thèse de catégorie (historique « Company OS » → suite métier) | [`01_PRODUCT/COMPANY_OS_THESIS.md`](01_PRODUCT/COMPANY_OS_THESIS.md) |
-| Audit go-to-market | [`GOTO_MARKET_AUDIT.md`](GOTO_MARKET_AUDIT.md) |
+| Repositionnement et périmètre de lancement | [`REPOSITIONNEMENT_2026.md`](REPOSITIONNEMENT_2026.md) |
 | Specs assets marketing (landing, brochure, pitch deck, vidéos) | [`ASSETS_PRODUCTION/`](ASSETS_PRODUCTION/) |
 
 ---
