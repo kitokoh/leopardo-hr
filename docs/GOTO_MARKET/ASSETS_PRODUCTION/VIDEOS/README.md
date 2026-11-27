@@ -23,7 +23,13 @@ Point d'entrée de la production vidéo Leopardo. Deux documents, deux usages.
 | **G — Activation** | G1 espace en 3 min, G2 import équipe, G3 premier bulletin | 3 min, 2 min, 4 min |
 | **H — Partenaires** | H1 devenir partenaire, H2 intégrer | 90 s, 2 min |
 
-**Total : 40 vidéos**, dont 14 verticales produites sur un gabarit unique.
+**Total : 32 vidéos**, dont 14 verticales produites sur un gabarit unique.
+
+> **Écart assumé (2026-11-27)** : ce programme décrit 40 vidéos (étages A à H).
+> `docs/marketing/scripts-video.json` en porte **32** : les étages **G (activation)**
+> et **H (partenaires)** sont volontairement hors du programme de lancement — ils
+> supposent des clients et des partenaires qui n'existent pas encore. Voir
+> `docs/marketing/AUDIT_MARKETING_2026-11-27.md` §2.2.
 
 ---
 
