@@ -1,8 +1,15 @@
 # Leopardo Mobile Apps
 
-Ce dossier est la source canonique des applications mobiles de lancement.
-Le mobile historique (`front/mobile/`) a ete retire du depot ; ces apps sont
-desormais les seules applications mobiles actives.
+Ce dossier est la source canonique des applications mobiles **Flutter** de
+lancement. Le mobile historique (`front/mobile/`) a ete retire du depot ; ces
+apps sont desormais les seules applications mobiles Flutter actives.
+
+Les applications mobiles **non-Flutter** (Expo / React Native) vivent dans
+`front/mobile_expo/` — voir `front/mobile_expo/README.md` pour la doctrine.
+Elles ne sont volontairement pas listees ici : ce dossier est garde par
+`check-mobile-layer-guard.sh` et `check-mobile-app-identities.sh`, qui exigent
+pour chaque `leopardo_*` un `applicationId` Android natif et une entree dans
+les registres Flutter.
 
 ## Structure
 
