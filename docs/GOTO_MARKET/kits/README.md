@@ -27,6 +27,7 @@
 | `launch-ph-hn.md` | #7874 | Product Hunt + Show HN (lancement coordonné) |
 | `ecosysteme-startup.md` | #7875 | Crunchbase, F6S, VC4A, Wellfound, BetaList + presse tech Afrique |
 | `social-communautes.md` | #7876 | LinkedIn/X + groupes FB/WhatsApp (calendrier 4 semaines) |
+| `cabinet-comptable.md` | #10018 | Cabinets comptables — argumentaire, grille de marge, script de premier rendez-vous |
 
 ## Faits produit vérifiés (à réutiliser tels quels)
 

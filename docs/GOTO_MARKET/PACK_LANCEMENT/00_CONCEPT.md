@@ -75,6 +75,13 @@ Sous-promesses par profil :
 - Secondaire : « Voir la démo restaurant (2 min) »
 - Terrain : « Tester hors-ligne : coupez votre wifi, la démo continue. »
 
+> ⚠️ **Depuis le repositionnement 2026 (2026-11-27)**, ce concept n'est plus le message de
+> lancement. Le message de lancement est « **la paie et le pointage de vos équipes de terrain,
+> dans une seule application** », en Algérie d'abord. Voir `../REPOSITIONNEMENT_2026.md` §4 et
+> la page de vente [`04_PAGE_VENTE_PAIE_POINTAGE_DZ.md`](04_PAGE_VENTE_PAIE_POINTAGE_DZ.md).
+> Ce document reste la référence du **concept de marque** (offline-first, verticales,
+> multi-sites), pas du pitch d'entrée.
+
 ## 9. Canaux (rappel stratégie existante)
 
 Cf. `STRATEGIE_ACQUISITION_2026.md`, `REGISTRE_CANAUX.md`. Ce pack fournit le

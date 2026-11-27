@@ -11,7 +11,7 @@
       "beats.vo",
       "beats.text"
     ],
-    "updated_at": "2026-11-26T19:40:00Z"
+    "updated_at": "2026-11-27"
   },
   "categories": {
     "presentation-solution": {
@@ -69,63 +69,63 @@
   },
   "scripts": {
     "VID-01": {
-      "title": "Leopardo, the Business OS for field companies (flagship film)",
-      "objective": "Make people understand in 90 seconds what Leopardo replaces and who it is for. Master film from which the 30-second and 15-second cuts derive.",
-      "hook": "Three tools every field company still uses: a paper timesheet, a payroll spreadsheet, a WhatsApp group.",
+      "title": "Leopardo — payroll and time tracking for your field teams (flagship film)",
+      "objective": "Make people understand in 90 seconds that Leopardo solves one precise problem: prove the hours and pay right. The business suite appears in the second half only, as an activatable catalogue, never as the hook. Master film from which the 30-second and 15-second cuts derive.",
+      "hook": "Your timesheets on paper. Your payroll on a spreadsheet. And by evening, an hours dispute nobody can settle.",
       "cta": "Try free for 14 days on kitokoh.github.io/leopardo-hr, or book a demo.",
       "beats": [
         {
-          "vo": "Every morning, your teams clock in on paper. Your payroll is calculated on a spreadsheet. Your customers live in WhatsApp.",
-          "text": "3 tools. 0 connection."
+          "vo": "Every morning your teams clock in on paper. Your payroll is calculated on a spreadsheet. And when an employee contests his hours, nobody can prove anything.",
+          "text": "Paper proves nothing."
         },
         {
-          "vo": "Leopardo brings all of that into a single platform, built for companies that work in the field.",
-          "text": "One single platform."
+          "vo": "Leopardo brings payroll and time tracking for your field teams into a single application.",
+          "text": "Payroll + time tracking. One app."
         },
         {
-          "vo": "HR and multi-country payroll: employee records, contracts, documents, payslips. 21 countries of payroll rules in pilot.",
-          "text": "HR & multi-country payroll"
+          "vo": "Clock-in comes from mobile, GPS or the ZKTeco biometric kiosk. When the network drops, the terminal keeps running and resyncs as soon as the link returns.",
+          "text": "Every hour is proven."
         },
         {
-          "vo": "Attendance on mobile, ZKTeco biometric kiosk, and an offline mode that syncs as soon as the network returns.",
-          "text": "Attendance anywhere, even without network"
+          "vo": "Algerian payroll applies: IRG, CNAS, attendance and leave variables pulled in, payslip generated as PDF, run locked once validated.",
+          "text": "Payroll is calculated, validated, locked."
         },
         {
-          "vo": "Accounting, customer CRM, marketing, and activatable business packs: restaurant, travel, pharmacy, hospitality, healthcare, school, fuel, ride-hailing.",
-          "text": "One core. Eight verticals."
+          "vo": "The employee record, the contract, leave and documents are entered once and used everywhere.",
+          "text": "The employee record feeds everything else."
         },
         {
-          "vo": "31 business modules, 994 open API endpoints, 8 Flutter apps, and strict multi-tenant isolation.",
-          "text": "31 modules - 994 endpoints - 8 apps"
+          "vo": "And because your business does not stop at payroll: accounting, CRM, and activatable business packs when you need them.",
+          "text": "One core. 38 activatable modules."
         },
         {
-          "vo": "Fourteen days of trial, no credit card. Business packs included. Set up in under thirty minutes.",
-          "text": "14-day trial - 0 EUR"
+          "vo": "Fourteen days free, no credit card. Set up in under thirty minutes.",
+          "text": "14-day trial — no card"
         }
       ],
-      "audience": "General public, hands-on SME owners"
+      "audience": "Hands-on SME owners and accounting firms, Algeria first"
     },
     "VID-02": {
-      "title": "Leopardo in 30 seconds (advertising cut)",
-      "objective": "Advertising version of the flagship film: one message, one CTA. No new shots, editing only, from VID-01.",
-      "hook": "Your payroll runs on a spreadsheet. Your attendance on paper. That can stop today.",
-      "cta": "Single button: Try for free.",
+      "title": "Leopardo in 30 seconds (ad cut)",
+      "objective": "Advertising version of the flagship film: one message (payroll + time tracking), one CTA. No new shots, editing only from VID-01.",
+      "hook": "Your timesheets on paper. Your payroll on a spreadsheet. That can stop today.",
+      "cta": "Single button: Start free.",
       "beats": [
         {
-          "vo": "Your payroll runs on a spreadsheet. Your attendance on paper.",
-          "text": "That can stop today."
+          "vo": "Your timesheets on paper. Your payroll on a spreadsheet.",
+          "text": "It can stop today."
         },
         {
-          "vo": "Leopardo brings HR, payroll, attendance, accounting and CRM into a single platform.",
-          "text": "HR - Payroll - Attendance - Accounting - CRM"
+          "vo": "Leopardo brings payroll and time tracking for your field teams into one application.",
+          "text": "Payroll + time tracking"
         },
         {
-          "vo": "With business packs that are already ready: restaurant, travel, pharmacy, hospitality.",
-          "text": "Business packs included"
+          "vo": "Employee records, leave, and 38 activatable modules when you need them.",
+          "text": "One core, 38 modules"
         },
         {
-          "vo": "Fourteen days of trial, no credit card.",
-          "text": "14 days - no card"
+          "vo": "Fourteen days free, no credit card.",
+          "text": "14 days — no card"
         }
       ],
       "audience": "Cold outreach, YouTube pre-roll, LinkedIn"
@@ -133,11 +133,11 @@
     "VID-03": {
       "title": "15-second bumper (non-skippable pre-roll)",
       "objective": "One word remembered: the name. Constrained format, no product explanation.",
-      "hook": "One question, one answer, one name.",
+      "hook": "How many tools to prove an hour and pay right?",
       "cta": "No button: the bumper installs the name, conversion happens on the 30-second film.",
       "beats": [
         {
-          "vo": "How many tools does it take to run your teams?",
+          "vo": "How many tools to prove an hour and pay right?",
           "text": "How many tools?"
         },
         {
@@ -145,7 +145,7 @@
           "text": "One."
         },
         {
-          "vo": "Leopardo. The Business OS for field companies.",
+          "vo": "Leopardo. Payroll and time tracking for your field teams.",
           "text": "Leopardo"
         }
       ],

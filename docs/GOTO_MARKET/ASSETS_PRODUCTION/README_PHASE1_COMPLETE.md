@@ -1,5 +1,13 @@
 # RÉCAPITULATIF DES ASSETS PRODUITS — PHASE 1
 
+> ⚠️ **NON MAINTENU — archivé le 2026-11-27.** Ce récapitulatif décrit la phase 1 des
+> assets (positionnement d'avant le repositionnement 2026). Trois des quatre documents
+> qu'il liste ont été archivés dans `docs/archive/ASSETS_PRODUCTION_2026-11-27.md`
+> (budget documentaire #9981) : `LEOPARDO_ONE_PAGER.md`, `LEOPARDO_BROCHURE_PLAN.md`,
+> `LANDING_PAGE_SPEC.md`. Seul `LEOPARDO_PITCH_DECK_OUTLINE.md` reste vivant.
+> **Références à jour** : `docs/GOTO_MARKET/REPOSITIONNEMENT_2026.md` et
+> `docs/GOTO_MARKET/PACK_LANCEMENT/04_PAGE_VENTE_PAIE_POINTAGE_DZ.md`.
+
 ## Documents générés pour le lancement commercial Leopardo HR
 
 ---

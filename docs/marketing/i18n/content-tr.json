@@ -11,7 +11,7 @@
       "beats.vo",
       "beats.text"
     ],
-    "updated_at": "2026-11-26T19:40:00Z"
+    "updated_at": "2026-11-27"
   },
   "categories": {
     "presentation-solution": {
@@ -69,87 +69,87 @@
   },
   "scripts": {
     "VID-01": {
-      "title": "Leopardo, sahadaki sirketlerin Business OS'i (ana film)",
-      "objective": "90 saniyede Leopardo'nun neyi degistirdigini ve kimin icin yapildigini anlatmak. 30 ve 15 saniyelik kesitlerin turedigi ana film.",
-      "hook": "Her saha sirketinin hala kullandigi uc arac: kagit puantaj, bordro tablosu, WhatsApp grubu.",
+      "title": "Leopardo — saha ekiplerinizin bordrosu ve yoklamasi (ana film)",
+      "objective": "90 saniyede Leopardo'nun tek bir sorunu cozdugunu anlatmak: saatleri kanitlamak ve dogru odemek. Is cozumleri yalnizca ikinci yarida, etkinlestirilebilir katalog olarak gorunur; asla giris cumlesi olarak degil. 30 ve 15 saniyelik kesitlerin turedigi ana film.",
+      "hook": "Puantajiniz kagitta. Bordronuz tabloda. Ve aksam, kimsenin cozemedigi bir saat itirazi.",
       "cta": "kitokoh.github.io/leopardo-hr adresinde 14 gun ucretsiz deneyin veya demo isteyin.",
       "beats": [
         {
-          "vo": "Her sabah ekipleriniz kagida giris yapiyor. Bordronuz bir tabloda hesaplaniyor. Musterileriniz WhatsApp'ta yasiyor.",
-          "text": "3 arac. 0 baglanti."
+          "vo": "Her sabah ekipleriniz kagida giris yapiyor. Bordronuz bir tabloda hesaplaniyor. Bir calisan saatlerine itiraz ettiginde kimse kanitlayamiyor.",
+          "text": "Kagit hicbir seyi kanitlamaz."
         },
         {
-          "vo": "Leopardo tum bunlari tek bir platformda birlestirir; sahada calisan sirketler icin tasarlandi.",
-          "text": "Tek bir platform."
+          "vo": "Leopardo, saha ekiplerinizin bordrosunu ve yoklamasini tek bir uygulamada birlestirir.",
+          "text": "Bordro + yoklama. Tek uygulama."
         },
         {
-          "vo": "IK ve cok ulkeli bordro: personel dosyalari, sozlesmeler, belgeler, bordrolar. 21 ulkede pilot bordro kurallari.",
-          "text": "IK ve cok ulkeli bordro"
+          "vo": "Giris mobilden, GPS'ten veya ZKTeco biyometrik kiosktan gelir. Ag koptugunda terminal calismaya devam eder ve baglanti donunce yeniden esitlenir.",
+          "text": "Her saat kanitlanir."
         },
         {
-          "vo": "Mobilden devam takibi, ZKTeco biyometrik kiosk ve ag geri geldiginde esitleyen cevrimdisi mod.",
-          "text": "Her yerde devam takibi, ag olmadan bile"
+          "vo": "Cezayir bordrosu uygulanir: IRG, CNAS, yoklama ve izin degiskenleri aktarilir, bordro PDF olarak uretilir, donem onaylaninca kilitlenir.",
+          "text": "Bordro hesaplanir, onaylanir, kilitlenir."
         },
         {
-          "vo": "Muhasebe, musteri CRM'i, pazarlama ve etkinlestirilebilir is paketleri: restoran, seyahat, eczane, konaklama, saglik, okul, akaryakit, surucu hizmeti.",
-          "text": "Tek cekirdek. Sekiz dikey."
+          "vo": "Personel dosyasi, sozlesme, izinler ve belgeler bir kez girilir ve her yerde kullanilir.",
+          "text": "Personel dosyasi her seyi besler."
         },
         {
-          "vo": "31 is modulu, 994 acik API ucu, 8 Flutter uygulamasi ve siki cok kiracili izolasyon.",
-          "text": "31 modul - 994 uc - 8 uygulama"
+          "vo": "Ve isiniz bordroyla bitmedigi icin: muhasebe, CRM ve ihtiyac duydugunuzda etkinlestirilebilir sektor paketleri.",
+          "text": "Tek cekirdek. 38 etkinlestirilebilir modul."
         },
         {
-          "vo": "On dort gun deneme, kredi karti yok. Is paketleri dahil. Otuz dakikadan kisa surede kurulum.",
-          "text": "14 gun deneme - 0 EUR"
+          "vo": "On dort gun ucretsiz, kredi karti yok. Otuz dakikadan kisa surede kurulum.",
+          "text": "14 gun deneme — kart yok"
         }
       ],
-      "audience": "Genel izleyici, sahadaki KOBİ sahipleri"
+      "audience": "Sahada calisan KOBI sahipleri ve muhasebe burolari, once Cezayir"
     },
     "VID-02": {
       "title": "Leopardo 30 saniyede (reklam kesiti)",
-      "objective": "Ana filmin reklam surumu: tek mesaj, tek CTA. Yeni plan yok, yalnizca VID-01'den kurgu.",
-      "hook": "Bordronuz bir tabloda. Puantajiniz kagitta. Bu bugun bitebilir.",
-      "cta": "Tek dugme: Ucretsiz deneyin.",
+      "objective": "Ana filmin reklam versiyonu: tek mesaj (bordro + yoklama), tek CTA. Yeni plan yok, yalnizca VID-01'den kurgu.",
+      "hook": "Puantajiniz kagitta. Bordronuz tabloda. Bu bugun bitebilir.",
+      "cta": "Tek dugme: Ucretsiz basla.",
       "beats": [
         {
-          "vo": "Bordronuz bir tabloda. Puantajiniz kagitta.",
+          "vo": "Puantajiniz kagitta. Bordronuz tabloda.",
           "text": "Bu bugun bitebilir."
         },
         {
-          "vo": "Leopardo IK, bordro, devam takibi, muhasebe ve CRM'i tek bir platformda birlestirir.",
-          "text": "IK - Bordro - Devam - Muhasebe - CRM"
+          "vo": "Leopardo, saha ekiplerinizin bordrosunu ve yoklamasini tek uygulamada birlestirir.",
+          "text": "Bordro + yoklama"
         },
         {
-          "vo": "Hazir is paketleriyle: restoran, seyahat, eczane, konaklama.",
-          "text": "Is paketleri dahil"
+          "vo": "Personel dosyalari, izinler ve ihtiyac duydugunuzda 38 etkinlestirilebilir modul.",
+          "text": "Tek cekirdek, 38 modul"
         },
         {
-          "vo": "On dort gun deneme, kredi karti yok.",
-          "text": "14 gun - kart yok"
+          "vo": "On dort gun ucretsiz, kredi karti yok.",
+          "text": "14 gun — kart yok"
         }
       ],
-      "audience": "Soğuk erişim, YouTube pre-roll, LinkedIn"
+      "audience": "Soguk arama, YouTube pre-roll, LinkedIn"
     },
     "VID-03": {
       "title": "15 saniyelik bumper (atlanamayan pre-roll)",
-      "objective": "Akilda kalan tek kelime: isim. Kisitli format, urun aciklamasi yok.",
-      "hook": "Bir soru, bir cevap, bir isim.",
-      "cta": "Dugme yok: bumper ismi yerlestirir, donusum 30 saniyelik filmde olur.",
+      "objective": "Akilda kalan tek sey: isim. Kisitli format, urun aciklamasi yok.",
+      "hook": "Bir saati kanitlamak ve dogru odemek icin kac arac?",
+      "cta": "Dugme yok: bumper markayi yerlestirir, donusum 30 saniyelik filmde olur.",
       "beats": [
         {
-          "vo": "Ekiplerinizi yonetmek kac arac gerektirir?",
+          "vo": "Bir saati kanitlamak ve dogru odemek icin kac arac?",
           "text": "Kac arac?"
         },
         {
-          "vo": "Bir.",
-          "text": "Bir."
+          "vo": "Bir tane.",
+          "text": "Bir tane."
         },
         {
-          "vo": "Leopardo. Sahadaki sirketlerin Business OS'i.",
+          "vo": "Leopardo. Saha ekiplerinizin bordrosu ve yoklamasi.",
           "text": "Leopardo"
         }
       ],
-      "audience": "Atlanamayan YouTube pre-roll, görüntülü reklam"
+      "audience": "Atlanamayan YouTube pre-roll, display video"
     },
     "VID-04": {
       "title": "Leopardo Excel, WhatsApp ve kagidin yerine nasil geciyor (3 dakikalik anlatim)",
