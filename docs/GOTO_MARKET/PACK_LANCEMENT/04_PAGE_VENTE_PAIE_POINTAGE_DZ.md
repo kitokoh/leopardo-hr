@@ -1,21 +1,24 @@
-# Page de vente — « Paie + Pointage DZ »
+# Page de vente — offre grands comptes
 
-> **Statut** : livrable de la phase **P0 — Gel du message** · **Date** : 2026-11-27 · **Issue** : #10017
-> **Décision de référence** : `../REPOSITIONNEMENT_2026.md` §4.1 — un seul pack, un seul pays, un seul message.
+> **Statut** : livrable de la phase **P0 — Gel du message** · **Version** : v2 (grand compte) · **Date** : 2026-11-28 · **Issue** : #10025
+> **Remplace** : la v1 « Paie + Pointage DZ » (cible PME de terrain). Le chemin du fichier est conservé pour ne pas casser les références ni le budget documentaire.
+> **Décision de référence** : `../REPOSITIONNEMENT_2026.md` §4 — un seul message, un seul segment, un pilote payant.
+> **Étude de référence** : `../ETUDE_MARCHE_GRAND_COMPTE_2026.md`.
 > **Cadre bloquant** : `docs/REFERENTIEL_PRODUIT/MESSAGE.md` (pitch canonique, promesses interdites), `METRIQUES_VITRINE.md` (chiffres datés uniquement).
-> **Rappel de catégorie** : Leopardo est une **suite métier**. Jamais « logiciel RH », « HR SaaS » ni « Business OS » comme catégorie.
+> **Rappel de catégorie** : Leopardo est une **suite métier**. Jamais « logiciel RH », « HR SaaS » ni « Business OS ».
 
 ---
 
 ## 0. Comment utiliser ce document
 
-Ce document est la **copie de référence** de la page de vente unique du lancement. Il se lit de haut en bas : chaque bloc correspond à une section de la page publique, dans l'ordre où le visiteur la voit.
+Ce document est la **copie de référence** de la page de vente de l'offre grands comptes. Il se lit de haut en bas : chaque bloc correspond à une section de la page publique, dans l'ordre où le visiteur la voit.
 
-Trois règles d'écriture, non négociables :
+Quatre règles d'écriture, non négociables :
 
-1. **Un seul message.** Si une phrase ne parle pas de paie, de pointage ou de preuve des heures, elle n'a rien à faire dans les six premiers écrans.
-2. **Un seul pays.** L'Algérie est le pays du lancement. Les autres pays existent, mais en mention secondaire (« disponible sur demande »), jamais en argument d'entrée.
-3. **Aucune promesse non prouvée.** Les référentiels de paie sont en statut **`pilot`**. On dit « le moteur calcule la paie algérienne », jamais « conformité validée ».
+1. **Un seul message.** Si une phrase ne parle pas de paie multi-entités, de preuve des heures ou de contrôle, elle n'a rien à faire dans les six premiers écrans.
+2. **Un seul segment.** Le groupe multi-entités de 500 à 5 000 salariés. Pas de « convient aussi aux PME » : ça dilue et ça fait fuir les deux.
+3. **Aucune promesse non prouvée.** Les référentiels de paie sont en statut **`pilot`**. On dit « le moteur calcule la paie algérienne », jamais « conformité validée ». On ne dit **jamais** « SSO SAML » : seul OIDC est implémenté (§8).
+4. **Aucun prix affiché.** Un grand compte ne compare pas des prix par salarié sur une page publique ; il demande une proposition. Le prix se discute en rendez-vous, avec le périmètre.
 
 ---
 
@@ -23,322 +26,237 @@ Trois règles d'écriture, non négociables :
 
 **Titre (H1)**
 
-> # La paie et le pointage de vos équipes de terrain, dans une seule application.
+> # Une seule paie pour toutes vos entités, et la preuve des heures de chaque site.
 
 **Sous-titre**
 
-> Vos équipes pointent sur le terrain — mobile, GPS ou borne biométrique. Leopardo transforme ces heures en bulletins de paie algériens, calculés, validés et verrouillés. Sans tableur, sans double saisie, sans contestation que personne ne peut trancher.
+> Vos filiales ont chacune leur convention, leur paie, leur tableur. Vos sites ont chacun leur badgeuse, et personne n'exporte proprement. Leopardo réunit la paie multi-pays et le pointage terrain dans un seul moteur : une paie par entité, un total groupe, et des heures que l'on peut prouver.
 
 **Boutons**
 
-- **Primaire** : `Essayer 14 jours, sans carte bancaire`
-- **Secondaire** : `Voir la démo de 20 minutes` (ancre vers §7)
+- **Primaire** : `Demander une démonstration sur vos données`
+- **Secondaire** : `Télécharger le dossier technique` (architecture, sécurité, hébergement)
 
 **Bandeau de réassurance (4 items, une ligne chacun)**
 
 | Item | Texte |
 |---|---|
-| 🇩🇿 | Paie algérienne : IRG, CNAS, cotisations, primes |
-| 📱 | Pointage mobile, GPS et borne ZKTeco |
-| 🔌 | Fonctionne quand le réseau tombe |
-| 📄 | Bulletin PDF, run verrouillé après validation |
+| 🌍 | Paie multi-pays : 21 moteurs pays, dont DZ, MA, TN |
+| 🏢 | Multi-entités : une paie par société, une consolidation groupe |
+| 📱 | Pointage mobile, GPS et borne biométrique, y compris hors réseau |
+| 🔐 | Hébergement maîtrisé : déploiement chez vous ou chez votre hébergeur |
 
-**Ce que le hero ne dit pas** — et c'est volontaire : ni « suite complète », ni « 41 modules », ni « 21 pays », ni « Business OS ». Ces éléments existent (§6), mais ils ne sont pas l'accroche.
+**Ce que le hero ne dit pas** — et c'est volontaire : ni « suite complète », ni « 42 modules », ni « 21 pays disponibles partout », ni « certifié ». Ces éléments existent (§6), mais ils ne sont pas l'accroche.
 
 ---
 
 ## 2. Le problème — trois phrases, pas un paragraphe
 
-> **Le papier ne prouve rien.**
-> Un carnet de pointage se perd, se rature, se conteste. Le jour où un employé dit « j'ai fait deux heures de plus », personne n'a de preuve.
+> **Votre paie est éclatée en autant de systèmes que vous avez de sociétés.**
+> Une filiale sur l'ERP du groupe, une autre sur un logiciel local, une troisième sur un tableur tenu par une seule personne. Le total consolidé, personne ne l'a avant la fin du mois — et personne ne le croit.
 
-> **Le tableur ne calcule pas la loi.**
-> Un tableur de paie reproduit ce qu'on lui a appris. Quand l'IRG change de tranche ou qu'une cotisation bouge, il faut le savoir avant, pas après le virement.
+> **Vos heures ne sont pas prouvées, elles sont déclarées.**
+> Une badgeuse par site, dont les données sortent en fichier texte. Quand un salarié conteste ses heures supplémentaires, la réponse est « on va vérifier » — et on ne vérifie pas.
 
-> **Et entre les deux, il y a vous.**
-> Vous passez le début de chaque mois à recoller des heures, des absences et des avances — pour un résultat que personne ne peut vérifier.
-
-**Transition**
-
-> Leopardo ne vous demande pas de changer votre façon de travailler. Il vous demande d'arrêter de la documenter trois fois.
+> **Et le jour de l'audit, tout le monde cherche la même chose.**
+> Qui a changé cette ligne de paie, quand, et avec quelle valeur avant ? Si la réponse n'est pas dans un journal, elle n'existe pas.
 
 ---
 
 ## 3. Les 3 modules en avant
 
-Trois modules. Pas quatre. Pas « et aussi ». Le reste est au §6, en catalogue.
+Trois, pas quatre. Un grand compte élimine un fournisseur qui ne sait pas hiérarchiser son offre.
 
-### 3.1 Paie — le moteur
+### 3.1 Paie multi-pays & multi-entités — le moteur
 
-**Ce que ça fait**
+**Ce qu'il fait.** Calcule la paie de chaque entité juridique selon sa convention et son pays, puis consolide le total groupe. Un moteur, 21 pays résolus, dont l'Algérie (IRG, CNAS), le Maroc et la Tunisie.
 
-> Calcule la paie algérienne : IRG, CNAS, cotisations patronales et salariales, primes, retenues, avances. Produit le bulletin en PDF. Verrouille le run une fois validé — plus personne ne le modifie par accident.
+**Ce qu'il remplace.** Un ERP local par pays, un tableur de consolidation, et la ressaisie mensuelle entre les deux.
 
-**Ce que ça remplace** : le tableur de paie, la ressaisie mensuelle, le « je te renvoie le fichier corrigé ».
+**Ce qu'il produit.** Bulletins PDF, journal de paie, exports comptables, run verrouillé après validation.
 
-**Preuve vérifiée en exécution** (2026-11-27, environnement local PHP 8.4 / PostgreSQL 15) :
+**Sa limite, dite franchement.** Les référentiels de paie sont en statut **`pilot`** : le moteur calcule, mais la conformité légale doit être validée par un conseil fiscal local avant une mise en production. Nous le disons avant la signature, pas après.
 
-| Test | Résultat observé |
-|---|---|
-| Run de paie DZ, 9 salariés | **9 bulletins**, 842 059,10 DZD brut, 626 085,54 DZD net, 1 060 994,47 DZD coût employeur |
-| `/validate` puis `/lock` | Statuts `validated` → `locked` confirmés |
-| `GET /api/v1/pay-slips/1/pdf` | **PDF de 879 730 octets** généré |
-| `/payroll-runs/1/anomalies` | 0 anomalie sur le run de test |
+### 3.2 Pointage & preuve des heures — le terrain
 
-**Ce que ça ne prouve pas** : la conformité légale. Les référentiels sont en statut **`pilot`** et doivent être validés par un conseil fiscal algérien avant toute promesse contractuelle. C'est un engagement de la phase P1, pas un argument de vente.
+**Ce qu'il fait.** Enregistre les heures depuis le mobile, le GPS ou une borne biométrique ZKTeco. Fonctionne en coupure réseau et resynchronise au retour du lien.
 
-### 3.2 Pointage — la preuve
+**Ce qu'il remplace.** Les badgeuses dont personne n'exporte les données, et les feuilles de présence papier des chantiers.
 
-**Ce que ça fait**
+**Ce qu'il produit.** Une heure rattachée à une personne, un site et un horodatage — donc une réponse opposable à une contestation.
 
-> Enregistre les arrivées et départs depuis le mobile, le web ou une borne biométrique ZKTeco, avec GPS et photo. En cas de coupure réseau, la borne continue de fonctionner et resynchronise au retour du lien.
+**Sa limite, dite franchement.** La tenue en charge au-delà de quelques centaines d'utilisateurs simultanés n'a pas encore été testée publiquement. C'est un point du plan de pilote, pas un acquis.
 
-**Ce que ça remplace** : le carnet, la badgeuse isolée, le « il m'a dit qu'il était là ».
+### 3.3 Contrôle & conformité — ce que la DSI achète
 
-**Pourquoi c'est décisif** : c'est le module qui rend la paie défendable. Sans preuve d'heures, la paie est une opinion. Avec, c'est un calcul.
+**Ce qu'il fait.** Rôles et permissions par entité, cloisonnement des données, exports d'audit, hébergement chez vous ou chez votre hébergeur, authentification unique OIDC.
 
-**Limite assumée** : le mode hors-ligne est présent dans le code (kiosque + EdgeSync) mais n'a pas été testé en coupure réseau réelle dans cette mission. À valider en pilote.
+**Ce qu'il remplace.** Les fichiers Excel de « qui a le droit de voir les salaires », et les réponses improvisées aux questionnaires de sécurité.
 
-### 3.3 RH & absences — le référentiel
+**Ce qu'il produit.** Un dossier de sécurité opposable, et une piste d'audit sur les actions sensibles.
 
-**Ce que ça fait**
-
-> Tient le dossier employé complet : identité, contrat, poste, horaire, documents, historique. Gère les demandes de congés et d'absences avec circuit de validation et soldes calculés.
-
-**Ce que ça remplace** : le classeur de contrats, le fichier Excel des congés, la relance par WhatsApp.
-
-**Pourquoi il est là et pas ailleurs** : c'est le module qui alimente les deux autres. Un employé saisi une fois est visible dans la paie, le pointage et les congés. C'est ce qui supprime la triple saisie — et c'est la raison pour laquelle il est dans le pack, pas au catalogue.
+**Sa limite, dite franchement.** Trois écarts sont en cours de comblement et sont annoncés comme tels : **SAML 2.0** (seul OIDC est opérationnel aujourd'hui), **SCIM** (provisionnement automatisé), et la **piste d'audit immuable généralisée**. Aucune certification SOC 2 ni ISO 27001 n'est détenue à ce jour.
 
 ---
 
 ## 4. La boucle fermée — le schéma qui vend
 
 ```
-   POINTAGE                RH & ABSENCES              PAIE
-   ─────────               ─────────────              ────
-   Mobile / GPS            Dossier employé            IRG, CNAS
-   Borne ZKTeco     ───▶   Contrat, horaire    ───▶   Primes, retenues
-   Hors-ligne              Congés, soldes             Bulletin PDF
-        │                                                  │
-        └────────────── heures prouvées ───────────────────┘
-                              │
-                        Run verrouillé
+   Pointage (mobile / GPS / borne)
+              │
+              ▼
+   Heures validées par le manager de site
+              │
+              ▼
+   Paie de l'entité (convention + pays)
+              │
+              ▼
+   Bulletin PDF  ──►  Run verrouillé
+              │
+              ▼
+   Consolidation groupe + exports comptables
 ```
 
-**La phrase à retenir** : *« Une heure pointée devient une ligne de paie, sans ressaisie. »*
+**Ce que ça veut dire en une phrase :** l'heure pointée sur un chantier devient la ligne du bulletin, sans ressaisie, et le total remonte au groupe sans tableur.
 
-C'est cette boucle — et rien d'autre — qui se démontre en 20 minutes. C'est aussi ce qu'aucune suite internationale ne peut montrer en Algérie, faute de référentiel de paie local.
+**Ce que ça vaut en démonstration :** 20 minutes, sur les données du client, avec un cas réel — un salarié, un mois, une contestation.
 
 ---
 
-## 5. Le canal cabinet comptable
+## 5. Le cycle d'achat — ce que le visiteur doit comprendre
 
-**Bloc dédié, placé après la boucle fermée et avant le catalogue.**
+Un grand compte ne clique pas « essayer ». Il doit voir que nous savons comment il achète.
 
-> ### Vous êtes un cabinet comptable ?
->
-> Vos clients vous demandent déjà de produire leur paie. Leopardo vous donne un espace multi-dossiers : chaque PME cliente a son dossier, ses écritures, ses clôtures — et sa paie calculée avec les règles algériennes.
->
-> Vous ne revendez pas un logiciel. Vous industrialisez votre production de paie, et vous gardez une marge sur chaque dossier.
-
-**Trois arguments, dans l'ordre où un cabinet les entend**
-
-| # | Argument | Ce qu'il répond |
+| Étape | Durée | Ce que nous fournissons |
 |---|---|---|
-| 1 | **Productivité** | « Combien de dossiers puis-je traiter sans embaucher ? » — la paie cesse d'être un travail de ressaisie |
-| 2 | **Conformité** | « La paie DZ est dans l'outil, pas dans un tableur que je maintiens moi-même » |
-| 3 | **Marge** | « Je facture le service, je garde une commission sur l'abonnement » — voir la grille dans le kit partenaire |
+| **1. Cadrage** | 1 réunion | Compréhension de vos entités, conventions et systèmes |
+| **2. Démonstration** | 1 session | La boucle fermée sur un jeu de données anonymisé de votre groupe |
+| **3. Revue technique** | 3-6 semaines | Architecture, sécurité, hébergement, intégration à votre ERP |
+| **4. Pilote payant** | 12 semaines | Une entité, un site, 150 à 400 salariés, critères de succès écrits d'avance |
+| **5. Contrat groupe** | 4-8 semaines | Périmètre, SLA, déploiement des autres entités |
 
-**CTA du bloc** : `Recevoir le kit partenaire cabinet` → `docs/GOTO_MARKET/kits/cabinet-comptable.md`
+**Pourquoi un pilote payant et pas un POC gratuit :** un POC gratuit ne se termine jamais, ne se signe jamais, et ne prouve rien. Un pilote payant a des critères de succès écrits, une date de fin, et une décision à la sortie.
 
-**Pourquoi ce bloc est sur la page de vente et pas dans un PDF séparé** : le cabinet est un **prescripteur**, pas un prospect comme les autres. Il doit se reconnaître immédiatement, sans qu'on le lui dise deux fois.
+**Critères de succès du pilote, annoncés d'avance :**
+1. Trois paies consécutives sans erreur imputable à l'outil.
+2. 100 % des heures du site pilote prouvées et rattachées.
+3. Le DSI du client valide l'authentification et l'audit sur son propre environnement.
 
 ---
 
-## 6. Le catalogue — 38 modules activables
+## 6. Le catalogue — 39 modules activables
 
-**Titre de section**
-
-> ### Et quand vous en avez besoin : 38 modules déjà là.
-
-**Chapeau**
-
-> Leopardo n'est pas seulement une paie et un pointage. C'est une suite métier complète. Ces modules ne sont pas dans le pack de lancement — ils s'activent quand votre activité les réclame, sans changer d'outil ni ressaisir vos données.
-
-**Règle d'affichage** : cette section est **atteignable**, jamais **mise en avant**. Elle vit sous le pli, après le CTA principal. Un visiteur qui cherche la paie ne doit jamais avoir à la traverser.
+Ce qui suit n'est **pas** l'argumentaire. C'est ce que le client découvre après la démonstration, quand il demande « et sinon, vous faites quoi d'autre ? ».
 
 ### 6.1 Les 3 modules du pack (rappel, non répétés au catalogue)
 
-Paie · Pointage · RH & absences — voir §3.
+Paie multi-pays & multi-entités · Pointage & preuve des heures · Contrôle & conformité.
 
-### 6.2 Les 38 modules activables, par famille
+### 6.2 Les 39 modules activables, par famille
 
-**Socle & administration (8)**
+**Socle RH** — Dossier employé, Congés & absences, Contrats, Recrutement, Formation, Onboarding, Communication interne, Notifications, Planning & tâches.
 
-| Module | Ce qu'il fait |
-|---|---|
-| Authentification & IAM | Connexion sécurisée : mot de passe, code à usage unique, double authentification |
-| Multi-tenant & sécurité | Isole les données de chaque entreprise dans une base partagée et sécurisée |
-| Plateforme & observabilité | Administre les entreprises clientes, leurs modules et leurs abonnements |
-| Abonnements & facturation | Gère les abonnements, factures, encaissements et impayés |
-| Encaissements | Encaisse par carte, mobile ou espèces et rapproche les paiements |
-| Audit & conformité | Journalise les actions sensibles et produit les registres de conformité (RGPD) |
-| Exports & rapports | Exporte en CSV, Excel et PDF ; rapports de paie, présence et comptabilité |
-| Notifications | Envoie par push, e-mail ou SMS selon les préférences de chacun |
+**Finance** — Comptabilité, Notes de frais, Abonnements & facturation, Encaissements, Exports & rapports.
 
-**Terrain & opérations (7)**
+**Relation client** — CRM, Catalogue produits & services, Vitrine & acquisition, Pages & contenu, Recherche & intelligence.
 
-| Module | Ce qu'il fait |
-|---|---|
-| Kiosque & EdgeSync | Fait tourner la borne biométrique et synchronise les pointages avec le serveur |
-| EdgeSync & hors-ligne | Pont local chez le client pour continuer à travailler sans internet |
-| Géolocalisation | Localise pointages et interventions sur une carte, vérifie la présence sur site |
-| Planning & tâches | Planifie les shifts, affecte les équipes, exige une preuve d'exécution |
-| Notes de frais | Soumet une note de frais avec justificatif, la fait valider, suit le remboursement |
-| Flotte | Gère véhicules, affectations, entretien, carburant et documents réglementaires |
-| Livraison | Organise les tournées, suit les colis, capture la preuve de livraison |
+**Terrain & opérations** — Flotte, Géolocalisation, Caméras & supervision, EdgeSync & hors-ligne, Kiosque.
 
-**Finance & conformité (3)**
+**Verticales** — Restauration & POS, Hôtellerie, Commerce de détail, Pharmacie, Santé, École & formation, Station-service, VTC, Livraison, Agence de voyage, Agriculture, Négoce & import-export.
 
-| Module | Ce qu'il fait |
-|---|---|
-| Comptabilité | Tient plan comptable, écritures et journaux ; génère les clôtures et exporte |
-| Cabinet comptable | Gère un portefeuille de clients depuis un espace unique : dossiers, écritures, clôtures |
-| Contrats | Génère et stocke les contrats, alerte avant échéances, gère les renouvellements |
+**Plateforme** — Authentification & IAM, Multi-tenant & sécurité, Multilingue & RTL, Connecteurs & intégrations, API & intégrations, Applications mobiles, Poste de travail, Assistant IA, Audit & conformité, Marque & surfaces publiques, Bibliothèque, Cagnottes & collecte, Cabinet comptable, Programme partenaires.
 
-**Commerce & relation client (5)**
-
-| Module | Ce qu'il fait |
-|---|---|
-| CRM client | Suit prospects et clients, les échanges et les relances, avec pipeline par étape |
-| Catalogue produits & services | Tient le catalogue avec tarifs et TVA, gère la disponibilité par établissement |
-| Vitrine & acquisition | Publie la vitrine publique et capte les demandes entrantes |
-| Pages & contenu | Crée et publie des pages publiques avec contenu éditorial et métadonnées |
-| Marque & surfaces publiques | Applique logo, couleurs et identité sur toutes les surfaces publiques |
-
-**Personnes & organisation (6)**
-
-| Module | Ce qu'il fait |
-|---|---|
-| Recrutement | Publie les offres et une page carrières, recueille et fait avancer les candidatures |
-| Onboarding & provisioning | Démarre une nouvelle entreprise en quelques minutes : inscription, essai, création |
-| Communication interne | Diffuse annonces et messages ciblés, suit les accusés de lecture |
-| Formation | Organise les formations internes, suit la progression, délivre les attestations |
-| Programme partenaires | Gère les partenaires et apporteurs d'affaires, suit commissions et paiements |
-| Recherche & intelligence | Cherche dans toutes les données de l'entreprise en une seule barre |
-
-**Verticales métier (9)**
-
-| Module | Ce qu'il fait |
-|---|---|
-| Restauration & POS | Encaisse sur le POS, gère le plan de salle, envoie en cuisine via le KDS |
-| Commerce de détail | Encaisse sur le POS retail, gère catalogue et stock, imprime les tickets |
-| Hotellerie | Gère chambres, séjours et housekeeping ; applique les tarifs et prend les réservations |
-| Pharmacie | Tient catalogue, stock et ordonnances ; encaisse et publie la fiche officine |
-| Santé | Gère patients, rendez-vous et dossiers de soin ; rédige les ordonnances |
-| École & formation | Gère élèves, classes, notes et présences ; facture la scolarité |
-| Station-service | Suit pompes et index, enregistre les ventes de carburant, clôture la journée |
-| VTC | Affecte les courses aux chauffeurs, applique la grille tarifaire, consolide |
-| Agence de voyage | Publie une boutique de trajets, gère réservations et devis |
-
-**Extensions (4)**
-
-| Module | Ce qu'il fait |
-|---|---|
-| Assistant IA | Répond aux questions sur les données et prépare des actions (brouillon de bulletin) |
-| API & intégrations | Expose une API documentée (OpenAPI) et des webhooks |
-| Applications mobiles | Apps distinctes pour l'employé, le manager et l'administrateur |
-| Poste de travail (desktop) | Application de bureau pour les postes fixes et la saisie intensive |
-
-**Deux modules hors catalogue de lancement** — `Agriculture` (Farm OS) et `Négoce & import-export` (Trade OS) : ils exigent des environnements de démonstration qui n'existent pas encore. Ils restent dans le produit, hors du discours public (voir `REPOSITIONNEMENT_2026.md` §3.3).
-
-**Total** : 3 modules en pack + 38 en catalogue + 2 hors lancement = 43 entrées produit. Le décompte « 41 modules API » du dépôt compte les modules techniques ; le décompte commercial ci-dessus compte les modules vendables. Les deux sont vrais, ils ne mesurent pas la même chose.
+**Deux modules hors catalogue de lancement** — `Agriculture` (Farm OS) et `Négoce & import-export` (Trade OS) : ils exigent des environnements de démonstration qui n'existent pas encore. Ils restent dans le produit, hors du discours public.
 
 ---
 
-## 7. La démo de 20 minutes — script de vente
+## 7. La démonstration de 20 minutes — script de vente
 
-**Titre**
-
-> ### Vingt minutes, et vous savez si ça marche chez vous.
-
-**Déroulé, minute par minute**
-
-| Temps | Ce qu'on montre | Ce que le prospect doit penser |
+| Min | Ce qu'on montre | Ce qu'on dit |
 |---|---|---|
-| 0-2 | Le problème, avec ses mots : « combien de temps pour recoller les heures ce mois-ci ? » | « Il connaît mon problème » |
-| 2-6 | Création d'un employé, puis le même employé visible dans paie, pointage et congés | « Je ne saisis qu'une fois » |
-| 6-11 | Pointage depuis le mobile, puis la borne ; coupure réseau simulée | « Mes heures sont prouvées » |
-| 11-16 | Simulation de paie DZ, bulletin PDF, verrouillage du run | « Ma paie est calculée, pas recopiée » |
-| 16-19 | Le catalogue, en 3 minutes, sans insister | « Il y a de la marge pour plus tard » |
-| 19-20 | Le prix, le pilote, la prochaine étape | « Je sais ce que ça coûte » |
+| 0-2 | Le problème, avec leurs mots | « Combien de systèmes pour sortir votre masse salariale consolidée ? » |
+| 2-5 | Le pointage d'un site | « Voilà une heure, rattachée à une personne, un site, un horodatage. » |
+| 5-9 | La paie de l'entité | « IRG, CNAS, variables de pointage remontées. Le run se calcule. » |
+| 9-12 | Validation et verrouillage | « Une fois validé, le run est verrouillé. Personne ne le modifie en silence. » |
+| 12-15 | Le bulletin PDF | « Le bulletin sort. Pas de ressaisie. » |
+| 15-18 | La consolidation | « Le total groupe, sans tableur. » |
+| 18-20 | Le catalogue, en un écran | « Et si vous avez besoin d'autre chose, c'est là. » |
 
-**Règle** : on ne montre jamais le catalogue avant la minute 16. Un prospect qui voit 41 modules avant de voir la paie repart en se disant « c'est trop gros pour moi ».
+**Règle :** on ne montre jamais le catalogue avant la minute 18.
 
 ---
 
-## 8. Prix
+## 8. Ce que nous ne disons pas — et pourquoi
 
-**Grille publique existante** (`front/web/src/modules/vitrine/data/pricing.ts`, consultée le 2026-11-27) :
+Cette section existe pour être lue par quiconque écrit la copie publique. Elle est aussi contraignante que le reste.
 
-| Offre | Prix | Pour qui |
+| Interdit | Pourquoi | Ce qu'on dit à la place |
 |---|---|---|
-| **Free** | 0 € | Découverte, un site, équipe réduite |
-| **Pilot** | 29 €/mois | PME qui démarre : paie + pointage + RH |
-| **Operations** | 79 €/mois | PME multi-sites, modules opérationnels |
-| **Enterprise** | Sur devis | Multi-entités, auto-hébergement, engagements |
+| « SSO SAML » | `SSOService.php` déclare `'saml' => false` ; la connexion SAML est refusée dans le code | « Authentification unique OIDC (Entra ID, Okta, Google) ; SAML en cours » |
+| « SCIM » | Aucune implémentation | « Provisionnement par API ; SCIM en cours » |
+| « Certifié SOC 2 / ISO 27001 » | Aucune certification détenue | « Dossier de sécurité disponible ; certification en préparation » |
+| « Conformité légale validée » | Référentiels en statut `pilot` | « Le moteur calcule la paie algérienne ; validation par conseil local requise » |
+| « Testé à 10 000 utilisateurs » | Aucun test de charge publié | « Test de charge au programme du pilote » |
+| « Multi-entités » sans réserve | Le modèle est un tenant = une entreprise ; la consolidation groupe est en construction | « Multi-entités : disponible à l'issue du chantier en cours (mois 1-3) » |
 
-**Positionnement du pack de lancement** : le pack « Paie + Pointage DZ » se vend sur l'offre **Pilot**, avec les 3 modules inclus. Les 38 modules du catalogue s'activent au niveau **Operations** ou au-delà.
-
-**Ce qu'on ne fait pas** : inventer un prix algérien en dinars sur cette page. Le prix en DZD dépend du taux, de la fiscalité locale et du mode de facturation — il se fixe avec le premier pilote, pas avant. La page publique affiche l'euro ; la facturation locale se traite au contrat.
+**Le dire avant la signature n'est pas une faiblesse. C'est ce qui fait revenir le client après le pilote.**
 
 ---
 
 ## 9. Objections — les six qui reviennent
 
-| Objection | Réponse |
-|---|---|
-| **« On a déjà un tableur qui marche. »** | Il marche jusqu'au premier contrôle ou à la première contestation. Leopardo ne remplace pas votre façon de travailler, il remplace la ressaisie. |
-| **« C'est trop gros pour nous. »** | Vous n'achetez pas 41 modules. Vous achetez la paie et le pointage. Le reste s'active plus tard, si besoin. |
-| **« Et si internet tombe ? »** | La borne continue de pointer hors-ligne et resynchronise au retour du réseau. *(À valider en pilote : non testé en coupure réelle.)* |
-| **« Est-ce que c'est conforme ? »** | Le moteur applique les règles algériennes (IRG, CNAS) et calcule réellement. Les référentiels sont en statut **pilote** : la validation par un conseil fiscal local fait partie du pilote, et on ne vous vend pas une conformité qu'on n'a pas fait vérifier. |
-| **« On est multi-pays. »** | Le moteur couvre 21 pays. Le lancement est centré sur l'Algérie ; les autres pays sont disponibles sur demande, avec un référentiel à valider pays par pays. |
-| **« Qui va le mettre en place ? »** | Mise en route en moins de 30 minutes pour le socle. Pour la paie, on accompagne le premier run — c'est aussi comme ça qu'on valide le référentiel. |
+**« Vous êtes trop petits pour nous. »**
+Nous ne sommes pas un éditeur installé, c'est vrai. C'est pourquoi nous ne demandons pas un déploiement groupe : nous demandons une entité, 12 semaines, avec des critères de succès écrits. Si le pilote échoue, vous avez perdu 12 semaines et nous avons perdu un client.
+
+**« Pourquoi pas Workday ou SAP ? »**
+Parce qu'ils ne font pas la paie algérienne, marocaine ou tunisienne de façon native, et qu'ils coûtent 95 à 180 $ par salarié et par an avec 9 à 18 mois d'intégration. Si votre groupe est déjà standardisé sur SAP, nous ne sommes pas le bon choix — et nous le dirons.
+
+**« Et la sécurité ? »**
+Voici le dossier : architecture, chiffrement, cloisonnement par entité, rôles, hébergement. Trois écarts sont ouverts et documentés : SAML, SCIM, audit immuable généralisé. Nous ne prétendons pas avoir de certification.
+
+**« On a déjà un ERP. »**
+Nous ne remplaçons pas votre ERP. Nous remplaçons la paie et le pointage, et nous exportons vers votre comptabilité. L'intégration est un point du pilote, pas une promesse.
+
+**« Combien ça coûte ? »**
+Cela dépend du nombre de salariés, d'entités et de pays. Un groupe de 1 000 salariés sur 6 entités se situe dans une fourchette de 30 000 à 80 000 € par an. Le pilote, lui, est à 8 000-15 000 € et se déduit du contrat si vous signez.
+
+**« Et si ça ne marche pas ? »**
+Le pilote a une date de fin et trois critères écrits. S'ils ne sont pas atteints, vous ne signez pas, et nous documentons publiquement pourquoi.
 
 ---
 
 ## 10. CTA final
 
-> ## Prouvez vos heures. Payez juste.
->
-> Quatorze jours, sans carte bancaire. Vous branchez le pointage, vous importez vos employés, vous lancez une simulation de paie. Si le bulletin ne tombe pas juste, vous arrêtez — et vous nous dites pourquoi.
+> **Douze semaines, une entité, trois critères.**
+> Demandez une démonstration sur vos données — pas sur les nôtres.
 
-- **Primaire** : `Commencer l'essai`
-- **Secondaire** : `Parler à quelqu'un` (formulaire, réponse sous 24 h ouvrées)
-- **Tertiaire** : `Je suis un cabinet comptable` → kit partenaire
+- **Primaire** : `Demander une démonstration`
+- **Secondaire** : `Télécharger le dossier technique`
 
 ---
 
 ## 11. Ce que cette page change, et ce qu'elle ne change pas
 
-| Avant | Après |
+| Avant (v1, PME) | Après (v2, grand compte) |
 |---|---|
-| « Le Business OS des entreprises de terrain » | « La paie et le pointage de vos équipes de terrain » |
-| 41 modules en accroche | 3 modules en accroche, 38 en catalogue |
-| 21 pays en argument | 1 pays en argument, 20 sur demande |
-| 32 profils ciblés | 2 cibles : dirigeant PME, cabinet comptable |
-| Vente directe | Vente directe + canal cabinet |
+| « La paie et le pointage de vos équipes de terrain » | « Une seule paie pour toutes vos entités, et la preuve des heures de chaque site » |
+| 3 modules : Paie, Pointage, RH/absences | 3 modules : Paie multi-entités, Pointage, **Contrôle** |
+| Canal cabinet comptable en §5 | **Cycle d'achat en §5** — le cabinet n'est plus le cœur |
+| « Essayer 14 jours, sans carte » | **« Pilote payant 12 semaines »** |
+| Prix affichés (29-79 €/mois) | **Aucun prix public** — fourchette en rendez-vous |
+| 1 pays (DZ) | 3 pays en avant (DZ, MA, TN) |
 
-**Ce qui ne change pas** : le produit. Aucun module n'est supprimé, aucune fonctionnalité n'est retirée. Seul l'ordre de lecture change.
+**Ce qui ne change pas :** le produit, la boucle fermée, et l'exigence de ne rien promettre qui ne soit prouvé.
 
 ---
 
 ## 12. Checklist de publication
 
-- [ ] Le H1 ne contient ni « suite », ni « Business OS », ni un nombre de modules.
-- [ ] Les 3 modules du pack sont au-dessus du pli ; le catalogue est en dessous.
-- [ ] Chaque chiffre de la page est daté et traçable (`METRIQUES_VITRINE.md` ou test d'exécution du 2026-11-27).
-- [ ] Aucune occurrence de « conformité validée » — uniquement « statut pilote ».
-- [ ] Le bloc cabinet comptable est présent et pointe vers le kit.
-- [ ] Les 4 locales (fr, en, tr, ar) portent la même accroche ; l'arabe est en RTL.
-- [ ] Le CTA primaire mène à l'inscription d'essai, pas à une page de contact.
+- [ ] Le H1 ne contient ni « PME », ni « terrain » seul, ni « suite complète ».
+- [ ] Les trois modules en avant sont exactement Paie multi-entités, Pointage, Contrôle.
+- [ ] Aucune occurrence de « SAML », « SCIM », « certifié », « conformité validée » hors de la section §8.
+- [ ] Le catalogue n'apparaît pas avant la section 6.
+- [ ] Aucun prix public.
+- [ ] Le pilote payant est présenté avec ses trois critères de succès.
+- [ ] `bash dev-hub/tools/check-public-promises.sh` passe.
+- [ ] Les chiffres cités (9 bulletins, 842 059,10 DZD, 879 730 octets) sont datés et traçables.

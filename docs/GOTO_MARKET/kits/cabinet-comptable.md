@@ -1,277 +1,239 @@
-# Kit partenaire — cabinet comptable
+# Kit de vente grands comptes
 
-> **Statut** : kit opérationnel prêt à l'emploi · **Date** : 2026-11-27 · **Issue** : #10018
-> **Phase** : P2 du `../REPOSITIONNEMENT_2026.md` — le canal cabinet comptable.
-> **Public** : commercial Leopardo, ou fondateur en premier rendez-vous.
-> **Cadre bloquant** : `../kits/README.md` (règles communes), `docs/REFERENTIEL_PRODUIT/MESSAGE.md` (promesses interdites).
+> **Statut** : kit d'exécution · **Version** : v2 (grand compte) · **Date** : 2026-11-28 · **Issue** : #10025
+> **Remplace** : le kit « cabinet comptable » (v1, cible PME). Le chemin du fichier est conservé pour ne pas casser les références ni le budget documentaire.
+> **Décision de référence** : `../REPOSITIONNEMENT_2026.md` §4-5.
+> **Cadre bloquant** : `docs/REFERENTIEL_PRODUIT/MESSAGE.md` (promesses interdites), `METRIQUES_VITRINE.md` (chiffres datés uniquement).
 
 ---
 
 ## 0. Pourquoi ce kit existe
 
-Un cabinet comptable gère **20 à 200 PME**. S'il adopte Leopardo, il ne vend pas un logiciel : il **industrialise sa production de paie** et devient un canal de distribution à coût d'acquisition quasi nul.
+Un cycle grand compte se perd sur trois choses, jamais sur le produit : on parle au mauvais interlocuteur, on promet ce qu'on n'a pas, et on n'a pas de réponse préparée à la question de sécurité.
 
-Ce kit contient tout ce qu'il faut pour ouvrir, convaincre et signer un cabinet — sans autre document. Il se lit dans l'ordre d'un rendez-vous : argumentaire (§1), chiffres (§2), grille de marge (§3), script (§4), objections (§5), onboarding (§6).
+Ce kit tient en une page par sujet, et s'utilise tel quel en rendez-vous. Il ne remplace pas la démonstration : il l'encadre.
 
-**Règle d'or** : on ne vend pas au cabinet une « suite métier de 41 modules ». On lui vend **la fin d'une corvée** : la paie de ses clients, calculée et prouvée, sans ressaisie.
-
----
-
-## 1. Argumentaire — ce que le cabinet y gagne
-
-### 1.1 La phrase d'ouverture
-
-> « Aujourd'hui, pour produire la paie d'un client, vous ressaisissez des heures qui viennent d'un carnet ou d'un WhatsApp. Leopardo supprime cette ressaisie : les heures arrivent déjà pointées, et la paie se calcule avec les règles algériennes. »
-
-### 1.2 Les trois gains, dans l'ordre où un associé les entend
-
-| # | Gain | Ce que ça change concrètement | Comment le prouver |
-|---|---|---|---|
-| 1 | **Productivité** | Un dossier de paie cesse d'être un travail de ressaisie. Le temps libéré se réinvestit en dossiers supplémentaires, pas en embauche. | Démo : un employé saisi une fois, visible dans paie + pointage + congés |
-| 2 | **Conformité** | La paie DZ est dans l'outil (IRG, CNAS, cotisations), pas dans un tableur que le cabinet maintient lui-même. | Run de paie calculé, validé, verrouillé, bulletin PDF |
-| 3 | **Marge** | Le cabinet facture le service à son client et garde une commission sur l'abonnement. Revenu récurrent, sans coût d'acquisition. | Grille §3 |
-
-### 1.3 Ce que le cabinet ne prend pas comme risque
-
-C'est le cœur de l'argument. Un cabinet ne prend pas de **risque technologique** — il prend un risque de **productivité**. Il faut donc désamorcer la peur technique avant de parler de marge :
-
-- **Pas de migration forcée** : le cabinet peut démarrer sur **un seul dossier**, celui d'un client volontaire.
-- **Pas d'engagement de volume** : le partenariat ne l'oblige pas à basculer tout son portefeuille.
-- **Pas de perte de contrôle** : le cabinet garde la main sur la validation. Leopardo calcule, le cabinet valide et verrouille.
-- **Pas de dépendance à une promesse** : les référentiels sont en statut **pilote**, et le premier dossier sert précisément à les valider avec lui.
-
-### 1.4 Le pitch en 30 secondes (à savoir par cœur)
-
-> « Vos clients vous demandent déjà de produire leur paie. Aujourd'hui vous ressaisissez leurs heures. Avec Leopardo, les heures arrivent pointées depuis le mobile ou la borne, la paie algérienne se calcule, vous validez, le run se verrouille. Vous traitez plus de dossiers sans embaucher, et vous gardez une commission sur chaque abonnement. On commence par un dossier, pas par tout votre portefeuille. »
+**Règle d'or :** on entre par le **DAF**, jamais par la DRH. Dans un groupe, la DRH gère les personnes ; le DAF paie et subit les erreurs.
 
 ---
 
-## 2. Les chiffres à utiliser — et ceux à ne pas utiliser
+## 1. Le cycle de décision — les 7 étapes
 
-### 2.1 Chiffres vérifiés (utilisables tels quels)
-
-| Fait | Valeur | Vérifié le | Source |
-|---|---|---|---|
-| Run de paie DZ, 9 salariés | 9 bulletins, 842 059,10 DZD brut, 626 085,54 DZD net | 2026-11-27 | Exécution locale |
-| Coût employeur du même run | 1 060 994,47 DZD | 2026-11-27 | Exécution locale |
-| Bulletin PDF | 879 730 octets générés | 2026-11-27 | `/api/v1/pay-slips/1/pdf` |
-| Verrouillage du run | `validated` → `locked` | 2026-11-27 | `/validate` puis `/lock` |
-| Anomalies détectées | 0 sur le run de test | 2026-11-27 | `/payroll-runs/1/anomalies` |
-| Pays couverts par le moteur | 21 | 2026-11-27 | Résolution des moteurs pays |
-| Licence | MIT | 2026-09-20 | `LICENSE` |
-| Modules API | 41 (techniques) / 3 en pack + 38 en catalogue (commercial) | 2026-11-27 | `api/app/Modules` |
-
-### 2.2 Chiffres interdits
-
-| Interdit | Pourquoi | Dire à la place |
-|---|---|---|
-| « Conformité validée » | Les référentiels sont en statut `pilot` | « Le moteur applique les règles DZ ; la validation par un conseil fiscal fait partie du pilote » |
-| « X cabinets nous font confiance » | Aucun cabinet signé à ce jour | « Nous ouvrons deux cabinets partenaires sur Alger » |
-| « 21 pays opérationnels » | 21 pays résolvent, un seul est au lancement | « 21 pays couverts par le moteur, l'Algérie au lancement » |
-| Tout chiffre d'adoption non sourcé | Non mesuré | Ne pas en parler |
-
----
-
-## 3. Grille de marge
-
-### 3.1 Le modèle
-
-Trois modèles possibles. **Le modèle recommandé est le B** (commission récurrente) : il aligne les intérêts et ne demande aucun investissement au cabinet.
-
-| Modèle | Mécanique | Avantage cabinet | Avantage Leopardo | Quand le proposer |
+| # | Étape | Durée | Interlocuteur principal | Ce qu'il faut obtenir pour passer à la suivante |
 |---|---|---|---|---|
-| **A — Apport d'affaires** | Le cabinet présente, Leopardo facture, le cabinet touche une commission unique | Zéro effort, zéro risque | Contrôle de la relation client | Cabinet méfiant, premier contact |
-| **B — Revendeur (recommandé)** | Le cabinet facture son client, Leopardo facture le cabinet au tarif partenaire, le cabinet garde la différence | Marge récurrente, relation client maîtrisée | Volume prévisible, CAC quasi nul | Cabinet déjà structuré sur la paie |
-| **C — Marque blanche** | Le cabinet présente l'outil sous sa marque | Différenciation forte | Verrouillage long terme | Cabinet > 100 dossiers, projet stratégique |
+| 1 | **Prise de contact** | 1-2 sem. | DAF | Un rendez-vous de 45 minutes |
+| 2 | **Découverte** | 2-3 sem. | DAF + DRH | La cartographie des entités, conventions et systèmes |
+| 3 | **Démonstration** | 1 sem. | DAF + DRH + DSI | L'accord pour une revue technique |
+| 4 | **Revue technique** | 3-6 sem. | DSI + RSSI | La validation de l'architecture et de la sécurité |
+| 5 | **Pilote** | 12 sem. | DAF + DSI | Les 3 critères de succès atteints |
+| 6 | **Négociation** | 4-8 sem. | Achats + DAF | La signature |
+| 7 | **Déploiement** | 8-16 sem. | DSI + DRH | L'extension aux autres entités |
 
-### 3.2 Grille chiffrée — modèle B (revendeur)
+**Durée totale : 6 à 12 mois.** Toute promesse de « mise en route en 30 minutes » est un mensonge qui se paie à l'étape 4.
 
-Base : offre **Pilot à 29 €/mois** (paie + pointage + RH), offre **Operations à 79 €/mois** (modules opérationnels).
-
-| Volume de dossiers | Tarif partenaire / dossier / mois | Prix public conseillé | Marge cabinet / dossier | Marge mensuelle cabinet |
-|---|---|---|---|---|
-| 1-9 dossiers | 20 € | 29 € | **9 €** (31 %) | 9 € à 81 € |
-| 10-29 dossiers | 17 € | 29 € | **12 €** (41 %) | 120 € à 348 € |
-| 30-59 dossiers | 14 € | 29 € | **15 €** (52 %) | 450 € à 885 € |
-| 60+ dossiers | 12 € | 29 € | **17 €** (59 %) | 720 € et plus |
-
-**Exemple concret, à montrer en rendez-vous** — un cabinet avec **25 dossiers** en Pilot :
-
-| Ligne | Calcul | Montant |
-|---|---|---|
-| Facturation aux clients | 25 × 29 € | 725 €/mois |
-| Coût partenaire | 25 × 17 € | 425 €/mois |
-| **Marge brute cabinet** | 725 − 425 | **300 €/mois** |
-| Sur 12 mois | 300 × 12 | **3 600 €/an** |
-
-Et si 8 de ces 25 dossiers passent en Operations (79 € public, 55 € partenaire) :
-
-| Ligne | Calcul | Montant |
-|---|---|---|
-| Facturation clients (8 × 79) | | 632 €/mois |
-| Coût partenaire (8 × 55) | | 440 €/mois |
-| Marge sur ces 8 | | 192 €/mois |
-| **Marge totale cabinet** | 300 + 192 | **492 €/mois — 5 904 €/an** |
-
-### 3.3 Ce que le cabinet peut facturer en plus (et qui ne nous concerne pas)
-
-Le cabinet reste libre de facturer à son client :
-
-- la **mise en place** du pointage (paramétrage, formation des équipes) ;
-- la **reprise des données** (employés, contrats, historiques) ;
-- l'**accompagnement du premier run de paie** ;
-- le **support de premier niveau**.
-
-C'est souvent là que se trouve la marge réelle du cabinet — et c'est un argument : Leopardo ne lui prend pas ce revenu, il le lui rend possible.
-
-### 3.4 Conditions du partenariat (à annoncer clairement)
-
-| Point | Règle |
-|---|---|
-| Engagement minimum | **1 dossier** pendant 3 mois. Pas de volume imposé. |
-| Exclusivité | Aucune au démarrage. Une exclusivité de zone s'étudie au-delà de 50 dossiers. |
-| Durée | 12 mois renouvelables, résiliable avec 60 jours de préavis. |
-| Facturation | Mensuelle, à terme échu, en euros ou en dinars selon accord. |
-| Formation | 2 sessions incluses : une sur la paie, une sur le pointage. |
-| Support | Le cabinet assure le premier niveau ; Leopardo le second, sous 24 h ouvrées. |
+**Point de non-retour :** l'étape 4. Si le DSI n'est pas convaincu, le reste ne sert à rien. C'est pourquoi le dossier technique se prépare **avant** la première démonstration.
 
 ---
 
-## 4. Script du premier rendez-vous (45 minutes)
+## 2. Les interlocuteurs — qui veut quoi, qui bloque quoi
 
-### 4.1 Avant le rendez-vous — 10 minutes de préparation
+| Rôle | Ce qu'il veut entendre | Ce qu'il peut bloquer | Argument à lui servir |
+|---|---|---|---|
+| **DAF** | « Votre paie consolidée sort sans tableur, et elle est juste. » | Le budget | Le coût d'une paie fausse : redressement, heures payées à tort, temps de correction |
+| **DRH groupe** | « Vos équipes RH arrêtent la ressaisie. » | L'adoption | Le dossier employé saisi une fois, le self-service, les congés |
+| **DSI** | « Ça s'intègre, ça s'héberge chez nous, c'est documenté. » | **Techniquement, tout** | API versionnée, 994 endpoints, Docker, auto-hébergement |
+| **RSSI** | « Voici l'architecture, le chiffrement, les rôles, l'audit. » | La revue de sécurité | Le dossier de sécurité, avec ses écarts assumés |
+| **Achats** | « Le prix est défendable, le contrat est clair. » | La signature | Fourchette 30-80 k€/an, contrat type, SLA |
+| **DG / famille** | « Le risque est maîtrisé. » | Tout, en dernier recours | Un pilote borné, une sortie possible |
 
-- [ ] Identifier le **nombre de dossiers de paie** du cabinet (site web, LinkedIn, ou question d'ouverture).
-- [ ] Identifier **qui décide** : l'associé signataire, pas le collaborateur qui fera la saisie.
-- [ ] Préparer **un seul cas d'usage** : une PME de 20 à 50 salariés avec du personnel de terrain.
-- [ ] Vérifier que la démo tourne (environnement de démo, pas de production).
+**Erreur classique :** convaincre le DAF puis découvrir à l'étape 4 que le RSSI exige SAML. C'est pourquoi l'écart SAML s'annonce **dès l'étape 2**, pas à l'étape 4.
 
-### 4.2 Déroulé
+---
 
-**0-5 min — Cadrage**
+## 3. Argumentaire — les trois gains, dans l'ordre où un DAF les entend
 
-> « Merci de me recevoir. Je vais vous montrer une chose précise : comment la paie d'un de vos clients peut se calculer sans que vous ressaisissiez les heures. Si ça ne vous intéresse pas au bout de dix minutes, on arrête et je ne vous dérange plus. »
+### 3.1 « Vous arrêtez de consolider à la main »
 
-*Objectif : obtenir la permission de montrer, pas de vendre.*
+Aujourd'hui : une paie par entité, un tableur de consolidation, une ressaisie mensuelle, et un total que personne ne vérifie vraiment.
 
-**5-15 min — Découverte (on écoute, on ne pitche pas)**
+Demain : une paie par entité dans le même moteur, un total groupe disponible sans manipulation.
 
-Quatre questions, dans cet ordre :
+**Ce que ça vaut :** 2 à 5 jours-homme par mois dans un groupe de 6 entités, et la fin d'une source d'erreur qui ne se voit qu'à l'audit.
 
-1. « Combien de dossiers de paie traitez-vous aujourd'hui ? »
-2. « Comment récupérez-vous les heures de vos clients ? » *(attendre : carnet, WhatsApp, Excel)*
-3. « Combien de temps vous prend un dossier de paie par mois, tout compris ? »
-4. « Qu'est-ce qui vous coûte le plus : la saisie, les corrections, ou les questions des clients ? »
+### 3.2 « Vos heures deviennent opposables »
 
-*Objectif : faire dire au cabinet, avec ses mots, la douleur que le produit supprime. Ne pas l'aider.*
+Aujourd'hui : des badgeuses dont les données sortent en fichier texte, des feuilles papier sur les chantiers, et « on va vérifier » comme réponse aux contestations.
 
-**15-30 min — Démonstration (15 minutes, pas une de plus)**
+Demain : une heure rattachée à une personne, un site, un horodatage — y compris en coupure réseau.
 
-| Min | Ce qu'on montre | Ce qu'on dit |
+**Ce que ça vaut :** la fin des heures payées sans preuve, et une position défendable en cas de contentieux.
+
+### 3.3 « Vous passez une revue de sécurité sans improviser »
+
+Aujourd'hui : un questionnaire de 60 questions qui remonte à la direction, et des réponses bricolées.
+
+Demain : un dossier de sécurité, une architecture documentée, un hébergement que vous choisissez.
+
+**Ce que ça vaut :** 3 à 6 semaines gagnées sur le cycle, et un DSI qui devient un allié au lieu d'un obstacle.
+
+### 3.4 Le pitch en 30 secondes (à savoir par cœur)
+
+> « Vous avez six sociétés, trois pays, et la paie consolidée se fait sur un tableur. Nous mettons la paie de chaque entité et le pointage de chaque site dans un seul moteur : une paie par société, un total groupe, et des heures qu'on peut prouver. On commence par une entité, douze semaines, avec trois critères écrits. Si ça ne marche pas, vous ne signez pas. »
+
+---
+
+## 4. Les chiffres à utiliser — et ceux à ne pas utiliser
+
+### 4.1 Chiffres vérifiés (utilisables tels quels)
+
+| Fait | Valeur | Vérifié le |
 |---|---|---|
-| 15-19 | Création d'un employé, puis le même employé dans paie, pointage, congés | « Saisi une fois, utilisé partout. C'est ça qui supprime la ressaisie. » |
-| 19-24 | Pointage mobile, puis borne ; coupure réseau simulée | « L'heure est prouvée, même sans réseau. » |
-| 24-29 | Simulation de paie DZ, bulletin PDF, verrouillage | « IRG, CNAS, cotisations. Vous validez, le run se verrouille. » |
-| 29-30 | Le catalogue, en 30 secondes, sans insister | « Et il y a d'autres modules, mais ce n'est pas le sujet aujourd'hui. » |
+| Run de paie DZ | 9 bulletins, 842 059,10 DZD brut, 626 085,54 DZD net | 2026-11-27 |
+| Coût employeur du run DZ | 1 060 994,47 DZD | 2026-11-27 |
+| Bulletin PDF généré | 879 730 octets | 2026-11-27 |
+| Run de paie Maroc | 6 bulletins, 53 614,27 MAD brut | 2026-11-27 |
+| Moteurs pays résolus en exécution | 21 pays | 2026-11-27 |
+| Modules API | 42 | 2026-11-28 |
+| Endpoints | 994 | 2026-11-28 |
+| Licence | MIT | 2026-09-20 |
 
-**30-38 min — Le modèle économique**
+### 4.2 Chiffres interdits
 
-> « Voilà comment ça marche pour vous. Vous facturez le service à votre client. Nous vous facturons un tarif partenaire. La différence, c'est votre marge. Sur 25 dossiers, ça fait 300 € par mois, 3 600 € par an — sans embaucher. »
-
-*Montrer le tableau §3.2. Laisser le silence après le chiffre.*
-
-**38-43 min — Objections** (voir §5)
-
-**43-45 min — Closing**
-
-> « Ce que je vous propose : on prend **un** dossier, celui d'un client qui vous pose le plus de problèmes de pointage. On le met en route ensemble, on valide le premier run de paie avec vous. Si ça ne vous fait pas gagner du temps, on s'arrête là. Si ça marche, on regarde le deuxième. »
-
-*Demander une date, pas un « oui ». Un « oui » sans date n'est pas un oui.*
-
-### 4.3 Après le rendez-vous — dans les 24 heures
-
-- [ ] Envoyer le récapitulatif : le dossier choisi, la date de mise en route, le contact technique.
-- [ ] Envoyer la grille de marge (§3.2) en PDF.
-- [ ] Créer la ligne dans `../REGISTRE_CANAUX.md`.
-- [ ] Planifier la session de formation 1 (paie) sous 7 jours.
+- « X clients », « X utilisateurs », « X entreprises nous font confiance » — **aucune référence client publiable**.
+- « Conformité validée », « certifié », « 100 % conforme » — référentiels en statut `pilot`.
+- « SSO SAML », « SCIM » — non implémentés (voir §6).
+- « Testé à 10 000 utilisateurs » — aucun test de charge publié.
+- Tout prix par salarié présenté comme ferme.
 
 ---
 
-## 5. Objections du cabinet — et les réponses
+## 5. Script du premier rendez-vous (45 minutes)
 
-| Objection | Ce qu'elle cache | Réponse |
+### 5.1 Avant le rendez-vous — 15 minutes de préparation
+
+1. Combien d'entités juridiques ? (registre de commerce, site du groupe, LinkedIn)
+2. Combien de pays ? (implantations déclarées)
+3. Quel ERP ? (offres d'emploi, communiqués)
+4. Combien de salariés, et quelle proportion en horaire ? (rapport annuel, presse)
+5. Qui est le DAF, et depuis quand ? (LinkedIn)
+
+**But :** ne poser aucune question dont la réponse est publique. Un DAF perd patience en 3 minutes face à un fournisseur mal préparé.
+
+### 5.2 Déroulé
+
+| Min | Ce qu'on fait | Ce qu'on dit |
 |---|---|---|
-| **« On a déjà un logiciel de paie. »** | Peur de changer un outil qui marche | « On ne remplace pas votre logiciel de paie. On remplace la ressaisie des heures qui l'alimente. Si votre logiciel actuel vous convient, on peut même n'utiliser que le pointage. » |
-| **« Mes clients ne voudront pas. »** | Peur de perdre un client | « On commence par le client qui vous pose le plus de problèmes de pointage. C'est lui qui a intérêt à changer, pas les autres. » |
-| **« C'est encore un outil à apprendre. »** | Peur du temps de formation | « Deux sessions, une sur la paie, une sur le pointage. Et le premier run, on le fait avec vous. » |
-| **« Et la conformité ? »** | Peur de l'erreur qui engage sa responsabilité | « Le moteur applique les règles DZ. Les référentiels sont en statut pilote — c'est justement pour ça qu'on valide le premier run avec vous, pas tout seul. » |
-| **« Combien ça me rapporte vraiment ? »** | Calcul non fait | Montrer §3.2 : 25 dossiers = 300 €/mois, 3 600 €/an. Puis : « et vous facturez la mise en place en plus, ça reste chez vous. » |
-| **« Pourquoi pas Odoo / un grand éditeur ? »** | Peur de l'inconnu | « Odoo n'a pas de paie algérienne officielle : il faut la faire développer, et c'est vous qui portez le risque. Ici, la paie DZ est dans l'outil. » |
-| **« Vous êtes une petite structure. »** | Peur de l'abandon | « C'est vrai, et c'est pour ça que vous êtes deux cabinets, pas deux cents. Vous avez un interlocuteur direct, et le produit est en open source sous licence MIT : si nous disparaissions, le code reste. » |
-| **« Laissez-moi en parler à mon associé. »** | Vrai besoin de temps, ou refus poli | « Bien sûr. Je vous propose qu'on fixe déjà la date du dossier pilote : si votre associé dit non, on l'annule, ça ne coûte rien. » |
+| 0-3 | Cadrage | « Je ne vais pas vous présenter un logiciel. Je vais vous poser trois questions, et si la troisième ne vous parle pas, on s'arrête là. » |
+| 3-12 | Découverte | « Combien de systèmes pour sortir votre masse salariale consolidée ? » · « Qui consolide, et avec quoi ? » · « Combien de temps par mois ? » |
+| 12-18 | Reformulation | « Si je comprends : six entités, trois systèmes, un tableur, et deux à trois jours par mois. C'est ça ? » |
+| 18-28 | La boucle fermée | Pointage → heures → paie → bulletin → consolidation. Sur un cas réel, pas une démo générique. |
+| 28-35 | Les écarts, annoncés | « Trois choses ne sont pas encore prêtes : SAML, SCIM, et l'audit immuable généralisé. Voilà notre calendrier. » |
+| 35-42 | Le pilote | « Une entité, douze semaines, trois critères écrits, 8 à 15 k€, déduits si vous signez. » |
+| 42-45 | La suite | « Je vous envoie le dossier technique. Qui, chez vous, doit le lire ? » |
+
+**La minute 28-35 est la plus importante du rendez-vous.** Annoncer ses écarts avant que le client ne les découvre est ce qui transforme un fournisseur en partenaire.
+
+### 5.3 Après le rendez-vous — dans les 24 heures
+
+- Envoyer le dossier technique (architecture, sécurité, hébergement).
+- Envoyer le contrat de pilote type, avec les trois critères.
+- Nommer le prochain interlocuteur (DSI ou RSSI) et proposer une date.
+- Consigner dans le CRM : entités, pays, ERP, nombre de salariés, blocages identifiés.
 
 ---
 
-## 6. Onboarding d'un dossier client — checklist
+## 6. Objections — et les réponses
 
-À dérouler avec le cabinet, sur le premier dossier. Objectif : **premier run de paie validé en 15 jours**.
+**« Vous êtes trop petits. »**
+« C'est vrai, nous n'avons pas de référence dans votre secteur. C'est pourquoi nous ne demandons pas un déploiement groupe : une entité, douze semaines, trois critères. Si ça échoue, vous avez perdu douze semaines. »
 
-### Semaine 1 — Cadrage et données
+**« Pourquoi pas Workday / SAP ? »**
+« Ils ne font pas la paie algérienne de façon native, et ils coûtent 95 à 180 $ par salarié et par an avec 9 à 18 mois d'intégration. Si vous êtes déjà standardisé sur SAP, nous ne sommes pas le bon choix — et je vous le dis maintenant. »
 
-- [ ] Dossier client créé dans l'espace cabinet.
-- [ ] Liste des employés fournie par le client (nom, poste, contrat, salaire de base).
-- [ ] Import ou saisie des employés ; vérification des contrats et horaires.
-- [ ] Choix du mode de pointage : mobile, borne, ou les deux.
-- [ ] Paramétrage des règles de paie du dossier (IRG, CNAS, primes, retenues).
+**« Avez-vous SOC 2 / ISO 27001 ? »**
+« Non. Nous avons un dossier de sécurité complet, un hébergement que vous choisissez, et une architecture documentée. La certification est au programme, pas au catalogue. »
 
-### Semaine 2 — Pointage et premier run
+**« Faites-vous du SAML ? »**
+« Pas encore. OIDC est opérationnel — Entra ID, Okta, Google. SAML est en cours, deux à trois semaines. Si c'est bloquant pour votre revue, dites-le maintenant et nous planifions le pilote après. »
 
-- [ ] Formation des équipes du client au pointage (30 minutes sur site ou visio).
-- [ ] Une semaine de pointage réel enregistrée.
-- [ ] **Simulation de paie** lancée, sans validation.
-- [ ] Relecture du bulletin par le cabinet, ligne par ligne.
-- [ ] Corrections appliquées, simulation relancée.
+**« Et le multi-entités ? »**
+« C'est le chantier en cours, un à trois mois. Aujourd'hui le produit gère une entreprise par tenant. Nous ne vendons pas la consolidation groupe avant qu'elle soit livrée. »
 
-### Semaine 3 — Validation
+**« Combien ? »**
+« Un groupe de 1 000 salariés sur 6 entités : 30 000 à 80 000 € par an selon le périmètre. Le pilote est à 8 à 15 k€, déduits si vous signez. »
 
-- [ ] Run validé par le cabinet.
-- [ ] Run verrouillé.
-- [ ] Bulletins PDF générés et transmis au client.
-- [ ] **Compte rendu de validation du référentiel** : ce qui a été vérifié, ce qui reste à confirmer par un conseil fiscal.
-- [ ] Décision : deuxième dossier, ou arrêt.
+**« On a déjà un ERP. »**
+« Nous ne le remplaçons pas. Nous remplaçons la paie et le pointage, et nous exportons vers votre comptabilité. L'intégration est un point du pilote. »
 
-### Critère de succès du pilote
-
-Le pilote est réussi si **les trois** conditions sont réunies :
-
-1. Le cabinet a validé un run de paie réel sans ressaisie manuelle des heures.
-2. Le temps passé sur ce dossier a diminué par rapport à la méthode précédente (mesuré, pas estimé).
-3. Le cabinet accepte de prendre un deuxième dossier.
-
-Si l'une des trois manque, on ne pousse pas le volume : on corrige d'abord.
+**« Pourquoi un pilote payant ? »**
+« Parce qu'un POC gratuit ne se termine jamais. Un pilote payant a une date de fin, des critères écrits, et une décision à la sortie — pour vous comme pour nous. »
 
 ---
 
-## 7. Ce qu'il ne faut jamais dire
+## 7. Onboarding du pilote — checklist 12 semaines
+
+### Semaines 1-2 — Cadrage
+- [ ] Entité pilote et site pilote désignés par le client.
+- [ ] Périmètre écrit : nombre de salariés, conventions, variables de paie.
+- [ ] Les 3 critères de succès signés par le DAF.
+- [ ] Accès : environnement, réseau, matériel de pointage.
+
+### Semaines 3-5 — Données et pointage
+- [ ] Import du dossier employé (fichier client, anonymisé si besoin).
+- [ ] Paramétrage de la convention et du pays.
+- [ ] Installation du pointage (mobile, GPS ou borne) sur le site.
+- [ ] Test de coupure réseau et resynchronisation.
+
+### Semaines 6-9 — Première paie réelle
+- [ ] Run de paie en parallèle de l'existant (double calcul).
+- [ ] Écart expliqué ligne par ligne avec le comptable du client.
+- [ ] Validation par le conseil fiscal local si le client l'exige.
+- [ ] Bulletin PDF et exports comptables vérifiés.
+
+### Semaines 10-12 — Consolidation et décision
+- [ ] Deuxième et troisième paie sans erreur imputable à l'outil.
+- [ ] Revue technique finale avec le DSI.
+- [ ] Bilan écrit contre les 3 critères.
+- [ ] Proposition de contrat groupe, ou décision d'arrêt documentée.
+
+### Critère de succès du pilote — les 3, écrits d'avance
+1. **Trois paies consécutives** sans erreur imputable à l'outil.
+2. **100 % des heures du site** prouvées et rattachées à une personne.
+3. **Validation du DSI** sur l'authentification et l'audit, dans son environnement.
+
+---
+
+## 8. Ce qu'il ne faut jamais dire
 
 | Interdit | Pourquoi |
 |---|---|
-| « Conformité garantie / validée » | Référentiels en statut `pilot` |
-| « On a X cabinets partenaires » | Aucun signé à ce jour |
-| « Ça remplace votre logiciel de paie » | Faux, et ça déclenche la peur de changer |
-| « C'est simple, tout est automatique » | La paie n'est jamais entièrement automatique ; c'est le cabinet qui valide |
-| Un prix en dinars non validé | Le prix DZD se fixe avec le premier pilote |
-| « 41 modules » en ouverture | Le cabinet achète la paie, pas un catalogue |
+| « SSO SAML » | Non implémenté — `SSOService.php` refuse la connexion SAML |
+| « SCIM » | Aucune implémentation |
+| « Certifié SOC 2 / ISO 27001 » | Aucune certification détenue |
+| « Conformité légale validée » | Référentiels en statut `pilot` |
+| « Multi-entités disponible » | Chantier en cours (mois 1-3) |
+| « Testé à 10 000 utilisateurs » | Aucun test de charge publié |
+| « Mise en route en 30 minutes » | Vrai pour une PME, faux pour un groupe |
+| « Nous avons X clients » | Aucune référence publiable |
+
+**Une seule de ces phrases prononcée en rendez-vous peut coûter le compte — et la réputation sur le marché, qui est petit.**
 
 ---
 
-## 8. Résumé en une page (à imprimer)
+## 9. Résumé en une page (à imprimer)
 
-> **Leopardo pour les cabinets comptables**
->
-> **Le problème** : vous ressaisissez les heures de vos clients depuis un carnet ou un WhatsApp.
-> **La solution** : les heures arrivent pointées (mobile, GPS, borne), la paie algérienne se calcule, vous validez, le run se verrouille.
-> **Votre gain** : plus de dossiers sans embaucher, et une commission récurrente.
-> **Le chiffre** : 25 dossiers = 300 €/mois de marge, 3 600 €/an — plus ce que vous facturez en mise en place.
-> **L'engagement** : un dossier, 15 jours, premier run validé ensemble. Pas de volume imposé.
-> **La limite assumée** : les référentiels de paie sont en statut pilote ; la validation se fait avec vous, sur le premier dossier.
+**Cible :** groupe privé multi-entités, 500-5 000 salariés, 4-15 entités, main-d'œuvre horaire.
+
+**Message :** « Une seule paie pour toutes vos entités, et la preuve des heures de chaque site. »
+
+**Entrée :** le DAF. **Décision :** DAF + DSI + RSSI + achats.
+
+**Offre :** pilote payant, 12 semaines, une entité, 150-400 salariés, 8-15 k€.
+
+**Critères de succès :** 3 paies sans erreur · 100 % des heures prouvées · validation DSI.
+
+**Écarts annoncés d'emblée :** SAML, SCIM, audit immuable généralisé, multi-entités, SOC 2.
+
+**Prix cible :** 30-80 k€/an pour 1 000 salariés sur 6 entités.
+
+**Durée du cycle :** 6-12 mois. Ne jamais promettre moins.

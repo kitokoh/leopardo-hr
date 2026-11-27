@@ -17,9 +17,10 @@ dans `docs/archive/AUDITS_GTM_2026.md` (budget documentaire #9981) :
 - `03_DIRECTION_COMMERCIALE_ET_OFFRES.md` — packaging, ICP, canaux, motion de vente.
 
 Leurs décisions sont reprises et **tranchées** dans
-`docs/GOTO_MARKET/REPOSITIONNEMENT_2026.md` : segment primaire (PME de terrain
-5-150 salariés, DZ/MA/TN), pack de lancement (Paie + Pointage), canal cabinet
-comptable, séquence 90 jours et critères d'arrêt.
+`docs/GOTO_MARKET/REPOSITIONNEMENT_2026.md` (v2, 2026-11-28) : segment primaire
+(groupe multi-entités 500-5 000 salariés, DZ/MA/TN), trio de lancement (Paie
+multi-entités, Pointage, Contrôle), vente directe, séquence 180 jours et
+critères d'arrêt. Étude détaillée : `docs/GOTO_MARKET/ETUDE_MARCHE_GRAND_COMPTE_2026.md`.
 
 ## Décision stratégique (à jour)
 

@@ -73,9 +73,10 @@ Permettre à **n'importe quelle partie prenante** de comprendre en moins de 30 m
 | Positionnement | [`01_PRODUCT/POSITIONING.md`](01_PRODUCT/POSITIONING.md) |
 | Fonctionnalités cœur | [`01_PRODUCT/CORE_FEATURES.md`](01_PRODUCT/CORE_FEATURES.md) |
 | Thèse de catégorie (historique « Company OS » → suite métier) | [`01_PRODUCT/COMPANY_OS_THESIS.md`](01_PRODUCT/COMPANY_OS_THESIS.md) |
-| Repositionnement et périmètre de lancement | [`REPOSITIONNEMENT_2026.md`](REPOSITIONNEMENT_2026.md) |
-| **Page de vente unique du lancement (Paie + Pointage DZ)** | [`PACK_LANCEMENT/04_PAGE_VENTE_PAIE_POINTAGE_DZ.md`](PACK_LANCEMENT/04_PAGE_VENTE_PAIE_POINTAGE_DZ.md) |
-| **Kit partenaire cabinet comptable** | [`kits/cabinet-comptable.md`](kits/cabinet-comptable.md) |
+| **Étude de marché grands comptes 2026** | [`ETUDE_MARCHE_GRAND_COMPTE_2026.md`](ETUDE_MARCHE_GRAND_COMPTE_2026.md) |
+| Repositionnement et périmètre de lancement (cible grands comptes) | [`REPOSITIONNEMENT_2026.md`](REPOSITIONNEMENT_2026.md) |
+| **Page de vente de l'offre grands comptes** | [`PACK_LANCEMENT/04_PAGE_VENTE_PAIE_POINTAGE_DZ.md`](PACK_LANCEMENT/04_PAGE_VENTE_PAIE_POINTAGE_DZ.md) |
+| **Kit de vente grands comptes** | [`kits/cabinet-comptable.md`](kits/cabinet-comptable.md) |
 | Specs assets marketing (landing, brochure, pitch deck, vidéos) | [`ASSETS_PRODUCTION/`](ASSETS_PRODUCTION/) |
 
 ---
