@@ -1,0 +1,1030 @@
+{
+ "logins": {
+  "principal": 200,
+  "rh": 200,
+  "dept": 200,
+  "comptable": 200,
+  "superviseur": 200,
+  "employe": 200
+ },
+ "ids": {
+  "employee": 1
+ },
+ "cases": [
+  {
+   "id": "UC-01",
+   "title": "Connexion d'un employé à l'espace client web",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/login",
+     "method": "GET",
+     "status": 200,
+     "kind": "web"
+    }
+   ]
+  },
+  {
+   "id": "UC-02",
+   "title": "Pointage entrée / sortie (API, employé)",
+   "probed": 4,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/attendance/check-in",
+     "method": "POST",
+     "status": 403,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/attendance/today",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/attendance/check-out",
+     "method": "POST",
+     "status": 403,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/auth/login",
+     "method": "POST",
+     "status": 422,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-03",
+   "title": "Pointage au kiosque biométrique (mode secours matricule)",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-04",
+   "title": "Demande d'absence et approbation manager",
+   "probed": 2,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/absences",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/absences/1/approve",
+     "method": "GET",
+     "status": 405,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-05",
+   "title": "Consultation du bulletin de paie (self-service employé)",
+   "probed": 2,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/me/pay-slips",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/me/pay-slips/999999",
+     "method": "GET",
+     "status": 404,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-06",
+   "title": "Préparation de paie (Manager Comptable)",
+   "probed": 2,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/salary-structures",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/payroll/simulate",
+     "method": "POST",
+     "status": 422,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-07",
+   "title": "Gestion du dossier employé (création, modification, archivage)",
+   "probed": 3,
+   "ok": 2,
+   "results": [
+    {
+     "path": "/api/v1/employees",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/employees/1",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/employees/1/archive",
+     "method": "GET",
+     "status": 405,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-08",
+   "title": "Isolation multi-tenant",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/employees/1",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-09",
+   "title": "Multilingue et RTL (fr / en / tr / ar)",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-10",
+   "title": "Kiosque en mode dégradé / synchronisation Edge",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-11",
+   "title": "CRM client (comptes, contacts, opportunités)",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-12",
+   "title": "Vitrine publique et demande d'essai",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-13",
+   "title": "Observabilité et santé de la plateforme",
+   "probed": 4,
+   "ok": 4,
+   "results": [
+    {
+     "path": "/api/v1/health",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/health/live",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/health/ready",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/docs",
+     "method": "GET",
+     "status": 200,
+     "kind": "web"
+    }
+   ]
+  },
+  {
+   "id": "UC-14",
+   "title": "Solution verticale « Agence de voyage » (boutique publique)",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/public/travel/marketplace/trips",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-15",
+   "title": "Connexion Manager Principal et tableau de bord",
+   "probed": 1,
+   "ok": 0,
+   "results": [
+    {
+     "path": "/dashboard",
+     "method": "GET",
+     "status": 401,
+     "kind": "web"
+    }
+   ]
+  },
+  {
+   "id": "UC-16",
+   "title": "Gestion des départements et des équipes",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/departments",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-17",
+   "title": "Attribution de rôles et invitations",
+   "probed": 2,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/invitations",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/company/team-roles",
+     "method": "GET",
+     "status": 403,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-18",
+   "title": "Validation des heures supplémentaires et du planning",
+   "probed": 2,
+   "ok": 2,
+   "results": [
+    {
+     "path": "/api/v1/planning",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/reports/overtime",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-19",
+   "title": "Génération et téléchargement d'un bulletin PDF",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-20",
+   "title": "Console Super Admin — gestion des entreprises",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-21",
+   "title": "Impersonation encadrée (Support)",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-22",
+   "title": "Facturation et abonnements (Finance)",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-23",
+   "title": "Kill switch et nœuds Edge (Ops)",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-24",
+   "title": "Campagnes et vitrine (Marketing)",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-25",
+   "title": "Recrutement et offres d'emploi",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-26",
+   "title": "Bibliothèque / Showcase public",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-27",
+   "title": "Comptabilité — écritures et clôture mensuelle",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/accounting/journals",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-28",
+   "title": "Comptabilité — export et rapprochement bancaire",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-29",
+   "title": "Notes de frais — soumission et validation",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/expense-claims",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-30",
+   "title": "Notes de frais — remboursement et impact paie",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-31",
+   "title": "Planning — shifts et affectations",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/planning",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-32",
+   "title": "Tâches — assignation et preuve d'exécution",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/tasks",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-33",
+   "title": "Recrutement — offre d'emploi et page carrières",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-34",
+   "title": "Recrutement — pipeline de candidatures",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-35",
+   "title": "Communication — annonce interne et accusés de lecture",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/announcements",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-36",
+   "title": "Notifications — préférences et multi-canal",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/notification-preferences",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-37",
+   "title": "Onboarding — provisioning d'un essai guidé",
+   "probed": 1,
+   "ok": 0,
+   "results": [
+    {
+     "path": "/api/v1/trial/signup",
+     "method": "POST",
+     "status": 422,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-38",
+   "title": "Onboarding — reprise d'un parcours interrompu",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/onboarding-setup/state",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-39",
+   "title": "Catalogue — produits, services et tarifs",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-40",
+   "title": "Recherche — recherche transverse et permissions",
+   "probed": 1,
+   "ok": 0,
+   "results": [
+    {
+     "path": "/api/v1/crm/search",
+     "method": "GET",
+     "status": 422,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-41",
+   "title": "Pages — pages publiques et SEO multilingue",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-42",
+   "title": "Showcase — vitrine publique et bibliothèque",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-43",
+   "title": "Bibliothèque — prêt et retour d'ouvrages",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-44",
+   "title": "Caméras — parc et supervision des flux",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-45",
+   "title": "Caméras — incident et maintenance",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-46",
+   "title": "Flotte — véhicules, affectations et entretien",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-47",
+   "title": "Station-service — index pompes et ventes carburant",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-48",
+   "title": "VTC — course et tarification",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-49",
+   "title": "Livraison — tournée et preuve de livraison",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-50",
+   "title": "Restauration — POS et plan de salle",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-51",
+   "title": "Restauration — KDS et cycle de commande",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-52",
+   "title": "Retail — POS et encaissement",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-53",
+   "title": "Retail — stock et inventaire",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-54",
+   "title": "Hôtellerie — chambres, séjours et housekeeping",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-55",
+   "title": "Pharmacie — stock, ordonnance et profil public",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-56",
+   "title": "Santé — patients, rendez-vous et dossier",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-57",
+   "title": "École — classes, notes et présences",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-58",
+   "title": "École — facturation scolaire et espace parents",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-59",
+   "title": "Agriculture — parcelles, cultures et récoltes",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-60",
+   "title": "Cagnottes — campagne de collecte et dons",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-61",
+   "title": "Cabinet comptable — portefeuille clients",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-62",
+   "title": "Négoce — intention, sous-profil et devis",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-63",
+   "title": "Marque — branding tenant et surfaces publiques",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-64",
+   "title": "Abonnements — plan, essai et facturation",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-65",
+   "title": "Paiements — encaissement et webhooks",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-66",
+   "title": "EdgeSync — file hors-ligne et rejeu idempotent",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-67",
+   "title": "Géolocalisation — preuve de présence",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-68",
+   "title": "API — contrat OpenAPI, webhooks et clés",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-69",
+   "title": "Mobile — build et distribution des applications",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-70",
+   "title": "Desktop — poste de travail et mise à jour",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-71",
+   "title": "Public — fiche commerce (leopardo_public)",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-72",
+   "title": "Plateforme — provisionnement et diagnostic",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-73",
+   "title": "Tenant — isolation par établissement",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-74",
+   "title": "IAM — connexion SSO (SAML / OIDC)",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-75",
+   "title": "RGPD — registre des traitements et droits",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-76",
+   "title": "Performance — objectifs et évaluations",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-77",
+   "title": "Documents — coffre-fort et échéances",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-78",
+   "title": "Workflows — validations multi-niveaux",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-79",
+   "title": "Plateforme — tableau de bord consolidé",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-80",
+   "title": "Support — tickets et impersonation encadrée",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-81",
+   "title": "Finance — métriques d'abonnement et revenus",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-82",
+   "title": "Ops — nœuds Edge et kill switch",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-83",
+   "title": "Marketing OS — publication sociale et statistiques",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-84",
+   "title": "RH — onboarding d'un nouvel employé",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-85",
+   "title": "Marketing OS — campagne, idée et promotion en production",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-86",
+   "title": "Marketing — publication sociale, mode assisté et vitrine publique",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-87",
+   "title": "Négoce — parcours RFQ, devis et acceptation (acheteur / vendeur)",
+   "probed": 0,
+   "ok": 0,
+   "results": []
+  },
+  {
+   "id": "UC-88",
+   "title": "Négoce — coût total rendu, checklist douanière et profil vitrine",
+   "probed": 3,
+   "ok": 0,
+   "results": [
+    {
+     "path": "/api/v1/trade/cost-estimates",
+     "method": "GET",
+     "status": 403,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/trade/customs/checklist",
+     "method": "GET",
+     "status": 403,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/trade/profile",
+     "method": "GET",
+     "status": 403,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-89",
+   "title": "Connecteurs — catalogue, connexion et révocation d'une intégration tierce",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/connectors/catalog",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-90",
+   "title": "Assistant IA — chat, proposition d'action et confirmation",
+   "probed": 2,
+   "ok": 0,
+   "results": [
+    {
+     "path": "/api/v1/ai/chat/history",
+     "method": "GET",
+     "status": 403,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/ai/tools",
+     "method": "GET",
+     "status": 403,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-91",
+   "title": "Contrats — modèle pays, signature et alerte d'expiration",
+   "probed": 3,
+   "ok": 2,
+   "results": [
+    {
+     "path": "/api/v1/contracts",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/contracts/templates",
+     "method": "GET",
+     "status": 422,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/contracts/expiring",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-92",
+   "title": "Audit — journal global, accès aux données sensibles et export",
+   "probed": 2,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/audit-logs",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/audit-logs/export",
+     "method": "GET",
+     "status": 422,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-93",
+   "title": "Exports — employés, pointage, bulletins, absences et rapports RH",
+   "probed": 2,
+   "ok": 2,
+   "results": [
+    {
+     "path": "/api/v1/export/employees",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/export/pay-slips",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-94",
+   "title": "Partenaires — candidature, taux de commission et reversement",
+   "probed": 1,
+   "ok": 0,
+   "results": [
+    {
+     "path": "/api/v1/partners",
+     "method": "GET",
+     "status": 404,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-95",
+   "title": "Formation — cours, sessions et inscriptions",
+   "probed": 2,
+   "ok": 2,
+   "results": [
+    {
+     "path": "/api/v1/training/courses",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    },
+    {
+     "path": "/api/v1/training/sessions",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  },
+  {
+   "id": "UC-96",
+   "title": "Sécurité — double authentification (2FA) et MFA plateforme",
+   "probed": 1,
+   "ok": 1,
+   "results": [
+    {
+     "path": "/api/v1/auth/2fa/status",
+     "method": "GET",
+     "status": 200,
+     "kind": "api"
+    }
+   ]
+  }
+ ]
+}

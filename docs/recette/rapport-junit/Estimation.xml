@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/workspace/leopardo-hr/api/phpunit.xml" tests="10" assertions="33" errors="0" failures="0" skipped="0" time="12.669121">
+    <testsuite name="Estimation" tests="10" assertions="33" errors="0" failures="0" skipped="0" time="12.669121">
+      <testsuite name="Tests\Feature\Estimation\DailySummaryTest" file="Daily Summary (Tests\Feature\Estimation\DailySummary)" tests="4" assertions="13" errors="0" failures="0" skipped="0" time="6.502689">
+        <testcase name="Returns zero for absent day" file="Daily Summary (Tests\Feature\Estimation\DailySummary)::Returns zero for absent day" class="Tests\Feature\Estimation\DailySummaryTest" classname="Tests.Feature.Estimation.DailySummaryTest" assertions="4" time="3.210035"/>
+        <testcase name="Returns daily summary with overtime" file="Daily Summary (Tests\Feature\Estimation\DailySummary)::Returns daily summary with overtime" class="Tests\Feature\Estimation\DailySummaryTest" classname="Tests.Feature.Estimation.DailySummaryTest" assertions="7" time="0.996224"/>
+        <testcase name="Employee cannot view other employee summary" file="Daily Summary (Tests\Feature\Estimation\DailySummary)::Employee cannot view other employee summary" class="Tests\Feature\Estimation\DailySummaryTest" classname="Tests.Feature.Estimation.DailySummaryTest" assertions="1" time="1.358047"/>
+        <testcase name="Manager can view any employee summary" file="Daily Summary (Tests\Feature\Estimation\DailySummary)::Manager can view any employee summary" class="Tests\Feature\Estimation\DailySummaryTest" classname="Tests.Feature.Estimation.DailySummaryTest" assertions="1" time="0.938383"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Estimation\QuickEstimateTest" file="Quick Estimate (Tests\Feature\Estimation\QuickEstimate)" tests="3" assertions="9" errors="0" failures="0" skipped="0" time="3.123589">
+        <testcase name="Manager can get quick estimate with dz deduction" file="Quick Estimate (Tests\Feature\Estimation\QuickEstimate)::Manager can get quick estimate with dz deduction" class="Tests\Feature\Estimation\QuickEstimateTest" classname="Tests.Feature.Estimation.QuickEstimateTest" assertions="5" time="1.020939"/>
+        <testcase name="Employee cannot access quick estimate" file="Quick Estimate (Tests\Feature\Estimation\QuickEstimate)::Employee cannot access quick estimate" class="Tests\Feature\Estimation\QuickEstimateTest" classname="Tests.Feature.Estimation.QuickEstimateTest" assertions="1" time="1.030004"/>
+        <testcase name="Quick estimate rejects periods longer than 365 days" file="Quick Estimate (Tests\Feature\Estimation\QuickEstimate)::Quick estimate rejects periods longer than 365 days" class="Tests\Feature\Estimation\QuickEstimateTest" classname="Tests.Feature.Estimation.QuickEstimateTest" assertions="3" time="1.072647"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Estimation\ReceiptPdfTest" file="Receipt Pdf (Tests\Feature\Estimation\ReceiptPdf)" tests="2" assertions="6" errors="0" failures="0" skipped="0" time="2.111315">
+        <testcase name="Manager can download receipt pdf and contains disclaimer" file="Receipt Pdf (Tests\Feature\Estimation\ReceiptPdf)::Manager can download receipt pdf and contains disclaimer" class="Tests\Feature\Estimation\ReceiptPdfTest" classname="Tests.Feature.Estimation.ReceiptPdfTest" assertions="5" time="1.152712"/>
+        <testcase name="Employee cannot download receipt pdf" file="Receipt Pdf (Tests\Feature\Estimation\ReceiptPdf)::Employee cannot download receipt pdf" class="Tests\Feature\Estimation\ReceiptPdfTest" classname="Tests.Feature.Estimation.ReceiptPdfTest" assertions="1" time="0.958603"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Estimation\TenantIsolationTest" file="Tenant Isolation (Tests\Feature\Estimation\TenantIsolation)" tests="1" assertions="5" errors="0" failures="0" skipped="0" time="0.931527">
+        <testcase name="Manager cannot access foreign tenant estimation endpoints" file="Tenant Isolation (Tests\Feature\Estimation\TenantIsolation)::Manager cannot access foreign tenant estimation endpoints" class="Tests\Feature\Estimation\TenantIsolationTest" classname="Tests.Feature.Estimation.TenantIsolationTest" assertions="5" time="0.931527"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

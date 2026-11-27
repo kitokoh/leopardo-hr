@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-mid">3/5</span></td>
-          <td class="obs">Vérifié sur pièces : <code>GET/POST /employees</code>, <code>GET/PATCH /employees/{employee}</code> déclarés dans <code>api/routes/modules/hr_app.php</code> (lignes 39-42) ; 93 fichiers de tests RH (<code>EmployeeCreatePersistsPasswordHashTest</code>, <code>EmployeesRbacTest</code>, <code>EmployeeDepartureTest</code>, <code>EmployeeDocumentTest</code>). <strong>Écart constaté</strong> : l&#x27;étape 3 documente <code>PUT /api/v1/employees/{id}</code> alors que la route déclarée est <code>PATCH /employees/{employee}</code> — le <code>PUT</code> n&#x27;existe pas (l&#x27;issue #9149 a documenté un 500 sur ce verbe). Note 3 = contournement nécessaire (verbe à corriger dans le cas de test).</td>
+          <td class="center"><span class="note note-bad">2/5</span></td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : échantillon de <strong>285 test(s)</strong> exécuté(s) sur 60 fichier(s) — 2 échec(s)/erreur(s) (statut <code>fail</code>). Sondes HTTP : 3 endpoint(s) appelé(s), 2 en 2xx (<code>GET /api/v1/employees</code> → <strong>200</strong>, <code>GET /api/v1/employees/1</code> → <strong>200</strong>, <code>GET /api/v1/employees/1/archive</code> → <strong>405</strong>). Note 2 = défaillance fonctionnelle sur un critère majeur.</td>
           <td class="center human-cell" data-human-note="UC-07"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-07">GET /employees -&gt; 200 (RH) et POST /employees -&gt; 403 MANAGER_REQUIRED pour un employe : le controle d&#x27;acces est correct sur les deux sens. Creation/modification/archivage non rejoues.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

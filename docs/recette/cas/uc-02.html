@@ -74,8 +74,8 @@
       </thead>
       <tbody>
         <tr>
-          <td class="center"><span class="note note-mid">3/5</span></td>
-          <td class="obs">Vérifié sur pièces : <code>POST /attendance/check-in</code>, <code>POST /attendance/check-out</code>, <code>GET /attendance/today</code> déclarés dans <code>api/routes/modules/rh.php</code> (lignes 137-139) ; 77 fichiers de tests pointage/kiosque présents (<code>tests/Feature/Attendance/*</code>, <code>KioskMultiEventPunchTest</code>, <code>AttendanceServiceTest</code>). API live en <strong>503</strong> : le cycle entrée/sortie n&#x27;a pas été rejoué en HTTP. Note 3 = critère d&#x27;exécution non vérifiable.</td>
+          <td class="center"><span class="note note-bad">2/5</span></td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : échantillon de <strong>291 test(s)</strong> exécuté(s) sur 46 fichier(s) — 1 échec(s)/erreur(s) (statut <code>fail</code>). Sondes HTTP : 4 endpoint(s) appelé(s), 1 en 2xx (<code>POST /api/v1/attendance/check-in</code> → <strong>403</strong>, <code>GET /api/v1/attendance/today</code> → <strong>200</strong>, <code>POST /api/v1/attendance/check-out</code> → <strong>403</strong>, <code>POST /api/v1/auth/login</code> → <strong>422</strong>). Endpoints en 401/403 : accès refusé pour le persona utilisé (RBAC ou feature gate). Note 2 = défaillance fonctionnelle sur un critère majeur.</td>
           <td class="center human-cell" data-human-note="UC-02"><span class="note-badge">3/5</span></td>
           <td class="human-cell" data-human-obs="UC-02">Surface OK (GET /attendance -&gt; 200 en persona employe). Le cycle complet entree/sortie n&#x27;a pas ete rejoue : seule la lecture a ete mesuree.<div class="human-meta muted small">par QA Agent (Teamily) le 2026-11-25</div></td>
         </tr>

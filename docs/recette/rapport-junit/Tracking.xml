@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="/workspace/leopardo-hr/api/phpunit.xml" tests="11" assertions="66" errors="0" failures="0" skipped="0" time="2.151579">
+    <testsuite name="Tracking" tests="11" assertions="66" errors="0" failures="0" skipped="0" time="2.151579">
+      <testsuite name="Tests\Feature\Tracking\FleetSyncCommandTest" file="Fleet Sync Command (Tests\Feature\Tracking\FleetSyncCommand)" tests="5" assertions="43" errors="0" failures="0" skipped="0" time="1.268546">
+        <testcase name="It links devices writes positions and trips then is idempotent" file="Fleet Sync Command (Tests\Feature\Tracking\FleetSyncCommand)::It links devices writes positions and trips then is idempotent" class="Tests\Feature\Tracking\FleetSyncCommandTest" classname="Tests.Feature.Tracking.FleetSyncCommandTest" assertions="20" time="0.459596"/>
+        <testcase name="It bounds the window to 90 days and the pass by limit" file="Fleet Sync Command (Tests\Feature\Tracking\FleetSyncCommand)::It bounds the window to 90 days and the pass by limit" class="Tests\Feature\Tracking\FleetSyncCommandTest" classname="Tests.Feature.Tracking.FleetSyncCommandTest" assertions="7" time="0.195881"/>
+        <testcase name="It never writes for another tenant" file="Fleet Sync Command (Tests\Feature\Tracking\FleetSyncCommand)::It never writes for another tenant" class="Tests\Feature\Tracking\FleetSyncCommandTest" classname="Tests.Feature.Tracking.FleetSyncCommandTest" assertions="5" time="0.231478"/>
+        <testcase name="It is a fail open noop when traccar is not configured" file="Fleet Sync Command (Tests\Feature\Tracking\FleetSyncCommand)::It is a fail open noop when traccar is not configured" class="Tests\Feature\Tracking\FleetSyncCommandTest" classname="Tests.Feature.Tracking.FleetSyncCommandTest" assertions="3" time="0.165405"/>
+        <testcase name="The manual sync positions endpoint now persists positions" file="Fleet Sync Command (Tests\Feature\Tracking\FleetSyncCommand)::The manual sync positions endpoint now persists positions" class="Tests\Feature\Tracking\FleetSyncCommandTest" classname="Tests.Feature.Tracking.FleetSyncCommandTest" assertions="8" time="0.216185"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Tracking\TraccarServiceTest" file="Traccar Service (Tests\Feature\Tracking\TraccarService)" tests="2" assertions="19" errors="0" failures="0" skipped="0" time="0.181220">
+        <testcase name="Device crud and permissions call traccar with bearer token" file="Traccar Service (Tests\Feature\Tracking\TraccarService)::Device crud and permissions call traccar with bearer token" class="Tests\Feature\Tracking\TraccarServiceTest" classname="Tests.Feature.Tracking.TraccarServiceTest" assertions="10" time="0.080755"/>
+        <testcase name="Positions trips and events include iso ranges and fallbacks" file="Traccar Service (Tests\Feature\Tracking\TraccarService)::Positions trips and events include iso ranges and fallbacks" class="Tests\Feature\Tracking\TraccarServiceTest" classname="Tests.Feature.Tracking.TraccarServiceTest" assertions="9" time="0.100465"/>
+      </testsuite>
+      <testsuite name="Tests\Feature\Tracking\TrackingSyncTripsDateRangeTest" file="Tracking Sync Trips Date Range (Tests\Feature\Tracking\TrackingSyncTripsDateRange)" tests="4" assertions="4" errors="0" failures="0" skipped="0" time="0.701812">
+        <testcase name="Rejects from after to" file="Tracking Sync Trips Date Range (Tests\Feature\Tracking\TrackingSyncTripsDateRange)::Rejects from after to" class="Tests\Feature\Tracking\TrackingSyncTripsDateRangeTest" classname="Tests.Feature.Tracking.TrackingSyncTripsDateRangeTest" assertions="1" time="0.197318"/>
+        <testcase name="Rejects future to date" file="Tracking Sync Trips Date Range (Tests\Feature\Tracking\TrackingSyncTripsDateRange)::Rejects future to date" class="Tests\Feature\Tracking\TrackingSyncTripsDateRangeTest" classname="Tests.Feature.Tracking.TrackingSyncTripsDateRangeTest" assertions="1" time="0.137106"/>
+        <testcase name="Rejects range longer than 90 days" file="Tracking Sync Trips Date Range (Tests\Feature\Tracking\TrackingSyncTripsDateRange)::Rejects range longer than 90 days" class="Tests\Feature\Tracking\TrackingSyncTripsDateRangeTest" classname="Tests.Feature.Tracking.TrackingSyncTripsDateRangeTest" assertions="1" time="0.202966"/>
+        <testcase name="Accepts valid range without vehicles" file="Tracking Sync Trips Date Range (Tests\Feature\Tracking\TrackingSyncTripsDateRange)::Accepts valid range without vehicles" class="Tests\Feature\Tracking\TrackingSyncTripsDateRangeTest" classname="Tests.Feature.Tracking.TrackingSyncTripsDateRangeTest" assertions="1" time="0.164422"/>
+      </testsuite>
+    </testsuite>
+  </testsuite>
+</testsuites>

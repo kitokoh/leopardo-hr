@@ -20,6 +20,7 @@
       <a href="../recap.html">Récapitulatif</a>
       <a href="../tests-ia-leopardo-hr.md">Markdown</a>
       <a href="../prompt-agent-testeur.md">Prompt IA</a>
+      <a href="../../marketing/index.html">Scripts marketing</a>
     </nav>
   </div>
 </header>
@@ -74,7 +75,7 @@
       <tbody>
         <tr>
           <td class="center"><span class="note note-mid">3/5</span></td>
-          <td class="obs">Vérifié sur pièces : <code>api/routes/ai.php</code> déclare 26 routes (chat, historique, propositions, confirmation/rejet, outils, exports, voix, analytics) ; 28 fichiers de tests dans <code>tests/Feature/AI/</code> dont <code>AIActionProposalHttpTest</code>, <code>WriteIdempotencyTest</code>, <code>ToolPermissionMatrixTest</code>, <code>AIToolExecutionAuditTest</code>, <code>AiGoldenJourneyTest</code>. API live 503 : le chat n&#x27;a pas été rejoué en HTTP. Note 3 = critère d&#x27;exécution non vérifiable (API 503).</td>
+          <td class="obs"><strong>Exécution réelle</strong> (backend Laravel 12 local, PHP 8.4.28, PostgreSQL 15.20 + PostGIS 3.3, base seedée par <code>DemoCompanySeeder</code>) : échantillon de <strong>6 test(s)</strong> exécuté(s) sur 1 fichier(s) — 0 échec(s)/erreur(s) (statut <code>pass</code>). Sondes HTTP : 2 endpoint(s) appelé(s), 0 en 2xx (<code>GET /api/v1/ai/chat/history</code> → <strong>403</strong>, <code>GET /api/v1/ai/tools</code> → <strong>403</strong>). <strong>Écart constaté</strong> : <code>GET /api/v1/ai/chat/history</code> et <code>GET /api/v1/ai/tools</code> renvoient <strong>403</strong> avec le persona Manager Principal : la verticale IA n&#x27;est pas ouverte à ce rôle sur le tenant de démo. Les 26 routes de <code>api/routes/ai.php</code> existent et 6 tests de proposition d&#x27;action passent, mais le chat n&#x27;a pas pu être rejoué. Note 3 = fonctionne partiellement ou critère non vérifiable.</td>
           <td class="center human-cell" data-human-note="UC-90"><span class="muted">—</span></td>
           <td class="human-cell" data-human-obs="UC-90"><span class="muted">Non renseignée — éditable ci-dessous.</span></td>
         </tr>

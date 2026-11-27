@@ -42,4 +42,4 @@ def patch_file(path: Path, ids):
 
 
 patch_file(HERE / "build_portal.py", ["UC-%02d" % i for i in range(1, 27)])
-patch_file(HERE / "taxonomy_extension.py", ["UC-%02d" % i for i in range(27, 90)])
+patch_file(HERE / "taxonomy_extension.py", ["UC-%02d" % i for i in range(27, 97)])
