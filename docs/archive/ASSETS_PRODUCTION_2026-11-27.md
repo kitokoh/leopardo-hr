@@ -1,3 +1,478 @@
+# Assets production — documents archivés le 2026-11-27
+
+> ⚠️ **NON MAINTENU.** Ces trois documents décrivent le positionnement d'AVANT le
+> repositionnement 2026 : catégorie « Mobile-First Company OS » (périmée depuis #7428),
+> pitch « suite complète », 41 modules en accroche, 6 pays en argument.
+>
+> **Références à jour** : `docs/GOTO_MARKET/REPOSITIONNEMENT_2026.md` (périmètre de
+> lancement) et `docs/GOTO_MARKET/PACK_LANCEMENT/04_PAGE_VENTE_PAIE_POINTAGE_DZ.md`
+> (page de vente du lancement).
+>
+> Archivés pour le budget documentaire (#9981) : leurs décisions sont tranchées dans le
+> repositionnement, et les garder vivants créait une source de vérité concurrente.
+> Conservés ici pour traçabilité uniquement.
+
+---
+
+## 1. LEOPARDO_ONE_PAGER.md (ex `docs/GOTO_MARKET/ASSETS_PRODUCTION/DOCS/`)
+
+# LEOPARDO — Mobile-First Company OS
+## One Pager Commercial
+
+_Ticket: `PA2-STR-002` (Issue #1012). Depend de `PA2-STR-001` (positionnement final, deja livre — voir `docs/GOTO_MARKET/REPOSITIONNEMENT_2026.md`). Ce document remplace la version brouillon precedente (temoignages placeholder, coordonnees fictives, sans pricing chiffre) par une version alignee sur les sources de verite du produit : `docs/dossierdeConception/03_modele_economique/03_MODELE_ECONOMIQUE.md` (plans/prix) et `docs/GOTO_MARKET/REPOSITIONNEMENT_2026.md` (positionnement/objections)._
+
+---
+
+### **L'OS mobile qui fait fonctionner votre entreprise terrain.**
+
+Presence, taches, paie, documents et pilotage RH — dans une seule plateforme mobile-first, pour employes, managers et direction.
+
+---
+
+### **LE PROBLEME**
+
+Les PME terrain (securite, BTP, logistique, nettoyage, restauration, retail, maintenance — 20 a 250 employes) sont coincees entre :
+
+- **Excel et WhatsApp** — pratique au quotidien, mais aucune preuve, aucun audit, aucune vue consolidee.
+- **ERP/SIRH lourds** — penses desktop, deploiement long, hors budget PME.
+- **Outils RH deconnectes du terrain** — pas d'offline, pas de mobile natif, adoption faible par les equipes terrain.
+
+**Resultat concret** : paie contestee, retards non suivis, absences gerees par appel telephonique, direction sans visibilite temps reel sur qui travaille, ou, et sur quoi.
+
+---
+
+### **LA SOLUTION LEOPARDO**
+
+Un **Company OS mobile-first**, deja en production, qui couvre le cycle complet presence → validation → paie :
+
+- **Pointage intelligent** — QR code, biometrie faciale, geolocalisation (mode tolerant : jamais de blocage si le GPS est indisponible), kiosque tablette partage.
+- **Absences et corrections** — demande, validation manager, historique, workflow de correction en cas d'oubli de pointage.
+- **Paie multi-pays** — cycles journalier/hebdomadaire/mensuel configurables, avances sur salaire a double validation (demande → approbation manager → paiement declare → confirmation employe), bulletins PDF generes en asynchrone.
+- **Taches et communication** — assignation d'equipe, annonces entreprise, notifications push/email/SMS avec preferences et heures silencieuses.
+- **Documents** — placard numerique par employe, telechargement mobile.
+- **Multi-tenant et securite** — isolation par entreprise, roles employe/manager/RH/admin plateforme, audit trail sur les operations sensibles (avances, confirmations de paiement).
+
+---
+
+### **PROPOSITION PAR PERSONA**
+
+_(reprise du positionnement final — `02_POSITIONNEMENT_ET_MESSAGING.md`, PA2-STR-001)_
+
+- **Dirigeant** — visibilite quotidienne sur presences, alertes, couts et documents, sans consultant ni fichier Excel.
+- **RH** — moins de relances et de doubles saisies ; les demandes des employes et les validations des managers alimentent directement une paie basee sur des donnees propres.
+- **Manager terrain** — qui est present, qui est en retard, quelle tache est terminee, quelle demande attend une validation.
+- **Employe** — son espace personnel dans la poche : pointage, absences, bulletins, notifications, documents.
+- **Partenaire integrateur (cabinet RH/comptable)** — API documentee, produit multi-tenant, offre standardisable pour plusieurs clients PME.
+
+---
+
+### **OFFRE ET PRICING**
+
+_Source de verite : `docs/dossierdeConception/03_modele_economique/03_MODELE_ECONOMIQUE.md`. Facturation Phase 1 en EUR uniquement ; prix locaux (DZD/MAD/TND) affiches a titre indicatif sur la landing page, facture emise en EUR au taux du jour._
+
+| | **Trial** | **Starter** | **Business** | **Enterprise** |
+|---|---|---|---|---|
+| **Prix mensuel** | Gratuit | 29 EUR | 79 EUR | 199 EUR |
+| **Prix annuel** | — | 290 EUR (-17%) | 790 EUR (-17%) | 1990 EUR (-17%) |
+| **Employes max** | 5 | 20 | 200 | Illimite |
+| **Duree** | 14 jours | — | — | 30 jours d'essai |
+| **Biometrie / photo pointage** | — | — | ✅ | ✅ |
+| **Taches et evaluations** | — | — | ✅ | ✅ |
+| **Rapports avances / export bancaire** | — | Export Excel seul | ✅ | ✅ |
+| **API publique** | — | — | — | ✅ |
+| **Isolation schema dediee** | — | — | — | ✅ |
+
+**Prix indicatifs multi-pays** (a titre d'affichage, facturation reelle en EUR) :
+
+| Plan | EUR | DZD | MAD | TND |
+|---|---|---|---|---|
+| Starter | 29€ | ~4 200 DA | ~315 MAD | ~96 TND |
+| Business | 79€ | ~11 500 DA | ~855 MAD | ~261 TND |
+| Enterprise | 199€ | ~29 000 DA | ~2 150 MAD | ~657 TND |
+
+---
+
+### **ROI — CE QUE LA PME RECUPERE**
+
+_Aligne sur `03_DIRECTION_COMMERCIALE_ET_OFFRES.md` (KPI business et resultat promis)._
+
+- **Moins d'erreurs de paie** — donnees de presence sourcees directement du pointage, pas ressaisies.
+- **Moins de temps perdu en relances** — demandes d'absence et d'avance auto-routees au bon manager.
+- **Meilleure visibilite terrain** — qui travaille, ou, sur quoi, en temps reel plutot qu'en fin de mois.
+- **Onboarding plus rapide** — nouvel employe operationnel via QR/invitation, sans formation lourde.
+- **Conformite et audit** — chaque validation d'avance/paiement laisse une trace horodatee.
+
+**Critere de conversion pilote** (7 jours, methode deja definie) : au moins 70% des employes invites se connectent, au moins 5 jours de donnees de presence, au moins 1 workflow valide de bout en bout, rapport ROI remis au dirigeant.
+
+---
+
+### **CAS D'USAGE PME TERRAIN**
+
+- **Securite / gardiennage multi-sites** — pointage QR par site, verification de presence en temps reel pour la direction, export pour les rondes.
+- **BTP / chantier** — pointage geolocalise sur chantier temporaire, heures supplementaires suivies pour la paie de fin de mois, corrections manuelles tracees en cas d'oubli sur site sans reseau.
+- **Logistique / entrepot** — kiosque partage a l'entree du depot, plusieurs employes pointent sur le meme appareil, alertes manager en cas de pointage hors zone autorisee.
+- **Restauration / retail multi-boutiques** — cycles de paie hebdomadaires, avances sur salaire encadrees par validation manager, annonces d'equipe (changement d'horaire, rappel consignes) en un envoi.
+- **Cabinet RH/comptable multi-clients** — un tenant par client final, meme produit, standardisation de l'onboarding et des exports pour plusieurs PME a la fois.
+
+---
+
+### **OBJECTIONS ET REPONSES**
+
+_Reprise integrale de `02_POSITIONNEMENT_ET_MESSAGING.md` (PA2-STR-001), qui reste la source de verite pour ce contenu._
+
+| Objection | Reponse |
+|---|---|
+| "On a deja Excel/WhatsApp" | Leopardo garde la simplicite du mobile mais ajoute preuve, audit, paie et pilotage. |
+| "Un SIRH est trop lourd" | Leopardo commence par les parcours quotidiens : presence, demandes, validations, documents. |
+| "Nos employes ne sont pas tech" | Le produit est mobile-first, role-based et concu pour limiter la formation. |
+| "Et si internet tombe ?" | Le pointage kiosque et mobile reste utilisable meme sans reseau permanent ; la priorite produit est de ne jamais bloquer l'ecran presence. |
+| "Combien de temps pour demarrer ?" | Objectif commercial : demo en 15 minutes, pilote en 48h, valeur visible en 7 jours. |
+| "Pourquoi pas un ERP existant ?" | Un ERP est concu desktop-first et facture les modules RH/paie a part ; Leopardo est mobile natif et inclut paie + presence + communication dans un seul abonnement. |
+
+---
+
+### **DEMANDEZ UNE DEMONSTRATION**
+
+📧 **Email** : contact@leopardo.com
+🌐 **Site** : www.leopardo.com
+
+_Coordonnees commerciales finales (telephone/WhatsApp direct, liens de demo en ligne) a completer par l'equipe commerciale au moment de la mise en marche — hors scope technique de ce ticket._
+
+---
+
+### **CALL TO ACTION**
+
+**"Essai gratuit 14 jours, sans carte bancaire. Pilote 7 jours avec rapport ROI."**
+
+---
+
+*Leopardo HR — Mobile-First Company OS pour PME terrain.*
+
+---
+
+## 2. LEOPARDO_BROCHURE_PLAN.md (ex `docs/GOTO_MARKET/ASSETS_PRODUCTION/DOCS/`)
+
+# PLAN DE PRODUCTION BROCHURE COMMERCIALE LEOPARDO
+
+## Spécifications
+
+- **Format :** PDF 8-12 pages, A4
+- **Public cible :** PME, usines, agriculture, construction, logistique, sécurité, restauration
+- **Ton :** Professionnel, pragmatique, orienté résultats
+- **Objectif :** Convaincre en moins de 5 minutes
+
+---
+
+## STRUCTURE DE LA BROCHURE
+
+### PAGE 1 — COUVERTURE
+
+**Visuel :** Manager africain/européen utilisant Leopardo sur smartphone, interface dashboard visible  
+**Titre :**  
+```
+L'OS mobile qui fait fonctionner votre entreprise.
+```
+**Sous-titre :**  
+```
+Présence, tâches, paie, documents et workflows dans une seule plateforme.
+```
+**Logo :** Leopardo HR  
+**Tagline :** Mobile-First Company OS
+
+---
+
+### PAGE 2 — LE PROBLÈME
+
+**Titre :**  
+```
+Votre entreprise mérite mieux qu'Excel et WhatsApp.
+```
+
+**Contenu :**
+- ❌ Feuilles de présence perdues ou falsifiées
+- ❌ Calculs de paie manuels et erreurs coûteuses
+- ❌ Absences non suivies, retards non justifiés
+- ❌ Communication éparpillée (WhatsApp, SMS, papier)
+- ❌ ERP trop lourds, trop chers, pas mobiles
+
+**Statistique choc :**  
+*"Les PME perdent en moyenne 12h/mois en gestion administrative manuelle."*
+
+**Visuel :** Collage montrant chaos actuel (feuilles papier, écrans Excel, messages WhatsApp)
+
+---
+
+### PAGE 3 — LA SOLUTION LEOPARDO
+
+**Titre :**  
+```
+Tout votre entreprise dans votre poche.
+```
+
+**Présentation produit :**
+Leopardo est le premier **Company OS Mobile-First** conçu pour les équipes terrain.
+
+**Fonctionnalités clés :**
+- 📍 **Pointage intelligent** — QR Code, biométrie faciale, géolocalisation
+- 📋 **Gestion des absences** — Demandes et validations instantanées
+- ✅ **Tâches & Workflows** — Assignation, suivi, notifications
+- 💰 **Paie automatisée** — Calculs multi-pays, avances, bulletins
+- 📄 **Documents & Kiosque** — Placard numérique, signatures électroniques
+- 📶 **Offline-First** — Fonctionne sans connexion
+
+**Visuel :** Mockup smartphone avec interface Leopardo (dashboard manager)
+
+---
+
+### PAGE 4 — POINTAGE INTELLIGENT
+
+**Titre :**  
+```
+Fini les feuilles de présence. Bonjour la précision.
+```
+
+**Fonctionnalités :**
+- Pointage en 1 clic via smartphone
+- QR Code unique par entreprise
+- Reconnaissance faciale anti-fraude
+- Géolocalisation optionnelle
+- Mode kiosque tablette pour entrée unique
+- Historique complet et exportable
+
+**Bénéfices :**
+- ⏱️ Gain de temps : 80%
+- 🔒 Zéro fraude possible
+- 📊 Données temps réel
+
+**Visuel :** Employé scannant un QR Code + écran de validation
+
+---
+
+### PAGE 5 — GESTION DES ÉQUIPES
+
+**Titre :**  
+```
+Une équipe synchronisée, même sans connexion.
+```
+
+**Fonctionnalités :**
+- Absences : demandes et validations en temps réel
+- Tâches : assignation, priorités, échéances
+- Notifications push instantanées
+- Chat intégré par équipe
+- Tableau de bord manager
+
+**Bénéfices :**
+- 🚀 Réactivité immédiate
+- 📱 100% mobile, offline-first
+- 👥 Collaboration simplifiée
+
+**Visuel :** Notification de validation d'absence + liste de tâches
+
+---
+
+### PAGE 6 — PAIE AUTOMATISÉE
+
+**Titre :**  
+```
+La paie en 2 clics. Sans erreur.
+```
+
+**Fonctionnalités :**
+- Calcul automatique des salaires
+- Primes, heures supplémentaires, retenues
+- Avances sur salaire validées par workflow
+- Bulletins de salaire numériques
+- Export vers systèmes comptables
+- Multi-pays (Afrique, Europe, Turquie, Moyen-Orient)
+
+**Bénéfices :**
+- 💰 Réduction des erreurs de 95%
+- ⏱️ Traitement en minutes vs jours
+- 🌍 Conformité locale garantie
+
+**Visuel :** Bulletin de salaire mobile + écran de validation paie
+
+---
+
+### PAGE 7 — DOCUMENTS & KIOSQUE
+
+**Titre :**  
+```
+Vos documents RH, accessibles partout.
+```
+
+**Fonctionnalités :**
+- Placard numérique (contrats, attestations, règlements)
+- Signature électronique intégrée
+- Kiosque tablette avec reconnaissance faciale
+- Archivage sécurisé et conforme RGPD
+- Accès employé 24/7
+
+**Bénéfices :**
+- 📄 Zéro papier
+- 🔐 Sécurité maximale
+- ✅ Conformité légale
+
+**Visuel :** Tablette en mode kiosque + employé signant un document
+
+---
+
+### PAGE 8 — POURQUOI LEOPARDO ?
+
+**Titre :**  
+```
+La différence qui change tout.
+```
+
+**Tableau comparatif :**
+
+| Critère | Leopardo | ERP Traditionnels | Outils RH |
+|---------|----------|-------------------|-----------|
+| Mobile-First Natif | ✅ Oui | ❌ Non | ⚠️ Adapté |
+| Mode Offline | ✅ Complet | ❌ Aucun | ⚠️ Limité |
+| Onboarding | ✅ 30 secondes | ❌ Jours/semaines | ⚠️ Heures |
+| Paie Incluse | ✅ Oui | ❌ Module payant | ❌ Non |
+| Prix PME | ✅ Abordable | ❌ Cher | ⚠️ Variable |
+| Open Core | ✅ Transparent | ❌ Fermé | ❌ Fermé |
+
+**Visuel :** Infographie comparative
+
+---
+
+### PAGE 9 — TÉMOIGNAGES
+
+**Titre :**  
+```
+Ils ont transformé leur gestion avec Leopardo.
+```
+
+**Témoignage 1 :**  
+*"Leopardo a révolutionné notre gestion de 200 employés sur chantiers. Fini les feuilles perdues et les erreurs de paie."*  
+**— PDG, Entreprise BTP, Sénégal**  
+🏗️ Secteur : Construction | 👥 200 employés
+
+**Témoignage 2 :**  
+*"La paie se fait maintenant en 2 clics. On a gagné 80% de temps administratif."*  
+**— DRH, Chaîne de restaurants, Turquie**  
+🍽️ Secteur : Restauration | 👥 150 employés
+
+**Témoignage 3 :**  
+*"L'onboarding par QR Code est bluffant. Nos équipes agricoles sont opérationnelles en 30 secondes."*  
+**— Directeur, Exploitation agricole, Maroc**  
+🌾 Secteur : Agriculture | 👥 80 employés
+
+**Visuel :** Photos des témoignages (si disponibles) ou icônes secteurs
+
+---
+
+### PAGE 10 — OFFRE DE LANCEMENT
+
+**Titre :**  
+```
+Commencez aujourd'hui. Transformez-vous en 14 jours.
+```
+
+**Offre spéciale lancement :**
+- 🎁 **Essai gratuit 14 jours** — Aucune carte requise
+- 🎁 **Onboarding offert** pour les 50 premières entreprises (valeur 500€)
+- 🎁 **Formation équipe incluse**
+- 🎁 **Support prioritaire 3 mois**
+
+**Plans tarifaires :** *(référer à PRICING.md)*
+- **Gratuit** — Jusqu'à 5 employés
+- **Starter** — 5-50 employés
+- **Business** — 50-250 employés
+- **Enterprise** — 250+ employés, personnalisé
+
+**Visuel :** Badge "Offre de lancement" + captures des plans
+
+---
+
+### PAGE 11 — PROGRAMME PARTENAIRE
+
+**Titre :**  
+```
+Devenez partenaire Leopardo.
+```
+
+**Cibles :**
+- Agences marketing digital
+- SSII et intégrateurs
+- Consultants RH
+- Cabinets comptables
+- Fournisseurs de logiciels
+
+**Avantages :**
+- 💰 **25% de commission récurrente** sur les abonnements
+- 🎓 Formation et certification offerte
+- 📦 Kit marketing complet (brochures, vidéos, démos)
+- 🤝 Support technique dédié
+- 🌟 Visibilité sur notre annuaire partenaires
+
+**Visuel :** Icônes partenaires + graphique commission
+
+---
+
+### PAGE 12 — CONTACT & CTA
+
+**Titre :**  
+```
+Prêt à transformer votre entreprise ?
+```
+
+**Call to Action :**
+👉 **Demandez votre démonstration gratuite**
+
+**Coordonnées :**
+- 📧 Email : contact@leopardo.com
+- 🌐 Site : www.leopardo.com
+- 📱 WhatsApp : +XX XXX XXX XXXX
+- 📍 Siège : [Adresse]
+
+**QR Codes :**
+- QR Code 1 → Démo live
+- QR Code 2 → Essai gratuit 14 jours
+- QR Code 3 → Programme partenaire
+
+**Réseaux sociaux :**
+- LinkedIn : @LeopardoHR
+- Twitter : @LeopardoHQ
+- Facebook : /LeopardoCompanyOS
+
+**Footer :**  
+*Leopardo HR — Le Système d'Exploitation Mobile de votre Entreprise*  
+© 2025 Leopardo. Tous droits réservés. | RGPD Compliant | ISO 27001
+
+---
+
+## INSTRUCTIONS GRAPHIQUES
+
+### Charte visuelle
+- **Couleurs principales :** Bleu nuit (#1a365d), Blanc, Accent orange (#ed8936)
+- **Typographie :** Inter (titres), Roboto (corps)
+- **Style :** Premium, épuré, style Apple/Stripe
+- **Images :** Photos authentiques de professionnels africains/européens, interfaces mockup haute qualité
+
+### Format de sortie
+- PDF haute résolution (300 DPI)
+- Version web optimisée (72 DPI)
+- Fichier source modifiable (Figma/Canva/InDesign)
+
+---
+
+## PROCHAINES ÉTAPES
+
+1. ✅ Valider le contenu texte (ce document)
+2. 🎨 Créer maquettes graphiques (Figma)
+3. 📸 Produire/sélectionner visuels
+4. 🖨️ Générer PDF final
+5. 📤 Diffuser aux équipes commerciales
+
+---
+
+## 3. LANDING_PAGE_SPEC.md (ex `docs/GOTO_MARKET/ASSETS_PRODUCTION/DOCS/`)
+
 # PLAN DE PRODUCTION LANDING PAGE — LEOPARDO HR
 
 ## Spécifications complètes pour site web de lancement
