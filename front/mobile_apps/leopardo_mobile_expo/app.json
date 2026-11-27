@@ -1,0 +1,61 @@
+{
+  "expo": {
+    "name": "Leopardo RH",
+    "slug": "leopardo-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "leopardo",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B1220"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.leopardo.mobile",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Le scan de QR code sert a l'onboarding des employes.",
+        "NSLocationWhenInUseUsageDescription": "La position est utilisee pour le pointage geolocalise."
+      }
+    },
+    "android": {
+      "package": "com.leopardo.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0B1220"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "CAMERA"
+      ],
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "La position est utilisee pour le pointage geolocalise."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Le scan de QR code sert a l'onboarding des employes."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "REMPLACER_PAR_VOTRE_PROJECT_ID"
+      }
+    }
+  }
+}
