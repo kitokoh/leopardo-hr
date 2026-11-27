@@ -955,6 +955,180 @@
           "text": "Full film in bio"
         }
       ]
+    },
+    "VID-33": {
+      "title": "Delivery: the route, the proof, the tracking",
+      "objective": "Show the Delivery module (BC-26): routes and stops, proof of delivery (POD), recipient tracking, and cash-on-delivery (COD) settlements reconciled with accounting.",
+      "hook": "A parcel delivered without proof is a dispute waiting to happen.",
+      "cta": "Activate the Delivery module from the product site, at no pack cost.",
+      "audience": "Carriers, delivery agencies, e-commerce sellers, restaurants that deliver",
+      "beats": [
+        {
+          "vo": "A parcel delivered without proof is a dispute waiting to happen.",
+          "text": "Delivered, or not?"
+        },
+        {
+          "vo": "The Delivery module organises the route: pickups, stops, order of passage, and the status of every stop.",
+          "text": "Route & stops"
+        },
+        {
+          "vo": "At every stop, a proof of delivery: photo, signature, timestamp. The parcel has a trace, not a promise.",
+          "text": "Proof of delivery (POD)"
+        },
+        {
+          "vo": "The recipient follows the delivery through a shared tracking link, and can opt out of notifications.",
+          "text": "Recipient tracking & opt-out"
+        },
+        {
+          "vo": "Cash-on-delivery settlements reconcile with accounting. The Delivery module is included: you pay for the platform, not the sector.",
+          "text": "COD settlements - module included"
+        }
+      ]
+    },
+    "VID-34": {
+      "title": "Library: the catalogue, the access, the reading",
+      "objective": "Show the Library module: a catalogue of digital resources (books, ebooks, guides, manuals, reports, articles), access models, per-unit purchase, reading progress and semantic search.",
+      "hook": "A resource catalogue that lives in a spreadsheet always ends up lying.",
+      "cta": "Activate the Library module from the product site, at no pack cost.",
+      "audience": "Training institutions, companies, organisations that publish resources",
+      "beats": [
+        {
+          "vo": "A resource catalogue that lives in a spreadsheet always ends up lying.",
+          "text": "The catalogue that drifts."
+        },
+        {
+          "vo": "The Library holds the catalogue: books, ebooks, guides, manuals, reports, articles, sorted by category and collection.",
+          "text": "Catalogue & collections"
+        },
+        {
+          "vo": "Every resource has its access model: free, read-only, per-unit purchase, included in a subscription, or private to your organisation.",
+          "text": "Free - read-only - purchase - subscription - private"
+        },
+        {
+          "vo": "The reader picks up where they left off: reading progress is saved, resource by resource.",
+          "text": "Resume where you left off"
+        },
+        {
+          "vo": "Search finds a resource by its meaning, not only by its title. The Library is included: you pay for the platform, not the sector.",
+          "text": "Search by meaning - module included"
+        }
+      ]
+    },
+    "VID-35": {
+      "title": "Fleet & cameras: what rolls, what films",
+      "objective": "Show the Fleet and Cameras modules: vehicles and assignments, due dates (insurance, roadworthiness) and alerts, supervised IP cameras with time-limited logged access, and deduplicated alerts.",
+      "hook": "A vehicle that breaks down is a route that stops. A silent camera is a doubt that lingers.",
+      "cta": "Activate the Fleet and Cameras modules from the product site, at no pack cost.",
+      "audience": "Companies with a vehicle fleet, sites to supervise, fleet managers",
+      "beats": [
+        {
+          "vo": "A vehicle that breaks down is a route that stops. A silent camera is a doubt that lingers.",
+          "text": "What must roll. What must film."
+        },
+        {
+          "vo": "Fleet holds every vehicle: plate number, brand, mileage, assignment to a driver and a site.",
+          "text": "Vehicles & assignments"
+        },
+        {
+          "vo": "Insurance and roadworthiness have a due date. The system lists vehicles coming due and raises an alert before the date.",
+          "text": "Due dates & alerts"
+        },
+        {
+          "vo": "IP cameras are declared, supervised and viewed through a time-limited access link. Every access is logged.",
+          "text": "Cameras & logged access"
+        },
+        {
+          "vo": "Camera alerts are deduplicated: a burst of motion produces a single alert. Fleet and Cameras are included: you pay for the platform, not the sector.",
+          "text": "Deduplicated alerts - modules included"
+        }
+      ]
+    },
+    "VID-36": {
+      "title": "Retail: the till, the stock, the online shop",
+      "objective": "Show the Retail module (BC-17): POS till with session and close-out, stock held by traced movements, online orders and the Leopardo Marche marketplace, sales reports.",
+      "hook": "The till says one thing, the stock another. At month end, nobody knows which is right.",
+      "cta": "Activate the Retail pack from the product site, at no pack cost.",
+      "audience": "Shopkeepers, stores, convenience stores, e-commerce sellers, point-of-sale managers",
+      "beats": [
+        {
+          "vo": "The till says one thing, the stock another. At month end, nobody knows which is right.",
+          "text": "Two numbers. No agreement."
+        },
+        {
+          "vo": "The till opens a session, takes payment, prints the receipt, and closes on a calculated variance. Not a variance you tell a story about.",
+          "text": "Session, payment, close-out"
+        },
+        {
+          "vo": "Every sale decrements stock. Every receipt, every loss, every transfer leaves a traced movement: stock can never go negative.",
+          "text": "Stock held by movements"
+        },
+        {
+          "vo": "The online shop sells the same catalogue, and the Leopardo Marche marketplace only exposes sellers who have opted in.",
+          "text": "Online shop & marketplace"
+        },
+        {
+          "vo": "Today's sales, best-selling products, till variance, stock value: reports are computed server-side. Retail is included: you pay for the platform, not the sector.",
+          "text": "Reports - module included"
+        }
+      ]
+    },
+    "VID-37": {
+      "title": "Solidarity fundraisers: the link, the donation, the payout",
+      "objective": "Show the Fundraising module: a fundraiser published through a short link, card and mobile money contributions, collection tracking, payout to the beneficiary.",
+      "hook": "A collection that lives in a notebook and a phone, nobody can verify it.",
+      "cta": "Activate the Solidarity Fundraisers pack from the product site, at no pack cost.",
+      "audience": "Associations, NGOs, mutuals, schools, civic-minded companies, community groups",
+      "beats": [
+        {
+          "vo": "A collection that lives in a notebook and a phone, nobody can verify it.",
+          "text": "Who gave what?"
+        },
+        {
+          "vo": "The fundraiser is published through a short link. You share it on WhatsApp, on social media, or as a QR code. Giving needs no account.",
+          "text": "One link, one donation page"
+        },
+        {
+          "vo": "Contributions arrive by bank card or mobile money. The amount is bounded by the fundraiser, and the donation can stay anonymous.",
+          "text": "Card & mobile money"
+        },
+        {
+          "vo": "The collection is tracked live: amount raised, number of contributions, supporters wall. The owner also confirms cash or bank-transfer donations.",
+          "text": "Live tracking"
+        },
+        {
+          "vo": "The balance is paid out to the beneficiary, by mobile money or bank transfer, with a trace of every step. The Solidarity Fundraisers pack is included.",
+          "text": "Traced payout - pack included"
+        }
+      ]
+    },
+    "VID-38": {
+      "title": "Accounting firm: the file, the share, the export",
+      "objective": "Show the accounting firm's journey: accounting documents shared through a time-limited link, entries and lettering, standardised FEC export, fiscal year close.",
+      "hook": "Every client has their own export format. Every month end starts with a hunt for documents.",
+      "cta": "Request a 20-minute accounting demo.",
+      "audience": "Chartered accountants, partner firms, CFOs, finance and admin managers",
+      "beats": [
+        {
+          "vo": "Every client has their own export format. Every month end starts with a hunt for documents.",
+          "text": "The month starts with a document hunt."
+        },
+        {
+          "vo": "Accounting documents are shared through a time-limited link. The recipient opens the document, and nothing else.",
+          "text": "Time-limited sharing"
+        },
+        {
+          "vo": "Invoices, credit notes, quotes, delivery notes: every document has its status, from draft to paid, with its payments attached.",
+          "text": "Documents & statuses"
+        },
+        {
+          "vo": "Entries are lettered inside the tool, with a trace of who reconciled what. The FEC export comes out in the format the firm expects.",
+          "text": "Lettering & FEC export"
+        },
+        {
+          "vo": "The fiscal year closes when the accounts are ready, not when the date forces it. Leopardo, for the firm and its client, in the same tool.",
+          "text": "Controlled close"
+        }
+      ]
     }
   }
 }

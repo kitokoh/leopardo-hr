@@ -1,6 +1,6 @@
 # Scripts marketing — leopardo-hr
 
-_32 scripts video, 5 categories. Source de verite : `docs/marketing/scripts-video.json`._
+_38 scripts video, 5 categories. Source de verite : `docs/marketing/scripts-video.json`._
 
 ## Calendrier de tournage
 
@@ -260,13 +260,13 @@ Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hot
 | 0:08-0:22 | Le pack Hospitality gere vos etablissements et leur inventaire : chambres, equipements, etats. | Capture etablissements, inventaire, etat d'une chambre. | Etablissements & inventaire |
 | 0:22-0:36 | Les reservations se posent sur l'inventaire reel, pas sur un tableur parallele. | Capture planning de reservations. | Reservations |
 | 0:36-0:48 | Pour la location longue duree, les baux et les loyers sont suivis dans le meme outil. | Capture bail, echeancier de loyers. | Baux & loyers |
-| 0:48-1:00 | Et le menage, la maintenance et les equipes remontent dans le meme systeme. | CTA. | Pack offert |
+| 0:48-1:00 | Et les equipements, la maintenance et les equipes remontent dans le meme systeme. | CTA. | Pack offert |
 
 **CTA :** Activer le pack HospitalityManager.
 
 **Son :** Piano, ambiance calme, 90 BPM.
 
-**Notes :** Le RBAC de cette verticale est documente dans docs/hospitality/DONNEES_RBAC.md : utile pour un film dedie aux profils, pas ici.
+**Notes :** Le RBAC de cette verticale est documente dans docs/hospitality/DONNEES_RBAC.md : utile pour un film dedie aux profils, pas ici. Le module HospitalityManager ne gere AUCUN menage ni housekeeping (verifie le 2026-11-27 : aucun modele, service ni route de menage) : ne jamais filmer de valet de chambre, de checklist de nettoyage ni de statut « chambre prete ». Les etats d'unite sont disponible, occupee, en maintenance, hors service.
 
 ### VID-09 — Sante : patients, rendez-vous, hospitalisations, facturation des soins
 
@@ -390,6 +390,132 @@ Un film par pack metier activable : restaurant, agence de voyage, pharmacie, hot
 **Son :** Percussions seches et nappe synthetique, 105 BPM, tension commerciale.
 
 **Notes :** Chiffres verifies dans le depot au 2026-11-26 : 54 routes (api/routes/modules/trade.php), 29 chemins OpenAPI /trade/, 19 tables tenant (14 migrations). Garde anti-surpromesse (public-promises-guard.yml) : dire « aide a la preparation documentaire » et « estimation indicative », jamais « dedouanement automatique », « taux officiels » ni « fournisseurs verifies ». L'IA ne fixe ni taux ni prix.
+
+### VID-33 — Livraison : la tournee, la preuve, le suivi
+
+- **Format :** 16:9 · **Duree :** 60 s · **Audience :** Transporteurs, agences de livraison, e-commercants, restaurants qui livrent
+- **Statut de production :** A ecrire
+- **Objectif :** Montrer le module Delivery (BC-26) : tournees et arrets, preuve de livraison (POD), suivi destinataire, encaissements a la livraison (COD) reconcilies avec la comptabilite.
+- **Hook :** « Un colis livre sans preuve, c'est une contestation qui commence. »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:08 | Un colis livre sans preuve, c'est une contestation qui commence. | Livreur devant une porte close, un carton a la main, personne pour signer. | Livre, ou pas livre ? |
+| 0:08-0:22 | Le module Livraison organise la tournee : enlevements, arrets, ordre de passage, et le statut de chaque arret. | Capture tournee : liste des arrets, statut par arret (en route, arrive, livre, echoue, saute). | Tournee & arrets |
+| 0:22-0:36 | A chaque arret, une preuve de livraison : photo, signature, horodatage. Le colis a une trace, pas une promesse. | Capture preuve de livraison : photo, signature du destinataire, horodatage. | Preuve de livraison (POD) |
+| 0:36-0:50 | Le destinataire suit sa livraison par un lien de suivi partage, et peut se desinscrire des notifications. | Capture lien de suivi cote destinataire, puis reglage d'opt-out des notifications. | Suivi destinataire & opt-out |
+| 0:50-1:00 | Les encaissements a la livraison se reconcilient avec la comptabilite. Le module Livraison est offert : vous payez la plateforme, pas le secteur. | Capture reconciliation des encaissements COD, puis CTA et logo. | Encaissements COD - module offert |
+
+**CTA :** Activer le module Livraison depuis le site produit, sans frais de pack.
+
+**Son :** Percussions regulieres, tempo de tournee, 110 BPM.
+
+**Notes :** Module Delivery (BC-26, api/app/Modules/Delivery) : cycle de vie verrouille par DeliveryStateMachine (created -> assigned -> picked_up -> out_for_delivery -> arrived -> delivered | failed -> returned | cancelled ; etats terminaux non rouvrables). Statuts d'arret : pending, en_route, arrived, delivered, failed, skipped. Preuve de livraison = documents ; encaissements COD = comptabilite. Ne pas afficher de delai ni de taux de reussite chiffre : le produit ne les invente pas.
+
+### VID-34 — Bibliotheque : le catalogue, l'acces, la lecture
+
+- **Format :** 16:9 · **Duree :** 60 s · **Audience :** Etablissements de formation, entreprises, organisations qui diffusent des ressources
+- **Statut de production :** A ecrire
+- **Objectif :** Montrer le module Library : catalogue de ressources numeriques (livres, ebooks, guides, manuels, rapports, articles), modeles d'acces, achat a l'unite, progression de lecture et recherche par le sens.
+- **Hook :** « Un catalogue de ressources qui vit dans un tableur finit toujours par mentir. »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:08 | Un catalogue de ressources qui vit dans un tableur finit toujours par mentir. | Bureau encombre de catalogues papier et d'un tableur ouvert. | Le catalogue qui deraille. |
+| 0:08-0:22 | La Bibliotheque tient le catalogue : livres, ebooks, guides, manuels, rapports, articles, ranges par categorie et par collection. | Capture catalogue : liste des ressources, filtres par type et par categorie, fiche ressource. | Catalogue & collections |
+| 0:22-0:36 | Chaque ressource a son modele d'acces : libre, lecture seule, achat a l'unite, inclus dans un abonnement, ou prive a votre organisation. | Capture fiche ressource : modele d'acces, prix, bouton de lecture ou d'achat. | Libre - lecture seule - achat - abonnement - prive |
+| 0:36-0:50 | Le lecteur reprend ou il s'est arrete : la progression de lecture est enregistree, ressource par ressource. | Capture lecteur en ligne, barre de progression reprise a la derniere page. | Reprendre ou on s'est arrete |
+| 0:50-1:00 | La recherche retrouve une ressource par son sens, pas seulement par son titre. La Bibliotheque est offerte : vous payez la plateforme, pas le secteur. | Capture recherche semantique, puis CTA et logo. | Recherche par le sens - module offert |
+
+**CTA :** Activer le module Bibliotheque depuis le site produit, sans frais de pack.
+
+**Son :** Nappe douce, piano discret, 90 BPM.
+
+**Notes :** Module Library (api/app/Modules/Library) : types de document book, ebook, guide, manual, report, article ; modeles d'acces free, read_only, purchase, subscription, private (LibraryAccessModel). L'achat a l'unite reutilise le paiement Leopardo. La recherche est semantique (LibrarySemanticScorer). Ne pas promettre de pret physique ni de gestion d'emprunteurs : le module gere des ressources numeriques, pas des ouvrages papier.
+
+### VID-35 — Flotte & cameras : ce qui roule, ce qui filme
+
+- **Format :** 16:9 · **Duree :** 60 s · **Audience :** Entreprises avec parc de vehicules, sites a superviser, gestionnaires de flotte
+- **Statut de production :** A ecrire
+- **Objectif :** Montrer les modules Fleet et Cameras : vehicules et affectations, echeances (assurance, controle technique) et alertes, cameras IP supervisees avec acces a duree limitee et journalise, alertes dedupliquees.
+- **Hook :** « Un vehicule qui tombe en panne, c'est une tournee qui s'arrete. Une camera muette, c'est un doute qui reste. »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:08 | Un vehicule qui tombe en panne, c'est une tournee qui s'arrete. Une camera muette, c'est un doute qui reste. | Vehicule au bord de la route, puis ecran de supervision qui affiche une camera hors ligne. | Ce qui doit rouler. Ce qui doit filmer. |
+| 0:08-0:22 | La Flotte tient chaque vehicule : immatriculation, marque, kilometrage, affectation a un chauffeur et a un site. | Capture liste des vehicules, fiche vehicule, affectation chauffeur. | Vehicules & affectations |
+| 0:22-0:36 | Assurance et controle technique ont une echeance. Le systeme liste les vehicules a echeance et leve une alerte avant la date. | Capture echeances (assurance, controle technique), liste des vehicules a echeance, alerte. | Echeances & alertes |
+| 0:36-0:50 | Les cameras IP se declarent, se supervisent et se consultent par un lien d'acces a duree limitee. Chaque acces est journalise. | Capture supervision cameras, lien d'acces temporaire, journal des acces. | Cameras & acces trace |
+| 0:50-1:00 | Les alertes camera se dedupliquent : une rafale de mouvement ne produit qu'une alerte. Flotte et Cameras sont offerts : vous payez la plateforme, pas le secteur. | Capture alerte camera (mouvement, personne, vehicule, franchissement, sabotage), puis CTA et logo. | Alertes dedupliquees - modules offerts |
+
+**CTA :** Activer les modules Flotte et Cameras depuis le site produit, sans frais de pack.
+
+**Son :** Basse reguliere, nappe tendue, 100 BPM.
+
+**Notes :** Modules Fleet (api/app/Modules/Fleet) et Cameras (api/app/Modules/Cameras). Fleet : Vehicle (immatriculation, marque, kilometrage, assurance, controle technique, affectation chauffeur/site), VehicleAlert, VehicleMaintenance, VehicleTrip. Cameras : Camera (rtsp_url chiffre en base), CameraAccessToken (lien a duree limitee), CameraAccessLog (journal des acces), CameraAlert (types motion, person, vehicle, line_crossing, tamper ; severites info, warning, high, critical ; cycle open -> acknowledged -> resolved ; dedupliquee par alert_key unique par tenant). Ne pas afficher de flux video reel d'un site client : utiliser un flux de demonstration.
+
+### VID-36 — Retail : la caisse, le stock, la boutique en ligne
+
+- **Format :** 16:9 · **Duree :** 60 s · **Audience :** Commercants, boutiques, superettes, e-commercants, gerants de point de vente
+- **Statut de production :** A ecrire
+- **Objectif :** Montrer le module Retail (BC-17) : caisse POS avec session et cloture, stock tenu par mouvements traces, commandes en ligne et marketplace Leopardo Marche, rapports de vente.
+- **Hook :** « La caisse dit une chose, le stock une autre. A la fin du mois, personne ne sait qui a raison. »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:08 | La caisse dit une chose, le stock une autre. A la fin du mois, personne ne sait qui a raison. | Comptoir de boutique : un ticket imprime d'un cote, un cahier de stock de l'autre, deux chiffres qui ne se parlent pas. | Deux chiffres. Aucun accord. |
+| 0:08-0:22 | La caisse ouvre une session, encaisse, imprime le ticket, et ferme sur un ecart calcule. Pas un ecart raconte. | Capture POS : ouverture de session, encaissement multi-moyens (especes, carte, mobile), ticket, ecran de cloture avec attendu / compte / ecart. | Session, encaissement, cloture |
+| 0:22-0:36 | Chaque vente decremente le stock. Chaque entree, chaque perte, chaque transfert laisse un mouvement trace : le stock ne peut pas devenir negatif. | Capture stock : niveau par emplacement, journal des mouvements (achat, vente, ajustement, retour, transfert, perte), valorisation au cout moyen pondere. | Stock tenu par mouvements |
+| 0:36-0:50 | La boutique en ligne vend le meme catalogue, et la marketplace Leopardo Marche n'expose que les vendeurs qui l'ont activee. | Capture commande en ligne (statut de preparation : en attente, confirmee, prete, expediee, livree), puis fiche produit publique sur la marketplace. | Boutique en ligne & marketplace |
+| 0:50-1:00 | Ventes du jour, produits les plus vendus, ecart de caisse, valeur du stock : les rapports se calculent cote serveur. Retail est offert : vous payez la plateforme, pas le secteur. | Capture rapports (ventes, top produits, clotures de caisse, valorisation du stock), puis CTA et logo. | Rapports - module offert |
+
+**CTA :** Activer le pack Retail depuis le site produit, sans frais de pack.
+
+**Son :** Percussions seches, tempo de comptoir, 108 BPM.
+
+**Notes :** Module Retail (BC-17, api/app/Modules/Retail). POS : RetailPosSession (statut open/closed, une seule session ouverte par emplacement), RetailOrder (source pos/online, statut draft/completed/cancelled), RetailPaymentMethod (cash, card, mobile, online), RetailPosRefund. Stock : RetailStockService est le point d'ecriture UNIQUE, chaque mouvement est un RetailInventoryMovement (reason_code purchase, sale, adjustment, return, transfer_in, transfer_out, loss) ; le stock n'est JAMAIS negatif ; cout moyen pondere (avg_cost_minor) alimente par les entrees. En ligne : RetailFulfillmentStatus (pending, confirmed, ready, shipped, delivered, cancelled), checkout invite avec cle d'idempotence. Marketplace : RetailMarketplaceService agrege uniquement les vendeurs opt-in (boutique activee + feature retail + company valide) ; aucune quantite de stock n'est exposee publiquement, seulement available: bool. Rapports : RetailReportService (ventes, top produits, clotures de caisse, valorisation du stock avec cost_source average|catalog). Ne pas afficher de chiffre de vente, de marge ni de taux : le produit ne les invente pas.
+
+### VID-37 — Cagnottes solidaires : le lien, le don, le reversement
+
+- **Format :** 16:9 · **Duree :** 60 s · **Audience :** Associations, ONG, mutuelles, ecoles, entreprises citoyennes, collectifs
+- **Statut de production :** A ecrire
+- **Objectif :** Montrer le module Fundraising : cagnotte publiee par lien court, contributions par carte et mobile money, suivi de la collecte, reversement au beneficiaire.
+- **Hook :** « Une collecte qui vit dans un carnet et un telephone, personne ne peut la verifier. »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:08 | Une collecte qui vit dans un carnet et un telephone, personne ne peut la verifier. | Table de collecte : un carnet de dons manuscrit, un telephone qui sonne, une liste de noms a moitie remplie. | Qui a donne quoi ? |
+| 0:08-0:22 | La cagnotte se publie par un lien court. On le partage sur WhatsApp, sur les reseaux, ou par un QR code. Donner ne demande aucun compte. | Capture cagnotte : creation, publication, lien public court, page de don avec montants suggeres. | Un lien, une page de don |
+| 0:22-0:36 | Les contributions arrivent par carte bancaire ou par mobile money. Le montant est borne par la cagnotte, et le don peut rester anonyme. | Capture contribution : choix du montant, choix du moyen (carte, mobile money), option anonyme, message de soutien. | Carte & mobile money |
+| 0:36-0:50 | La collecte se suit en direct : montant atteint, nombre de contributions, mur des soutiens. Le responsable confirme aussi les dons en especes ou par virement. | Capture suivi : jauge de collecte, compteur de contributions, mur des soutiens, puis confirmation d'une contribution manuelle. | Suivi en direct |
+| 0:50-1:00 | Le solde se reverse au beneficiaire, par mobile money ou par virement, avec une trace de chaque etape. Le pack Cagnottes solidaires est offert. | Capture reversement : demande, traitement, statut paye, journal des etapes, puis CTA et logo. | Reversement trace - pack offert |
+
+**CTA :** Activer le pack Cagnottes solidaires depuis le site produit, sans frais de pack.
+
+**Son :** Nappe chaleureuse, cordes discretes, 92 BPM.
+
+**Notes :** Module Fundraising (api/app/Modules/Fundraising, spec docs/specifications/SOLUTION_FUNDRAISING.md). Cagnotte : Fundraiser (slug public stable, categorie medical/education/emergency/community/project/other, objectif, montants suggeres, fenetre de collecte starts_at..ends_at, statut draft/active/paused/completed/closed/cancelled). Contributions : ContributionMethod (card, mobile_money, bank_transfer, cash), ContributionStatus (pending, completed, failed, refunded) ; passerelles Stripe (carte), CinetPay / PayDunya / Pvit (mobile money), et confirmation manuelle des especes / virements par le responsable. Reversements : FundraisingPayout (method mobile_money ou bank_transfer, statut requested/processing/paid/failed/cancelled). Reglages : methodes activees, montants min/max, anonymat, messages, affichage des soutiens. IMPORTANT : le recu fiscal automatique n'existe pas encore (mentionne 'recu phase 2' dans le code) : ne jamais promettre que les recus partent seuls. Ne pas afficher de montant collecte reel ni de nombre de donateurs : donnees de demonstration uniquement.
+
+### VID-38 — Cabinet comptable : le dossier, le partage, l'export
+
+- **Format :** 16:9 · **Duree :** 60 s · **Audience :** Experts-comptables, cabinets partenaires, DAF, responsables administratifs et financiers
+- **Statut de production :** A ecrire
+- **Objectif :** Montrer le parcours du cabinet : documents comptables partages par lien a duree limitee, ecritures et lettrage, export FEC normalise, cloture d'exercice.
+- **Hook :** « Chaque client a son format d'export. Chaque fin de mois recommence par une chasse aux pieces. »
+
+| Temps | Voix off | Plan | Texte a l'ecran |
+|---|---|---|---|
+| 0:00-0:08 | Chaque client a son format d'export. Chaque fin de mois recommence par une chasse aux pieces. | Bureau d'expert-comptable : plusieurs dossiers papier empiles, une boite mail ouverte, des pieces jointes en desordre. | Le mois recommence par la chasse aux pieces. |
+| 0:08-0:22 | Les documents comptables se partagent par un lien a duree limitee. Le destinataire ouvre le document, et rien d'autre. | Capture partage : choix du document, destinataire, duree d'expiration, lien genere, portail public de consultation. | Partage a duree limitee |
+| 0:22-0:36 | Factures, avoirs, devis, bons de livraison : chaque piece a son statut, du brouillon au paiement, avec les reglements rattaches. | Capture documents : liste des pieces par type, statut (brouillon, envoye, partiellement paye, paye, en retard), reglements. | Pieces & statuts |
+| 0:36-0:50 | Les ecritures se lettrent dans l'outil, avec une trace de qui a rapproche quoi. L'export FEC sort dans le format attendu par le cabinet. | Capture lettrage (rapprochement des ecritures, trace), puis export FEC de la periode. | Lettrage & export FEC |
+| 0:50-1:00 | L'exercice se cloture quand les comptes sont prets, pas quand la date l'impose. Leopardo, pour le cabinet et son client, dans le meme outil. | Capture cloture d'exercice et periode verrouillee, puis CTA et logo. | Cloture maitrisee |
+
+**CTA :** Demander une demo comptabilite de 20 minutes.
+
+**Son :** Neutre, precis, metronomique, 96 BPM.
+
+**Notes :** Le parcours cabinet s'appuie sur le module Accounting (api/app/Modules/Accounting), PAS sur le module Cabinet (api/app/Modules/Cabinet) : ce dernier est un placard personnel de documents (dossiers, upload, partage par token), pas un outil d'expertise comptable. Accounting : AccountingDocument (DocumentType invoice, proforma, quote, credit_note, delivery_note, receipt, purchase_invoice, purchase_credit_note ; DocumentStatus draft, sent, partially_paid, paid, cancelled, overdue), AccountingJournal (JournalType sale, purchase, bank, cash, payroll, misc, opening), lettrage (LetteringService, erreurs LETTERING_UNBALANCED / LETTERING_INVALID / LETTERING_ALREADY_USED), export FEC (norme DGFiP, 13 colonnes CSV UTF-8, nom de fichier SIRENFECAAAAMMJJ pour un tenant francais), AccountingFiscalYear et AccountingClosedPeriod (cloture d'exercice, periode verrouillee), partage de document par token (DocumentShareService, TTL par defaut 14 jours, borne 1 a 365 jours). Le role 'comptable' existe dans le RBAC (manager_role). Ne pas afficher de montants reels ni de taux : ils dependent du pays et de l'annee. Le FEC est un format francais : preciser le pays si le film est diffuse hors France.
 
 ## 👥 Profils utilisateurs
 

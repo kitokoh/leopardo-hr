@@ -133,7 +133,7 @@ Pourquoi une suite metier plutot qu'un SaaS RH de plus
 
 ```
 1. Le probleme reel : la donnee terrain n'arrive pas au back office
-2. Ce qu'on a appris en migrant un monolithe plat vers 41 modules DDD
+2. Ce qu'on a appris en migrant un monolithe plat vers 42 modules DDD
 3. Le contrat d'outils : exposer une API a un agent sans lui donner les cles
 4. Ce qu'on ne fait pas (et pourquoi)
 ```

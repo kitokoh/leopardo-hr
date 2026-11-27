@@ -1,6 +1,14 @@
-# SCRIPTS VIDÉOS COURTES — LEOPARDO HR
+# SCRIPTS VIDÉOS COURTES — LEOPARDO
 
 ## 8 vidéos de 5 secondes pour TikTok, Reels, Shorts, YouTube
+
+> **Catégorie** : Leopardo est une **suite métier des entreprises de terrain** — jamais un « logiciel RH » (décision P03, `docs/REFERENTIEL_PRODUIT/MESSAGE.md`). Le nom « Leopardo HR » ne subsiste que comme identifiant technique figé du dépôt.
+>
+> **Chiffres** : aucun chiffre de performance à l'écran sans mesure datée dans `docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md`.
+>
+> **Écran réel** : chaque plan produit est une captation de l'application livrée, sur données de démonstration fictives.
+>
+> **Deux prompts par vidéo, deux rôles.** Le bloc **« Prompt Génération »** est une intention visuelle (moodboard, style, lumière) : il ne doit **jamais** être utilisé pour générer l'écran produit, car un modèle d'image inventerait une interface qui n'existe pas. Le bloc **« Prompt pour agent IA de production »** est le contrat d'exécution : il impose la captation de l'app réelle, le nommage des fichiers et l'auto-contrôle. En cas de contradiction, c'est le second qui fait foi.
 
 ---
 
@@ -45,6 +53,40 @@ Créer une vidéo publicitaire verticale 9:16 de 5 secondes ultra premium style 
 
 ---
 
+
+### Prompt pour agent IA de production — Vidéo 1
+
+```text
+ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video courte 1 « POINTAGE EN 1 CLIC » (pointage mobile) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- 5 secondes exactes, 9:16 (1080x1920), 30 fps, H.264 High, AAC 320 kbps
+- Style Apple keynote / SaaS premium : transitions fluides, aucun temps mort
+- Texte overlay Inter Bold, blanc avec ombre portee, dans les 60 % centraux (zone sure TikTok)
+- Sous-titres brules obligatoires (80 % regardent sans son)
+- Logo Leopardo dans la derniere frame + CTA « Essai gratuit 14 j » + QR code
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre de performance a l'ecran sans mesure datee dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le geste de pointage doit être filmé sur l'app réelle (bouton « Pointer »), pas sur une maquette. Le badge de validation est vert #16A34A.
+
+SORTIES
+- leopardo_short01_{slug}_{lang}_9x16_v1.mp4 / .srt / .vtt
+- version sans musique pour A/B testing ; miniature 1080x1920
+
+AUTO-CONTROLE
+- duree = 5,00 s a +/- 0,1 s
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- texte lisible dans la zone sure ; logo present dans la derniere frame
+- QR code teste sur deux telephones
+```
+
 ## VIDÉO 2 — ABSENCES EN TEMPS RÉEL
 
 ### Script
@@ -73,6 +115,40 @@ Vidéo verticale 9:16 de 5 secondes style SaaS premium. Séquence 1 : employé e
 - 💬 UI : Montrer vrai formulaire avec champs réalistes
 
 ---
+
+
+### Prompt pour agent IA de production — Vidéo 2
+
+```text
+ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video courte 2 « ABSENCES EN TEMPS RÉEL » (demande d'absence + validation manager) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- 5 secondes exactes, 9:16 (1080x1920), 30 fps, H.264 High, AAC 320 kbps
+- Style Apple keynote / SaaS premium : transitions fluides, aucun temps mort
+- Texte overlay Inter Bold, blanc avec ombre portee, dans les 60 % centraux (zone sure TikTok)
+- Sous-titres brules obligatoires (80 % regardent sans son)
+- Logo Leopardo dans la derniere frame + CTA « Essai gratuit 14 j » + QR code
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre de performance a l'ecran sans mesure datee dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Montrer le vrai formulaire (dates, motif) et la vraie notification de validation. Le cut employé → manager doit être instantané.
+
+SORTIES
+- leopardo_short02_{slug}_{lang}_9x16_v1.mp4 / .srt / .vtt
+- version sans musique pour A/B testing ; miniature 1080x1920
+
+AUTO-CONTROLE
+- duree = 5,00 s a +/- 0,1 s
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- texte lisible dans la zone sure ; logo present dans la derniere frame
+- QR code teste sur deux telephones
+```
 
 ## VIDÉO 3 — AVANCES SUR SALAIRE
 
@@ -103,6 +179,40 @@ Publicité verticale fintech premium 5 secondes. Séquence 1 : jeune employé af
 
 ---
 
+
+### Prompt pour agent IA de production — Vidéo 3
+
+```text
+ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video courte 3 « AVANCES SUR SALAIRE » (demande d'avance sur salaire) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- 5 secondes exactes, 9:16 (1080x1920), 30 fps, H.264 High, AAC 320 kbps
+- Style Apple keynote / SaaS premium : transitions fluides, aucun temps mort
+- Texte overlay Inter Bold, blanc avec ombre portee, dans les 60 % centraux (zone sure TikTok)
+- Sous-titres brules obligatoires (80 % regardent sans son)
+- Logo Leopardo dans la derniere frame + CTA « Essai gratuit 14 j » + QR code
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre de performance a l'ecran sans mesure datee dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le module d'avance existe (Payroll : ManagerApproveSalaryAdvance, MarkSalaryAdvancePaid). Ne jamais afficher de montant réel : un montant de démonstration, jamais un taux.
+
+SORTIES
+- leopardo_short03_{slug}_{lang}_9x16_v1.mp4 / .srt / .vtt
+- version sans musique pour A/B testing ; miniature 1080x1920
+
+AUTO-CONTROLE
+- duree = 5,00 s a +/- 0,1 s
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- texte lisible dans la zone sure ; logo present dans la derniere frame
+- QR code teste sur deux telephones
+```
+
 ## VIDÉO 4 — TÂCHES SYNCHRONISÉES
 
 ### Script
@@ -131,6 +241,40 @@ Vidéo startup moderne verticale 5 secondes. Séquence 1 : manager européen dan
 - 🔄 Boucle : Peut tourner en loop parfaite
 
 ---
+
+
+### Prompt pour agent IA de production — Vidéo 4
+
+```text
+ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video courte 4 « TÂCHES SYNCHRONISÉES » (assignation et suivi de tâche) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- 5 secondes exactes, 9:16 (1080x1920), 30 fps, H.264 High, AAC 320 kbps
+- Style Apple keynote / SaaS premium : transitions fluides, aucun temps mort
+- Texte overlay Inter Bold, blanc avec ombre portee, dans les 60 % centraux (zone sure TikTok)
+- Sous-titres brules obligatoires (80 % regardent sans son)
+- Logo Leopardo dans la derniere frame + CTA « Essai gratuit 14 j » + QR code
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre de performance a l'ecran sans mesure datee dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le module Planning expose POST /api/v1/tasks. Montrer l'assignation, la notification et le passage à « terminée » sur l'app réelle.
+
+SORTIES
+- leopardo_short04_{slug}_{lang}_9x16_v1.mp4 / .srt / .vtt
+- version sans musique pour A/B testing ; miniature 1080x1920
+
+AUTO-CONTROLE
+- duree = 5,00 s a +/- 0,1 s
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- texte lisible dans la zone sure ; logo present dans la derniere frame
+- QR code teste sur deux telephones
+```
 
 ## VIDÉO 5 — QR CODE ONBOARDING
 
@@ -161,6 +305,40 @@ Vidéo futuriste verticale 5 secondes. Séquence 1 : jeune employé premier jour
 
 ---
 
+
+### Prompt pour agent IA de production — Vidéo 5
+
+```text
+ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video courte 5 « QR CODE ONBOARDING » (onboarding par QR signé) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- 5 secondes exactes, 9:16 (1080x1920), 30 fps, H.264 High, AAC 320 kbps
+- Style Apple keynote / SaaS premium : transitions fluides, aucun temps mort
+- Texte overlay Inter Bold, blanc avec ombre portee, dans les 60 % centraux (zone sure TikTok)
+- Sous-titres brules obligatoires (80 % regardent sans son)
+- Logo Leopardo dans la derniere frame + CTA « Essai gratuit 14 j » + QR code
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre de performance a l'ecran sans mesure datee dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le QR d'onboarding est signé et expire (OnboardingQrService). Montrer le scan et le profil pré-rempli, jamais un QR forgeable.
+
+SORTIES
+- leopardo_short05_{slug}_{lang}_9x16_v1.mp4 / .srt / .vtt
+- version sans musique pour A/B testing ; miniature 1080x1920
+
+AUTO-CONTROLE
+- duree = 5,00 s a +/- 0,1 s
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- texte lisible dans la zone sure ; logo present dans la derniere frame
+- QR code teste sur deux telephones
+```
+
 ## VIDÉO 6 — KIOSQUE SÉCURISÉ
 
 ### Script
@@ -189,6 +367,40 @@ Vidéo high-tech verticale 5 secondes style contrôle accès premium. Séquence 
 - 🛡️ Trust : Inspirer confiance absolue
 
 ---
+
+
+### Prompt pour agent IA de production — Vidéo 6
+
+```text
+ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video courte 6 « KIOSQUE SÉCURISÉ » (pointage kiosque biométrique) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- 5 secondes exactes, 9:16 (1080x1920), 30 fps, H.264 High, AAC 320 kbps
+- Style Apple keynote / SaaS premium : transitions fluides, aucun temps mort
+- Texte overlay Inter Bold, blanc avec ombre portee, dans les 60 % centraux (zone sure TikTok)
+- Sous-titres brules obligatoires (80 % regardent sans son)
+- Logo Leopardo dans la derniere frame + CTA « Essai gratuit 14 j » + QR code
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre de performance a l'ecran sans mesure datee dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Méthodes réelles configurables par tenant : fingerprint, face, card (docs/kiosk/punch-methods-config.md). Un échec biométrique ne crée jamais de présence : ne pas le suggérer.
+
+SORTIES
+- leopardo_short06_{slug}_{lang}_9x16_v1.mp4 / .srt / .vtt
+- version sans musique pour A/B testing ; miniature 1080x1920
+
+AUTO-CONTROLE
+- duree = 5,00 s a +/- 0,1 s
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- texte lisible dans la zone sure ; logo present dans la derniere frame
+- QR code teste sur deux telephones
+```
 
 ## VIDÉO 7 — PAIE SIMPLIFIÉE
 
@@ -219,6 +431,40 @@ Vidéo entreprise premium verticale 5 secondes. Séquence 1 : responsable RH eur
 
 ---
 
+
+### Prompt pour agent IA de production — Vidéo 7
+
+```text
+ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video courte 7 « PAIE SIMPLIFIÉE » (génération de bulletins) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- 5 secondes exactes, 9:16 (1080x1920), 30 fps, H.264 High, AAC 320 kbps
+- Style Apple keynote / SaaS premium : transitions fluides, aucun temps mort
+- Texte overlay Inter Bold, blanc avec ombre portee, dans les 60 % centraux (zone sure TikTok)
+- Sous-titres brules obligatoires (80 % regardent sans son)
+- Logo Leopardo dans la derniere frame + CTA « Essai gratuit 14 j » + QR code
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre de performance a l'ecran sans mesure datee dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Ne jamais afficher « 100 bulletins » comme un chiffre de performance : c'est un compteur de démonstration. Aucun montant réel, aucun taux de cotisation.
+
+SORTIES
+- leopardo_short07_{slug}_{lang}_9x16_v1.mp4 / .srt / .vtt
+- version sans musique pour A/B testing ; miniature 1080x1920
+
+AUTO-CONTROLE
+- duree = 5,00 s a +/- 0,1 s
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- texte lisible dans la zone sure ; logo present dans la derniere frame
+- QR code teste sur deux telephones
+```
+
 ## VIDÉO 8 — COMPANY OS COMPLET
 
 ### Script
@@ -247,6 +493,40 @@ Vidéo teaser Apple+Tesla verticale 5 secondes. Séquence 1 (0.5s) : pointage QR
 - 💥 Impact : Doit laisser bouche bée
 
 ---
+
+
+### Prompt pour agent IA de production — Vidéo 8
+
+```text
+ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video courte 8 « COMPANY OS COMPLET » (vue d'ensemble de la suite) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- 5 secondes exactes, 9:16 (1080x1920), 30 fps, H.264 High, AAC 320 kbps
+- Style Apple keynote / SaaS premium : transitions fluides, aucun temps mort
+- Texte overlay Inter Bold, blanc avec ombre portee, dans les 60 % centraux (zone sure TikTok)
+- Sous-titres brules obligatoires (80 % regardent sans son)
+- Logo Leopardo dans la derniere frame + CTA « Essai gratuit 14 j » + QR code
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre de performance a l'ecran sans mesure datee dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le titre « Company OS » n'est pas la catégorie canonique : à l'écran, écrire « la suite métier des entreprises de terrain ». Rythme effréné, mais chaque plan reste une capture réelle.
+
+SORTIES
+- leopardo_short08_{slug}_{lang}_9x16_v1.mp4 / .srt / .vtt
+- version sans musique pour A/B testing ; miniature 1080x1920
+
+AUTO-CONTROLE
+- duree = 5,00 s a +/- 0,1 s
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- texte lisible dans la zone sure ; logo present dans la derniere frame
+- QR code teste sur deux telephones
+```
 
 ## CHECKLIST PRODUCTION
 
