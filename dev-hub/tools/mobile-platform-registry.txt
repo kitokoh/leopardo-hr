@@ -31,3 +31,16 @@ leopardo_pos_retail        android,ios
 leopardo_pos_restaurant    android,ios
 leopardo_cameras           android      (mur des cameras : tablette Android du tenant)
 leopardo_travel_agent      android      (guichet agence : terminal Android)
+
+# Applications grand public dediees (une par verticale).
+# android,ios : chaque verticale vise les deux stores — c'est le sens de
+# la mission (une app par verticale, pas une app Android-only).
+leopardo_restaurant_app    android,ios
+leopardo_retail_app        android,ios
+leopardo_hospitality_app   android,ios
+leopardo_trade_app         android,ios
+leopardo_travel_app        android,ios
+leopardo_pharmacy_app      android,ios
+leopardo_mobility_app      android,ios
+leopardo_careers_app       android,ios
+
