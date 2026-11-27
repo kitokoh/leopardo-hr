@@ -203,6 +203,7 @@ jobs:
       rls_role_script: ${{ steps.filter.outputs.rls_role_script }}
       ci_workflows: ${{ steps.filter.outputs.ci_workflows }}
       docs_budget: ${{ steps.filter.outputs.docs_budget }}
+      codeowners: ${{ steps.filter.outputs.codeowners }}
       env_parity: ${{ steps.filter.outputs.env_parity }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -310,6 +311,9 @@ jobs:
               - "api/database/scripts/rls/**"
               - "dev-hub/tools/check-rls-role-script.py"
               - ".github/workflows/guards-fast.yml"
+            codeowners:
+              - "CODEOWNERS"
+              - "dev-hub/tools/check-codeowners-coverage.py"
             docs_budget:
               - "**/*.md"
               - "dev-hub/tools/check-docs-inventory.py"
@@ -858,3 +862,35 @@ jobs:
       - name: Vérifier le budget documentaire
         shell: bash
         run: python3 dev-hub/tools/check-docs-inventory.py --check
+
+  # ---------------------------------------------------------------------------
+  # 18/18 — CODEOWNERS couvre réellement les surfaces sensibles (#9980)
+  #
+  # Le ruleset exige `require_code_owner_review: true` : une entrée CODEOWNERS
+  # n'est plus documentaire, elle est OPPOSABLE. Mais GitHub applique la règle
+  # par ABSENCE : un chemin non listé retombe sur `*`, et `*` est satisfait par
+  # n'importe quel propriétaire — donc par l'auteur lui-même.
+  #
+  # Cette garde vérifie la sémantique réelle (le DERNIER motif gagne) et la
+  # spécificité : `/api/` ne « couvre » pas `/api/database/migrations/`.
+  # ---------------------------------------------------------------------------
+  codeowners:
+    name: CODEOWNERS — surfaces sensibles
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.codeowners == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Auto-test de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-codeowners-coverage.py --self-test
+      - name: Vérifier la couverture CODEOWNERS
+        shell: bash
+        run: python3 dev-hub/tools/check-codeowners-coverage.py

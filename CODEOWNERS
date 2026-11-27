@@ -83,12 +83,20 @@
 
 # CRM client module (bounded context tenant, issue #5745 / ADR-CRM-001)
 
-# Audit #1712 + issue #1730 : @kitokoh est seul propriétaire humain aujourd'hui.
-# ÉTAT RÉEL de la protection (vérifié via API GitHub le 2026-09-05) :
-# **0 approval requis** (`required_pull_request_reviews` absent), mais
-# `enforce_admins: true` et 5 checks requis (Backend Coverage, PHPStan Strict,
-# Module Structure Validator, Frontend ESLint+TS, actionlint) — les entrées
-# CODEOWNERS sont **documentaires** (`require_code_owner_reviews: false`).
+# Audit #1712 + #1730 / #9980 : @kitokoh est seul propriétaire humain.
+#
+# ÉTAT DE LA PROTECTION au 2026-11-27 (#9980) — à relire avant de modifier :
+#   - `/protection` porte encore `required_pull_request_reviews: null` ;
+#   - MAIS un **ruleset de dépôt** « main — revue obligatoire sur zones
+#     sensibles » exige 1 approbation ET `require_code_owner_review: true`
+#     (voir .github/BRANCH_PROTECTION_REQUIRED.md §Ruleset).
+#   => ces entrées CODEOWNERS ne sont plus documentaires : elles sont
+#      OPPOSABLES. Modifier un chemin listé ci-dessous demande l'approbation
+#      du propriétaire.
+#
+# Le bypass admin du ruleset est en mode `pull_request` : il permet au
+# mainteneur unique de fusionner sa propre PR, jamais de pousser sur `main`.
+# À retirer dès qu'un second mainteneur humain rejoint le projet.
 # La procédure de revue croisée (issue #1730) reste la règle volontaire :
 #   1. L'auteur auto-revues sa PR avec la checklist .github/PULL_REQUEST_TEMPLATE.md ;
 #   2. Pour les chemins sensibles (workflows, middleware, configs, seeders,
@@ -132,3 +140,49 @@
 /api/routes/modules/branding_public.php @kitokoh
 /front/web/src/modules/public-surface/ @kitokoh
 /front/mobile_apps/leopardo_public/lib/features/brand/ @kitokoh
+
+# ---------------------------------------------------------------------------
+# #9980 — Surfaces sensibles ajoutées le 2026-11-27.
+#
+# Le ruleset exige une revue CODEOWNERS : tout chemin qui peut modifier
+# l'isolation entre clients, la protection de branche ou les gardes de sécurité
+# doit être listé ici, sinon il devient éditable sans revue par simple
+# absence de la liste.
+# ---------------------------------------------------------------------------
+
+# Migrations — le schéma EST l'isolation. Une migration peut poser (ou retirer)
+# une politique RLS, un index d'unicité inter-tenant, un trigger d'audit.
+/api/database/migrations/       @kitokoh
+/api/database/scripts/          @kitokoh
+
+# Modèles tenant : le trait BelongsToCompany et le global scope sont le premier
+# filet d'isolation (le second étant RLS, #9974/#9975).
+/api/app/Shared/Traits/BelongsToCompany.php @kitokoh
+/api/app/Core/Tenant/           @kitokoh
+/api/app/Console/Commands/TenantRlsStatusCommand.php @kitokoh
+
+# Gardes de gouvernance : modifier une garde, c'est pouvoir désactiver un
+# contrôle. Elles sont donc aussi sensibles que le code qu'elles gardent.
+/dev-hub/tools/                 @kitokoh
+/dev-hub/governance/            @kitokoh
+
+# Protection de branche (canonique machine + doc opposable).
+/dev-hub/tools/branch-protection-canonical.json @kitokoh
+/.github/BRANCH_PROTECTION_REQUIRED.md @kitokoh
+/.github/CODEOWNERS             @kitokoh
+
+# Secrets / surface d'identité et de paiement.
+/api/app/Modules/Payroll/       @kitokoh
+/api/app/Modules/Billing/       @kitokoh
+/api/app/Modules/Paiements/     @kitokoh
+/api/app/Modules/HealthManager/ @kitokoh
+
+# Health / sondes : une sonde modifiée peut masquer une panne (précédent
+# #9976 : un scheduler mort restait vert).
+/api/app/Modules/Platform/Infrastructure/Services/HealthProbeService.php @kitokoh
+/api/app/Modules/Platform/Interfaces/Api/V1/Controllers/HealthController.php @kitokoh
+
+# Blueprints de déploiement : topologie, plans, gates de démarrage.
+/render.yaml                    @kitokoh
+/render.prod.yaml               @kitokoh
+/api/docker-entrypoint.sh       @kitokoh
