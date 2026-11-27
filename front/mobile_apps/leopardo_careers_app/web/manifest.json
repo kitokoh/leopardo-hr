@@ -1,0 +1,42 @@
+{
+    "name": "Leopardo Emploi",
+    "short_name": "Emploi",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#166534",
+    "theme_color": "#166534",
+    "description": "Les offres des entreprises près de chez vous, et comment postuler.",
+    "orientation": "portrait-primary",
+    "lang": "fr",
+    "dir": "auto",
+    "categories": [
+        "food",
+        "shopping",
+        "travel"
+    ],
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

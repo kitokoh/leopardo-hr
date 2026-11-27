@@ -1,0 +1,51 @@
+name: leopardo_trade_app
+description: "Leopardo Entreprises — application mobile grand public dédiée à la verticale trade."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+# ## Une app, une verticale
+#
+# Cette application sert UNE verticale et rien d'autre. Elle n'embarque aucune
+# logique métier : le moteur (découverte, fiches, parcours, identités) vit dans
+# `leopardo_surface`, partagé par les huit apps. Ce qui est propre à cette app
+# tient en trois fichiers : `main.dart`, `app_router.dart`, et son identité
+# produit (manifeste, Info.plist, AndroidManifest).
+#
+# ## Pourquoi ce n'est pas une copie de leopardo_public
+#
+# `leopardo_public` reste l'app MULTI-VERTICALES : elle sert le visiteur qui ne
+# sait pas encore ce qu'il cherche. Cette app sert celui qui sait déjà — il
+# arrive par `entreprises.leopardo.app` ou par un QR code, et il ne doit pas se demander s'il
+# est au bon endroit.
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  material_ui: ^1.0.0
+  cupertino_ui: ^1.0.2
+  cupertino_icons: ^1.0.9
+  flutter_riverpod: ^3.4.2
+  go_router: ^18.0.1
+  intl: ^0.20.2
+  url_strategy: ^0.3.0
+  leopardo_core:
+    path: ../leopardo_core
+  leopardo_surface:
+    path: ../leopardo_surface
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+dependency_overrides:
+  xml: ^7.0.1
+  uuid: ^4.6.0

@@ -14,6 +14,20 @@ packages:
   - front/mobile_apps/leopardo_public
   - front/mobile_apps/leopardo_marketing
   - front/mobile_apps/leopardo_travel_agent
+  # Moteur commun des apps grand public (découverte, fiches, parcours des huit
+  # verticales, identités de vitrine). Extrait de `leopardo_public` pour que les
+  # huit apps dédiées le partagent au lieu d'en copier ~6 800 lignes.
+  - front/mobile_apps/leopardo_surface
+  # Applications grand public DÉDIÉES, une par verticale. Chacune n'assemble
+  # que son identité, son routeur et son `main.dart` — le moteur est partagé.
+  - front/mobile_apps/leopardo_restaurant_app
+  - front/mobile_apps/leopardo_retail_app
+  - front/mobile_apps/leopardo_hospitality_app
+  - front/mobile_apps/leopardo_trade_app
+  - front/mobile_apps/leopardo_travel_app
+  - front/mobile_apps/leopardo_pharmacy_app
+  - front/mobile_apps/leopardo_mobility_app
+  - front/mobile_apps/leopardo_careers_app
 
 command:
   bootstrap:

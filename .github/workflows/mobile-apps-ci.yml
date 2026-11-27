@@ -272,6 +272,31 @@ jobs:
             path: front/mobile_apps/leopardo_pos_retail
           - name: leopardo_pos_restaurant
             path: front/mobile_apps/leopardo_pos_restaurant
+          # Applications grand public DÉDIÉES, une par verticale. Elles ne
+          # portent aucune logique métier : le moteur vit dans
+          # `leopardo_surface`, partagé. Ce qui est propre à chacune tient en
+          # `main.dart`, `app_router.dart` et son identité produit — donc une
+          # régression y est silencieuse sans cette matrice.
+          - name: leopardo_restaurant_app
+            path: front/mobile_apps/leopardo_restaurant_app
+          - name: leopardo_retail_app
+            path: front/mobile_apps/leopardo_retail_app
+          - name: leopardo_hospitality_app
+            path: front/mobile_apps/leopardo_hospitality_app
+          - name: leopardo_trade_app
+            path: front/mobile_apps/leopardo_trade_app
+          - name: leopardo_travel_app
+            path: front/mobile_apps/leopardo_travel_app
+          - name: leopardo_pharmacy_app
+            path: front/mobile_apps/leopardo_pharmacy_app
+          - name: leopardo_mobility_app
+            path: front/mobile_apps/leopardo_mobility_app
+          - name: leopardo_careers_app
+            path: front/mobile_apps/leopardo_careers_app
+          # Le MOTEUR partagé : sans lui dans la matrice, une régression du
+          # socle ne serait vue que par ricochet, via les apps.
+          - name: leopardo_surface
+            path: front/mobile_apps/leopardo_surface
 
     steps:
       - name: Checkout code
@@ -428,6 +453,31 @@ jobs:
           - name: leopardo_pos_restaurant
             path: front/mobile_apps/leopardo_pos_restaurant
             artifact: leopardo-pos-restaurant-debug-apk
+          # Applications grand public dédiées (une par verticale).
+          - name: leopardo_restaurant_app
+            path: front/mobile_apps/leopardo_restaurant_app
+            artifact: leopardo-restaurant-debug-apk
+          - name: leopardo_retail_app
+            path: front/mobile_apps/leopardo_retail_app
+            artifact: leopardo-retail-debug-apk
+          - name: leopardo_hospitality_app
+            path: front/mobile_apps/leopardo_hospitality_app
+            artifact: leopardo-hospitality-debug-apk
+          - name: leopardo_trade_app
+            path: front/mobile_apps/leopardo_trade_app
+            artifact: leopardo-trade-debug-apk
+          - name: leopardo_travel_app
+            path: front/mobile_apps/leopardo_travel_app
+            artifact: leopardo-travel-debug-apk
+          - name: leopardo_pharmacy_app
+            path: front/mobile_apps/leopardo_pharmacy_app
+            artifact: leopardo-pharmacy-debug-apk
+          - name: leopardo_mobility_app
+            path: front/mobile_apps/leopardo_mobility_app
+            artifact: leopardo-mobility-debug-apk
+          - name: leopardo_careers_app
+            path: front/mobile_apps/leopardo_careers_app
+            artifact: leopardo-careers-debug-apk
 
     steps:
       - name: Checkout code
@@ -481,27 +531,80 @@ jobs:
           retention-days: 7
 
   # ---------------------------------------------------------------------------
-  # Cible WEB grand public (mission parité web ↔ mobile, verticale restaurant).
+  # Cible WEB grand public — l'app multi-verticales ET les huit apps dédiées.
   #
-  # `leopardo_public` est la seule app du dépôt qui vise le grand public sur le
-  # web : `flutter build web` est le SEUL contrôle qui prouve que cette cible
-  # existe. `flutter test` tourne sur la VM Dart et ne compile jamais en
-  # JavaScript — une dépendance non web-compatible (dart:io, dart:ffi) ne se
-  # voit qu'ici. Le job est volontairement séparé de `flutter-build-debug`
-  # (APK) : la cible web n'a besoin ni du SDK Android ni de Java, et payer
-  # ~10 min de setup Android par build web serait du gaspillage pur.
+  # `flutter build web` est le SEUL contrôle qui prouve que la cible web existe.
+  # `flutter test` tourne sur la VM Dart et ne compile jamais en JavaScript —
+  # une dépendance non web-compatible (dart:io, dart:ffi) ne se voit qu'ici.
+  # Le job est volontairement séparé de `flutter-build-debug` (APK) : la cible
+  # web n'a besoin ni du SDK Android ni de Java, et payer ~10 min de setup
+  # Android par build web serait du gaspillage pur.
   #
-  # Il vit DANS ce workflow (et non dans un fichier dédié) parce que le budget
-  # CI du dépôt est gelé à 89 workflows (#9979) : un fichier de plus le
-  # dépasserait. `mobile-apps-ci.yml` couvre déjà `leopardo_public` en analyze
-  # et en test — le build web est le maillon manquant de la même chaîne.
+  # ## Pourquoi une matrice et pas neuf jobs
+  #
+  # Les neuf cibles partagent exactement la même chaîne (pub get, gen-l10n,
+  # build, vérification d'artefact). Neuf jobs copiés seraient neuf endroits où
+  # oublier une correction — et le budget CI du dépôt est gelé à 89 workflows
+  # (#9979), donc un fichier par app est exclu. La matrice donne neuf cibles
+  # pour un seul job.
+  #
+  # ## Pourquoi chaque app dédiée est vérifiée séparément
+  #
+  # Une app dédiée ne porte que son identité, son routeur et son `main.dart`.
+  # Une erreur de compilation y est donc invisible depuis les autres : c'est
+  # précisément ce que la matrice attrape.
   # ---------------------------------------------------------------------------
   flutter-build-web:
     needs: [changes, flutter-analyze]
     if: needs.changes.outputs.mobile == 'true'
     timeout-minutes: 30
-    name: Build web (leopardo_public)
+    name: Build web (${{ matrix.project.name }})
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          # L'app multi-verticales : elle sert les huit verticales à la fois.
+          - name: leopardo_public
+            path: front/mobile_apps/leopardo_public
+            artifact: leopardo-public-web
+            # Le bootstrap de cette app couvre QUATRE verticales ; les apps
+            # dédiées n'en couvrent qu'une. La vérification d'artefact doit
+            # donc savoir laquelle des deux formes attendre.
+            multi_vertical: 'true'
+          - name: leopardo_restaurant_app
+            path: front/mobile_apps/leopardo_restaurant_app
+            artifact: leopardo-restaurant-web
+            multi_vertical: 'false'
+          - name: leopardo_retail_app
+            path: front/mobile_apps/leopardo_retail_app
+            artifact: leopardo-retail-web
+            multi_vertical: 'false'
+          - name: leopardo_hospitality_app
+            path: front/mobile_apps/leopardo_hospitality_app
+            artifact: leopardo-hospitality-web
+            multi_vertical: 'false'
+          - name: leopardo_trade_app
+            path: front/mobile_apps/leopardo_trade_app
+            artifact: leopardo-trade-web
+            multi_vertical: 'false'
+          - name: leopardo_travel_app
+            path: front/mobile_apps/leopardo_travel_app
+            artifact: leopardo-travel-web
+            multi_vertical: 'false'
+          - name: leopardo_pharmacy_app
+            path: front/mobile_apps/leopardo_pharmacy_app
+            artifact: leopardo-pharmacy-web
+            multi_vertical: 'false'
+          - name: leopardo_mobility_app
+            path: front/mobile_apps/leopardo_mobility_app
+            artifact: leopardo-mobility-web
+            multi_vertical: 'false'
+          - name: leopardo_careers_app
+            path: front/mobile_apps/leopardo_careers_app
+            artifact: leopardo-careers-web
+            multi_vertical: 'false'
 
     steps:
       - name: Checkout code
@@ -517,7 +620,7 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        working-directory: front/mobile_apps/leopardo_public
+        working-directory: ${{ matrix.project.path }}
         run: flutter pub get
 
       - name: Regenerate shared localizations
@@ -528,7 +631,7 @@ jobs:
         run: flutter gen-l10n
 
       - name: Build web (release)
-        working-directory: front/mobile_apps/leopardo_public
+        working-directory: ${{ matrix.project.path }}
         run: |
           # `--no-wasm-dry-run` : le dry-run wasm est un contrôle OPTIONNEL que
           # Flutter exécute en plus de dart2js. Sur les SDK récents il échoue
@@ -546,7 +649,9 @@ jobs:
       # un `index.html` resté au placeholder Flutter, ou un `main.dart.js`
       # absent, signifierait que le build n'a pas produit ce qu'on croit.
       - name: Vérifier l'artefact web
-        working-directory: front/mobile_apps/leopardo_public
+        working-directory: ${{ matrix.project.path }}
+        env:
+          MULTI_VERTICAL: ${{ matrix.project.multi_vertical }}
         run: |
           set -euo pipefail
 
@@ -557,13 +662,25 @@ jobs:
           grep -q 'og:title' build/web/index.html || { echo "::error::balises Open Graph absentes de index.html"; exit 1; }
           grep -q 'vertical_web_bootstrap.js' build/web/index.html || { echo "::error::bootstrap verticales non référencé"; exit 1; }
 
-          # Les quatre verticales doivent être couvertes par le bootstrap :
-          # une verticale oubliée dans la table VERTICALS ne produit aucune
-          # erreur à l'exécution, elle rend juste un titre générique.
-          for prefix in '/restaurants/' '/boutiques/' '/stay/' '/billets/'; do
-            grep -q "prefix: '$prefix'" build/web/vertical_web_bootstrap.js \
-              || { echo "::error::verticale $prefix absente du bootstrap"; exit 1; }
-          done
+          if [ "$MULTI_VERTICAL" = "true" ]; then
+            # L'app multi-verticales doit couvrir les quatre verticales de sa
+            # table : une verticale oubliée ne produit aucune erreur à
+            # l'exécution, elle rend juste un titre générique.
+            for prefix in '/restaurants/' '/boutiques/' '/stay/' '/billets/'; do
+              grep -q "prefix: '$prefix'" build/web/vertical_web_bootstrap.js \
+                || { echo "::error::verticale $prefix absente du bootstrap"; exit 1; }
+            done
+          else
+            # Une app dédiée ne sert qu'UNE verticale : son bootstrap doit
+            # porter exactement un préfixe. Zéro signifierait que le fichier a
+            # été copié sans être réécrit ; plus d'un, que l'app prétend servir
+            # des verticales qu'elle n'assemble pas.
+            count=$(grep -c "prefix: '" build/web/vertical_web_bootstrap.js || true)
+            if [ "$count" -ne 1 ]; then
+              echo "::error::le bootstrap d'une app dédiée doit porter exactement 1 verticale (trouvé: $count)"
+              exit 1
+            fi
+          fi
 
           # Le placeholder Flutter ne doit plus être le titre de la page.
           if grep -q 'A new Flutter project' build/web/index.html; then
@@ -571,13 +688,13 @@ jobs:
             exit 1
           fi
 
-          echo "✅ Artefact web conforme (index.html, main.dart.js, bootstrap restaurant)"
+          echo "✅ Artefact web conforme (${{ matrix.project.name }})"
 
       - name: Publier l'artefact web
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
-          name: leopardo-public-web
-          path: front/mobile_apps/leopardo_public/build/web
+          name: ${{ matrix.project.artifact }}
+          path: ${{ matrix.project.path }}/build/web
           if-no-files-found: error
           retention-days: 14
 
