@@ -59,6 +59,15 @@ jobs:
       QUEUE_MAX_PENDING: ${{ vars.QUEUE_MAX_PENDING || '50' }}
       QUEUE_MAX_FAILED: ${{ vars.QUEUE_MAX_FAILED || '10' }}
       QUEUE_MAX_STALE_MINUTES: ${{ vars.QUEUE_MAX_STALE_MINUTES || '10' }}
+      # #9976 — le scheduler tourne dans le conteneur web sur le plan gratuit
+      # (WEB_SCHEDULER_LOOP) et s'arrête avec lui au spin-down. `checkQueue()`
+      # ne le voit pas : la file reste vide, tout est vert, et les tâches
+      # planifiées (congés, relances, rapprochements) ne s'exécutent plus.
+      # `checks.scheduler.last_slot_age_seconds` comble ce trou. Seuil 20 min :
+      # au-delà du spin-down Render (~15 min) + une marge de redémarrage.
+      # 0 = contrôle désactivé (topologie sans scheduler, ex. worker non
+      # provisionné et WEB_SCHEDULER_LOOP=false assumé).
+      SCHEDULER_MAX_STALE_MINUTES: ${{ vars.SCHEDULER_MAX_STALE_MINUTES || '20' }}
     steps:
       - name: Superviser la queue via /api/v1/health (seuils DoD #5282)
         shell: bash
@@ -117,6 +126,19 @@ jobs:
           fi
           if (( oldest > max_stale_seconds )); then
             violations+=("oldest_reserved_seconds=$oldest > $max_stale_seconds — job réservé trop longtemps (worker mort probable)")
+          fi
+
+          # #9976 — le scheduler est-il encore vivant ?
+          # `status: unknown` (table vide, base fraîche) n'est PAS une panne :
+          # on ne transforme pas une absence de mesure en incident.
+          sched_status="$(jq -r '.checks.scheduler.status // "unknown"' <<<"$body")"
+          sched_age="$(jq -r '.checks.scheduler.last_slot_age_seconds // -1' <<<"$body")"
+
+          if [[ "$SCHEDULER_MAX_STALE_MINUTES" != "0" && "$sched_status" == "observed" ]]; then
+            sched_max_seconds=$(( SCHEDULER_MAX_STALE_MINUTES * 60 ))
+            if (( sched_age > sched_max_seconds )); then
+              violations+=("scheduler: dernier créneau il y a ${sched_age}s > ${sched_max_seconds}s — scheduler arrêté (spin-down ? WEB_SCHEDULER_LOOP=false sans worker ?)")
+            fi
           fi
 
           if (( ${#violations[@]} > 0 )); then

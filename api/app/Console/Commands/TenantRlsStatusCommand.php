@@ -67,6 +67,31 @@ final class TenantRlsStatusCommand extends Command
         'contracts' => 'etape 5 (#9924)',
         'leave_balances' => 'etape 5 (#9924)',
         'attendance_logs' => 'etape 5 (#9924)',
+
+        // #9975 — lot 6 : paie, facturation, comptabilite, sante, identite.
+        // 18 tables ou une fuite inter-tenant est un incident RGPD ou
+        // financier. Choisies sur inventaire : aucun acces inter-tenant
+        // legitime, `company_id` renseigne ou backfillable.
+        'employee_loans' => 'etape 6 (#9975)',
+        'payment_batches' => 'etape 6 (#9975)',
+        'payment_confirmations' => 'etape 6 (#9975)',
+        'pay_slip_lines' => 'etape 6 (#9975)',
+        'invoices' => 'etape 6 (#9975)',
+        'billing_collections' => 'etape 6 (#9975)',
+        'accounting_documents' => 'etape 6 (#9975)',
+        'accounting_document_lines' => 'etape 6 (#9975)',
+        'bank_statements' => 'etape 6 (#9975)',
+        'bank_statement_lines' => 'etape 6 (#9975)',
+        'health_patients' => 'etape 6 (#9975)',
+        'health_consultations' => 'etape 6 (#9975)',
+        'health_prescriptions' => 'etape 6 (#9975)',
+        'health_prescription_items' => 'etape 6 (#9975)',
+        'health_invoices' => 'etape 6 (#9975)',
+        'employee_documents' => 'etape 6 (#9975)',
+        'employee_departures' => 'etape 6 (#9975)',
+        'contract_amendments' => 'etape 6 (#9975)',
+        'leave_accruals' => 'etape 6 (#9975)',
+        'leave_balance_logs' => 'etape 6 (#9975)',
     ];
 
     public function handle(): int

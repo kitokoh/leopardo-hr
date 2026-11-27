@@ -56,6 +56,7 @@ class HealthController extends Controller
         $redis = $this->probes->checkRedis();
         $storage = $this->probes->checkStorage();
         $queue = $this->probes->checkQueue();
+        $scheduler = $this->probes->checkScheduler();
         $memory = $this->probes->checkMemory();
         $web = $this->probes->checkWeb();
         $delivery = $this->probes->checkDeliveryConfiguration();
@@ -85,6 +86,7 @@ class HealthController extends Controller
                 'redis' => $redis,
                 'storage' => $storage,
                 'queue' => $queue,
+                'scheduler' => $scheduler,
                 'memory' => $memory,
                 'web' => $web,
                 'delivery' => $delivery,
@@ -142,12 +144,14 @@ class HealthController extends Controller
         $database = $this->probes->checkDatabase();
         $redis = $this->probes->checkRedis();
         $queue = $this->probes->checkQueue();
+        $scheduler = $this->probes->checkScheduler();
         $mail = $this->probes->checkMail();
 
         $checks = [
             'database' => $database,
             'redis' => $redis,
             'queue' => $queue,
+            'scheduler' => $scheduler,
             'mail' => $mail,
         ];
 

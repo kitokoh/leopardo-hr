@@ -9,7 +9,9 @@ use App\Modules\Notification\Infrastructure\Services\ProductionDeliveryGuard;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Carbon;
 use Throwable;
 use UnitEnum;
 
@@ -488,6 +490,70 @@ class HealthProbeService
             return DB::table((string) config('queue.failed.table', 'failed_jobs'))->count();
         } catch (Throwable) {
             return null;
+        }
+    }
+
+    /**
+     * #9976 — fraîcheur du scheduler : le scheduler tourne-t-il encore ?
+     *
+     * ## Le trou que cette sonde comble
+     *
+     * `checkQueue()` mesure la file : backlog, jobs réservés, échecs. Il ne dit
+     * RIEN du scheduler. Or sur le plan Render gratuit, le scheduler tourne
+     * DANS le conteneur web (`WEB_SCHEDULER_LOOP`), qui s'endort après ~15 min
+     * d'inactivité. Conséquence mesurée : les tâches dues pendant le sommeil
+     * ne s'exécutent pas — acquisition de congés, relances de recouvrement,
+     * rapprochement de paiements. La file reste vide, `checkQueue()` reste
+     * vert, et le produit est silencieusement faux.
+     *
+     * `scheduler:catch-up` (#7967) rattrape les créneaux perdus, mais il est
+     * lui-même planifié : si le scheduler est mort, le rattrapage ne tourne
+     * pas non plus. Personne ne le voyait.
+     *
+     * ## Ce que la sonde mesure
+     *
+     * L'âge du dernier créneau enregistré dans `scheduler_slot_runs` (écrit
+     * par `SchedulerRunLedger` à chaque passage). Si le scheduler tourne, cette
+     * table avance à chaque minute. Si elle n'avance plus, le scheduler est
+     * arrêté — quel qu'en soit le motif (spin-down, crash, gate à false sans
+     * worker provisionné).
+     *
+     * ## Pourquoi `ok` reste vrai par défaut
+     *
+     * Une base fraîchement migrée n'a aucune ligne : ce n'est pas une panne.
+     * `status: unknown` le dit sans faire échouer `/health/ready` — même
+     * doctrine que `checkRedis()` (`skipped` n'est jamais un échec). Le seuil
+     * d'alerte appartient à la sonde externe (`queue-supervision.yml`), qui
+     * sait quelle topologie est déployée.
+     *
+     * @return array{ok: bool, status: string, last_slot_age_seconds?: int|null, last_slot_at?: string|null}
+     */
+    public function checkScheduler(): array
+    {
+        try {
+            if (! Schema::hasTable('scheduler_slot_runs')) {
+                return ['ok' => true, 'status' => 'unknown', 'last_slot_age_seconds' => null];
+            }
+
+            $last = DB::table('scheduler_slot_runs')->max('executed_at');
+
+            if ($last === null) {
+                return ['ok' => true, 'status' => 'unknown', 'last_slot_age_seconds' => null];
+            }
+
+            $lastAt = Carbon::parse((string) $last);
+            $age = max(0, (int) $lastAt->diffInSeconds(now()));
+
+            return [
+                'ok' => true,
+                'status' => 'observed',
+                'last_slot_age_seconds' => $age,
+                'last_slot_at' => $lastAt->toIso8601String(),
+            ];
+        } catch (Throwable) {
+            // La sonde ne doit jamais faire tomber /health : une erreur ici
+            // signifie « non mesurable », pas « scheduler mort ».
+            return ['ok' => true, 'status' => 'unknown', 'last_slot_age_seconds' => null];
         }
     }
 
