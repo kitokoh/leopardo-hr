@@ -67,12 +67,8 @@ void main() {
       expect(gradle.existsSync(), isTrue, reason: 'gradle absent');
 
       final kts = gradle.readAsStringSync();
-      final hasAppId = kts.contains(
-        'applicationId = "com.leopardo.hospitality"',
-      );
-      final hasNamespace = kts.contains(
-        'namespace = "com.leopardo.hospitality"',
-      );
+      final hasAppId = kts.contains('applicationId = "com.leopardo.hospitality"');
+      final hasNamespace = kts.contains('namespace = "com.leopardo.hospitality"');
 
       expect(hasAppId, isTrue, reason: 'applicationId incorrect');
       expect(hasNamespace, isTrue, reason: 'namespace incorrect');
@@ -106,10 +102,8 @@ void main() {
       // route publique manquerait au socle ferait echouer ce test pour les
       // huit apps a la fois — c'est voulu.
       final routes = surfaceDetailRoutes(SurfaceVertical.hospitality);
-      final paths = routes
-          .whereType<GoRoute>()
-          .map((route) => route.path)
-          .toList();
+      final paths =
+          routes.whereType<GoRoute>().map((route) => route.path).toList();
 
       // Deux formes d'URL publique coexistent, et ce n'est pas un oubli :
       //   - les verticales a etablissement portent un slug

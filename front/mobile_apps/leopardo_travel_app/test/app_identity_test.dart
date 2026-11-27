@@ -102,10 +102,8 @@ void main() {
       // route publique manquerait au socle ferait echouer ce test pour les
       // huit apps a la fois — c'est voulu.
       final routes = surfaceDetailRoutes(SurfaceVertical.travel);
-      final paths = routes
-          .whereType<GoRoute>()
-          .map((route) => route.path)
-          .toList();
+      final paths =
+          routes.whereType<GoRoute>().map((route) => route.path).toList();
 
       // Deux formes d'URL publique coexistent, et ce n'est pas un oubli :
       //   - les verticales a etablissement portent un slug
