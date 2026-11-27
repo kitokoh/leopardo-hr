@@ -106,7 +106,13 @@ test.describe('trade-os — onglets vendeur B2B', () => {
     await page.goto('/trade-os', { waitUntil: 'domcontentloaded' });
 
     // `role="tablist"` + `role="tab"` sont posés explicitement par la page.
-    const ordersTab = page.getByRole('tab', { name: /^(commandes|orders)$/i });
+    //
+    // Le libellé réel est « Commandes & expéditions » (fr) / « Orders &
+    // shipments » (en) : une correspondance EXACTE (`^(commandes|orders)$`)
+    // ne trouvait donc jamais l'onglet et le spec échouait sur main. On
+    // ancre sur le DÉBUT du libellé, ce qui reste discriminant (aucun autre
+    // onglet ne commence par « commandes ») sans figer la copie produit.
+    const ordersTab = page.getByRole('tab', { name: /^(commandes|orders)\b/i });
     await expect(ordersTab).toBeVisible({ timeout: 30_000 });
     await ordersTab.click();
 
