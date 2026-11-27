@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:material_ui/material_ui.dart';
 import 'package:cupertino_ui/cupertino_ui.dart'
     show GlobalCupertinoLocalizations;
@@ -54,7 +55,9 @@ void main() {
 
   if (kIsWeb) {
     // `/restaurants/{slug}` et non `/#/restaurants/{slug}`.
-    usePathUrlStrategy();
+    // `url_strategy` 0.3.0 expose `setPathUrlStrategy` (le nom
+    // `usePathUrlStrategy` n'existe pas dans ce paquet).
+    setPathUrlStrategy();
   }
 
   FlutterError.onError = (details) {

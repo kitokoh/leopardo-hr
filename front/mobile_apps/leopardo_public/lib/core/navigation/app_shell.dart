@@ -8,6 +8,7 @@ import '../../features/business_profile/screens/business_profile_route.dart';
 import '../../features/discovery/screens/discovery_home_screen.dart';
 import '../../features/activity/screens/activity_tab.dart';
 import '../../features/journeys/screens/contact_request_screen.dart';
+import '../../features/journeys/screens/restaurant_order_screen.dart';
 import '../../features/journeys/screens/retail_order_screen.dart';
 import '../../features/journeys/screens/stay_reservation_screen.dart';
 import '../../features/journeys/screens/travel_journey_screen.dart';
