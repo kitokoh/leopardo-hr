@@ -272,3 +272,10 @@ donc listés ici explicitement.
   `docs/ops/RUNBOOK_SECRET_ROTATION_PURGE.md`. Les jetons sont réputés compromis dès qu'ils ont
   transité hors du gestionnaire de secrets (chat, capture, CI log).
 - **Règle** : un secret ne doit pas être partagé entre dev et prod (voir issue #7260).
+
+## Complément 2026-11-27 — E2E Maestro restaurant (#9996)
+
+| Secret / Variable | Used by | Purpose | Required? |
+|---|---|---|---|
+| `E2E_RESTO_SLUG` (variable) | `mobile-apps-ci.yml` (job `maestro-restaurant-e2e`) | Slug de l'établissement de démonstration sur lequel tournent les flows Maestro du parcours commande. Défaut `le-bistrot` si absente. La changer ne demande aucune modification des flows : ils lisent l'environnement, jamais une valeur codée en dur | Optional (défaut `le-bistrot`) |
+| `E2E_RESTO_PRODUCT_CODE` (variable) | `mobile-apps-ci.yml` (job `maestro-restaurant-e2e`) | Code catalogue d'un produit réellement commandable chez cet établissement. C'est le code, pas le nom, qui sert de sélecteur : un plat renommé ne casse pas le flow. Défaut `demo-1` | Optional (défaut `demo-1`) |
