@@ -30,6 +30,16 @@ set -euo pipefail
 EXPECTED_COMPILE_SDK=37
 EXPECTED_MIN_SDK=26
 
+# Packages Dart purs de `front/mobile_apps` — PAS des applications.
+#
+# Ils n'ont deliberement pas de projet Android : ils ne produisent aucun
+# binaire, donc il n'y a rien a verifier chez eux. La liste est EXPLICITE (et
+# non deduite de l'absence d'un `android/`) : une app qui perdrait son projet
+# Android par accident doit rester ROUGE (#9491), et c'est l'auto-test
+# `app sans android/app/build.gradle` qui le garantit. Ajouter un nom ici est
+# donc une decision revue, jamais un contournement silencieux.
+ANDROID_SDK_PACKAGES="leopardo_core leopardo_surface"
+
 errors=0
 
 fail() {
@@ -149,7 +159,14 @@ check_root() {
   for app_dir in "${apps_parent}"/*/; do
     [[ -f "${app_dir}pubspec.yaml" ]] || continue
     app="$(basename "${app_dir}")"
-    [[ "${app}" == "leopardo_core" ]] && continue
+    # Packages Dart purs : PAS des applications. Ils n'ont deliberement pas de
+    # projet Android — ils ne produisent aucun binaire, donc il n'y a rien a
+    # verifier pour eux. Leur presence dans cette liste est DECLAREE et
+    # visible : un package oublie reste ROUGE (#9491), c'est l'auto-test qui
+    # le garantit. Ajouter un nom ici est une decision, pas un contournement.
+    if [[ " ${ANDROID_SDK_PACKAGES} " == *" ${app} "* ]]; then
+      continue
+    fi
     seen=$((seen + 1))
     check_app "${app_dir%/}"
   done
