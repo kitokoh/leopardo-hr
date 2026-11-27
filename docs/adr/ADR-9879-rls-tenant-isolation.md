@@ -131,7 +131,10 @@ Un test qui laisse la base moins protégée qu'il ne l'a trouvée est un défaut
 php artisan tenant:rls-status
 
 # 2) Créer le rôle et poser les droits
-psql "$DATABASE_URL" -v app_password="'<secret>'" -f database/scripts/rls/create-app-role.sql
+#    ATTENTION : valeur BRUTE, non quotée. Le script applique `%L`, qui quote
+#    et échappe lui-même. Passer `"'<secret>'"` stockait un mot de passe
+#    contenant des quotes littérales → `password authentication failed`.
+psql "$DATABASE_URL" -v app_password='<secret>' -f database/scripts/rls/create-app-role.sql
 
 # 3) Vérifier AVANT bascule : les 2 requêtes du script doivent renvoyer 0 ligne / toutes les tables couvertes
 # 4) Basculer
