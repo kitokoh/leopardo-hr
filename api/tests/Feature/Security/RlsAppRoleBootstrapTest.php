@@ -42,7 +42,16 @@ use Tests\TestCase;
  */
 final class RlsAppRoleBootstrapTest extends TestCase
 {
-    private const ROLE = 'leopardo_app';
+    /**
+     * Nom de rôle UNIQUE PAR BASE DE TEST.
+     *
+     * Un rôle PostgreSQL est CLUSTER-WIDE : deux bases sur la même instance
+     * partagent le même catalogue de rôles. En CI parallèle (4 workers), un
+     * worker supprimait `leopardo_app` pendant qu'un autre s'y connectait —
+     * `password authentication failed` aléatoire, mesuré en CI. Dériver le nom
+     * du nom de base rend chaque worker hermétique.
+     */
+    private string $role = 'leopardo_app';
 
     private const TENANT_A = '11111111-1111-1111-1111-111111111111';
 
@@ -64,8 +73,22 @@ final class RlsAppRoleBootstrapTest extends TestCase
             $this->markTestSkipped('Le rôle de test ne peut pas créer de rôle.');
         }
 
+        $this->role = $this->uniqueRoleName();
+
         $this->dropRole();
         $this->createProbeTable();
+    }
+
+    /**
+     * `leopardo_app_<base>` : 63 octets max (limite PostgreSQL), caractères
+     * sûrs uniquement.
+     */
+    private function uniqueRoleName(): string
+    {
+        $db = (string) config('database.connections.'.config('database.default').'.database');
+        $suffix = preg_replace('/[^a-z0-9_]/', '_', strtolower($db)) ?? 'test';
+
+        return substr('leopardo_app_'.$suffix, 0, 63);
     }
 
     protected function tearDown(): void
@@ -85,10 +108,10 @@ final class RlsAppRoleBootstrapTest extends TestCase
 
         $role = DB::selectOne(
             'SELECT rolsuper, rolbypassrls, rolcreatedb, rolcreaterole FROM pg_roles WHERE rolname = ?',
-            [self::ROLE]
+            [$this->role]
         );
 
-        expect($role)->not->toBeNull('le script doit créer le rôle '.self::ROLE.'.');
+        expect($role)->not->toBeNull('le script doit créer le rôle '.$this->role.'.');
         expect((bool) $role->rolsuper)->toBeFalse('le rôle applicatif ne doit PAS être SUPERUSER.');
         expect((bool) $role->rolbypassrls)->toBeFalse('le rôle applicatif ne doit PAS porter BYPASSRLS.');
         expect((bool) $role->rolcreatedb)->toBeFalse('moindre privilège : NOCREATEDB.');
@@ -104,13 +127,13 @@ final class RlsAppRoleBootstrapTest extends TestCase
         $this->runBootstrapScript('first-password');
 
         // Dérive volontaire : quelqu'un a promu le rôle à la main.
-        DB::statement('ALTER ROLE '.self::ROLE.' SUPERUSER BYPASSRLS');
+        DB::statement('ALTER ROLE '.$this->role.' SUPERUSER BYPASSRLS');
 
         $this->runBootstrapScript('rotated-password');
 
         $role = DB::selectOne(
             'SELECT rolsuper, rolbypassrls FROM pg_roles WHERE rolname = ?',
-            [self::ROLE]
+            [$this->role]
         );
 
         expect((bool) $role->rolsuper)->toBeFalse('la réexécution doit retirer SUPERUSER.');
@@ -161,12 +184,17 @@ final class RlsAppRoleBootstrapTest extends TestCase
         expect(is_file($script))->toBeTrue('le script de bascule doit exister : '.$script);
 
         $dsn = $this->psqlDsn();
-        $quoted = "'".str_replace("'", "''", $password)."'";
 
+        // Contrat du script : valeur BRUTE, non quotée. Le script applique
+        // `%L`, qui quote et échappe lui-même. La version précédente passait
+        // une valeur déjà quotée : le mot de passe stocké contenait des quotes
+        // littérales et la connexion échouait en `password authentication
+        // failed` (mesuré en CI).
         $command = sprintf(
-            'psql %s -v ON_ERROR_STOP=1 -v app_password=%s -f %s 2>&1',
+            'psql %s -v ON_ERROR_STOP=1 -v app_role=%s -v app_password=%s -f %s 2>&1',
             escapeshellarg($dsn),
-            escapeshellarg($quoted),
+            escapeshellarg($this->role),
+            escapeshellarg($password),
             escapeshellarg($script)
         );
 
@@ -242,7 +270,7 @@ final class RlsAppRoleBootstrapTest extends TestCase
         $base = (array) config('database.connections.'.config('database.default'));
 
         config(['database.connections.rls_app_probe' => array_merge($base, [
-            'username' => self::ROLE,
+            'username' => $this->role,
             'password' => 'probe-password',
         ])]);
 
@@ -287,13 +315,13 @@ final class RlsAppRoleBootstrapTest extends TestCase
         // NORMAL au premier `setUp()` d'un worker frais. Sans cette garde, le
         // test échouait avant même d'avoir testé quoi que ce soit (mesuré en CI :
         // 3 échecs `role "leopardo_app" does not exist`).
-        $exists = DB::selectOne('SELECT 1 AS present FROM pg_roles WHERE rolname = ?', [self::ROLE]);
+        $exists = DB::selectOne('SELECT 1 AS present FROM pg_roles WHERE rolname = ?', [$this->role]);
 
         if ($exists === null) {
             return;
         }
 
-        DB::statement('DROP OWNED BY '.self::ROLE.' CASCADE');
-        DB::statement('DROP ROLE IF EXISTS '.self::ROLE);
+        DB::statement('DROP OWNED BY '.$this->role.' CASCADE');
+        DB::statement('DROP ROLE IF EXISTS '.$this->role);
     }
 }
