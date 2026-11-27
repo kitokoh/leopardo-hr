@@ -5,11 +5,38 @@ lancement. Le mobile historique (`front/mobile/`) a ete retire du depot ; ces
 apps sont desormais les seules applications mobiles Flutter actives.
 
 Les applications mobiles **non-Flutter** (Expo / React Native) vivent dans
-`front/mobile_expo/` — voir `front/mobile_expo/README.md` pour la doctrine.
-Elles ne sont volontairement pas listees ici : ce dossier est garde par
-`check-mobile-layer-guard.sh` et `check-mobile-app-identities.sh`, qui exigent
-pour chaque `leopardo_*` un `applicationId` Android natif et une entree dans
-les registres Flutter.
+`front/mobile_expo/`. Elles ne sont volontairement pas listees ici : ce dossier
+est garde par `check-mobile-layer-guard.sh` et `check-mobile-app-identities.sh`,
+qui exigent pour chaque `leopardo_*` un `applicationId` Android natif, un bundle
+id iOS, une entree dans deux registres et trois matrices CI. Un projet Expo n'a
+rien de cela — il echouerait donc a raison.
+
+## Doctrine « app non-Flutter »
+
+1. Une app Expo vit sous `front/mobile_expo/<nom>/` et n'est **pas** ajoutee a
+   `melos.yaml` (melos ne gere que les packages Dart).
+2. Elle n'est **pas** ajoutee aux matrices de `mobile-apps-ci.yml`,
+   `mobile-distribute.yml` ni `mobile-distribute-main.yml` : ces matrices
+   compilent des APK Flutter via `flutter build apk` et Firebase App
+   Distribution. Une app Expo se distribue par **EAS Build**.
+3. Elle porte son propre `package.json` et son propre `package-lock.json` — le
+   depot n'utilise pas de workspaces npm (decision #7305).
+4. Elle n'introduit aucune dependance Flutter et ne modifie pas `melos.yaml`.
+
+Application presente : `front/mobile_expo/leopardo_mobile_expo/` — Leopardo
+Mobile (socle RH + architecture des verticales alignee sur le web + actions
+d'ecriture des verticales). Build APK :
+
+```bash
+cd front/mobile_expo/leopardo_mobile_expo
+npm install && npm install -g eas-cli
+eas login && eas build:configure
+EXPO_PUBLIC_API_URL=https://api.leopardo-rh.com/api/v1 \
+  eas build -p android --profile preview
+```
+
+Le profil `preview` produit un APK installable. L'URL de l'API est figee au
+build : sans `EXPO_PUBLIC_API_URL`, l'APK pointera vers l'emulateur local.
 
 ## Structure
 
