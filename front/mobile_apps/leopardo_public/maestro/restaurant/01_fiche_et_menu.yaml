@@ -1,0 +1,54 @@
+# Parcours 1/3 — fiche restaurant, menu, recherche, filtre catégorie.
+#
+# ## Pourquoi ce flow ouvre par un lien profond et pas par l'accueil
+#
+# Le client arrive sur cette fiche par un QR code collé sur la table ou par un
+# lien partagé sur WhatsApp — jamais en tapant « Accueil → catégorie →
+# restaurant ». Ouvrir par `-e` reproduit donc le vrai point d'entrée, et
+# vérifie du même coup que la route `/restaurants/{slug}` existe : c'est
+# exactement l'URL que la cible web expose en `location.pathname`.
+appId: com.leopardo.public
+name: Restaurant — fiche et menu
+tags:
+  - restaurant
+  - smoke
+---
+- launchApp:
+    clearState: true
+    arguments:
+      # Route profonde : l'app doit ouvrir directement la fiche.
+      route: /restaurants/${RESTO_SLUG || 'le-bistrot'}
+
+# ── La fiche est chargée ────────────────────────────────────────────────
+# Le champ de recherche n'existe que dans la vue « menu », donc sa présence
+# prouve que le profil a été chargé ET que le menu est publié. Un
+# `assertVisible` sur le nom de l'établissement serait plus fragile : le nom
+# vient du serveur.
+- extendedWaitUntil:
+    visible:
+      id: restaurant-menu-search
+    timeout: 20000
+
+# ── Recherche dans la carte ─────────────────────────────────────────────
+- tapOn:
+    id: restaurant-menu-search
+- inputText: ${RESTO_SEARCH_TERM || 'poulet'}
+- assertVisible:
+    id: restaurant-menu-search
+
+# Effacer la recherche : le bouton « croix » n'a pas de clé (icône standard),
+# donc on vide par le clavier — `eraseText` est déterministe et ne dépend
+# d'aucun libellé.
+- eraseText: 20
+
+# ── Filtre par catégorie ────────────────────────────────────────────────
+# « Tout » est toujours présent : c'est la seule puce dont l'existence ne
+# dépend pas du contenu serveur.
+- assertVisible:
+    id: restaurant-category-all
+- tapOn:
+    id: restaurant-category-all
+
+# ── Le menu est revenu complet ──────────────────────────────────────────
+- assertVisible:
+    id: restaurant-menu-search

@@ -530,9 +530,16 @@ jobs:
       - name: Build web (release)
         working-directory: front/mobile_apps/leopardo_public
         run: |
+          # `--no-wasm-dry-run` : le dry-run wasm est un contrôle OPTIONNEL que
+          # Flutter exécute en plus de dart2js. Sur les SDK récents il échoue
+          # (`Unexpected wasm dry run failure`) et fait échouer tout le build
+          # alors que la compilation dart2js, elle, réussit. Le drapeau ne
+          # change PAS l'artefact produit : il retire un contrôle dont l'échec
+          # n'est pas un échec de compilation.
           flutter build web --release \
             --base-href=/ \
             --pwa-strategy=none \
+            --no-wasm-dry-run \
             --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}
 
       # Vérifie que les marqueurs de la cible web sont bien dans l'artefact :
@@ -564,4 +571,104 @@ jobs:
           name: leopardo-public-web
           path: front/mobile_apps/leopardo_public/build/web
           if-no-files-found: error
+          retention-days: 14
+
+  # ---------------------------------------------------------------------------
+  # Tests E2E Maestro — parcours commande restaurant (#9996)
+  #
+  # ## Pourquoi ce job vit ICI et pas dans un fichier à lui
+  #
+  # Le budget CI du dépôt est gelé à 89 workflows (#9979) : un fichier de plus
+  # le dépasserait et `check-ci-workflow-budget.py` échouerait. Ce job rejoint
+  # donc la chaîne mobile existante, qui couvre déjà `leopardo_public` en
+  # analyze, test et build web — Maestro est le maillon « app réellement
+  # installée » de la même chaîne.
+  #
+  # ## Pourquoi il n'est PAS un check requis
+  #
+  # Un émulateur Android met 3 à 6 minutes à démarrer et le parcours dépend
+  # d'un backend de démonstration joignable. En faire un check requis
+  # bloquerait toutes les PR sur une infrastructure instable — exactement
+  # l'incident que #9979 documente (checks requis ABSENTS, aucune PR
+  # mergeable). Il tourne donc en information, et un échec se lit dans l'onglet
+  # Actions sans bloquer le merge.
+  #
+  # ## Ce qu'il prouve que `flutter test` ne prouve pas
+  #
+  # Les tests widget simulent le serveur et ne voient ni le clavier logiciel ni
+  # le défilement réel. Ce job installe l'APK sur un émulateur et pilote
+  # l'app comme un client : c'est le seul contrôle qui attrape « le bouton de
+  # validation est masqué par le clavier ».
+  # ---------------------------------------------------------------------------
+  maestro-restaurant-e2e:
+    needs: [changes, flutter-analyze]
+    if: needs.changes.outputs.mobile == 'true'
+    timeout-minutes: 45
+    name: E2E Maestro (restaurant)
+    runs-on: ubuntu-latest
+    # Non bloquant : voir le commentaire ci-dessus. `continue-on-error` au
+    # niveau du job garde le run vert tout en publiant le rapport.
+    continue-on-error: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+
+      - name: Setup Flutter + Java
+        uses: ./.github/actions/setup-flutter-android
+        with:
+          flutter-version: '3.50.0'
+
+      - name: Install dependencies
+        working-directory: front/mobile_apps/leopardo_public
+        run: flutter pub get
+
+      - name: Regenerate shared localizations
+        working-directory: front/mobile_apps/leopardo_core
+        run: flutter gen-l10n
+
+      - name: Restore Firebase config from secret (issue #1467)
+        working-directory: front/mobile_apps/leopardo_public
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          set -euo pipefail
+          if [[ -n "${GOOGLE_SERVICES_JSON:-}" ]]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+          else
+            echo "::notice::GOOGLE_SERVICES_JSON absent — build sans Firebase."
+          fi
+
+      - name: Build debug APK
+        working-directory: front/mobile_apps/leopardo_public
+        run: |
+          flutter build apk --debug \
+            --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}
+
+      - name: Install Maestro
+        run: |
+          set -euo pipefail
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Run Maestro flows (restaurant)
+        working-directory: front/mobile_apps/leopardo_public
+        env:
+          RESTO_SLUG: ${{ vars.E2E_RESTO_SLUG || 'le-bistrot' }}
+          RESTO_PRODUCT_CODE: ${{ vars.E2E_RESTO_PRODUCT_CODE || 'demo-1' }}
+        run: |
+          set -euo pipefail
+          maestro test maestro/restaurant/ \
+            --format junit \
+            --output maestro-report.xml
+
+      - name: Publier le rapport Maestro
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: maestro-restaurant-report
+          path: front/mobile_apps/leopardo_public/maestro-report.xml
+          if-no-files-found: warn
           retention-days: 14
