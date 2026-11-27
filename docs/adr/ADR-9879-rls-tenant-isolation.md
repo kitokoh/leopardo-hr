@@ -199,6 +199,52 @@ rejouer la section 2 du script sous **ce** rôle — sinon la première migratio
 suivante créera une table que `leopardo_app` ne peut pas lire (panne au
 déploiement suivant, pas au moment de la bascule).
 
+### Vérification fonctionnelle — l'isolation est-elle RÉELLE ?
+
+`tenant:rls-status` mesure le rôle et les politiques. Il ne prouve pas qu'une
+requête est réellement filtrée. Trois commandes le prouvent, à exécuter après
+la bascule :
+
+```bash
+# 1) Sans tenant publié : 0 ligne, et PAS d'erreur (fail-closed).
+psql "$DATABASE_URL" -c \
+  "SET ROLE leopardo_app; SELECT count(*) FROM shared_tenants.employees;"
+#   attendu : 0
+
+# 2) Avec un tenant publié : uniquement les lignes de CE tenant.
+psql "$DATABASE_URL" -c \
+  "SET ROLE leopardo_app; SET app.current_company_id = '<uuid-entreprise>'; \
+   SELECT count(*) FROM shared_tenants.employees;"
+#   attendu : le nombre d'employés de cette entreprise, pas le total
+
+# 3) Écriture hors tenant : refusée par le WITH CHECK.
+psql "$DATABASE_URL" -c \
+  "SET ROLE leopardo_app; SET app.current_company_id = '<uuid-A>'; \
+   INSERT INTO shared_tenants.employees (company_id, ...) VALUES ('<uuid-B>', ...);"
+#   attendu : ERROR new row violates row-level security policy
+```
+
+**Point d'arrêt** : si (1) renvoie autre chose que `0`, **rollback immédiat**.
+Une fuite inter-tenant est un incident RGPD, pas un bug à planifier.
+
+### Checklist de sortie
+
+- [ ] `tenant:rls-status --strict` renvoie `0`
+- [ ] `SELECT rolsuper, rolbypassrls FROM pg_roles WHERE rolname='leopardo_app'` → `f, f`
+- [ ] Requête sans tenant publié → `0` ligne, sans erreur
+- [ ] Écriture hors tenant → refusée par le `WITH CHECK`
+- [ ] Smoke test applicatif vert (connexion, liste employés, ouverture bulletin)
+- [ ] Logs de démarrage : « RLS effectif »
+- [ ] Mot de passe `leopardo_app` dans le gestionnaire de secrets, **pas** dans le dépôt
+
+### Worker dédié (queue + scheduler) — #9976
+
+La bascule RLS et la séparation du worker sont **indépendantes** : l'une ne
+bloque pas l'autre. La procédure du worker (bloc `type: worker` de
+`render.yaml`, gates `WEB_QUEUE_DRAIN` / `WEB_SCHEDULER_LOOP`, vérification
+`checks.scheduler`) est dans `docs/ops/QUEUE_TOPOLOGY.md` §Bascule. Elle est
+bloquée par le billing Render (402, #7649), pas par le code.
+
 ## Étape 4 — `employees` (#9897)
 
 ### Inventaire des accès légitimes (exigé par l'ADR)
