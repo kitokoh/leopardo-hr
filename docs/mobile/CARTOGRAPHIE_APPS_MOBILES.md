@@ -13,10 +13,28 @@
 | Thème | identité de **surface** par verticale (ADR-0035) | marque du **tenant** (`TenantTheme`) |
 | Modèle d'accès | `user_api` (client), consultation sans compte | `sanctum` (employé) ou guard plateforme |
 | Doctrine | ADR-0034 (web) + ADR-0035 (mobile) | ADR-0035, règle de couche uniquement |
-| Nombre d'apps | **1** (`leopardo_public`) | **10** |
+| Nombre d'apps | **9** (1 multi-verticales + 8 dédiées) | **10** |
 
 Une app par persona, pas une app fourre-tout : c'est ce qui permet des identités
 store distinctes, des permissions distinctes et des cycles de release distincts.
+
+### Grand public : une app par verticale, plus une app de découverte
+
+Depuis la mission « une app par verticale », le canal grand public n'est plus
+une app unique mais **neuf** :
+
+- `leopardo_public` reste l'app **multi-verticales** — celle qui sert le
+  visiteur qui ne sait pas encore ce qu'il cherche, et qui doit pouvoir passer
+d'un restaurant à une pharmacie sans changer d'application ;
+- les **huit apps dédiées** servent le visiteur qui sait déjà — celui qui
+  arrive par `restaurants.leopardo.app` ou par un QR code de boutique.
+
+Le **moteur** (découverte, fiches, parcours des huit verticales, identités de
+vitrine, catalogue de chaînes, thème public) vit dans le package partagé
+`leopardo_surface`. Aucune app ne le duplique : chacune n'assemble que son
+identité produit, son routeur et son `main.dart`. Huit copies d'un moteur de
+~6 800 lignes divergeraient au premier correctif — le dépôt a déjà payé ce prix
+(`check-mobile-duplicated-drift.sh`, #7091).
 
 ## 2. Matrice persona → application (état mesuré)
 
@@ -24,7 +42,34 @@ store distinctes, des permissions distinctes et des cycles de release distincts.
 
 | Persona | App | Identifiant | Plateformes | Contrepartie web | État mesuré |
 |---|---|---|---|---|---|
-| Visiteur / client final / candidat | `leopardo_public` | `com.leopardo.publicapp` | Android + iOS | `front/web/src/app/decouvrir`, `(public)`, `[companySlug]`, 8 verticales `public-surfaces` | 64 fichiers Dart, 17 fichiers de test, 8 verticales au **registre des parcours** (`lib/features/journeys/domain/journey_registry.dart`) |
+| Visiteur / client final / candidat (multi-verticales) | `leopardo_public` | `com.leopardo.publicapp` | Android + iOS + **web** | `front/web/src/app/decouvrir`, `(public)`, `[companySlug]`, 8 verticales `public-surfaces` | `main.dart` + `app_router.dart` (le moteur est dans `leopardo_surface`) ; 13 tests |
+| Client restaurant | `leopardo_restaurant_app` | `com.leopardo.restaurant` | Android + iOS + **web** | `front/web/src/app/restaurants` | identité + routeur + `main.dart` ; 8 tests |
+| Client boutique | `leopardo_retail_app` | `com.leopardo.retail` | Android + iOS + **web** | `front/web/src/app/boutiques` | identité + routeur + `main.dart` ; 8 tests |
+| Client séjour | `leopardo_hospitality_app` | `com.leopardo.hospitality` | Android + iOS + **web** | `front/web/src/app/stay` | identité + routeur + `main.dart` ; 8 tests |
+| Acheteur B2B | `leopardo_trade_app` | `com.leopardo.trade` | Android + iOS + **web** | `front/web/src/app/entreprises` | identité + routeur + `main.dart` ; 8 tests |
+| Voyageur | `leopardo_travel_app` | `com.leopardo.travel` | Android + iOS + **web** | `front/web/src/app/billets` | identité + routeur + `main.dart` ; 8 tests |
+| Patient / client officine | `leopardo_pharmacy_app` | `com.leopardo.pharmacy` | Android + iOS + **web** | `front/web/src/app/pharmacies` | identité + routeur + `main.dart` ; 8 tests |
+| Client transport | `leopardo_mobility_app` | `com.leopardo.mobility` | Android + iOS + **web** | `front/web/src/app/operateurs` | identité + routeur + `main.dart` ; 8 tests |
+| Candidat | `leopardo_careers_app` | `com.leopardo.careers` | Android + iOS + **web** | `front/web/src/app/emploi` | identité + routeur + `main.dart` ; 8 tests |
+
+**Ce qui distingue réellement une app dédiée** (et non une copie de
+`leopardo_public`) :
+
+- l'onglet principal porte le **nom et l'icône de la verticale**
+  (« Restaurants » + icône couverts), pas « Accueil » + loupe ;
+- la **couleur de marque** de la verticale est dans le manifeste web et
+  `theme-color` (restaurant `#C2410C`, retail `#4338CA`, …) ;
+- le **domaine canonique** propre apparaît dans `og:url`
+  (`restaurants.leopardo.app`, …) ;
+- le **deep link** est `leopardo://<vertical>/…` : un QR code de restaurant
+  n'ouvre pas l'app pharmacie ;
+- le **bootstrap social** ne connaît qu'UNE verticale : un chemin d'une autre
+  verticale n'est pas reconnu, et l'app ne prétend pas le servir.
+
+Les huit apps sont produites par
+`dev-hub/tools/generate-vertical-mobile-apps.py` depuis une source unique :
+huit copies manuelles divergeraient au premier oubli, et c'est exactement le
+défaut que `check-mobile-app-identity.sh` (#9110) attrape.
 
 **Conformité au web — ce qui est aligné** : les 8 verticales (`restaurant`, `retail`,
 `hospitality`, `trade`, `travel`, `pharmacy`, `vtc`, `careers`), leurs `basePath`
