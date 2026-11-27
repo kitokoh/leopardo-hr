@@ -1,0 +1,17 @@
+{
+  "_meta": {
+    "title": "Budget de workflows CI (#9979)",
+    "description": "Gelé sur la mesure du 2026-11-27 : 89 workflows, dont 62 mono-job et 35 mono-job déclenchés sur pull_request. Le budget ne peut que descendre ; le relever exige une PR qui explique pourquoi. Modèle de regroupement : guards-fast.yml (41 runs → 12 pour dix gardes, -71 %).",
+    "guard": "dev-hub/tools/check-ci-workflow-budget.py",
+    "measured_on": "2026-11-27",
+    "measured": {
+      "workflows": 89,
+      "mono_job": 62,
+      "on_pull_request": 50,
+      "mono_job_on_pull_request": 35
+    },
+    "target_workflows": 60,
+    "target_note": "Regrouper les 35 mono-job/PR par surface (mobile, web, edge, gouvernance, verticales) : 89 → ~60 sans perdre de couverture."
+  },
+  "max_workflows": 89
+}

@@ -201,6 +201,7 @@ jobs:
       env_hygiene: ${{ steps.filter.outputs.env_hygiene }}
       rls_parity: ${{ steps.filter.outputs.rls_parity }}
       rls_role_script: ${{ steps.filter.outputs.rls_role_script }}
+      ci_workflows: ${{ steps.filter.outputs.ci_workflows }}
       env_parity: ${{ steps.filter.outputs.env_parity }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -308,6 +309,11 @@ jobs:
               - "api/database/scripts/rls/**"
               - "dev-hub/tools/check-rls-role-script.py"
               - ".github/workflows/guards-fast.yml"
+            ci_workflows:
+              - ".github/workflows/**"
+              - "dev-hub/tools/check-ci-workflow-budget.py"
+              - "dev-hub/governance/ci-workflow-budget.json"
+              - "dev-hub/tools/branch-protection-canonical.json"
             env_parity:
               - "api/.env.example"
               - "api/config/**"
@@ -773,3 +779,40 @@ jobs:
       - name: Vérifier le script de bascule
         shell: bash
         run: python3 dev-hub/tools/check-rls-role-script.py --verbose
+
+  # ---------------------------------------------------------------------------
+  # 16/16 — Budget de workflows CI + checks requis jamais orphelins (#9979)
+  #
+  # 89 workflows, dont 62 mono-job et 35 mono-job sur `pull_request`. Le dépôt
+  # documente l'incident réel : file `queued` 99 → 140 en 30 min, et les 3
+  # checks requis d'architecture-check.yml sortis `ABSENT` (pas `queued`, pas
+  # rouge) parce que leur amont `detect-changes` n'obtenait pas de runner. Avec
+  # `enforce_admins: true`, AUCUNE PR n'était mergeable.
+  #
+  # Un check requis ABSENT est indétectable par la garde de protection de
+  # branche : elle ne voit que la liste des contexts attendus, pas leur
+  # existence. Cette garde comble ce trou, et gèle le nombre de workflows.
+  # ---------------------------------------------------------------------------
+  ci-workflow-budget:
+    name: Budget CI + checks requis atteignables
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.ci_workflows == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Installer PyYAML
+        shell: bash
+        run: pip install --quiet pyyaml
+      - name: Auto-test de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-ci-workflow-budget.py --self-test
+      - name: Vérifier le budget et l'atteignabilité des checks requis
+        shell: bash
+        run: python3 dev-hub/tools/check-ci-workflow-budget.py
