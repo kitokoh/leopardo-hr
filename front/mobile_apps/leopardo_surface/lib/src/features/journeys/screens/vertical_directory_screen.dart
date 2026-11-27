@@ -30,10 +30,28 @@ import 'restaurant_order_screen.dart';
 /// - Une verticale dont le contact est bloqué n'affiche pas de bouton de
 ///   contact — elle affiche le motif du registre.
 class VerticalDirectoryScreen extends ConsumerStatefulWidget {
-  const VerticalDirectoryScreen({super.key, required this.verticalCode});
+  const VerticalDirectoryScreen({
+    super.key,
+    required this.verticalCode,
+    this.initialSlug,
+  });
 
   /// Code stable de la verticale (`restaurant`, `retail`, …).
   final String verticalCode;
+
+  /// Slug à ouvrir directement à l'arrivée, ou `null`.
+  ///
+  /// ## Pourquoi ce paramètre existe
+  ///
+  /// La verticale B2B (`trade`) n'a pas d'écran transactionnel : sa fiche EST
+  /// l'annuaire. Son URL publique `/entreprises/{slug}` doit donc ouvrir
+  /// l'annuaire **sur cette entreprise**, pas sur une liste vide. Sans ce
+  /// paramètre, un lien partagé depuis la vitrine web tomberait sur la liste
+  /// complète — l'utilisateur ne verrait pas ce qu'on lui a envoyé.
+  ///
+  /// La sélection est appliquée après le chargement : le slug ne peut pas être
+  /// résolu avant que l'annuaire soit là.
+  final String? initialSlug;
 
   @override
   ConsumerState<VerticalDirectoryScreen> createState() =>
@@ -89,6 +107,19 @@ class _VerticalDirectoryScreenState
       setState(() {
         _directory = directory;
         _loading = false;
+        // Sélection initiale depuis l'URL publique (`/entreprises/{slug}`).
+        // Appliquée APRÈS le chargement : le slug ne peut pas être résolu
+        // avant que l'annuaire soit là. Un slug absent de la liste laisse la
+        // liste affichée — on ne fabrique pas une fiche vide.
+        final wanted = widget.initialSlug;
+        if (wanted != null && wanted.isNotEmpty) {
+          for (final entry in directory.entries) {
+            if (entry.slug == wanted) {
+              _selected = entry;
+              break;
+            }
+          }
+        }
       });
     } catch (error) {
       if (!mounted) return;

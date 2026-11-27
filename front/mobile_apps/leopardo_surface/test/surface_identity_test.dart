@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/surface/domain/surface_identity.dart';
-import 'package:leopardo_public/features/surface/infrastructure/surface_palette_tokens.dart';
-import 'package:leopardo_public/features/surface/infrastructure/surface_theme.dart';
+import 'package:leopardo_surface/src/features/surface/domain/surface_identity.dart';
+import 'package:leopardo_surface/src/features/surface/infrastructure/surface_palette_tokens.dart';
+import 'package:leopardo_surface/src/features/surface/infrastructure/surface_theme.dart';
 
 /// Tests de la feature `surface` — vitrines publiques verticales.
 ///

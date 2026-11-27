@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/core/i18n/app_strings.dart';
+import 'package:leopardo_surface/src/core/i18n/app_strings.dart';
 
 /// Tests du catalogue de messages — le contrat de textes du couloir 16.
 ///

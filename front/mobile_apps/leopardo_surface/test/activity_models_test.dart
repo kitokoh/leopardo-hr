@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/core/i18n/app_strings.dart';
-import 'package:leopardo_public/features/activity/data/public_activity_repository.dart';
+import 'package:leopardo_surface/src/core/i18n/app_strings.dart';
+import 'package:leopardo_surface/src/features/activity/data/public_activity_repository.dart';
 
 /// COULOIR 16 — M3 (#9105) · Modèles de l'onglet Activités.
 ///

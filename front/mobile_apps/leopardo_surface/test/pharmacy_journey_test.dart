@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/journeys/domain/pharmacy_models.dart';
+import 'package:leopardo_surface/src/features/journeys/domain/pharmacy_models.dart';
 
 /// Contrat de la verticale Pharmacie (#9945).
 ///

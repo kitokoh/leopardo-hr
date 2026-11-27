@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/journeys/data/travel_gateway.dart';
-import 'package:leopardo_public/features/journeys/domain/travel_models.dart';
+import 'package:leopardo_surface/src/features/journeys/data/travel_gateway.dart';
+import 'package:leopardo_surface/src/features/journeys/domain/travel_models.dart';
 
 /// Contrat de la verticale Billets (#9943).
 ///

@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/journeys/domain/restaurant_test_keys.dart';
+import 'package:leopardo_surface/leopardo_surface.dart';
 
 /// Garde de cohérence entre les flows Maestro et les clés de test Dart.
 ///

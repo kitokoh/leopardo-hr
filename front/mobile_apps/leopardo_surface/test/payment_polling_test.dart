@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/journeys/domain/payment_polling.dart';
+import 'package:leopardo_surface/src/features/journeys/domain/payment_polling.dart';
 
 /// Tests du planificateur de polling de paiement — #9958.
 ///

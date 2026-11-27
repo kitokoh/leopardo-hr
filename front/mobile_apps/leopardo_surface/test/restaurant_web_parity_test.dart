@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/journeys/domain/restaurant_order_models.dart';
+import 'package:leopardo_surface/src/features/journeys/domain/restaurant_order_models.dart';
 
 /// Écarts web ↔ mobile refermés par la mission de parité restaurant.
 ///

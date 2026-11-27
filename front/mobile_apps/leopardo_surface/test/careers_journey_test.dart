@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/journeys/data/careers_gateway.dart';
-import 'package:leopardo_public/features/journeys/domain/careers_models.dart';
+import 'package:leopardo_surface/src/features/journeys/data/careers_gateway.dart';
+import 'package:leopardo_surface/src/features/journeys/domain/careers_models.dart';
 
 /// Contrat de la verticale Emploi (#9944).
 ///

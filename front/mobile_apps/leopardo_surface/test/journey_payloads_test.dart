@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/journeys/data/contact_request_gateway.dart';
-import 'package:leopardo_public/features/journeys/data/retail_order_gateway.dart';
-import 'package:leopardo_public/features/journeys/data/stay_reservation_gateway.dart';
-import 'package:leopardo_public/features/journeys/domain/journey_models.dart';
+import 'package:leopardo_surface/src/features/journeys/data/contact_request_gateway.dart';
+import 'package:leopardo_surface/src/features/journeys/data/retail_order_gateway.dart';
+import 'package:leopardo_surface/src/features/journeys/data/stay_reservation_gateway.dart';
+import 'package:leopardo_surface/src/features/journeys/domain/journey_models.dart';
 
 /// Les corps de requête sont testés SANS réseau, contre les règles serveur.
 ///

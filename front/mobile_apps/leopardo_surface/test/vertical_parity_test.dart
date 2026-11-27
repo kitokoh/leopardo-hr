@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/journeys/data/vertical_directory_gateway.dart';
-import 'package:leopardo_public/features/journeys/domain/journey_registry.dart';
-import 'package:leopardo_public/features/journeys/domain/vertical_directory_models.dart';
+import 'package:leopardo_surface/src/features/journeys/data/vertical_directory_gateway.dart';
+import 'package:leopardo_surface/src/features/journeys/domain/journey_registry.dart';
+import 'package:leopardo_surface/src/features/journeys/domain/vertical_directory_models.dart';
 
 /// Contrat des cinq verticales restantes (#9948).
 ///

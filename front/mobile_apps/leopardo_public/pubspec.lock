@@ -788,6 +788,13 @@ packages:
       relative: true
     source: path
     version: "1.0.0+1"
+  leopardo_surface:
+    dependency: "direct main"
+    description:
+      path: "../leopardo_surface"
+      relative: true
+    source: path
+    version: "1.0.0+1"
   lints:
     dependency: transitive
     description:

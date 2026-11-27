@@ -6,8 +6,8 @@
 library;
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/brand/domain/brand.dart';
-import 'package:leopardo_public/features/brand/infrastructure/brand_api.dart';
+import 'package:leopardo_surface/src/features/brand/domain/brand.dart';
+import 'package:leopardo_surface/src/features/brand/infrastructure/brand_api.dart';
 
 Map<String, dynamic> validDto() => <String, dynamic>{
       'slug': 'chez-lea',

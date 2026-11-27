@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/core/i18n/app_strings.dart';
-import 'package:leopardo_public/core/widgets/state_widgets.dart';
+import 'package:leopardo_surface/src/core/i18n/app_strings.dart';
+import 'package:leopardo_surface/src/core/widgets/state_widgets.dart';
 
 /// Tests des 7 états obligatoires.
 ///

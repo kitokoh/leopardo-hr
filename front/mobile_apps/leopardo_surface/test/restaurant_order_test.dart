@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/journeys/data/restaurant_order_gateway.dart';
-import 'package:leopardo_public/features/journeys/domain/restaurant_order_models.dart';
+import 'package:leopardo_surface/src/features/journeys/data/restaurant_order_gateway.dart';
+import 'package:leopardo_surface/src/features/journeys/domain/restaurant_order_models.dart';
 
 /// Tests du contrat de commande restaurant par slug — #9959.
 ///

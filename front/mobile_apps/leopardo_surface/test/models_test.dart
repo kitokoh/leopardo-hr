@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/business_profile/models/business_profile.dart';
-import 'package:leopardo_public/features/discovery/models/discovery_category.dart';
-import 'package:leopardo_public/features/discovery/models/discovery_item.dart';
+import 'package:leopardo_surface/src/features/business_profile/models/business_profile.dart';
+import 'package:leopardo_surface/src/features/discovery/models/discovery_category.dart';
+import 'package:leopardo_surface/src/features/discovery/models/discovery_item.dart';
 
 /// Tests des modèles de découverte et de fiche.
 ///

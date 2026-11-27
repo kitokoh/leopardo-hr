@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/features/journeys/domain/journey_registry.dart';
+import 'package:leopardo_surface/src/features/journeys/domain/journey_registry.dart';
 
 /// Parité web ↔ mobile des verticales boutique, séjour et billets (#9997-#9999).
 ///
@@ -21,12 +21,12 @@ import 'package:leopardo_public/features/journeys/domain/journey_registry.dart';
 ///
 /// `appRouterProvider` construit un `GoRouter` complet (4 branches, 15 routes,
 /// providers Riverpod) : le monter dans un test unitaire demanderait de
-/// simuler toute la coque. Lire `app_shell.dart` vérifie exactement ce qui
+/// simuler toute la coque. Lire `surface_router.dart` vérifie exactement ce qui
 /// compte ici — la présence et la cible de chaque route — sans cette
 /// dépendance. Le test échoue si le fichier disparaît, donc il ne peut pas
 /// passer silencieusement.
 void main() {
-  final shell = File('lib/core/navigation/app_shell.dart');
+  final shell = File('lib/src/core/navigation/surface_router.dart');
 
   late String source;
 
@@ -34,7 +34,7 @@ void main() {
     expect(
       shell.existsSync(),
       isTrue,
-      reason: 'app_shell.dart doit exister : c\'est le routeur de l\'app',
+      reason: 'surface_router.dart doit exister : c\'est le routeur de l\'app',
     );
     source = shell.readAsStringSync();
   });
@@ -45,7 +45,7 @@ void main() {
       source.contains("path: '$path'"),
       isTrue,
       reason:
-          'La route publique `$path` est absente de app_shell.dart. Sans elle, '
+          'La route publique `$path` est absente de surface_router.dart. Sans elle, '
           'un lien partagé depuis la vitrine web tombe sur le 404 de l\'app.',
     );
 

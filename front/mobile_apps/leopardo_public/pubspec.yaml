@@ -40,6 +40,11 @@ dependencies:
   url_launcher: ^6.3.3
   leopardo_core:
     path: ../leopardo_core
+  # Le MOTEUR commun des apps grand public (découverte, fiches, parcours des
+  # huit verticales, identités de vitrine). Extrait de cette app pour que les
+  # huit applications dédiées le partagent au lieu d'en copier 6 800 lignes.
+  leopardo_surface:
+    path: ../leopardo_surface
 
 dev_dependencies:
   flutter_test:

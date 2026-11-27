@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/core/theme/public_theme.dart';
+import 'package:leopardo_surface/src/core/theme/public_theme.dart';
 
 /// Garde du thème grand public (#9359).
 ///

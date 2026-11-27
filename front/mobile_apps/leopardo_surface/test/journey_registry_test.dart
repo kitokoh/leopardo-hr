@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/core/i18n/app_strings.dart';
-import 'package:leopardo_public/features/journeys/data/contact_request_gateway.dart';
-import 'package:leopardo_public/features/journeys/domain/journey_registry.dart';
+import 'package:leopardo_surface/src/core/i18n/app_strings.dart';
+import 'package:leopardo_surface/src/features/journeys/data/contact_request_gateway.dart';
+import 'package:leopardo_surface/src/features/journeys/domain/journey_registry.dart';
 
 /// Le registre des parcours est la seule chose qui empêche une verticale de
 /// disparaître en silence.
