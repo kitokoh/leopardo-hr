@@ -42,7 +42,7 @@ Completer la grille des packs metier, y compris les deux verticales ajoutees en 
 | 10 | VID-10 | Ecole : etablissements, classes, notes | Redige |
 | 11 | VID-11 | Station-service : le litre, le poste, la marge | Redige |
 | 12 | VID-12 | VTC : reserver, dispatcher au plus proche, suivre | Redige |
-| 13 | VID-24 | Farm OS : la parcelle, le troupeau, la recolte, la marge | Redige |
+| 13 | VID-24 | Farm OS : la parcelle, le troupeau, la recolte, la tracabilite | Redige |
 | 14 | VID-25 | International Trade OS : du RFQ au cout rendu | Redige |
 
 **Pourquoi cet ordre :** Sante, ecole, station-service et VTC ferment la grille historique. Farm OS et International Trade OS arrivent ici : leurs captures d'ecran demandent un environnement de demonstration dedie (parcellaire, RFQ) qui n'existe pas encore sur le site public.
@@ -971,7 +971,7 @@ AUTO-CONTROLE AVANT LIVRAISON :
 - versions 16:9 / 9:16 / 1:1 exportees
 ```
 
-### VID-24 — Farm OS : la parcelle, le troupeau, la recolte, la marge
+### VID-24 — Farm OS : la parcelle, le troupeau, la recolte, la tracabilite
 
 - **Format :** 16:9 · **Duree :** 60 s · **Audience :** Agriculteurs, eleveurs, exploitations et cooperatives agricoles
 - **Statut de production :** Redige
@@ -990,7 +990,7 @@ AUTO-CONTROLE AVANT LIVRAISON :
 
 **Son :** Cordes basses et percussions organiques, 95 BPM, respiration lente.
 
-**Notes :** Chiffres verifies dans le depot au 2026-11-26 : 84 routes (api/routes/modules/farm_os.php), 73 chemins OpenAPI /farm/, 31 tables tenant (7 migrations), 13 capacites activables, 16 activites agricoles. Ne pas afficher de rendement ni de marge chiffree : le produit ne les invente pas (ADR-FARM-0003, honnetete des donnees). Afficher des libelles, jamais des valeurs.
+**Notes :** Chiffres verifies dans le depot au 2026-11-26 : 84 routes (api/routes/modules/farm_os.php), 73 chemins OpenAPI /farm/, 31 tables tenant (7 migrations), 13 capacites activables, 16 activites agricoles. Ne pas afficher de rendement ni de marge chiffree : le produit ne les invente pas (ADR-FARM-0003, honnetete des donnees). Le rendement est DECLARE par l'exploitant (attendus et reels, sur le cycle cultural) et n'est jamais estime par le systeme : ne jamais montrer de rendement calcule. Afficher des libelles, jamais des valeurs.
 
 #### Prompt pour agent IA de production
 
@@ -1028,7 +1028,7 @@ CONTRAINTES NON NEGOCIABLES :
 4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l'ecran.
 5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
 6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l'ecran.
-7. Consignes de tournage du script : Chiffres verifies dans le depot au 2026-11-26 : 84 routes (api/routes/modules/farm_os.php), 73 chemins OpenAPI /farm/, 31 tables tenant (7 migrations), 13 capacites activables, 16 activites agricoles. Ne pas afficher de rendement ni de marge chiffree : le produit ne les invente pas (ADR-FARM-0003, honnetete des donnees). Afficher des libelles, jamais des valeurs.
+7. Consignes de tournage du script : Chiffres verifies dans le depot au 2026-11-26 : 84 routes (api/routes/modules/farm_os.php), 73 chemins OpenAPI /farm/, 31 tables tenant (7 migrations), 13 capacites activables, 16 activites agricoles. Ne pas afficher de rendement ni de marge chiffree : le produit ne les invente pas (ADR-FARM-0003, honnetete des donnees). Le rendement est DECLARE par l'exploitant (attendus et reels, sur le cycle cultural) et n'est jamais estime par le systeme : ne jamais montrer de rendement calcule. Afficher des libelles, jamais des valeurs.
 
 SORTIES ATTENDUES :
 - leopardo_vid24_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)

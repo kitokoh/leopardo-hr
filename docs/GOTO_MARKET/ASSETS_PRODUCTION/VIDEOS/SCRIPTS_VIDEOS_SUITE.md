@@ -1233,7 +1233,7 @@ AUTO-CONTROLE
 | 10-24 s | 3 plans produit | Parcelle : superficie, source de la superficie, culture et cycle cultural · Intrants : stock, seuil d'alerte, lots · Recolte : lot de recolte, quantite recoltee, qualite, destination de stockage |
 | 24-30 s | Signature | « Leopardo, pour l'agriculture. » + CTA |
 
-**Note de montage :** Farm OS enregistre des rendements **déclarés** par l'exploitant (attendus et réels, portés par le cycle cultural), mais ne les **estime jamais** automatiquement — c'est la règle écrite dans `FarmProductionType` (« aucune estimation automatique de rendement »). Ne jamais montrer de rendement calculé par le système, ni de marge. Chaque superficie porte sa source (déclarée, mesurée, importée) : c'est ce qui distingue un chiffre d'une estimation. Une récolte crée un seul lot de stock, et ce lot garde sa traçabilité jusqu'à la vente.
+**Note de montage :** Farm OS enregistre des rendements **déclarés** par l'exploitant (attendus et réels, portés par le cycle cultural), mais ne les **estime jamais** automatiquement — c'est la règle écrite dans `FarmProductionType` (« aucune estimation automatique de rendement »). Ne jamais montrer de rendement calculé par le système, ni de marge. Chaque superficie porte sa source (déclarée, mesurée, importée), conformément à **ADR-FARM-0003** (`docs/mission-farm-os/01_tad.md` §6) : c'est ce qui distingue un chiffre d'une estimation. Une récolte crée un seul lot de stock, et ce lot garde sa traçabilité jusqu'à la vente.
 
 #### Prompt pour agent IA de production — D11
 
@@ -1254,7 +1254,7 @@ CONTRAINTES NON NEGOCIABLES
 4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
 5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
 6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
-7. Farm OS enregistre des rendements declares par l'exploitant (attendus et reels) mais ne les estime jamais automatiquement : ne jamais montrer de rendement calcule par le systeme, ni de marge. Chaque superficie porte sa source (declaree, mesuree, importee) : ne jamais afficher une superficie sans sa source. Une recolte cree un seul lot de stock qui garde sa tracabilite jusqu'a la parcelle : ne pas montrer de lot sans lien vers la parcelle.
+7. Farm OS enregistre des rendements declares par l'exploitant (attendus et reels) mais ne les estime jamais automatiquement : ne jamais montrer de rendement calcule par le systeme, ni de marge. Chaque superficie porte sa source (declaree, mesuree, importee), conformement a ADR-FARM-0003 : ne jamais afficher une superficie sans sa source. Une recolte cree un seul lot de stock qui garde sa tracabilite jusqu'a la parcelle : ne pas montrer de lot sans lien vers la parcelle.
 
 SORTIES
 - leopardo_d11_agriculture_{lang}_{ratio}_v1.mp4 / .srt / .vtt
@@ -1613,7 +1613,7 @@ python3 docs/DISTRIBUTION/scripts/generate-video-brief.py --vertical-all --cible
 
 Les 9 briefs sont dans `docs/DISTRIBUTION/VIDEOS/briefs/verticale__<objet>__<cible>.md`. Ils contiennent le plan minuté, la note de montage, les preuves à l'écran, les UTM et le **prompt de production** — les mêmes contraintes que le script, plus une contrainte propre au module. Seuls les `[A COMPLETER]` de tournage (lieu, date, `utm_content`) restent à renseigner : ce sont des données de plateau, pas des données produit.
 
-> **Correction de véracité du 2026-11-28.** Le brief D11 affirmait que Farm OS « n'affiche jamais de rendement chiffré ». C'est faux : `CropCycle` porte `expected_yield_value` / `actual_yield_value`. La règle réelle, écrite dans `FarmProductionType`, est que Farm OS **n'estime jamais** un rendement automatiquement — l'exploitant le **déclare**. Le brief et le script disent désormais cela, et interdisent seulement le rendement *calculé par le système*.
+> **Correction de véracité du 2026-11-28.** Le brief D11 affirmait que Farm OS « n'affiche jamais de rendement chiffré ». C'est faux : `CropCycle` porte `expected_yield_value` / `actual_yield_value`. La règle réelle, écrite dans `FarmProductionType`, est que Farm OS **n'estime jamais** un rendement automatiquement — l'exploitant le **déclare**. Le brief et le script disent désormais cela, et interdisent seulement le rendement *calculé par le système*. La même imprécision existait dans **VID-24**, dont le titre promettait « la marge » alors que ses propres notes l'interdisent : titre et notes corrigés.
 
 ---
 

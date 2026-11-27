@@ -35,7 +35,7 @@
 | 10-24 s | 3 plans produit | Parcelle : superficie, source de la superficie, culture et cycle cultural · Intrants : stock, seuil d'alerte, lots · Recolte : lot de recolte, quantite recoltee, qualite, destination de stockage |
 | 24-30 s | Signature | « Leopardo, pour l'agriculture. » + CTA |
 
-**Note de montage.** Farm OS enregistre des rendements DECLARES par l'exploitant (attendus et reels, sur le cycle cultural), mais ne les ESTIME jamais automatiquement : c'est la regle du registre FarmProductionType (« aucune estimation automatique de rendement »). Ne jamais montrer de rendement calcule par le systeme, ni de marge. Chaque superficie porte sa source (declaree, mesuree, importee) : c'est ce qui distingue un chiffre d'une estimation. Une recolte cree un seul lot de stock, et ce lot garde sa tracabilite jusqu'a la vente.
+**Note de montage.** Farm OS enregistre des rendements DECLARES par l'exploitant (attendus et reels, sur le cycle cultural), mais ne les ESTIME jamais automatiquement : c'est la regle du registre FarmProductionType (« aucune estimation automatique de rendement »). Ne jamais montrer de rendement calcule par le systeme, ni de marge. Chaque superficie porte sa source (declaree, mesuree, importee), conformement a ADR-FARM-0003 (docs/mission-farm-os/01_tad.md §6) : c'est ce qui distingue un chiffre d'une estimation. Une recolte cree un seul lot de stock, et ce lot garde sa tracabilite jusqu'a la vente.
 
 ## Preuves a l'ecran
 
@@ -76,7 +76,7 @@ CONTRAINTES NON NEGOCIABLES
 4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
 5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
 6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
-7. Farm OS enregistre des rendements declares par l'exploitant (attendus et reels) mais ne les estime jamais automatiquement : ne jamais montrer de rendement calcule par le systeme, ni de marge. Chaque superficie porte sa source (declaree, mesuree, importee) : ne jamais afficher une superficie sans sa source. Une recolte cree un seul lot de stock qui garde sa tracabilite jusqu'a la parcelle : ne pas montrer de lot sans lien vers la parcelle.
+7. Farm OS enregistre des rendements declares par l'exploitant (attendus et reels) mais ne les estime jamais automatiquement : ne jamais montrer de rendement calcule par le systeme, ni de marge. Chaque superficie porte sa source (declaree, mesuree, importee), conformement a ADR-FARM-0003 : ne jamais afficher une superficie sans sa source. Une recolte cree un seul lot de stock qui garde sa tracabilite jusqu'a la parcelle : ne pas montrer de lot sans lien vers la parcelle.
 
 SORTIES
 - leopardo_d11_agriculture_{lang}_{ratio}_v1.mp4 / .srt / .vtt
