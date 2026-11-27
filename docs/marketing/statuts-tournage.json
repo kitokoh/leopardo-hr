@@ -36,7 +36,7 @@
     "desc": "Video publiee sur au moins un canal."
    }
   ],
-  "updated_at": "2026-11-27T16:00:00Z"
+  "updated_at": "2026-11-27T16:30:00Z"
  },
  "statuts": {
   "VID-01": {
@@ -101,9 +101,9 @@
   },
   "VID-05": {
    "statut": "redige",
-   "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+   "observation": "Script detaille D1 ajoute au programme SUITE (section 6.7) : ecran cuisine comme poste de travail, pas comme affichage.",
    "auteur": "QA Agent (Teamily)",
-   "date_modification": "2026-11-26T06:36:41Z",
+   "date_modification": "2026-11-27T16:30:00Z",
    "historique": [
     {
      "date": "2026-11-26T06:36:41Z",
@@ -111,14 +111,21 @@
      "statut": "a_ecrire",
      "observation": "Initialisation du suivi de production.",
      "action": "creation"
+    },
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script detaille D1 ajoute au programme SUITE (section 6.7) : ecran cuisine comme poste de travail, pas comme affichage.",
+     "action": "script_detaille"
     }
    ]
   },
   "VID-06": {
    "statut": "redige",
-   "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+   "observation": "Script detaille D10 ajoute au programme SUITE (section 6.14) : consentement aux notifications enregistre et date.",
    "auteur": "QA Agent (Teamily)",
-   "date_modification": "2026-11-26T06:36:41Z",
+   "date_modification": "2026-11-27T16:30:00Z",
    "historique": [
     {
      "date": "2026-11-26T06:36:41Z",
@@ -126,14 +133,21 @@
      "statut": "a_ecrire",
      "observation": "Initialisation du suivi de production.",
      "action": "creation"
+    },
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script detaille D10 ajoute au programme SUITE (section 6.14) : consentement aux notifications enregistre et date.",
+     "action": "script_detaille"
     }
    ]
   },
   "VID-07": {
    "statut": "redige",
-   "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+   "observation": "Script detaille D4 ajoute au programme SUITE (section 6.9) : fiche publique sans stock ni prix.",
    "auteur": "QA Agent (Teamily)",
-   "date_modification": "2026-11-26T06:36:41Z",
+   "date_modification": "2026-11-27T16:30:00Z",
    "historique": [
     {
      "date": "2026-11-26T06:36:41Z",
@@ -141,14 +155,21 @@
      "statut": "a_ecrire",
      "observation": "Initialisation du suivi de production.",
      "action": "creation"
+    },
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script detaille D4 ajoute au programme SUITE (section 6.9) : fiche publique sans stock ni prix.",
+     "action": "script_detaille"
     }
    ]
   },
   "VID-08": {
    "statut": "redige",
-   "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+   "observation": "Script detaille D3 ajoute au programme SUITE (section 6.8). CORRECTION : le module HospitalityManager ne gere aucun menage ni housekeeping (aucun modele, service ni route verifie le 2026-11-27) ; la voix off et la contrainte de tournage ne le promettent plus.",
    "auteur": "QA Agent (Teamily)",
-   "date_modification": "2026-11-26T06:36:41Z",
+   "date_modification": "2026-11-27T16:30:00Z",
    "historique": [
     {
      "date": "2026-11-26T06:36:41Z",
@@ -156,14 +177,21 @@
      "statut": "a_ecrire",
      "observation": "Initialisation du suivi de production.",
      "action": "creation"
+    },
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script detaille D3 ajoute au programme SUITE (section 6.8). CORRECTION : le module HospitalityManager ne gere aucun menage ni housekeeping (aucun modele, service ni route verifie le 2026-11-27) ; la voix off et la contrainte de tournage ne le promettent plus.",
+     "action": "script_detaille"
     }
    ]
   },
   "VID-09": {
    "statut": "redige",
-   "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+   "observation": "Script detaille D5 ajoute au programme SUITE (section 6.10) : donnees sensibles chiffrees et affichees masquees.",
    "auteur": "QA Agent (Teamily)",
-   "date_modification": "2026-11-26T06:36:41Z",
+   "date_modification": "2026-11-27T16:30:00Z",
    "historique": [
     {
      "date": "2026-11-26T06:36:41Z",
@@ -171,14 +199,21 @@
      "statut": "a_ecrire",
      "observation": "Initialisation du suivi de production.",
      "action": "creation"
+    },
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script detaille D5 ajoute au programme SUITE (section 6.10) : donnees sensibles chiffrees et affichees masquees.",
+     "action": "script_detaille"
     }
    ]
   },
   "VID-10": {
    "statut": "redige",
-   "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+   "observation": "Script detaille D6 ajoute au programme SUITE (section 6.11) : bulletin construit/valide/publie, lien parents a duree limitee.",
    "auteur": "QA Agent (Teamily)",
-   "date_modification": "2026-11-26T06:36:41Z",
+   "date_modification": "2026-11-27T16:30:00Z",
    "historique": [
     {
      "date": "2026-11-26T06:36:41Z",
@@ -186,14 +221,21 @@
      "statut": "a_ecrire",
      "observation": "Initialisation du suivi de production.",
      "action": "creation"
+    },
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script detaille D6 ajoute au programme SUITE (section 6.11) : bulletin construit/valide/publie, lien parents a duree limitee.",
+     "action": "script_detaille"
     }
    ]
   },
   "VID-11": {
    "statut": "redige",
-   "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+   "observation": "Script detaille D7 ajoute au programme SUITE (section 6.12) : cloture sur ecart, jamais sur marge.",
    "auteur": "QA Agent (Teamily)",
-   "date_modification": "2026-11-26T06:36:41Z",
+   "date_modification": "2026-11-27T16:30:00Z",
    "historique": [
     {
      "date": "2026-11-26T06:36:41Z",
@@ -201,14 +243,21 @@
      "statut": "a_ecrire",
      "observation": "Initialisation du suivi de production.",
      "action": "creation"
+    },
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script detaille D7 ajoute au programme SUITE (section 6.12) : cloture sur ecart, jamais sur marge.",
+     "action": "script_detaille"
     }
    ]
   },
   "VID-12": {
    "statut": "redige",
-   "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+   "observation": "Script detaille D8 ajoute au programme SUITE (section 6.13) : prix = estimation, distance calculee par le noyau geospatial.",
    "auteur": "QA Agent (Teamily)",
-   "date_modification": "2026-11-26T06:36:41Z",
+   "date_modification": "2026-11-27T16:30:00Z",
    "historique": [
     {
      "date": "2026-11-26T06:36:41Z",
@@ -216,6 +265,13 @@
      "statut": "a_ecrire",
      "observation": "Initialisation du suivi de production.",
      "action": "creation"
+    },
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script detaille D8 ajoute au programme SUITE (section 6.13) : prix = estimation, distance calculee par le noyau geospatial.",
+     "action": "script_detaille"
     }
    ]
   },
@@ -386,9 +442,9 @@
   },
   "VID-24": {
    "statut": "redige",
-   "observation": "Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.",
+   "observation": "Script detaille D11 ajoute au programme SUITE (section 6.15) : superficie toujours avec sa source, aucun rendement chiffre.",
    "auteur": "QA Agent (Teamily)",
-   "date_modification": "2026-11-26T06:36:41Z",
+   "date_modification": "2026-11-27T16:30:00Z",
    "historique": [
     {
      "date": "2026-11-26T06:36:41Z",
@@ -396,6 +452,13 @@
      "statut": "a_ecrire",
      "observation": "Initialisation du suivi de production.",
      "action": "creation"
+    },
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script detaille D11 ajoute au programme SUITE (section 6.15) : superficie toujours avec sa source, aucun rendement chiffre.",
+     "action": "script_detaille"
     }
    ]
   },
@@ -518,6 +581,102 @@
    "observation": "Script 9:16 redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage a ce jour.",
    "auteur": "QA Agent (Teamily)",
    "date_modification": "2026-11-26T19:33:16Z"
+  },
+  "VID-33": {
+   "titre": "Livraison — « La preuve, pas la promesse »",
+   "statut": "redige",
+   "observation": "Script cree (D9) : tournees et arrets, preuve de livraison, suivi destinataire avec opt-out, encaissements COD reconcilies.",
+   "auteur": "QA Agent (Teamily)",
+   "date_modification": "2026-11-27T16:30:00Z",
+   "historique": [
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script cree (D9) : tournees et arrets, preuve de livraison, suivi destinataire avec opt-out, encaissements COD reconcilies.",
+     "action": "creation"
+    }
+   ]
+  },
+  "VID-34": {
+   "titre": "Bibliotheque — « Le catalogue qui se lit »",
+   "statut": "redige",
+   "observation": "Script cree (D12) : ressources numeriques (book/ebook/guide/manual/report/article), 5 modeles d'acces, achat a l'unite, progression de lecture.",
+   "auteur": "QA Agent (Teamily)",
+   "date_modification": "2026-11-27T16:30:00Z",
+   "historique": [
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script cree (D12) : ressources numeriques (book/ebook/guide/manual/report/article), 5 modeles d'acces, achat a l'unite, progression de lecture.",
+     "action": "creation"
+    }
+   ]
+  },
+  "VID-35": {
+   "titre": "Flotte & cameras — « Le parc sous controle »",
+   "statut": "redige",
+   "observation": "Script cree (D14) : vehicules et affectations, echeances assurance/controle technique, cameras IP avec jeton d'acces temporaire et journal d'acces, alertes dedupliquees.",
+   "auteur": "QA Agent (Teamily)",
+   "date_modification": "2026-11-27T16:30:00Z",
+   "historique": [
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script cree (D14) : vehicules et affectations, echeances assurance/controle technique, cameras IP avec jeton d'acces temporaire et journal d'acces, alertes dedupliquees.",
+     "action": "creation"
+    }
+   ]
+  },
+  "VID-36": {
+   "titre": "Commerce de detail — « La caisse, le stock, la boutique »",
+   "statut": "redige",
+   "observation": "Script cree : caisse POS avec session et cloture sur ecart, stock par mouvements traces, boutique en ligne, marketplace Leopardo Marche en opt-in.",
+   "auteur": "QA Agent (Teamily)",
+   "date_modification": "2026-11-27T16:30:00Z",
+   "historique": [
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script cree : caisse POS avec session et cloture sur ecart, stock par mouvements traces, boutique en ligne, marketplace Leopardo Marche en opt-in.",
+     "action": "creation"
+    }
+   ]
+  },
+  "VID-37": {
+   "titre": "Cagnottes solidaires — « La collecte, du don au versement »",
+   "statut": "redige",
+   "observation": "Script cree : cagnotte publiee par lien court, contributions carte et mobile money, suivi en direct, reversement au beneficiaire. Aucun recu fiscal automatique (phase 2).",
+   "auteur": "QA Agent (Teamily)",
+   "date_modification": "2026-11-27T16:30:00Z",
+   "historique": [
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script cree : cagnotte publiee par lien court, contributions carte et mobile money, suivi en direct, reversement au beneficiaire. Aucun recu fiscal automatique (phase 2).",
+     "action": "creation"
+    }
+   ]
+  },
+  "VID-38": {
+   "titre": "Cabinet comptable — « Les pieces, le lettrage, l'export »",
+   "statut": "redige",
+   "observation": "Script cree : partage documentaire a duree limitee, pieces et statuts, lettrage, export FEC (norme DGFiP), cloture d'exercice.",
+   "auteur": "QA Agent (Teamily)",
+   "date_modification": "2026-11-27T16:30:00Z",
+   "historique": [
+    {
+     "date": "2026-11-27T16:30:00Z",
+     "auteur": "QA Agent (Teamily)",
+     "statut": "redige",
+     "observation": "Script cree : partage documentaire a duree limitee, pieces et statuts, lettrage, export FEC (norme DGFiP), cloture d'exercice.",
+     "action": "creation"
+    }
+   ]
   }
  }
 }

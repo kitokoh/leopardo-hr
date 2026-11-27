@@ -11,7 +11,7 @@
       "beats.vo",
       "beats.text"
     ],
-    "updated_at": "2026-11-26T19:40:00Z"
+    "updated_at": "2026-11-27T09:30:00Z"
   },
   "categories": {
     "presentation-solution": {
@@ -69,7 +69,7 @@
   },
   "scripts": {
     "VID-01": {
-      "title": "Leopardo, sahadaki sirketlerin Business OS'i (ana film)",
+      "title": "Leopardo, sahadaki sirketler icin isletme yonetimi paketi (ana film)",
       "objective": "90 saniyede Leopardo'nun neyi degistirdigini ve kimin icin yapildigini anlatmak. 30 ve 15 saniyelik kesitlerin turedigi ana film.",
       "hook": "Her saha sirketinin hala kullandigi uc arac: kagit puantaj, bordro tablosu, WhatsApp grubu.",
       "cta": "kitokoh.github.io/leopardo-hr adresinde 14 gun ucretsiz deneyin veya demo isteyin.",
@@ -95,8 +95,8 @@
           "text": "Tek cekirdek. Sekiz dikey."
         },
         {
-          "vo": "31 is modulu, 994 acik API ucu, 8 Flutter uygulamasi ve siki cok kiracili izolasyon.",
-          "text": "31 modul - 994 uc - 8 uygulama"
+          "vo": "42 is modulu, 1.984 belgelenmis API yolu, 11 Flutter uygulamasi ve siki cok kiracili izolasyon.",
+          "text": "42 modul - 1.984 API yolu - 11 uygulama"
         },
         {
           "vo": "On dort gun deneme, kredi karti yok. Is paketleri dahil. Otuz dakikadan kisa surede kurulum.",
@@ -145,7 +145,7 @@
           "text": "Bir."
         },
         {
-          "vo": "Leopardo. Sahadaki sirketlerin Business OS'i.",
+          "vo": "Leopardo. Sahadaki sirketler icin isletme yonetimi paketi.",
           "text": "Leopardo"
         }
       ],
@@ -174,8 +174,8 @@
           "text": "21 ulkede pilot bordro kurallari."
         },
         {
-          "vo": "Dorduncu adim: aciklik. 994 belgelenmis API ucu, webhook'lar ve sektorunuze gore etkinlestirdiginiz is paketleri.",
-          "text": "994 uc - etkinlestirilebilir paketler"
+          "vo": "Dorduncu adim: aciklik. 1.984 belgelenmis API yolu, webhook'lar ve sektorunuze gore etkinlestirdiginiz is paketleri.",
+          "text": "1.984 API yolu - etkinlestirilebilir paketler"
         },
         {
           "vo": "Cok kiracili izolasyon, RBAC, denetim kaydi. Veriniz sizin kalir: bulutta veya kendi sunucunuzda.",
@@ -294,7 +294,7 @@
           "text": "Sozlesmeler ve kiralar"
         },
         {
-          "vo": "Kat hizmetleri, bakim ve ekipler ayni sisteme akar.",
+          "vo": "Ekipman, bakim ve ekipler ayni sisteme akar.",
           "text": "Paket dahil"
         }
       ],
@@ -953,6 +953,180 @@
         {
           "vo": "VTC: aramadan yolculuga. Tam film bio'da.",
           "text": "Tam film bio'da"
+        }
+      ]
+    },
+    "VID-33": {
+      "title": "Teslimat: tur, kanit, takip",
+      "objective": "Delivery modulunu (BC-26) goster: turlar ve duraklar, teslimat kaniti (POD), alici takibi ve muhasebe ile mutabik kapida odeme (COD) tahsilatlari.",
+      "hook": "Kanitsiz teslim edilen bir koli, baslayan bir itirazdir.",
+      "cta": "Delivery modulunu urun sitesinden etkinlestirin, paket ucreti yok.",
+      "audience": "Tasimacilar, teslimat acenteleri, e-ticaret saticilari, teslimat yapan restoranlar",
+      "beats": [
+        {
+          "vo": "Kanitsiz teslim edilen bir koli, baslayan bir itirazdir.",
+          "text": "Teslim edildi mi, edilmedi mi?"
+        },
+        {
+          "vo": "Delivery modulu turu duzenler: alimlar, duraklar, gecis sirasi ve her duragin durumu.",
+          "text": "Tur & duraklar"
+        },
+        {
+          "vo": "Her durakta bir teslimat kaniti: fotograf, imza, zaman damgasi. Kolinin bir izi var, bir sozu degil.",
+          "text": "Teslimat kaniti (POD)"
+        },
+        {
+          "vo": "Alici, paylasilan takip baglantisiyla teslimatini izler ve bildirimlerden cikabilir.",
+          "text": "Alici takibi & bildirimden cikma"
+        },
+        {
+          "vo": "Kapida odeme tahsilatlari muhasebe ile mutabik hale gelir. Delivery modulu ucretsizdir: sektoru degil, platformu odersiniz.",
+          "text": "COD tahsilatlari - modul ucretsiz"
+        }
+      ]
+    },
+    "VID-34": {
+      "title": "Kutuphane: katalog, erisim, okuma",
+      "objective": "Library modulunu goster: dijital kaynak katalogu (kitaplar, e-kitaplar, kilavuzlar, el kitaplari, raporlar, makaleler), erisim modelleri, birim satin alma, okuma ilerlemesi ve anlamsal arama.",
+      "hook": "Bir tabloda yasayan kaynak katalogu eninde sonunda yalan soyler.",
+      "cta": "Kutuphane modulunu urun sitesinden etkinlestirin, paket ucreti yok.",
+      "audience": "Egitim kurumlari, sirketler, kaynak yayinlayan kuruluslar",
+      "beats": [
+        {
+          "vo": "Bir tabloda yasayan kaynak katalogu eninde sonunda yalan soyler.",
+          "text": "Raydan cikan katalog."
+        },
+        {
+          "vo": "Kutuphane katalogu tutar: kitaplar, e-kitaplar, kilavuzlar, el kitaplari, raporlar, makaleler; kategori ve koleksiyona gore.",
+          "text": "Katalog & koleksiyonlar"
+        },
+        {
+          "vo": "Her kaynagin erisim modeli vardir: ucretsiz, yalnizca okuma, birim satin alma, abonelige dahil veya kurulusunuza ozel.",
+          "text": "Ucretsiz - okuma - satin alma - abonelik - ozel"
+        },
+        {
+          "vo": "Okuyucu kaldigi yerden devam eder: okuma ilerlemesi kaynak kaynak kaydedilir.",
+          "text": "Kaldiginiz yerden devam"
+        },
+        {
+          "vo": "Arama bir kaynagi yalnizca basligiyla degil, anlamiyla bulur. Kutuphane ucretsizdir: sektoru degil, platformu odersiniz.",
+          "text": "Anlama gore arama - modul ucretsiz"
+        }
+      ]
+    },
+    "VID-35": {
+      "title": "Filo & kameralar: giden ve ceken",
+      "objective": "Fleet ve Cameras modullerini goster: araclar ve atamalar, vadeler (sigorta, muayene) ve uyarilar, sureli ve kayitli erisimle izlenen IP kameralar, tekillestirilmis uyarilar.",
+      "hook": "Bozulan bir arac, duran bir turdur. Sessiz bir kamera, kalan bir suphedir.",
+      "cta": "Fleet ve Cameras modullerini urun sitesinden etkinlestirin, paket ucreti yok.",
+      "audience": "Arac filosu olan sirketler, izlenecek sahalar, filo yoneticileri",
+      "beats": [
+        {
+          "vo": "Bozulan bir arac, duran bir turdur. Sessiz bir kamera, kalan bir suphedir.",
+          "text": "Gitmesi gereken. Cekmesi gereken."
+        },
+        {
+          "vo": "Filo her araci tutar: plaka, marka, kilometre, sofor ve saha atamasi.",
+          "text": "Araclar & atamalar"
+        },
+        {
+          "vo": "Sigorta ve muayenenin bir vadesi vardir. Sistem vadesi gelen araclari listeler ve tarihten once uyari verir.",
+          "text": "Vadeler & uyarilar"
+        },
+        {
+          "vo": "IP kameralar tanimlanir, izlenir ve sureli bir erisim baglantisiyla goruntulenir. Her erisim kaydedilir.",
+          "text": "Kameralar & kayitli erisim"
+        },
+        {
+          "vo": "Kamera uyarilari tekillestirilir: bir hareket patlamasi tek bir uyari uretir. Filo ve Kameralar ucretsizdir: sektoru degil, platformu odersiniz.",
+          "text": "Tekillestirilmis uyarilar - moduller ucretsiz"
+        }
+      ]
+    },
+    "VID-36": {
+      "title": "Perakende: kasa, stok, cevrimici magaza",
+      "objective": "Retail modulunu (BC-17) gosterir: oturum ve kapanis ile POS kasa, izlenen hareketlerle tutulan stok, cevrimici siparisler ve Leopardo Marche pazar yeri, satis raporlari.",
+      "hook": "Kasa bir sey soyler, stok baska bir sey. Ay sonunda kimse hangisinin dogru oldugunu bilmez.",
+      "cta": "Retail paketini urun sitesinden etkinlestirin, paket ucreti yok.",
+      "audience": "Esnaflar, magazalar, marketler, e-ticaret saticilari, satis noktasi yoneticileri",
+      "beats": [
+        {
+          "vo": "Kasa bir sey soyler, stok baska bir sey. Ay sonunda kimse hangisinin dogru oldugunu bilmez.",
+          "text": "Iki sayi. Hic anlasma yok."
+        },
+        {
+          "vo": "Kasa bir oturum acar, tahsil eder, fisi yazdirir ve hesaplanan bir farkla kapanir. Anlatilan bir fark degil.",
+          "text": "Oturum, tahsilat, kapanis"
+        },
+        {
+          "vo": "Her satis stogu dusurur. Her giris, her kayip, her transfer izlenen bir hareket birakir: stok asla negatife dusmez.",
+          "text": "Hareketlerle tutulan stok"
+        },
+        {
+          "vo": "Cevrimici magaza ayni katalogu satar ve Leopardo Marche pazar yeri yalnizca etkinlestiren saticilari gosterir.",
+          "text": "Cevrimici magaza & pazar yeri"
+        },
+        {
+          "vo": "Gunun satislari, en cok satan urunler, kasa farki, stok degeri: raporlar sunucu tarafinda hesaplanir. Retail ucretsizdir: sektoru degil, platformu odersiniz.",
+          "text": "Raporlar - modul ucretsiz"
+        }
+      ]
+    },
+    "VID-37": {
+      "title": "Dayanisma bagislari: baglanti, bagis, odeme",
+      "objective": "Fundraising modulunu gosterir: kisa baglantiyla yayinlanan bagis kampanyasi, kart ve mobil para ile katkilar, toplama takibi, yararlaniciya odeme.",
+      "hook": "Bir defterde ve bir telefonda yasayan bir toplama, kimse dogrulayamaz.",
+      "cta": "Dayanisma Bagislari paketini urun sitesinden etkinlestirin, paket ucreti yok.",
+      "audience": "Dernekler, STK'lar, karsilikli yardim sandiklari, okullar, yurttas sirketler, kolektifler",
+      "beats": [
+        {
+          "vo": "Bir defterde ve bir telefonda yasayan bir toplama, kimse dogrulayamaz.",
+          "text": "Kim ne verdi?"
+        },
+        {
+          "vo": "Kampanya kisa bir baglantiyla yayinlanir. WhatsApp'ta, sosyal medyada veya QR kod ile paylasilir. Bagis icin hesap gerekmez.",
+          "text": "Bir baglanti, bir bagis sayfasi"
+        },
+        {
+          "vo": "Katkilar banka karti veya mobil para ile gelir. Tutar kampanya ile sinirlidir ve bagis anonim kalabilir.",
+          "text": "Kart & mobil para"
+        },
+        {
+          "vo": "Toplama canli takip edilir: toplanan tutar, katki sayisi, destekci duvari. Sorumlu nakit veya havale bagislarini da onaylar.",
+          "text": "Canli takip"
+        },
+        {
+          "vo": "Bakiye yararlaniciya mobil para veya havale ile odenir, her adimin izi kalir. Dayanisma Bagislari paketi ucretsizdir.",
+          "text": "Izlenen odeme - paket ucretsiz"
+        }
+      ]
+    },
+    "VID-38": {
+      "title": "Muhasebe burosu: dosya, paylasim, disa aktarim",
+      "objective": "Buro yolculugunu gosterir: sureli baglantiyla paylasilan muhasebe belgeleri, kayitlar ve eslestirme, standart FEC disa aktarimi, mali yil kapanisi.",
+      "hook": "Her musterinin kendi disa aktarim formati var. Her ay sonu belge aviyla baslar.",
+      "cta": "20 dakikalik muhasebe demosu isteyin.",
+      "audience": "Mali musavirler, ortak burolar, CFO'lar, idari ve mali sorumlular",
+      "beats": [
+        {
+          "vo": "Her musterinin kendi disa aktarim formati var. Her ay sonu belge aviyla baslar.",
+          "text": "Ay belge aviyla baslar."
+        },
+        {
+          "vo": "Muhasebe belgeleri sureli bir baglantiyla paylasilir. Alici belgeyi acar, baska hicbir seyi degil.",
+          "text": "Sureli paylasim"
+        },
+        {
+          "vo": "Faturalar, iade faturalari, teklifler, irsaliyeler: her belgenin taslaktan odemeye kadar durumu ve bagli odemeleri vardir.",
+          "text": "Belgeler & durumlar"
+        },
+        {
+          "vo": "Kayitlar arac icinde eslestirilir, kimin neyi mutabik kildiginin izi kalir. FEC disa aktarimi buroya uygun formatta cikar.",
+          "text": "Eslestirme & FEC aktarimi"
+        },
+        {
+          "vo": "Mali yil, tarih zorladiginda degil, hesaplar hazir oldugunda kapanir. Leopardo, buro ve musterisi icin ayni aracta.",
+          "text": "Kontrollu kapanis"
         }
       ]
     }

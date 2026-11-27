@@ -23,7 +23,6 @@
       <a href="../../en/categories/index.html">Categories</a>
       <a href="../../en/calendrier.html">Shoot calendar</a>
       <a href="../../en/recap.html">Summary</a>
-      <a href="../../en/profils-modules.html">Profiles &amp; modules</a>
       <a href="../../scripts-video.md">Markdown</a>
       <a href="../../../recette/index.html">QA portal</a>
     </nav>
@@ -109,21 +108,73 @@
     <div class="chips"><span class="chip">#ecole</span><span class="chip">#education</span><span class="chip">#notes</span><span class="chip">#verticale</span></div>
   </div>
 
+  <div class="panel"><h3>Prompt pour agent IA de production <span class="fr-badge">FR</span></h3><pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-10 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-10 - &quot;Ecole : etablissements, classes, notes&quot;
+- Format 16:9, duree cible 45 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Leger, optimiste ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Ecoles privees, groupes scolaires
+OBJECTIF : Montrer le pack EduManager : etablissements, classes, notes, et le lien avec les equipes.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Les notes arrivent sur un tableur. Les absences sur un cahier. Les parents appellent l&#x27;accueil.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:07 | Les notes arrivent sur un tableur. Les absences sur un cahier. Les parents appellent l&#x27;accueil. | Trois plans : tableur, cahier, standard telephonique. | Trois sources. |
+| 0:07-0:20 | Le pack EduManager structure vos etablissements et vos classes dans un seul referentiel. | Capture etablissement, classes, eleves. | Etablissements &amp; classes |
+| 0:20-0:33 | Les notes se saisissent par classe, et se consolident sans recopie. | Capture saisie de notes, consolidation. | Notes |
+| 0:33-0:45 | Les enseignants et le personnel administratif sont dans le meme systeme RH que le reste. | CTA. | Pack offert |
+
+CTA FINAL : Activer le pack EduManager.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Ne pas montrer de notes d&#x27;eleves reelles. Le pack est decrit comme solution EduManager dans le registre de feature flags.
+
+SORTIES ATTENDUES :
+- leopardo_vid10_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid10_{lang}_16x9_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 45 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre></div>
+
   
   <div class="panel status-panel" style="--accent:#7c3aed">
     <h3>Production tracking <span class="badge status-badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">Written</span></h3>
     <p class="muted small">Script written and approved (hook, breakdown, CTA); shooting not started.</p>
     <ol class="status-steps"><li class="step step-done" style="--step:#64748b"><span class="step-dot">1</span><span class="step-label">To write</span></li><li class="step step-done" style="--step:#7c3aed"><span class="step-dot">2</span><span class="step-label">Written</span></li><li class="step" style="--step:#b45309"><span class="step-dot">3</span><span class="step-label">Shot</span></li><li class="step" style="--step:#2563eb"><span class="step-dot">4</span><span class="step-label">Edited</span></li><li class="step" style="--step:#0f766e"><span class="step-dot">5</span><span class="step-label">Published</span></li></ol>
-    <p><strong>Observation :</strong> Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.</p>
-    <p class="muted small">Last modified : 2026-11-26T06:36:41Z
+    <p><strong>Observation :</strong> Script detaille D6 ajoute au programme SUITE (section 6.11) : bulletin construit/valide/publie, lien parents a duree limitee.</p>
+    <p class="muted small">Last modified : 2026-11-27T16:30:00Z
       — QA Agent (Teamily).</p>
     <details class="hist-details">
-      <summary>History (1 entries)</summary>
+      <summary>History (2 entries)</summary>
       
     <div class="table-wrap">
       <table class="data-table">
         <thead><tr><th>Date</th><th>Statut</th><th>Auteur</th><th>Observation</th><th>Action</th></tr></thead>
         <tbody>
+        <tr>
+          <td class="nowrap">2026-11-27T16:30:00Z</td>
+          <td class="nowrap"><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">Written</span></td>
+          <td>QA Agent (Teamily)</td>
+          <td>Script detaille D6 ajoute au programme SUITE (section 6.11) : bulletin construit/valide/publie, lien parents a duree limitee.</td>
+          <td class="nowrap">script_detaille</td>
+        </tr>
         <tr>
           <td class="nowrap">2026-11-26T06:36:41Z</td>
           <td class="nowrap"><span class="badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">To write</span></td>

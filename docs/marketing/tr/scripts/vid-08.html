@@ -23,7 +23,6 @@
       <a href="../../tr/categories/index.html">Kategoriler</a>
       <a href="../../tr/calendrier.html">Cekim takvimi</a>
       <a href="../../tr/recap.html">Ozet</a>
-      <a href="../../tr/profils-modules.html">Profiller ve moduller</a>
       <a href="../../scripts-video.md">Markdown</a>
       <a href="../../../recette/index.html">Test portali</a>
     </nav>
@@ -90,7 +89,7 @@
         </tr>
         <tr>
           <td class="nowrap"><strong>0:48-1:00</strong></td>
-          <td>Kat hizmetleri, bakim ve ekipler ayni sisteme akar.</td>
+          <td>Ekipman, bakim ve ekipler ayni sisteme akar.</td>
           <td>CTA. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></td>
           <td><span class="ontext">Paket dahil</span></td>
         </tr></tbody>
@@ -111,25 +110,79 @@
 
   <div class="panel">
     <h3>Yapim notlari</h3>
-    <p>Le RBAC de cette verticale est documente dans docs/hospitality/DONNEES_RBAC.md : utile pour un film dedie aux profils, pas ici. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></p>
+    <p>Le RBAC de cette verticale est documente dans docs/hospitality/DONNEES_RBAC.md : utile pour un film dedie aux profils, pas ici. Le module HospitalityManager ne gere AUCUN menage ni housekeeping (verifie le 2026-11-27 : aucun modele, service ni route de menage) : ne jamais filmer de valet de chambre, de checklist de nettoyage ni de statut « chambre prete ». Les etats d&#x27;unite sont disponible, occupee, en maintenance, hors service. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></p>
     <div class="chips"><span class="chip">#hotellerie</span><span class="chip">#reservations</span><span class="chip">#baux</span><span class="chip">#verticale</span></div>
   </div>
+
+  <div class="panel"><h3>Prompt pour agent IA de production <span class="fr-badge">FR</span></h3><pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-08 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-08 - &quot;Hotellerie : etablissements, inventaire, baux et loyers&quot;
+- Format 16:9, duree cible 60 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Piano, ambiance calme, 90 BPM. ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Hoteliers, gestionnaires de residences et de locations
+OBJECTIF : Montrer le pack HospitalityManager : etablissements, inventaire, reservations, baux et loyers.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Un hotel, des residences, des locations longue duree : trois metiers, un seul inventaire.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:08 | Un hotel, des residences, des locations longue duree. Trois metiers, un seul inventaire. | Trois facades differentes, meme plan de coupe. | Trois metiers. Un inventaire. |
+| 0:08-0:22 | Le pack Hospitality gere vos etablissements et leur inventaire : chambres, equipements, etats. | Capture etablissements, inventaire, etat d&#x27;une chambre. | Etablissements &amp; inventaire |
+| 0:22-0:36 | Les reservations se posent sur l&#x27;inventaire reel, pas sur un tableur parallele. | Capture planning de reservations. | Reservations |
+| 0:36-0:48 | Pour la location longue duree, les baux et les loyers sont suivis dans le meme outil. | Capture bail, echeancier de loyers. | Baux &amp; loyers |
+| 0:48-1:00 | Et les equipements, la maintenance et les equipes remontent dans le meme systeme. | CTA. | Pack offert |
+
+CTA FINAL : Activer le pack HospitalityManager.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Le RBAC de cette verticale est documente dans docs/hospitality/DONNEES_RBAC.md : utile pour un film dedie aux profils, pas ici. Le module HospitalityManager ne gere AUCUN menage ni housekeeping (verifie le 2026-11-27 : aucun modele, service ni route de menage) : ne jamais filmer de valet de chambre, de checklist de nettoyage ni de statut « chambre prete ». Les etats d&#x27;unite sont disponible, occupee, en maintenance, hors service.
+
+SORTIES ATTENDUES :
+- leopardo_vid08_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid08_{lang}_16x9_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 60 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- 0 occurrence de &quot;housekeeping&quot;, &quot;menage&quot;, &quot;femme de chambre&quot;, &quot;chambre prete&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre></div>
 
   
   <div class="panel status-panel" style="--accent:#7c3aed">
     <h3>Yapim takibi <span class="badge status-badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">Yazildi</span></h3>
     <p class="muted small">Senaryo yazildi ve onaylandi (kanca, bolumleme, CTA); cekim baslamadi.</p>
     <ol class="status-steps"><li class="step step-done" style="--step:#64748b"><span class="step-dot">1</span><span class="step-label">Yazilacak</span></li><li class="step step-done" style="--step:#7c3aed"><span class="step-dot">2</span><span class="step-label">Yazildi</span></li><li class="step" style="--step:#b45309"><span class="step-dot">3</span><span class="step-label">Cekildi</span></li><li class="step" style="--step:#2563eb"><span class="step-dot">4</span><span class="step-label">Kurgulandi</span></li><li class="step" style="--step:#0f766e"><span class="step-dot">5</span><span class="step-label">Yayinlandi</span></li></ol>
-    <p><strong>Gozlem :</strong> Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.</p>
-    <p class="muted small">Son degisiklik : 2026-11-26T06:36:41Z
+    <p><strong>Gozlem :</strong> Script detaille D3 ajoute au programme SUITE (section 6.8). CORRECTION : le module HospitalityManager ne gere aucun menage ni housekeeping (aucun modele, service ni route verifie le 2026-11-27) ; la voix off et la contrainte de tournage ne le promettent plus.</p>
+    <p class="muted small">Son degisiklik : 2026-11-27T16:30:00Z
       — QA Agent (Teamily).</p>
     <details class="hist-details">
-      <summary>Gecmis (1 kayit)</summary>
+      <summary>Gecmis (2 kayit)</summary>
       
     <div class="table-wrap">
       <table class="data-table">
         <thead><tr><th>Date</th><th>Statut</th><th>Auteur</th><th>Observation</th><th>Action</th></tr></thead>
         <tbody>
+        <tr>
+          <td class="nowrap">2026-11-27T16:30:00Z</td>
+          <td class="nowrap"><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">Yazildi</span></td>
+          <td>QA Agent (Teamily)</td>
+          <td>Script detaille D3 ajoute au programme SUITE (section 6.8). CORRECTION : le module HospitalityManager ne gere aucun menage ni housekeeping (aucun modele, service ni route verifie le 2026-11-27) ; la voix off et la contrainte de tournage ne le promettent plus.</td>
+          <td class="nowrap">script_detaille</td>
+        </tr>
         <tr>
           <td class="nowrap">2026-11-26T06:36:41Z</td>
           <td class="nowrap"><span class="badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">Yazilacak</span></td>

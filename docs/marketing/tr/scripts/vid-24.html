@@ -23,7 +23,6 @@
       <a href="../../tr/categories/index.html">Kategoriler</a>
       <a href="../../tr/calendrier.html">Cekim takvimi</a>
       <a href="../../tr/recap.html">Ozet</a>
-      <a href="../../tr/profils-modules.html">Profiller ve moduller</a>
       <a href="../../scripts-video.md">Markdown</a>
       <a href="../../../recette/index.html">Test portali</a>
     </nav>
@@ -115,21 +114,74 @@
     <div class="chips"><span class="chip">#farm os</span><span class="chip">#agriculture</span><span class="chip">#verticale</span><span class="chip">#parcellaire</span><span class="chip">#hors-ligne</span></div>
   </div>
 
+  <div class="panel"><h3>Prompt pour agent IA de production <span class="fr-badge">FR</span></h3><pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-24 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-24 - &quot;Farm OS : la parcelle, le troupeau, la recolte, la marge&quot;
+- Format 16:9, duree cible 60 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Cordes basses et percussions organiques, 95 BPM, respiration lente ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Agriculteurs, eleveurs, exploitations et cooperatives agricoles
+OBJECTIF : Montrer le pack Farm OS (BC-37) : parcelles et cultures, calendrier des travaux, intrants et stock, materiel, cheptel, recoltes et tracabilite, achats et ventes, couts et rentabilite.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Vous savez ce que vous avez seme. Savez-vous ce que la parcelle a rapporte ?&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:08 | Vous savez ce que vous avez seme. Vous savez rarement ce que chaque parcelle a reellement rapporte. | Plan large d&#x27;une parcelle a l&#x27;aube, puis main qui tient un carnet de travaux. | Semer, c&#x27;est facile. Compter, non. |
+| 0:08-0:22 | Farm OS tient le parcellaire : chaque parcelle, sa culture, sa superficie declaree, son cycle cultural. | Capture carte des parcelles, puis fiche parcelle avec cycle cultural. | Parcelles &amp; cycles culturaux |
+| 0:22-0:36 | Le calendrier des travaux se remplit depuis le champ, meme sans reseau. Chaque saisie porte un identifiant unique : rien n&#x27;est compte deux fois. | Telephone en mode hors-ligne, saisie d&#x27;une intervention, badge de synchronisation qui passe au vert. | Travaux saisis au champ, hors-ligne |
+| 0:36-0:50 | Intrants et stock, materiel, cheptel, recoltes et tracabilite : une recolte cree un seul lot de stock, et chaque sortie est un mouvement type. | Capture stock d&#x27;intrants, puis fiche cheptel, puis lot de recolte cree. | Stock, cheptel, recoltes |
+| 0:50-1:00 | Achats, ventes, couts et rentabilite se calculent sur les memes donnees. Le pack Farm OS est offert : vous payez la plateforme, pas le secteur. | Capture couts et rentabilite par parcelle, puis CTA et logo. | Couts &amp; rentabilite - pack offert |
+
+CTA FINAL : Activer le pack Farm OS depuis le site produit, sans frais de pack.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Chiffres verifies dans le depot au 2026-11-26 : 84 routes (api/routes/modules/farm_os.php), 73 chemins OpenAPI /farm/, 31 tables tenant (7 migrations), 13 capacites activables, 16 activites agricoles. Ne pas afficher de rendement ni de marge chiffree : le produit ne les invente pas (ADR-FARM-0003, honnetete des donnees). Afficher des libelles, jamais des valeurs.
+
+SORTIES ATTENDUES :
+- leopardo_vid24_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid24_{lang}_16x9_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 60 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre></div>
+
   
   <div class="panel status-panel" style="--accent:#7c3aed">
     <h3>Yapim takibi <span class="badge status-badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">Yazildi</span></h3>
     <p class="muted small">Senaryo yazildi ve onaylandi (kanca, bolumleme, CTA); cekim baslamadi.</p>
     <ol class="status-steps"><li class="step step-done" style="--step:#64748b"><span class="step-dot">1</span><span class="step-label">Yazilacak</span></li><li class="step step-done" style="--step:#7c3aed"><span class="step-dot">2</span><span class="step-label">Yazildi</span></li><li class="step" style="--step:#b45309"><span class="step-dot">3</span><span class="step-label">Cekildi</span></li><li class="step" style="--step:#2563eb"><span class="step-dot">4</span><span class="step-label">Kurgulandi</span></li><li class="step" style="--step:#0f766e"><span class="step-dot">5</span><span class="step-label">Yayinlandi</span></li></ol>
-    <p><strong>Gozlem :</strong> Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.</p>
-    <p class="muted small">Son degisiklik : 2026-11-26T06:36:41Z
+    <p><strong>Gozlem :</strong> Script detaille D11 ajoute au programme SUITE (section 6.15) : superficie toujours avec sa source, aucun rendement chiffre.</p>
+    <p class="muted small">Son degisiklik : 2026-11-27T16:30:00Z
       — QA Agent (Teamily).</p>
     <details class="hist-details">
-      <summary>Gecmis (1 kayit)</summary>
+      <summary>Gecmis (2 kayit)</summary>
       
     <div class="table-wrap">
       <table class="data-table">
         <thead><tr><th>Date</th><th>Statut</th><th>Auteur</th><th>Observation</th><th>Action</th></tr></thead>
         <tbody>
+        <tr>
+          <td class="nowrap">2026-11-27T16:30:00Z</td>
+          <td class="nowrap"><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">Yazildi</span></td>
+          <td>QA Agent (Teamily)</td>
+          <td>Script detaille D11 ajoute au programme SUITE (section 6.15) : superficie toujours avec sa source, aucun rendement chiffre.</td>
+          <td class="nowrap">script_detaille</td>
+        </tr>
         <tr>
           <td class="nowrap">2026-11-26T06:36:41Z</td>
           <td class="nowrap"><span class="badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">Yazilacak</span></td>

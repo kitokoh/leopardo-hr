@@ -23,7 +23,6 @@
       <a href="../../en/categories/index.html">Categories</a>
       <a href="../../en/calendrier.html">Shoot calendar</a>
       <a href="../../en/recap.html">Summary</a>
-      <a href="../../en/profils-modules.html">Profiles &amp; modules</a>
       <a href="../../scripts-video.md">Markdown</a>
       <a href="../../../recette/index.html">QA portal</a>
     </nav>
@@ -109,21 +108,73 @@
     <div class="chips"><span class="chip">#carburant</span><span class="chip">#station</span><span class="chip">#postes</span><span class="chip">#verticale</span></div>
   </div>
 
+  <div class="panel"><h3>Prompt pour agent IA de production <span class="fr-badge">FR</span></h3><pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-11 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-11 - &quot;Station-service : le litre, le poste, la marge&quot;
+- Format 16:9, duree cible 45 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Basse continue, ambiance nocturne ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Reseaux de stations-service, gerants independants
+OBJECTIF : Montrer le pack FuelStation : suivi des postes, des volumes et des ecritures, avec les equipes en decalage.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Une station ne ferme jamais. Votre gestion, si.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:07 | Une station ne ferme jamais. Votre gestion, si. | Station de nuit, pompe eclairee, gerant seul. | 24 h sur 24. |
+| 0:07-0:20 | Le pack FuelStation suit les postes et les volumes, et rattache les ecritures a la bonne journee. | Capture postes, releves, ecritures. | Postes &amp; volumes |
+| 0:20-0:33 | Les equipes en decalage pointent sur le kiosque, meme quand le reseau tombe. | Capture kiosque, mode hors-ligne. | Equipes en decalage |
+| 0:33-0:45 | Et la paie de vos equipes de nuit se calcule avec les memes donnees. | CTA. | Pack offert |
+
+CTA FINAL : Activer le pack FuelStation.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Verticale pilote terrain (BC-15 FUEL). Ne pas afficher de prix de carburant : ils varient par pays et par jour.
+
+SORTIES ATTENDUES :
+- leopardo_vid11_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid11_{lang}_16x9_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 45 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre></div>
+
   
   <div class="panel status-panel" style="--accent:#7c3aed">
     <h3>Production tracking <span class="badge status-badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">Written</span></h3>
     <p class="muted small">Script written and approved (hook, breakdown, CTA); shooting not started.</p>
     <ol class="status-steps"><li class="step step-done" style="--step:#64748b"><span class="step-dot">1</span><span class="step-label">To write</span></li><li class="step step-done" style="--step:#7c3aed"><span class="step-dot">2</span><span class="step-label">Written</span></li><li class="step" style="--step:#b45309"><span class="step-dot">3</span><span class="step-label">Shot</span></li><li class="step" style="--step:#2563eb"><span class="step-dot">4</span><span class="step-label">Edited</span></li><li class="step" style="--step:#0f766e"><span class="step-dot">5</span><span class="step-label">Published</span></li></ol>
-    <p><strong>Observation :</strong> Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.</p>
-    <p class="muted small">Last modified : 2026-11-26T06:36:41Z
+    <p><strong>Observation :</strong> Script detaille D7 ajoute au programme SUITE (section 6.12) : cloture sur ecart, jamais sur marge.</p>
+    <p class="muted small">Last modified : 2026-11-27T16:30:00Z
       — QA Agent (Teamily).</p>
     <details class="hist-details">
-      <summary>History (1 entries)</summary>
+      <summary>History (2 entries)</summary>
       
     <div class="table-wrap">
       <table class="data-table">
         <thead><tr><th>Date</th><th>Statut</th><th>Auteur</th><th>Observation</th><th>Action</th></tr></thead>
         <tbody>
+        <tr>
+          <td class="nowrap">2026-11-27T16:30:00Z</td>
+          <td class="nowrap"><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">Written</span></td>
+          <td>QA Agent (Teamily)</td>
+          <td>Script detaille D7 ajoute au programme SUITE (section 6.12) : cloture sur ecart, jamais sur marge.</td>
+          <td class="nowrap">script_detaille</td>
+        </tr>
         <tr>
           <td class="nowrap">2026-11-26T06:36:41Z</td>
           <td class="nowrap"><span class="badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">To write</span></td>

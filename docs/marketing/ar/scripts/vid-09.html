@@ -23,7 +23,6 @@
       <a href="../../ar/categories/index.html">الفئات</a>
       <a href="../../ar/calendrier.html">جدول التصوير</a>
       <a href="../../ar/recap.html">ملخص</a>
-      <a href="../../ar/profils-modules.html">الملفات الشخصية والوحدات</a>
       <a href="../../scripts-video.md">Markdown</a>
       <a href="../../../recette/index.html">بوابة الاختبار</a>
     </nav>
@@ -115,21 +114,74 @@
     <div class="chips"><span class="chip">#sante</span><span class="chip">#clinique</span><span class="chip">#patients</span><span class="chip">#verticale</span></div>
   </div>
 
+  <div class="panel"><h3>Prompt pour agent IA de production <span class="fr-badge">FR</span></h3><pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-09 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-09 - &quot;Sante : patients, rendez-vous, hospitalisations, facturation des soins&quot;
+- Format 16:9, duree cible 60 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Nappe douce, aucune urgence sonore ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Cliniques privees, hopitaux, centres de soins
+OBJECTIF : Montrer le pack HealthManager : patients, rendez-vous, hospitalisations, facturation des soins.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Le dossier patient est souvent le seul endroit ou l&#x27;information arrive en dernier.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:08 | Le dossier patient est souvent le seul endroit ou l&#x27;information arrive en dernier. | Couloir de clinique, dossier papier qui circule. | L&#x27;information arrive en dernier. |
+| 0:08-0:22 | Le pack HealthManager ouvre un dossier patient unique, partage entre l&#x27;accueil, le soin et la facturation. | Capture dossier patient, onglets. | Un dossier patient |
+| 0:22-0:36 | Les rendez-vous se prennent et se replanifient sans appeler le patient trois fois. | Capture agenda, replanification. | Rendez-vous |
+| 0:36-0:48 | L&#x27;hospitalisation et la facturation des soins se suivent dans le meme flux, sans ressaisie. | Capture admission, puis facture de soins. | Hospitalisation &amp; facturation |
+| 0:48-1:00 | Vos equipes soignantes, leurs plannings et leur paie restent dans Leopardo. | CTA. | Pack offert |
+
+CTA FINAL : Activer le pack HealthManager.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Ne jamais montrer de donnee patient reelle ni de nom lisible : utiliser des donnees de demonstration. Aucune allegation de conformite reglementaire.
+
+SORTIES ATTENDUES :
+- leopardo_vid09_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid09_{lang}_16x9_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 60 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre></div>
+
   
   <div class="panel status-panel" style="--accent:#7c3aed">
     <h3>متابعة الإنتاج <span class="badge status-badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">مكتوب</span></h3>
     <p class="muted small">النص مكتوب ومعتمد (الخطاف، التقسيم، الدعوة إلى الإجراء)؛ لم يبدأ التصوير.</p>
     <ol class="status-steps"><li class="step step-done" style="--step:#64748b"><span class="step-dot">1</span><span class="step-label">لللكتابة</span></li><li class="step step-done" style="--step:#7c3aed"><span class="step-dot">2</span><span class="step-label">مكتوب</span></li><li class="step" style="--step:#b45309"><span class="step-dot">3</span><span class="step-label">صُوِّر</span></li><li class="step" style="--step:#2563eb"><span class="step-dot">4</span><span class="step-label">رُكِّب</span></li><li class="step" style="--step:#0f766e"><span class="step-dot">5</span><span class="step-label">نُشِر</span></li></ol>
-    <p><strong>ملاحظة :</strong> Script redige et valide (hook, decoupage, CTA, notes de production). Aucun tournage planifie a ce jour.</p>
-    <p class="muted small">آخر تعديل : 2026-11-26T06:36:41Z
+    <p><strong>ملاحظة :</strong> Script detaille D5 ajoute au programme SUITE (section 6.10) : donnees sensibles chiffrees et affichees masquees.</p>
+    <p class="muted small">آخر تعديل : 2026-11-27T16:30:00Z
       — QA Agent (Teamily).</p>
     <details class="hist-details">
-      <summary>السجل (1 مدخل)</summary>
+      <summary>السجل (2 مدخل)</summary>
       
     <div class="table-wrap">
       <table class="data-table">
         <thead><tr><th>Date</th><th>Statut</th><th>Auteur</th><th>Observation</th><th>Action</th></tr></thead>
         <tbody>
+        <tr>
+          <td class="nowrap">2026-11-27T16:30:00Z</td>
+          <td class="nowrap"><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">مكتوب</span></td>
+          <td>QA Agent (Teamily)</td>
+          <td>Script detaille D5 ajoute au programme SUITE (section 6.10) : donnees sensibles chiffrees et affichees masquees.</td>
+          <td class="nowrap">script_detaille</td>
+        </tr>
         <tr>
           <td class="nowrap">2026-11-26T06:36:41Z</td>
           <td class="nowrap"><span class="badge" style="background:#64748b1a;color:#64748b;border-color:#64748b33">لللكتابة</span></td>

@@ -23,7 +23,6 @@
       <a href="../../en/categories/index.html">Categories</a>
       <a href="../../en/calendrier.html">Shoot calendar</a>
       <a href="../../en/recap.html">Summary</a>
-      <a href="../../en/profils-modules.html">Profiles &amp; modules</a>
       <a href="../../scripts-video.md">Markdown</a>
       <a href="../../../recette/index.html">QA portal</a>
     </nav>
@@ -86,13 +85,13 @@
           <td class="nowrap"><strong>1:30-2:10</strong></td>
           <td>Third step: payroll. The country&#x27;s rules apply, attendance and leave variables flow in, the payslip is generated and archived.</td>
           <td>Capture simulation de paie, puis bulletin PDF. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></td>
-          <td><span class="ontext">21 countries of payroll rules in pilot.</span></td>
+          <td><span class="ontext">21 countries covered, payroll rules in pilot.</span></td>
         </tr>
         <tr>
           <td class="nowrap"><strong>2:10-2:40</strong></td>
-          <td>Fourth step: openness. 994 documented API endpoints, webhooks, and business packs you activate according to your sector.</td>
+          <td>Fourth step: openness. 1,984 documented API paths, webhooks, and business packs you activate according to your sector.</td>
           <td>Capture documentation OpenAPI, puis grille de packs. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></td>
-          <td><span class="ontext">994 endpoints - activatable packs</span></td>
+          <td><span class="ontext">1,984 API paths - activatable packs</span></td>
         </tr>
         <tr>
           <td class="nowrap"><strong>2:40-3:00</strong></td>
@@ -120,6 +119,53 @@
     <p>Script le plus regarde en evaluation : chaque affirmation doit etre verifiable dans le depot. Ne pas promettre de fonctionnalite non livree. <span class="fr-badge" title="Fields marked FR are shooting instructions, left in French (the production team&#x27;s working language).">FR</span></p>
     <div class="chips"><span class="chip">#explainer</span><span class="chip">#objections</span><span class="chip">#demo</span><span class="chip">#3min</span></div>
   </div>
+
+  <div class="panel"><h3>Prompt pour agent IA de production <span class="fr-badge">FR</span></h3><pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-04 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-04 - &quot;Comment Leopardo remplace Excel, WhatsApp et le papier (explainer 3 min)&quot;
+- Format 16:9, duree cible 3 min, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Nappe discrete, aucun rythme fort : la voix porte ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Dirigeants en evaluation, page produit, demo asynchrone
+OBJECTIF : Repondre aux objections avant l&#x27;appel commercial : migration, securite, multi-pays, prix. Format capture d&#x27;ecran commentee.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;On ne vous demande pas de changer votre facon de travailler. On vous demande d&#x27;arreter de la documenter trois fois.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:15 | On ne vous demande pas de changer votre facon de travailler. On vous demande d&#x27;arreter de la documenter trois fois. | Trois copies du meme document sur trois outils. | Le probleme n&#x27;est pas l&#x27;outil. C&#x27;est la triple saisie. |
+| 0:15-0:50 | Premier temps : le referentiel. Un employe, un dossier, un contrat, des documents. Saisi une fois, utilise partout. | Capture : creation d&#x27;un employe, puis le meme employe visible dans paie, pointage et conges. | Saisir une fois. |
+| 0:50-1:30 | Deuxieme temps : le terrain. Le pointage remonte du mobile ou du kiosque. En cas de coupure reseau, la borne continue et resynchronise au retour du lien. | Capture kiosque, coupure simulee, file hors-ligne, resynchronisation. | Le terrain ne s&#x27;arrete pas quand le reseau s&#x27;arrete. |
+| 1:30-2:10 | Troisieme temps : la paie. Les regles du pays s&#x27;appliquent, les variables de pointage et de conges remontent, le bulletin se genere et s&#x27;archive. | Capture simulation de paie, puis bulletin PDF. | 21 pays couverts, regles de paie en pilote. |
+| 2:10-2:40 | Quatrieme temps : l&#x27;ouverture. 1 984 chemins d&#x27;API documentes, des webhooks, et des packs metier activables selon votre secteur. | Capture documentation OpenAPI, puis grille de packs. | 1 984 chemins d&#x27;API - packs activables |
+| 2:40-3:00 | Isolation multi-tenant, RBAC, journal d&#x27;audit. Vos donnees restent les votres, en cloud ou auto-hebergees. | Schema d&#x27;isolation, ecran de roles. | Cloud ou auto-heberge. |
+
+CTA FINAL : Telecharger la grille de comparaison, puis reserver 20 minutes de demo.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Script le plus regarde en evaluation : chaque affirmation doit etre verifiable dans le depot. Ne pas promettre de fonctionnalite non livree.
+
+SORTIES ATTENDUES :
+- leopardo_vid04_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid04_{lang}_16x9_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 3 min a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre></div>
 
   
   <div class="panel status-panel" style="--accent:#7c3aed">
