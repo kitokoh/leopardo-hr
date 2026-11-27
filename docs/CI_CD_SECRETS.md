@@ -277,5 +277,6 @@ donc listés ici explicitement.
 
 | Secret / Variable | Used by | Purpose | Required? |
 |---|---|---|---|
+| `E2E_API_BASE_URL` (variable) | `mobile-apps-ci.yml` (job `maestro-restaurant-e2e`) | URL du backend de démonstration contre lequel les flows Maestro pilotent l'app. **Tant qu'elle est vide, le job est SKIPPED** : les flows ont besoin d'un serveur joignable, et un échec réseau ne dit rien sur le code. La définir active le job | Optional (job désactivé si absente) |
 | `E2E_RESTO_SLUG` (variable) | `mobile-apps-ci.yml` (job `maestro-restaurant-e2e`) | Slug de l'établissement de démonstration sur lequel tournent les flows Maestro du parcours commande. Défaut `le-bistrot` si absente. La changer ne demande aucune modification des flows : ils lisent l'environnement, jamais une valeur codée en dur | Optional (défaut `le-bistrot`) |
 | `E2E_RESTO_PRODUCT_CODE` (variable) | `mobile-apps-ci.yml` (job `maestro-restaurant-e2e`) | Code catalogue d'un produit réellement commandable chez cet établissement. C'est le code, pas le nom, qui sert de sélecteur : un plat renommé ne casse pas le flow. Défaut `demo-1` | Optional (défaut `demo-1`) |

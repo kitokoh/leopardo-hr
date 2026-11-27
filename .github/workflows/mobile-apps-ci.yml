@@ -610,12 +610,25 @@ jobs:
   # ---------------------------------------------------------------------------
   maestro-restaurant-e2e:
     needs: [changes, flutter-analyze]
-    if: needs.changes.outputs.mobile == 'true'
+    # Deux conditions, et chacune a une raison precise :
+    #
+    # 1. `mobile == 'true'` : inutile de demarrer un emulateur pour une PR qui
+    #    ne touche que le backend.
+    # 2. `E2E_API_BASE_URL != ''` : les flows pilotent l'app CONTRE UN SERVEUR.
+    #    Sans backend joignable depuis un runner GitHub, ils echouent sur un
+    #    timeout reseau — un rouge qui ne dit rien sur le code et qui apprend a
+    #    l'equipe a ignorer ce check. Tant que la variable de depot n'est pas
+    #    definie, le job est SKIPPED avec une notice qui dit comment l'activer.
+    if: |
+      needs.changes.outputs.mobile == 'true' &&
+      vars.E2E_API_BASE_URL != ''
     timeout-minutes: 45
     name: E2E Maestro (restaurant)
     runs-on: ubuntu-latest
-    # Non bloquant : voir le commentaire ci-dessus. `continue-on-error` au
-    # niveau du job garde le run vert tout en publiant le rapport.
+    # Non bloquant : un emulateur met 3 a 6 minutes a demarrer et le parcours
+    # depend d'un backend de demonstration. En faire un check requis bloquerait
+    # toutes les PR sur une infrastructure instable — l'incident que #9979
+    # documente (checks requis ABSENTS, aucune PR mergeable).
     continue-on-error: true
 
     steps:
@@ -653,27 +666,27 @@ jobs:
         working-directory: front/mobile_apps/leopardo_public
         run: |
           flutter build apk --debug \
-            --dart-define=API_BASE_URL=${{ env.API_BASE_URL }}
+            --dart-define=API_BASE_URL=${{ vars.E2E_API_BASE_URL }}
 
       # ── Maestro ──────────────────────────────────────────────────────────
-      # Installé AVANT l'étape émulateur : `android-emulator-runner` exécute son
-      # `script` dans un shell qui hérite du PATH du job, donc le binaire doit
-      # déjà être là et sur le PATH.
+      # Installe AVANT l'etape emulateur : `android-emulator-runner` execute son
+      # `script` dans un shell qui herite du PATH du job, donc le binaire doit
+      # deja etre la et sur le PATH.
       - name: Install Maestro
         run: |
           set -euo pipefail
           curl -Ls "https://get.maestro.mobile.dev" | bash
           echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
-      # ── Émulateur ────────────────────────────────────────────────────────
-      # Sans cette étape, `maestro test` n'a AUCUN appareil à piloter et échoue
-      # sur « no devices connected ». C'était le défaut de la première version
-      # de ce job : l'APK était construit, Maestro installé, et le run échouait
+      # ── Emulateur ────────────────────────────────────────────────────────
+      # Sans cette etape, `maestro test` n'a AUCUN appareil a piloter et echoue
+      # sur « no devices connected ». C'etait le defaut de la premiere version
+      # de ce job : l'APK etait construit, Maestro installe, et le run echouait
       # faute de cible.
       #
-      # `reactivecircus/android-emulator-runner` démarre l'AVD ET exécute la
-      # commande passée dans `script` sur cet émulateur — c'est le seul moyen
-      # fiable de garder l'émulateur vivant pendant les tests.
+      # `reactivecircus/android-emulator-runner` demarre l'AVD ET execute la
+      # commande passee dans `script` sur cet emulateur — c'est le seul moyen
+      # fiable de garder l'emulateur vivant pendant les tests.
       - name: Run Maestro flows on emulator
         uses: reactivecircus/android-emulator-runner@b530d96654c385303d652368551fb075bc2f0b6b # v2.35.0
         with:
@@ -687,8 +700,8 @@ jobs:
             set -euo pipefail
             cd front/mobile_apps/leopardo_public
 
-            # L'APK doit être installé AVANT Maestro : `launchApp` ne
-            # télécharge rien, il lance un package déjà présent.
+            # L'APK doit etre installe AVANT Maestro : `launchApp` ne
+            # telecharge rien, il lance un package deja present.
             adb install -r build/app/outputs/flutter-apk/app-debug.apk
 
             maestro test maestro/restaurant/ \
