@@ -84,7 +84,23 @@ def observed_states() -> dict[str, str]:
         slug = JOB_TO_SLUG.get(match.group(1))
         if slug is None:
             continue
-        observed[slug] = "ok" if job.get("conclusion") == "success" else "failed"
+
+        # Un job EN COURS n'a pas de `conclusion` (None) : il n'est ni vert ni
+        # rouge. Le traiter comme `failed` faisait echouer le garde des qu'il
+        # tombait pendant une distribution — c'est-a-dire a chaque push sur
+        # main, puisque ce workflow se declenche sur push. Le garde lisait
+        # alors son propre run en cours et declarait 4 canaux « EN ECHEC »
+        # (observe sur #10020, run 46056290755 : 4 jobs `None`).
+        #
+        # On ne conclut donc que sur un verdict REELLEMENT rendu. Un job
+        # `cancelled` ou `skipped` n'est pas un echec de distribution non
+        # plus : il n'a rien prouve, on l'ignore plutot que de mentir.
+        conclusion = job.get("conclusion")
+        if conclusion == "success":
+            observed[slug] = "ok"
+        elif conclusion in ("failure", "timed_out", "startup_failure"):
+            observed[slug] = "failed"
+        # None (queued/in_progress), cancelled, skipped, neutral : pas de verdict.
 
     print(f"Run de référence : {run['id']} ({run['created_at'][:16]})")
     return observed

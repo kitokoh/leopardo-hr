@@ -195,7 +195,25 @@ class WeeklyManagerDigestTest extends TestCase
         $cmd->assertExitCode(0);
         $cmd->run();
 
-        Queue::assertPushed(SendWeeklyManagerDigestJob::class, 2);
+        /*
+         * Le contrat reel est « un job par ENTREPRISE ACTIVE », pas « 2 jobs
+         * dans l'absolu ». Compter 2 en dur supposait que la base du worker ne
+         * contenait aucune autre entreprise active — une hypothese fausse des
+         * qu'un fichier du meme shard ecrit hors transaction (c'est le cas de
+         * TravelHotelInventoryConcurrencyTest, qui desactive volontairement
+         * `beginDatabaseTransaction()` pour tester une vraie course entre
+         * processus OS). Le test etait alors vert isolement et rouge dans la
+         * suite (« pushed 3 times instead of 2 », CI main run 46042615126).
+         *
+         * On mesure donc le compte ATTENDU dans la base au moment du dispatch :
+         * le test verifie toujours la meme regle, mais il ne depend plus de ce
+         * que les autres fichiers ont laisse derriere eux.
+         */
+        $activeCount = Company::query()->where('status', 'active')->count();
+
+        Queue::assertPushed(SendWeeklyManagerDigestJob::class, $activeCount);
+
+        // Les deux entreprises creees ici recoivent CHACUNE exactement un job.
         Queue::assertPushed(
             SendWeeklyManagerDigestJob::class,
             static fn (SendWeeklyManagerDigestJob $job): bool => $job->companyId === (string) $activeA->id
@@ -203,6 +221,18 @@ class WeeklyManagerDigestTest extends TestCase
         Queue::assertPushed(
             SendWeeklyManagerDigestJob::class,
             static fn (SendWeeklyManagerDigestJob $job): bool => $job->companyId === (string) $activeB->id
+        );
+
+        // Et une entreprise suspendue n'en recoit AUCUN.
+        $this->assertSame(
+            0,
+            Queue::pushed(SendWeeklyManagerDigestJob::class)
+                ->filter(fn (SendWeeklyManagerDigestJob $job): bool => Company::query()
+                    ->whereKey($job->companyId)
+                    ->where('status', 'suspended')
+                    ->exists())
+                ->count(),
+            'une entreprise suspendue ne doit recevoir aucun digest',
         );
     }
 }

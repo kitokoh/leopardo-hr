@@ -3012,5 +3012,13 @@
              scenarios existants qui se connectent en super-admin sans second
              facteur ; les tests dedies la reactivent et prouvent le refus. -->
         <env name="PLATFORM_MFA_REQUIRED" value="false"/>
+        <!-- #9957 : `API_DOCS_PUBLIC` est un flag de DEPLOIEMENT (true sur le
+             tier dev Render, false en prod). Il ne doit pas fuiter dans la
+             suite : le `.env` de developpement du depot le pose a `true`, et
+             `OpenApiDocsTest::test_docs_require_authentication_in_production`
+             heritait alors du flag, le middleware sortait en 200 et le test de
+             securite de la Gate prod echouait en local tout en passant en CI.
+             Un test de securite ne doit pas dependre du `.env` de la machine. -->
+        <env name="API_DOCS_PUBLIC" value="false"/>
     </php>
 </phpunit>

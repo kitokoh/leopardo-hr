@@ -95,9 +95,17 @@ final class ExportDeliveryReportJob implements ShouldQueue, TenantScopedJob
             $this->runKey,
         );
 
+        // #9956 — le snapshot doit etre BYTE-IDENTIQUE pour une meme `runKey`
+        // (idempotence de l'export, contrat du rejeu DLQ). `now()` rendait le
+        // fichier different a chaque execution : `assertSame($first, $second)`
+        // cassait des que les deux appels tombaient sur deux millisecondes
+        // differentes, ce qui arrivait en execution par shard. L'horodatage est
+        // donc derive de la PERIODE couverte (borne haute), pas de l'horloge :
+        // meme `runKey` + meme periode => meme octets, quel que soit le moment
+        // du rejeu.
         Storage::disk('local')->put(
             $filePath,
-            (string) json_encode(['generated_at' => now()->toIso8601String(), 'report' => $snapshot], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+            (string) json_encode(['generated_at' => $to->toIso8601String(), 'report' => $snapshot], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
         );
 
         Log::info('delivery.report.exported', [
