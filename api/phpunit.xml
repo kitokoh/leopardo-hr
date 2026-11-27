@@ -1058,6 +1058,7 @@
             <file>tests/Feature/Payroll/PaySlipCabinetArchiveTest.php</file>
             <file>tests/Feature/Payroll/PaySlipDzMentionsTest.php</file>
             <file>tests/Feature/Payroll/PaySlipLegalMentionsByCountryTest.php</file>
+            <file>tests/Feature/Payroll/PaySlipLineTenantInheritanceTest.php</file>
             <file>tests/Feature/Payroll/PayrollAccountingEntriesFlowTest.php</file>
             <file>tests/Feature/Payroll/PayrollAccountingExportJournalTest.php</file>
             <file>tests/Feature/Payroll/PayrollAnomalyServiceTest.php</file>
@@ -1575,7 +1576,7 @@
           et detruit le marqueur `__mvp_fixture_ready`.
 
           FeatureMvpFixture : 242 fichiers.
-          FeatureRest       : 1125 fichiers.
+          FeatureRest       : 1126 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
             <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
@@ -2494,6 +2495,7 @@
             <file>tests/Feature/Payroll/PaySlipCabinetArchiveTest.php</file>
             <file>tests/Feature/Payroll/PaySlipDzMentionsTest.php</file>
             <file>tests/Feature/Payroll/PaySlipLegalMentionsByCountryTest.php</file>
+            <file>tests/Feature/Payroll/PaySlipLineTenantInheritanceTest.php</file>
             <file>tests/Feature/Payroll/PayrollAccountingEntriesFlowTest.php</file>
             <file>tests/Feature/Payroll/PayrollAccountingExportJournalTest.php</file>
             <file>tests/Feature/Payroll/PayrollAnomalyServiceTest.php</file>
