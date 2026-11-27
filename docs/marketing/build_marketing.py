@@ -50,6 +50,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 DATA_FILENAME = "scripts-video.json"
 STATUS_FILENAME = "statuts-tournage.json"
+PM_FILENAME = "profils-modules.json"
 CSV_FILENAME = "calendrier-tournage.csv"
 I18N_DIR = HERE / "i18n"
 UI_FILENAME = "ui.json"
@@ -84,6 +85,14 @@ META = DATA["meta"]
 
 CAT_BY_SLUG = {c["slug"]: c for c in CATEGORIES}
 SCRIPT_BY_ID = {s["id"]: s for s in SCRIPTS}
+
+# Onglet « Profils & modules » : source de verite separee (profils-modules.json).
+# Chaque entree porte un `can_do` (1-2 phrases concretes). Le fichier est
+# optionnel : s'il manque, l'onglet est simplement absent (pas d'erreur).
+PM_RAW = json.loads((HERE / PM_FILENAME).read_text(encoding="utf-8")) \
+    if (HERE / PM_FILENAME).exists() else {}
+PM_PROFILES = PM_RAW.get("profiles") or []
+PM_MODULES = PM_RAW.get("modules") or []
 
 
 def load_json(path: Path, default: dict) -> dict:
@@ -307,6 +316,7 @@ def layout(loc: str, title: str, depth: int, page_rel: str, body: str,
       <a href="{href(loc, depth, "categories/index.html")}">{esc(t(loc, "nav_categories"))}</a>
       <a href="{href(loc, depth, "calendrier.html")}">{esc(t(loc, "nav_calendar"))}</a>
       <a href="{href(loc, depth, "recap.html")}">{esc(t(loc, "nav_recap"))}</a>
+      <a href="{href(loc, depth, "profils-modules.html")}">{esc(t(loc, "nav_profiles_modules"))}</a>
       <a href="{site_href(loc, depth, "scripts-video.md")}">{esc(t(loc, "nav_markdown"))}</a>
       <a href="{p}../recette/index.html">{esc(t(loc, "nav_portal"))}</a>
     </nav>
@@ -357,6 +367,46 @@ def cat_badge(loc: str, s: dict) -> str:
 
 def n_scripts_label(loc: str, n: int) -> str:
     return f"{n} {t(loc, 'n_script' if n <= 1 else 'n_scripts')}"
+
+
+def pm_card(loc: str, item: dict, kind: str) -> str:
+    """Carte d'un profil ou d'un module : icone, nom, et ce qu'il peut faire."""
+    color = item.get("color") or "#0f766e"
+    return f"""
+        <article class="pm-card" data-kind="{esc(kind)}" data-search="{esc((item['name'] + ' ' + item['can_do']).lower())}" style="--accent:{color}">
+          <div class="pm-head">
+            <span class="pm-icon">{item.get('icon', '')}</span>
+            <h3>{esc(item['name'])}</h3>
+          </div>
+          <p class="pm-can">{esc(item['can_do'])}</p>
+        </article>"""
+
+
+def page_profils_modules(loc: str) -> str:
+    prof_cards = "".join(pm_card(loc, p, "profile") for p in PM_PROFILES)
+    mod_cards = "".join(pm_card(loc, m, "module") for m in PM_MODULES)
+    return layout(loc, t(loc, "pm_title"), 0, "profils-modules.html", f"""
+  <p class="lead">{esc(t(loc, "pm_lead"))}</p>
+  <div class="toolbar">
+    <input class="search" id="pm-q" type="search" placeholder="{esc(t(loc, "pm_search_ph"))}">
+    <select class="select" id="pm-kind">
+      <option value="">{esc(t(loc, "pm_all"))}</option>
+      <option value="profile">{esc(t(loc, "pm_profiles"))}</option>
+      <option value="module">{esc(t(loc, "pm_modules"))}</option>
+    </select>
+  </div>
+  <section class="section">
+    <h2 class="section-title">{esc(t(loc, "pm_profiles_title"))} <span class="hist-count-badge">{len(PM_PROFILES)}</span></h2>
+    <p class="section-sub">{esc(t(loc, "pm_profiles_sub"))}</p>
+    <div class="grid grid-modules" id="pm-profiles">{prof_cards}</div>
+  </section>
+  <section class="section">
+    <h2 class="section-title">{esc(t(loc, "pm_modules_title"))} <span class="hist-count-badge">{len(PM_MODULES)}</span></h2>
+    <p class="section-sub">{esc(t(loc, "pm_modules_sub"))}</p>
+    <div class="grid grid-modules" id="pm-modules">{mod_cards}</div>
+  </section>
+  <p class="empty-hint" id="pm-empty" hidden>{esc(t(loc, "empty_hint"))}</p>
+""")
 
 
 # ---------------------------------------------------------------------------
@@ -931,6 +981,16 @@ main{padding:28px 20px 60px}
 .card p{margin:0 0 10px;color:var(--muted);font-size:13.5px}
 .card-meta{font-size:12px;font-weight:600;color:var(--accent)}
 .profile-card{border-top:3px solid var(--accent,var(--brand))}
+/* Onglet « Profils & modules » : une carte = un profil ou un module, avec ce
+   qu'il sait reellement faire. Meme grille que les cartes de categorie. */
+.pm-card{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--accent,var(--brand));
+  border-radius:var(--radius);padding:16px 18px;box-shadow:var(--shadow);
+  transition:transform .15s ease,box-shadow .15s ease}
+.pm-card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(15,23,42,.10)}
+.pm-head{display:flex;align-items:center;gap:9px;margin-bottom:8px}
+.pm-icon{font-size:20px;line-height:1}
+.pm-head h3{margin:0;font-size:15px;letter-spacing:-.01em}
+.pm-can{margin:0;color:var(--muted);font-size:13.5px;line-height:1.55}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .chip{display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border:1px solid var(--line);
   border-radius:999px;padding:4px 11px;font-size:12.5px;color:#334155}
@@ -1126,6 +1186,44 @@ JS = """
   apply();
 })();
 
+/* Onglet « Profils & modules » : filtre texte + type (profil / module).
+   Les deux sections restent visibles ; une section dont aucune carte ne
+   passe le filtre est masquee, et le message « aucun resultat » apparait
+   seulement si les deux sont vides. */
+(function(){
+  var q = document.getElementById('pm-q');
+  var kind = document.getElementById('pm-kind');
+  var empty = document.getElementById('pm-empty');
+  var profGrid = document.getElementById('pm-profiles');
+  var modGrid = document.getElementById('pm-modules');
+  if(!profGrid && !modGrid) return;
+  function apply(){
+    var term = (q && q.value || '').toLowerCase().trim();
+    var want = kind && kind.value || '';
+    var total = 0;
+    [[profGrid, 'profile'], [modGrid, 'module']].forEach(function(pair){
+      var grid = pair[0], type = pair[1];
+      if(!grid) return;
+      var cards = grid.querySelectorAll('.pm-card');
+      var shown = 0;
+      for(var i=0;i<cards.length;i++){
+        var c = cards[i];
+        var ok = true;
+        if(want && want !== type) ok = false;
+        if(term && (c.getAttribute('data-search')||'').indexOf(term) === -1) ok = false;
+        c.hidden = !ok;
+        if(ok) shown++;
+      }
+      var section = grid.closest('.section');
+      if(section) section.hidden = shown === 0;
+      total += shown;
+    });
+    if(empty) empty.hidden = total !== 0;
+  }
+  [q, kind].forEach(function(el){ if(el) el.addEventListener('input', apply); });
+  apply();
+})();
+
 /* Indicateur de defilement des tableaux.
    Un tableau plus large que son conteneur cache des colonnes : sans indice,
    l'utilisateur croit que la donnee s'arrete la. On marque donc chaque
@@ -1163,6 +1261,7 @@ def write_locale(out: Path, loc: str) -> int:
     (root / "index.html").write_text(page_home(loc), encoding="utf-8")
     (root / "recap.html").write_text(page_recap(loc), encoding="utf-8")
     (root / "calendrier.html").write_text(page_calendrier(loc), encoding="utf-8")
+    (root / "profils-modules.html").write_text(page_profils_modules(loc), encoding="utf-8")
     (root / "categories" / "index.html").write_text(page_categories_index(loc), encoding="utf-8")
     for c in CATEGORIES:
         (root / "categories" / f"{c['slug']}.html").write_text(page_category(loc, c["slug"]), encoding="utf-8")
@@ -1176,7 +1275,7 @@ def write_locale(out: Path, loc: str) -> int:
                                          encoding="utf-8", newline="")
         (root / "scripts-video.md").write_text(build_markdown(), encoding="utf-8")
 
-    return 4 + len(CATEGORIES) + len(SCRIPTS)
+    return 5 + len(CATEGORIES) + len(SCRIPTS)
 
 
 def main() -> None:
@@ -1196,7 +1295,7 @@ def main() -> None:
 
     # Les sources de verite ne sont jamais ecrasees : on les recopie si la
     # sortie differe du dossier du script.
-    for name in (DATA_FILENAME, STATUS_FILENAME):
+    for name in (DATA_FILENAME, STATUS_FILENAME, PM_FILENAME):
         dest = out / name
         if dest.resolve() != (HERE / name).resolve() and (HERE / name).exists():
             shutil.copyfile(HERE / name, dest)
