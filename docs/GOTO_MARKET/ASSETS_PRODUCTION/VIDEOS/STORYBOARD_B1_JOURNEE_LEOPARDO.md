@@ -289,3 +289,42 @@ B1_journee_leopardo_en.mp4 / _ar.mp4 / _tr.mp4
 ---
 
 **Références :** [`SCRIPTS_VIDEOS_SUITE.md`](SCRIPTS_VIDEOS_SUITE.md) · [`SCRIPTS_VIDEOS_COURTES.md`](SCRIPTS_VIDEOS_COURTES.md) · [`README.md`](README.md) · `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`
+
+---
+
+## 12. Prompt pour agent IA de production
+
+```text
+ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video B1 « Une journee avec Leopardo » (2 min 30, 16:9) a partir de ce storyboard,
+sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps (captation interface 50 fps pour ralentis 2x), H.264 High, AAC 320 kbps
+- Declinaisons : web 1920x1080, social 9:16 1080x1920, feed 1:1 1080x1080, extrait 30 s, extrait 15 s
+- Voix off FR 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur le jeu de donnees de demonstration fige en §3. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu ; aucune promesse de « remplacer votre comptable / DRH ».
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Le plan cle P14 doit montrer le MEME identifiant passant du planning au solde, sans ressaisie. C'est le point de vente du film : si le montage ne le rend pas evident, le film est rate.
+
+SORTIES
+- B1_journee_leopardo_master_uhd_fr.mp4, _web_1080p_fr.mp4, _social_9x16_fr.mp4, _feed_1x1_fr.mp4,
+  _extrait_30s_fr.mp4, _extrait_15s_fr.mp4, _fr.srt / .vtt, _en / _ar / _tr
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree = 2 min 30 a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « HR SaaS », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- P14 verifie image par image : meme identifiant, aucune ressaisie
+- CTA conforme (logo + leopardo-rh.com + « Essai gratuit 14 jours » + QR code), teste sur deux telephones
+- les 6 declinaisons exportees et nommees selon la convention §11
+```
