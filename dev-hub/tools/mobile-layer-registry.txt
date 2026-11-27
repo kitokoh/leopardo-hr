@@ -20,7 +20,7 @@
 # Format : <app> <etat> <note libre jusqu'a la fin de ligne>
 # Les lignes vides et celles commencant par `#` sont ignorees.
 
-leopardo_public                layered   surface/ et brand/ portent un domain/ (ADR-0035)
+leopardo_public                flat      app d'assemblage : le moteur (et ses domain/) vit dans leopardo_surface
 leopardo_core                  flat      package partage : core/ + features/ plates, pas de domain/
 leopardo_employee              flat      features/ plates (data/providers/screens)
 leopardo_manager               flat      features/ plates (data/providers/screens/widgets)
@@ -32,3 +32,18 @@ leopardo_travel_agent          flat      features/ plates
 leopardo_cameras               flat      features/ plates
 leopardo_pos_retail            flat      features/pos/ plate
 leopardo_pos_restaurant        flat      features/pos/ plate
+
+# Moteur commun des apps grand public. Il PORTE les domaines (surface, brand,
+# journeys) : c'est lui que la garde doit verifier strictement, pas les apps
+# qui l'assemblent.
+leopardo_surface               layered   surface/, brand/ et journeys/ portent un domain/ (ADR-0035)
+# Applications grand public dediees : identite + routeur + main.dart, aucun
+# domain/ propre — tout le domaine est dans le socle.
+leopardo_restaurant_app        flat      assemblage : identite + routeur + main.dart
+leopardo_retail_app            flat      assemblage : identite + routeur + main.dart
+leopardo_hospitality_app       flat      assemblage : identite + routeur + main.dart
+leopardo_trade_app             flat      assemblage : identite + routeur + main.dart
+leopardo_travel_app            flat      assemblage : identite + routeur + main.dart
+leopardo_pharmacy_app          flat      assemblage : identite + routeur + main.dart
+leopardo_mobility_app          flat      assemblage : identite + routeur + main.dart
+leopardo_careers_app           flat      assemblage : identite + routeur + main.dart
