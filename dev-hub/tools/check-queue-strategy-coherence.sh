@@ -67,9 +67,68 @@ if grep -q "queue:work redis" "$REPO_ROOT/docs/deployment/DEPLOYMENT_GUIDE.md"; 
   violations=$((violations + 1))
 fi
 
+# 7. #9976 — topologie : le drain dans le conteneur web est une dégradation
+#    DÉCLARÉE, pas un état acceptable. Un web service au plan `free` s'endort
+#    après ~15 min d'inactivité : la queue ET le scheduler s'arrêtent avec lui.
+#    Le produit vend de la paie et de la facturation ; une paie non calculée
+#    n'est pas une dégradation cosmétique.
+#
+#    Cette garde interdit qu'on rende la dégradation SILENCIEUSE :
+#      - si le web tourne en plan free, le bloc « topologie » du blueprint doit
+#        garder la trace explicite de la dégradation (marqueur QUEUE_DEGRADED) ;
+#      - si un worker est décommenté (donc provisionné intentionnellement), les
+#        gates WEB_QUEUE_DRAIN / WEB_SCHEDULER_LOOP du web DOIVENT être à false,
+#        sinon deux consommateurs se disputent la même file.
+for plan_file in "$REPO_ROOT/render.yaml" "$REPO_ROOT/render.prod.yaml"; do
+  [[ -f "$plan_file" ]] || continue
+  name=$(basename "$plan_file")
+
+  # Un worker décommenté = provisionné.
+  worker_active=0
+  if grep -qE "^  - type: worker" "$plan_file"; then
+    worker_active=1
+  fi
+
+  if [[ "$worker_active" -eq 1 ]]; then
+    # Le web ne doit plus drainer ni planifier.
+    #
+    # ⚠️ Absence ≠ désactivation : le défaut du gate dans
+    # docker-entrypoint.sh est « on ». Un blueprint qui déclare un worker SANS
+    # poser `WEB_QUEUE_DRAIN=false` laisse donc le web drainer AUSSI : deux
+    # consommateurs sur une file, jobs volés et ordre non garanti. La première
+    # version de cette garde exigeait seulement « si la variable est déclarée,
+    # elle doit être à false » et laissait passer ce cas — vérifié en
+    # injectant un worker factice : garde verte, défaut présent.
+    for gate in WEB_QUEUE_DRAIN WEB_SCHEDULER_LOOP; do
+      if ! grep -A1 -E "key: $gate" "$plan_file" | grep -q 'value: "false"'; then
+        echo "::error::$name déclare un worker actif mais ne pose pas $gate=\"false\" sur le web : le web continue de consommer (défaut du gate = on) — deux consommateurs pour une file (issue #9976)."
+        violations=$((violations + 1))
+      fi
+    done
+  fi
+
+  # Le web en plan free + drain actif = scheduler perdu au spin-down.
+  # Acceptable UNIQUEMENT si la dégradation est déclarée par le marqueur.
+  if grep -qE "plan: free" "$plan_file"; then
+    if ! grep -q "QUEUE_DEGRADED:" "$plan_file"; then
+      echo "::error::$name a un service web en plan free sans marqueur QUEUE_DEGRADED : la perte de la queue au spin-down redeviendrait silencieuse (issue #9976)."
+      violations=$((violations + 1))
+    fi
+  fi
+done
+
+# 8. #9976 — l'entrypoint doit porter les gates (sinon WEB_QUEUE_DRAIN=false
+#    n'a aucun effet et la bascule vers un worker dédié est impossible).
+for gate in WEB_QUEUE_DRAIN WEB_SCHEDULER_LOOP; do
+  if ! grep -q "$gate" "$REPO_ROOT/api/docker-entrypoint.sh"; then
+    echo "::error::api/docker-entrypoint.sh ne lit plus $gate : la bascule vers un worker dédié serait impossible (issue #9976)."
+    violations=$((violations + 1))
+  fi
+done
+
 if [[ "$violations" -gt 0 ]]; then
   echo "::error::Stratégie queue incohérente : $violations divergence(s) (issue #5578)."
   exit 1
 fi
 
-echo "Queue strategy coherence OK (database partout)."
+echo "Queue strategy coherence OK (database partout, topologie #9976 declarée)."
