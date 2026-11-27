@@ -370,13 +370,16 @@ def n_scripts_label(loc: str, n: int) -> str:
 
 
 def pm_card(loc: str, item: dict, kind: str) -> str:
-    """Carte d'un profil ou d'un module : icone, nom, et ce qu'il peut faire."""
+    """Carte d'un profil ou d'un module : icone, nom, niveau, et ce qu'il peut faire."""
     color = item.get("color") or "#0f766e"
+    tier = item.get("tier") or "catalogue"
+    tier_label = t(loc, "pm_tier_socle" if tier == "socle" else "pm_tier_catalogue")
     return f"""
-        <article class="pm-card" data-kind="{esc(kind)}" data-search="{esc((item['name'] + ' ' + item['can_do']).lower())}" style="--accent:{color}">
+        <article class="pm-card" data-kind="{esc(kind)}" data-tier="{esc(tier)}" data-search="{esc((item['name'] + ' ' + item['can_do']).lower())}" style="--accent:{color}">
           <div class="pm-head">
             <span class="pm-icon">{item.get('icon', '')}</span>
             <h3>{esc(item['name'])}</h3>
+            <span class="pm-tier pm-tier-{esc(tier)}">{esc(tier_label)}</span>
           </div>
           <p class="pm-can">{esc(item['can_do'])}</p>
         </article>"""
@@ -990,6 +993,10 @@ main{padding:28px 20px 60px}
 .pm-head{display:flex;align-items:center;gap:9px;margin-bottom:8px}
 .pm-icon{font-size:20px;line-height:1}
 .pm-head h3{margin:0;font-size:15px;letter-spacing:-.01em}
+.pm-tier{margin-left:auto;flex:0 0 auto;border-radius:999px;padding:2px 8px;font-size:10.5px;
+  font-weight:600;letter-spacing:.02em;text-transform:uppercase;white-space:nowrap}
+.pm-tier-socle{background:#0f766e;color:#fff}
+.pm-tier-catalogue{background:#f1f5f9;color:#64748b;border:1px solid var(--line)}
 .pm-can{margin:0;color:var(--muted);font-size:13.5px;line-height:1.55}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .chip{display:inline-flex;align-items:center;gap:6px;background:#f1f5f9;border:1px solid var(--line);

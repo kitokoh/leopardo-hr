@@ -1,186 +1,702 @@
 {
   "_meta": {
-    "description": "Source de verite de l'onglet « Profils & modules » de l'espace marketing. Pour chaque profil : ce qu'il peut faire, en 1-2 phrases. Pour chaque module : ce qu'il sait reellement faire, en 1-2 phrases. Contenu volontairement concret (verbe d'action + resultat), jamais du marketing creux. Editable directement : la page est regeneree par build_marketing.py.",
+    "description": "Source de verite de l'onglet « Profils & modules » de l'espace marketing. Pour chaque profil : ce qu'il peut faire, en 1-2 phrases. Pour chaque module : ce qu'il sait reellement faire, en 1-2 phrases. Depuis le 2026-11-28, chaque entree porte un champ `tier` : `socle` (mis en avant pour la vente grands comptes) ou `catalogue` (activable, hors du message d'entree). Contenu volontairement concret (verbe d'action + resultat), jamais du marketing creux.",
     "schema_version": 1,
-    "updated_at": "2026-11-27T00:00:00Z",
+    "updated_at": "2026-11-28T00:00:00Z",
     "owner": "Marketing / Produit",
     "reference": "docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md (Leopardo = suite metier, jamais « logiciel RH »)",
-    "note": "Les identifiants (slug) sont stables : ne jamais les reutiliser pour un autre sujet. Les libelles et icones proviennent de la taxonomie de recette (docs/recette/build_portal.py + taxonomy_extension.py)."
+    "note": "Les identifiants (slug) sont stables : ne jamais les reutiliser pour un autre sujet. Le champ `tier` reflete le repositionnement 2026 v2 (cible grands comptes) : trio Paie multi-entites / Pointage / Controle en socle, le reste en catalogue. Les libelles et icones proviennent de la taxonomie de recette."
   },
   "profiles": [
-    {"slug": "employe", "name": "Employe", "icon": "👤", "color": "#2563eb",
-     "can_do": "Pointe son arrivee et son depart depuis son telephone, meme hors connexion, et consulte ses heures. Demande ses conges, telecharge ses bulletins de paie et met a jour ses informations personnelles sans passer par le RH."},
-    {"slug": "manager-principal", "name": "Manager Principal", "icon": "🧭", "color": "#0d9488",
-     "can_do": "Pilote l'entreprise depuis un tableau de bord unique : equipes, presence du jour, absences, paie et clients. Valide les demandes, suit les indicateurs et garde une vue d'ensemble sur tous les sites."},
-    {"slug": "manager-rh", "name": "Manager RH", "icon": "🗂️", "color": "#7c3aed",
-     "can_do": "Gere le referentiel des employes, les contrats, les documents et les absences. Attribue les roles, lance les recrutements et suit les dossiers de chaque collaborateur de bout en bout."},
-    {"slug": "manager-comptable", "name": "Manager Comptable", "icon": "🧮", "color": "#b45309",
-     "can_do": "Prepare et lance les runs de paie, simule les calculs avant validation et controle les anomalies. Exporte le journal de paie et le grand livre vers la comptabilite."},
-    {"slug": "superviseur-kiosque", "name": "Superviseur / Kiosque", "icon": "🖥️", "color": "#0891b2",
-     "can_do": "Supervise la borne de pointage biometrique et verifie que les pointages remontent bien. Corrige les oublis de pointage et suit l'etat de synchronisation du pont Edge local."},
-    {"slug": "super-admin", "name": "Super Admin plateforme", "icon": "👑", "color": "#be123c",
-     "can_do": "Detient tous les droits sur la plateforme, y compris la distribution des roles. Cree les entreprises clientes, active leurs modules et gere les abonnements."},
-    {"slug": "admin-plateforme", "name": "Administrateur plateforme", "icon": "🛠️", "color": "#4f46e5",
-     "can_do": "Administre la plateforme au quotidien : comptes entreprises, modules actives, sante du systeme. Intervient sur les incidents sans pouvoir redistribuer les roles."},
-    {"slug": "support", "name": "Support", "icon": "🎧", "color": "#059669",
-     "can_do": "Traite les tickets et les demandes des entreprises clientes. Ouvre une session d'assistance encadree pour reproduire un probleme a la place de l'utilisateur."},
-    {"slug": "finance", "name": "Finance", "icon": "💳", "color": "#ca8a04",
-     "can_do": "Suit les abonnements, les factures, les encaissements et les offres. Mesure le revenu recurrent et les impayes de la plateforme."},
-    {"slug": "ops", "name": "Operations (Ops)", "icon": "📡", "color": "#dc2626",
-     "can_do": "Surveille l'observabilite, les kill switches et les noeuds Edge. Coupe une fonctionnalite en urgence et suit les metriques d'exploitation en temps reel."},
-    {"slug": "marketing", "name": "Marketing", "icon": "📣", "color": "#db2777",
-     "can_do": "Gere la vitrine publique, les pages et le contenu editorial multilingue. Suit les leads entrants et les campagnes d'acquisition."},
-    {"slug": "comptable-cabinet", "name": "Cabinet comptable", "icon": "🧾", "color": "#0f766e",
-     "can_do": "Gere un portefeuille de clients depuis un espace unique : dossiers, ecritures, clotures et exports. Produit la paie de plusieurs entreprises sans ressaisie et suit l'avancement de chaque dossier."},
-    {"slug": "recruteur", "name": "Recruteur", "icon": "🎯", "color": "#7c3aed",
-     "can_do": "Publie les offres d'emploi et gere la page carrieres publique. Suit les candidatures et fait avancer chaque candidat dans le pipeline de recrutement."},
-    {"slug": "formateur", "name": "Ecole / Formation", "icon": "🎓", "color": "#2563eb",
-     "can_do": "Gere les eleves, les classes, les notes et les presences. Facture la scolarite et donne aux parents un espace pour suivre la scolarite de leur enfant."},
-    {"slug": "sante", "name": "Sante (cabinet / clinique)", "icon": "🩺", "color": "#be123c",
-     "can_do": "Gere les patients, les rendez-vous et les dossiers de soin. Redige les ordonnances et suit le parcours de chaque patient."},
-    {"slug": "pharmacien", "name": "Pharmacie", "icon": "💊", "color": "#059669",
-     "can_do": "Tient le catalogue, le stock et les ordonnances de l'officine. Encaisse les ventes et publie la fiche publique de la pharmacie (horaires, contact)."},
-    {"slug": "hotelier", "name": "Hotellerie", "icon": "🏨", "color": "#0891b2",
-     "can_do": "Gere les chambres, les sejours, le housekeeping et les tarifs. Prend les reservations et publie la fiche publique de l'etablissement."},
-    {"slug": "restaurateur", "name": "Restaurant", "icon": "🍽️", "color": "#b45309",
-     "can_do": "Encaisse les commandes sur le POS, gere le plan de salle et envoie les plats en cuisine via le KDS. Met a jour le menu et publie la fiche publique du restaurant."},
-    {"slug": "retail", "name": "Commerce de detail", "icon": "🛍️", "color": "#db2777",
-     "can_do": "Encaisse sur le POS retail, gere le catalogue et le stock, et imprime les tickets. Suit les ventes par article et par point de vente."},
-    {"slug": "station", "name": "Station-service", "icon": "⛽", "color": "#ca8a04",
-     "can_do": "Suit les pompes et les index, enregistre les ventes de carburant et gere la boutique. Cloture la journee et consolide les encaissements."},
-    {"slug": "vtc", "name": "VTC / Chauffeur", "icon": "🚕", "color": "#4f46e5",
-     "can_do": "Affecte les courses aux chauffeurs et applique la grille tarifaire. Suit chaque course en temps reel et consolide les recettes."},
-    {"slug": "livreur", "name": "Livraison", "icon": "🚚", "color": "#dc2626",
-     "can_do": "Organise les tournees et suit les colis. Capture la preuve de livraison et tient le client informe de l'avancement."},
-    {"slug": "agence-voyage", "name": "Agence de voyage", "icon": "✈️", "color": "#0d9488",
-     "can_do": "Publie une boutique publique de trajets et gere les reservations. Etablit les devis corporate et suit les dossiers clients."},
-    {"slug": "agricole", "name": "Exploitation agricole", "icon": "🌾", "color": "#65a30d",
-     "can_do": "Cartographie les parcelles et suit les cultures, les intrants et les recoltes. Planifie la main-d'oeuvre saisonniere et mesure les rendements."},
-    {"slug": "bibliothecaire", "name": "Bibliotheque", "icon": "📚", "color": "#9333ea",
-     "can_do": "Tient le catalogue des ouvrages et gere les prets et les retours. Suit les adherents et envoie les rappels de retard."},
-    {"slug": "client-final", "name": "Client / usager public", "icon": "📱", "color": "#475569",
-     "can_do": "Consulte la fiche publique d'un commerce : horaires, menu, contact et localisation. Prend contact ou reserve directement depuis cette fiche."},
-    {"slug": "technicien", "name": "Technicien terrain", "icon": "📷", "color": "#0e7490",
-     "can_do": "Supervise le parc de cameras et les flux video. Traite les incidents et planifie les interventions de maintenance."},
-    {"slug": "flotte", "name": "Gestion de flotte", "icon": "🚗", "color": "#1d4ed8",
-     "can_do": "Gere les vehicules, les affectations et l'entretien. Suit le carburant et les documents reglementaires de chaque vehicule."},
-    {"slug": "cagnotte", "name": "Cagnottes / collecte", "icon": "💝", "color": "#e11d48",
-     "can_do": "Lance des campagnes de collecte et encaisse les dons. Emet les recus et suit l'objectif de chaque cagnotte."},
-    {"slug": "developpeur", "name": "Integrateur / API", "icon": "🧩", "color": "#334155",
-     "can_do": "Integre Leopardo a ses propres outils via l'API OpenAPI et les webhooks. Gere les cles, utilise le SDK et peut auto-heberger la solution."},
-    {"slug": "integrateur-connecteurs", "name": "Integrateur connecteurs", "icon": "🔌", "color": "#0e7490",
-     "can_do": "Branche les connecteurs tiers (paiement, messagerie, comptabilite) sur l'entreprise. Suit l'etat de sante de chaque integration et la revoque si besoin."}
+    {
+      "slug": "employe",
+      "name": "Employe",
+      "icon": "👤",
+      "color": "#2563eb",
+      "can_do": "Pointe son arrivee et son depart depuis son telephone, meme hors connexion, et consulte ses heures. Demande ses conges, telecharge ses bulletins de paie et met a jour ses informations personnelles sans passer par le RH.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "manager-principal",
+      "name": "Manager Principal",
+      "icon": "🧭",
+      "color": "#0d9488",
+      "can_do": "Pilote son perimetre depuis un tableau de bord unique : equipes, presence du jour, absences, paie et clients. Valide les demandes et garde une vue d'ensemble sur tous les sites.",
+      "tier": "socle"
+    },
+    {
+      "slug": "manager-rh",
+      "name": "Manager RH",
+      "icon": "🗂️",
+      "color": "#7c3aed",
+      "can_do": "Gere le referentiel des employes, les contrats, les documents et les absences de son perimetre. Attribue les roles, lance les recrutements et suit chaque dossier de bout en bout.",
+      "tier": "socle"
+    },
+    {
+      "slug": "manager-comptable",
+      "name": "Manager Comptable",
+      "icon": "🧮",
+      "color": "#b45309",
+      "can_do": "Prepare et lance les runs de paie de chaque entite, simule les calculs avant validation et controle les anomalies. Exporte le journal de paie et le grand livre vers la comptabilite, et dispose des elements attendus lors d'un audit.",
+      "tier": "socle"
+    },
+    {
+      "slug": "superviseur-kiosque",
+      "name": "Superviseur / Kiosque",
+      "icon": "🖥️",
+      "color": "#0891b2",
+      "can_do": "Supervise la borne de pointage biometrique et verifie que les pointages remontent bien. Corrige les oublis de pointage et suit l'etat de synchronisation du pont Edge local.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "super-admin",
+      "name": "Super Admin plateforme",
+      "icon": "👑",
+      "color": "#be123c",
+      "can_do": "Detient tous les droits sur la plateforme, y compris la distribution des roles. Cree les entreprises clientes, active leurs modules et gere les abonnements.",
+      "tier": "socle"
+    },
+    {
+      "slug": "admin-plateforme",
+      "name": "Administrateur plateforme",
+      "icon": "🛠️",
+      "color": "#4f46e5",
+      "can_do": "Administre la plateforme au quotidien : comptes entreprises, modules actives, sante du systeme. Intervient sur les incidents sans pouvoir redistribuer les roles.",
+      "tier": "socle"
+    },
+    {
+      "slug": "support",
+      "name": "Support",
+      "icon": "🎧",
+      "color": "#059669",
+      "can_do": "Traite les tickets et les demandes des entreprises clientes. Ouvre une session d'assistance encadree pour reproduire un probleme a la place de l'utilisateur.",
+      "tier": "socle"
+    },
+    {
+      "slug": "finance",
+      "name": "Finance",
+      "icon": "💳",
+      "color": "#ca8a04",
+      "can_do": "Suit les abonnements, les factures, les encaissements et les offres. Mesure le revenu recurrent et les impayes de la plateforme.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "ops",
+      "name": "Operations (Ops)",
+      "icon": "📡",
+      "color": "#dc2626",
+      "can_do": "Surveille l'observabilite, les kill switches et les noeuds Edge. Coupe une fonctionnalite en urgence et suit les metriques d'exploitation en temps reel.",
+      "tier": "socle"
+    },
+    {
+      "slug": "marketing",
+      "name": "Marketing",
+      "icon": "📣",
+      "color": "#db2777",
+      "can_do": "Gere la vitrine publique, les pages et le contenu editorial multilingue. Suit les leads entrants et les campagnes d'acquisition.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "comptable-cabinet",
+      "name": "Cabinet comptable",
+      "icon": "🧾",
+      "color": "#0f766e",
+      "can_do": "Gere un portefeuille de clients depuis un espace unique : dossiers, ecritures, clotures et exports. Produit la paie de plusieurs entreprises sans ressaisie. Apporteur d'affaires occasionnel, plus un canal principal.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "recruteur",
+      "name": "Recruteur",
+      "icon": "🎯",
+      "color": "#7c3aed",
+      "can_do": "Publie les offres d'emploi et gere la page carrieres publique. Suit les candidatures et fait avancer chaque candidat dans le pipeline de recrutement.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "formateur",
+      "name": "Ecole / Formation",
+      "icon": "🎓",
+      "color": "#2563eb",
+      "can_do": "Gere les eleves, les classes, les notes et les presences. Facture la scolarite et donne aux parents un espace pour suivre la scolarite de leur enfant.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "sante",
+      "name": "Sante (cabinet / clinique)",
+      "icon": "🩺",
+      "color": "#be123c",
+      "can_do": "Gere les patients, les rendez-vous et les dossiers de soin. Redige les ordonnances et suit le parcours de chaque patient.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "pharmacien",
+      "name": "Pharmacie",
+      "icon": "💊",
+      "color": "#059669",
+      "can_do": "Tient le catalogue, le stock et les ordonnances de l'officine. Encaisse les ventes et publie la fiche publique de la pharmacie (horaires, contact).",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "hotelier",
+      "name": "Hotellerie",
+      "icon": "🏨",
+      "color": "#0891b2",
+      "can_do": "Gere les chambres, les sejours, le housekeeping et les tarifs. Prend les reservations et publie la fiche publique de l'etablissement.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "restaurateur",
+      "name": "Restaurant",
+      "icon": "🍽️",
+      "color": "#b45309",
+      "can_do": "Encaisse les commandes sur le POS, gere le plan de salle et envoie les plats en cuisine via le KDS. Met a jour le menu et publie la fiche publique du restaurant.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "retail",
+      "name": "Commerce de detail",
+      "icon": "🛍️",
+      "color": "#db2777",
+      "can_do": "Encaisse sur le POS retail, gere le catalogue et le stock, et imprime les tickets. Suit les ventes par article et par point de vente.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "station",
+      "name": "Station-service",
+      "icon": "⛽",
+      "color": "#ca8a04",
+      "can_do": "Suit les pompes et les index, enregistre les ventes de carburant et gere la boutique. Cloture la journee et consolide les encaissements.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "vtc",
+      "name": "VTC / Chauffeur",
+      "icon": "🚕",
+      "color": "#4f46e5",
+      "can_do": "Affecte les courses aux chauffeurs et applique la grille tarifaire. Suit chaque course en temps reel et consolide les recettes.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "livreur",
+      "name": "Livraison",
+      "icon": "🚚",
+      "color": "#dc2626",
+      "can_do": "Organise les tournees et suit les colis. Capture la preuve de livraison et tient le client informe de l'avancement.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "agence-voyage",
+      "name": "Agence de voyage",
+      "icon": "✈️",
+      "color": "#0d9488",
+      "can_do": "Publie une boutique publique de trajets et gere les reservations. Etablit les devis corporate et suit les dossiers clients.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "agricole",
+      "name": "Exploitation agricole",
+      "icon": "🌾",
+      "color": "#65a30d",
+      "can_do": "Cartographie les parcelles et suit les cultures, les intrants et les recoltes. Planifie la main-d'oeuvre saisonniere et mesure les rendements.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "bibliothecaire",
+      "name": "Bibliotheque",
+      "icon": "📚",
+      "color": "#9333ea",
+      "can_do": "Tient le catalogue des ouvrages et gere les prets et les retours. Suit les adherents et envoie les rappels de retard.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "client-final",
+      "name": "Client / usager public",
+      "icon": "📱",
+      "color": "#475569",
+      "can_do": "Consulte la fiche publique d'un commerce : horaires, menu, contact et localisation. Prend contact ou reserve directement depuis cette fiche.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "technicien",
+      "name": "Technicien terrain",
+      "icon": "📷",
+      "color": "#0e7490",
+      "can_do": "Supervise le parc de cameras et les flux video. Traite les incidents et planifie les interventions de maintenance.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "flotte",
+      "name": "Gestion de flotte",
+      "icon": "🚗",
+      "color": "#1d4ed8",
+      "can_do": "Gere les vehicules, les affectations et l'entretien. Suit le carburant et les documents reglementaires de chaque vehicule.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "cagnotte",
+      "name": "Cagnottes / collecte",
+      "icon": "💝",
+      "color": "#e11d48",
+      "can_do": "Lance des campagnes de collecte et encaisse les dons. Emet les recus et suit l'objectif de chaque cagnotte.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "developpeur",
+      "name": "Integrateur / API",
+      "icon": "🧩",
+      "color": "#334155",
+      "can_do": "Integre Leopardo au SI du client via l'API OpenAPI et les webhooks. Gere les cles, utilise le SDK et peut auto-heberger la solution — c'est l'interlocuteur d'une revue technique.",
+      "tier": "socle"
+    },
+    {
+      "slug": "integrateur-connecteurs",
+      "name": "Integrateur connecteurs",
+      "icon": "🔌",
+      "color": "#0e7490",
+      "can_do": "Branche les connecteurs tiers (paiement, messagerie, comptabilite, annuaire) sur l'entreprise. Suit l'etat de sante de chaque integration et la revoque si besoin.",
+      "tier": "socle"
+    }
   ],
   "modules": [
-    {"slug": "iam", "name": "Authentification & IAM", "icon": "🔐", "color": "#0f766e",
-     "can_do": "Connecte les utilisateurs en securite (mot de passe, code a usage unique, double authentification). Attribue les roles et les permissions, et cloisonne les donnees par entreprise."},
-    {"slug": "hr", "name": "Dossier employe (HR)", "icon": "🗂️", "color": "#0f766e",
-     "can_do": "Tient le dossier complet de chaque employe : identite, contrat, poste, horaire, documents et historique. Genere les documents RH en PDF et suit les dates d'echeance (contrats, visites)."},
-    {"slug": "attendance", "name": "Pointage (Attendance)", "icon": "⏱️", "color": "#0f766e",
-     "can_do": "Enregistre les arrivees et departs depuis le mobile, le web ou une borne biometrique, avec GPS et fuseau horaire. Fonctionne hors connexion et calcule heures travaillees, retards et heures supplementaires."},
-    {"slug": "absence", "name": "Conges & absences", "icon": "🌴", "color": "#0f766e",
-     "can_do": "Gere les demandes de conges et d'absences avec circuit de validation. Calcule les soldes de conges et les reporte automatiquement d'une periode a l'autre."},
-    {"slug": "payroll", "name": "Paie (Payroll)", "icon": "💰", "color": "#0f766e",
-     "can_do": "Calcule la paie multi-pays (DZ, MA, TN, FR, TR, SN) : cotisations, impot sur le revenu, primes et retenues. Produit les bulletins en PDF, detecte les anomalies et verrouille un run une fois valide."},
-    {"slug": "crm", "name": "CRM client", "icon": "🤝", "color": "#0f766e",
-     "can_do": "Suit les prospects et les clients, les echanges et les relances. Gere un pipeline commercial par etapes et declenche des e-mails automatises."},
-    {"slug": "marketing", "name": "Vitrine & acquisition", "icon": "📣", "color": "#0f766e",
-     "can_do": "Publie la vitrine publique de l'entreprise et capte les demandes entrantes. Suit les campagnes et les sources d'acquisition."},
-    {"slug": "platform", "name": "Plateforme & observabilite", "icon": "📡", "color": "#0f766e",
-     "can_do": "Administre les entreprises clientes, leurs modules et leurs abonnements. Surveille la sante du systeme et coupe une fonctionnalite en urgence si necessaire."},
-    {"slug": "kiosque", "name": "Kiosque & EdgeSync", "icon": "🖥️", "color": "#0f766e",
-     "can_do": "Fait tourner la borne de pointage biometrique et synchronise les pointages avec le serveur. Continue de fonctionner en local quand le reseau tombe, puis remonte les donnees."},
-    {"slug": "travel", "name": "Agence de voyage (TravelAgency)", "icon": "✈️", "color": "#0f766e",
-     "can_do": "Publie une boutique publique de trajets et gere les reservations et les devis. Suit les dossiers clients et les annonces de l'agence."},
-    {"slug": "tenant", "name": "Multi-tenant & securite", "icon": "🛡️", "color": "#0f766e",
-     "can_do": "Isole les donnees de chaque entreprise dans une base partagee et securisee. Applique les regles d'acces, journalise les actions sensibles et gere la conformite RGPD."},
-    {"slug": "i18n", "name": "Multilingue & RTL", "icon": "🌍", "color": "#0f766e",
-     "can_do": "Affiche l'interface en francais, anglais, turc et arabe. Adapte automatiquement la mise en page pour les langues qui s'ecrivent de droite a gauche."},
-    {"slug": "connectors", "name": "Connecteurs & integrations", "icon": "🔌", "color": "#0f766e",
-     "can_do": "Branche des services tiers (paiement, messagerie, comptabilite) sur l'entreprise. Suit l'etat de sante de chaque connexion et permet de la revoquer."},
-    {"slug": "accounting", "name": "Comptabilite", "icon": "🧾", "color": "#0f766e",
-     "can_do": "Tient le plan comptable, les ecritures et les journaux. Genere les clotures et exporte les donnees vers la comptabilite."},
-    {"slug": "expense", "name": "Notes de frais", "icon": "🧾", "color": "#0f766e",
-     "can_do": "Permet de soumettre une note de frais avec justificatif et de la faire valider. Suit le remboursement et repercute le montant dans la paie."},
-    {"slug": "planning", "name": "Planning & taches", "icon": "🗓️", "color": "#0f766e",
-     "can_do": "Planifie les shifts et affecte les equipes. Suit les taches operationnelles et exige une preuve d'execution sur le terrain."},
-    {"slug": "recruitment", "name": "Recrutement", "icon": "🎯", "color": "#0f766e",
-     "can_do": "Publie les offres et une page carrieres publique. Recueille les candidatures et fait avancer chaque candidat dans le pipeline."},
-    {"slug": "communication", "name": "Communication interne", "icon": "📢", "color": "#0f766e",
-     "can_do": "Diffuse des annonces et des messages cibles aux equipes. Suit les accuses de lecture et archive les communications."},
-    {"slug": "notification", "name": "Notifications", "icon": "🔔", "color": "#0f766e",
-     "can_do": "Envoie des notifications par push, e-mail ou SMS selon les preferences de chacun. Priorise les messages et tient un journal d'envoi."},
-    {"slug": "onboarding", "name": "Onboarding & provisioning", "icon": "🚀", "color": "#0f766e",
-     "can_do": "Fait demarrer une nouvelle entreprise en quelques minutes : inscription, essai guide et creation de son espace. Permet de reprendre un parcours interrompu."},
-    {"slug": "catalog", "name": "Catalogue produits & services", "icon": "🗂️", "color": "#0f766e",
-     "can_do": "Tient le catalogue des articles et services avec tarifs et TVA. Gere la disponibilite par etablissement."},
-    {"slug": "search", "name": "Recherche & intelligence", "icon": "🔎", "color": "#0f766e",
-     "can_do": "Recherche dans toutes les donnees de l'entreprise en une seule barre. Propose des suggestions et respecte les permissions de chacun."},
-    {"slug": "pages", "name": "Pages & contenu", "icon": "📄", "color": "#0f766e",
-     "can_do": "Cree et publie des pages publiques avec contenu editorial. Gere le referencement et les metadonnees multilingues."},
-    {"slug": "showcase", "name": "Vitrine & bibliotheque", "icon": "🖼️", "color": "#0f766e",
-     "can_do": "Publie la vitrine publique de l'entreprise et une bibliotheque de contenus. Sert les pages rapidement grace a un cache public."},
-    {"slug": "library", "name": "Bibliotheque", "icon": "📚", "color": "#0f766e",
-     "can_do": "Tient le catalogue des ouvrages et gere les prets et retours. Suit les adherents et envoie les rappels de retard."},
-    {"slug": "cameras", "name": "Cameras & supervision", "icon": "📷", "color": "#0f766e",
-     "can_do": "Supervise le parc de cameras et les flux video. Detecte les incidents et planifie les interventions de maintenance."},
-    {"slug": "fleet", "name": "Flotte", "icon": "🚗", "color": "#0f766e",
-     "can_do": "Gere les vehicules, les affectations et l'entretien. Suit le carburant et les documents reglementaires de chaque vehicule."},
-    {"slug": "fuel", "name": "Station-service", "icon": "⛽", "color": "#0f766e",
-     "can_do": "Suit les pompes et les index et enregistre les ventes de carburant. Gere la boutique et cloture la journee."},
-    {"slug": "vtc", "name": "VTC", "icon": "🚕", "color": "#0f766e",
-     "can_do": "Affecte les courses aux chauffeurs et applique la grille tarifaire. Suit chaque course et consolide les recettes."},
-    {"slug": "delivery", "name": "Livraison", "icon": "🚚", "color": "#0f766e",
-     "can_do": "Organise les tournees et suit les colis. Capture la preuve de livraison et informe le client de l'avancement."},
-    {"slug": "restaurant", "name": "Restauration & POS", "icon": "🍽️", "color": "#0f766e",
-     "can_do": "Encaisse les commandes sur le POS et gere le plan de salle. Envoie les plats en cuisine via le KDS et gere le menu."},
-    {"slug": "retail", "name": "Commerce de detail", "icon": "🛍️", "color": "#0f766e",
-     "can_do": "Encaisse sur le POS retail et gere le catalogue et le stock. Imprime les tickets et suit les ventes par article."},
-    {"slug": "hospitality", "name": "Hotellerie", "icon": "🏨", "color": "#0f766e",
-     "can_do": "Gere les chambres, les sejours et le housekeeping. Applique les tarifs et prend les reservations."},
-    {"slug": "pharmacy", "name": "Pharmacie", "icon": "💊", "color": "#0f766e",
-     "can_do": "Tient le catalogue, le stock et les ordonnances de l'officine. Encaisse les ventes et publie la fiche publique de la pharmacie."},
-    {"slug": "health", "name": "Sante", "icon": "🩺", "color": "#0f766e",
-     "can_do": "Gere les patients, les rendez-vous et les dossiers de soin. Redige les ordonnances et suit le parcours de chaque patient."},
-    {"slug": "edu", "name": "Ecole & formation", "icon": "🎓", "color": "#0f766e",
-     "can_do": "Gere les eleves, les classes, les notes et les presences. Facture la scolarite et ouvre un espace aux parents."},
-    {"slug": "farm", "name": "Agriculture", "icon": "🌾", "color": "#0f766e",
-     "can_do": "Cartographie les parcelles et suit les cultures, les intrants et les recoltes. Planifie la main-d'oeuvre saisonniere."},
-    {"slug": "fundraising", "name": "Cagnottes & collecte", "icon": "💝", "color": "#0f766e",
-     "can_do": "Lance des campagnes de collecte et encaisse les dons. Emet les recus et suit l'objectif de chaque cagnotte."},
-    {"slug": "cabinet", "name": "Cabinet comptable", "icon": "🧾", "color": "#0f766e",
-     "can_do": "Gere un portefeuille de clients depuis un espace unique : dossiers, ecritures et clotures. Produit la paie de plusieurs entreprises et suit l'avancement de chaque dossier."},
-    {"slug": "trade", "name": "Negoce & import-export", "icon": "🌍", "color": "#0f766e",
-     "can_do": "Gere les demandes de prix, les commandes et les fournisseurs a l'international. Suit les expeditions et les documents douaniers."},
-    {"slug": "branding", "name": "Marque & surfaces publiques", "icon": "🎨", "color": "#0f766e",
-     "can_do": "Applique le logo, les couleurs et l'identite de l'entreprise sur ses surfaces publiques. Personnalise les documents et les e-mails sortants."},
-    {"slug": "billing", "name": "Abonnements & facturation", "icon": "💳", "color": "#0f766e",
-     "can_do": "Gere les abonnements, les factures et les encaissements. Suit les impayes et permet de changer d'offre."},
-    {"slug": "paiements", "name": "Encaissements", "icon": "💵", "color": "#0f766e",
-     "can_do": "Encaisse les paiements par plusieurs moyens (carte, mobile, especes). Rapproche les encaissements et genere les recus."},
-    {"slug": "edge", "name": "EdgeSync & hors-ligne", "icon": "🔌", "color": "#0f766e",
-     "can_do": "Fait tourner un pont local chez le client pour continuer a travailler sans internet. Synchronise les donnees des que le reseau revient."},
-    {"slug": "geo", "name": "Geolocalisation", "icon": "📍", "color": "#0f766e",
-     "can_do": "Localise les pointages et les interventions sur une carte. Verifie qu'un employe est bien sur le site et suit les deplacements terrain."},
-    {"slug": "api", "name": "API & integrations", "icon": "🧩", "color": "#0f766e",
-     "can_do": "Expose une API documentee (OpenAPI) et des webhooks. Permet d'integrer Leopardo a des outils externes et de gerer les cles d'acces."},
-    {"slug": "mobile", "name": "Applications mobiles", "icon": "📱", "color": "#0f766e",
-     "can_do": "Fournit des applications mobiles distinctes pour l'employe, le manager et l'administrateur. Fonctionne sur Android et iOS, avec un mode hors-ligne."},
-    {"slug": "desktop", "name": "Poste de travail (desktop)", "icon": "🖥️", "color": "#0f766e",
-     "can_do": "Fournit une application de bureau pour les postes fixes. Utile pour la saisie intensive et les ecrans de caisse."},
-    {"slug": "ai", "name": "Assistant IA", "icon": "🤖", "color": "#0f766e",
-     "can_do": "Repond aux questions sur les donnees de l'entreprise et prepare des actions (par exemple un brouillon de paie). Reste dans le perimetre du produit et journalise ses reponses."},
-    {"slug": "contracts", "name": "Contrats", "icon": "📝", "color": "#0f766e",
-     "can_do": "Genere et stocke les contrats de travail et commerciaux. Alerte avant les echeances et gere les renouvellements."},
-    {"slug": "audit", "name": "Audit & conformite", "icon": "🧾", "color": "#0f766e",
-     "can_do": "Journalise les actions sensibles et tient une piste d'audit. Produit les registres de conformite (RGPD) et les preuves de controle."},
-    {"slug": "exports", "name": "Exports & rapports", "icon": "📤", "color": "#0f766e",
-     "can_do": "Exporte les donnees en CSV, Excel et PDF. Genere les rapports de paie, de presence et de comptabilite."},
-    {"slug": "growth", "name": "Programme partenaires", "icon": "🤝", "color": "#0f766e",
-     "can_do": "Gere les partenaires et les apporteurs d'affaires. Suit les commissions et les paiements lies au programme."},
-    {"slug": "training", "name": "Formation", "icon": "🎓", "color": "#0f766e",
-     "can_do": "Organise les formations internes et suit la progression des apprenants. Delivre les attestations a la fin du parcours."},
-    {"slug": "public", "name": "Surfaces publiques", "icon": "🌐", "color": "#0f766e",
-     "can_do": "Publie les fiches publiques des commerces et etablissements (horaires, menu, contact). Permet au grand public de trouver et de contacter l'entreprise."}
+    {
+      "slug": "iam",
+      "name": "Authentification & IAM",
+      "icon": "🔐",
+      "color": "#0f766e",
+      "can_do": "Connecte les utilisateurs en securite (mot de passe, code a usage unique, double authentification) et attribue les roles. L'authentification unique OIDC est operationnelle (Entra ID, Okta, Google) ; SAML 2.0 et le provisionnement SCIM ne sont pas encore implementes.",
+      "tier": "socle"
+    },
+    {
+      "slug": "hr",
+      "name": "Dossier employe (HR)",
+      "icon": "🗂️",
+      "color": "#0f766e",
+      "can_do": "Tient le dossier employe, le contrat, les documents et les conges, saisis une fois et reutilises partout (paie, pointage, absences). C'est le referentiel qui alimente le reste du produit.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "attendance",
+      "name": "Pointage (Attendance)",
+      "icon": "⏱️",
+      "color": "#0f766e",
+      "can_do": "Enregistre les heures depuis le mobile, le GPS ou une borne biometrique, y compris en coupure reseau avec resynchronisation au retour du lien. Chaque heure est rattachee a une personne, un site et un horodatage : elle devient opposable en cas de contestation.",
+      "tier": "socle"
+    },
+    {
+      "slug": "absence",
+      "name": "Conges & absences",
+      "icon": "🌴",
+      "color": "#0f766e",
+      "can_do": "Gere les demandes de conges et d'absences avec circuit de validation. Calcule les soldes de conges et les reporte automatiquement d'une periode a l'autre.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "payroll",
+      "name": "Paie (Payroll)",
+      "icon": "💰",
+      "color": "#0f766e",
+      "can_do": "Calcule la paie de chaque entite juridique selon sa convention et son pays, puis consolide le total groupe. Un moteur, 21 pays resolus dont l'Algerie (IRG, CNAS), le Maroc et la Tunisie ; bulletins PDF, journal de paie et exports comptables. Les referentiels pays sont en statut pilot : la conformite doit etre validee par un conseil local avant mise en production.",
+      "tier": "socle"
+    },
+    {
+      "slug": "crm",
+      "name": "CRM client",
+      "icon": "🤝",
+      "color": "#0f766e",
+      "can_do": "Suit les prospects, les opportunites et les clients, avec relances et historique. Pertinent pour les groupes qui vendent (distribution, concessions, services).",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "marketing",
+      "name": "Vitrine & acquisition",
+      "icon": "📣",
+      "color": "#0f766e",
+      "can_do": "Pilote la vitrine publique et les campagnes d'acquisition, avec suivi des sources et des conversions.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "platform",
+      "name": "Plateforme & observabilite",
+      "icon": "📡",
+      "color": "#0f766e",
+      "can_do": "Supervise la plateforme : sante du systeme, incidents, kill switches et metriques d'exploitation.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "kiosque",
+      "name": "Kiosque & EdgeSync",
+      "icon": "🖥️",
+      "color": "#0f766e",
+      "can_do": "Transforme une borne biometrique ou une tablette en point de pointage partage sur un site, avec file d'attente locale et remontee differee. Adapte aux equipes nombreuses et aux horaires decales.",
+      "tier": "socle"
+    },
+    {
+      "slug": "travel",
+      "name": "Agence de voyage (TravelAgency)",
+      "icon": "✈️",
+      "color": "#0f766e",
+      "can_do": "Publie une boutique publique de trajets et gere les reservations et les devis. Suit les dossiers clients et les annonces de l'agence.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "tenant",
+      "name": "Multi-tenant & securite",
+      "icon": "🛡️",
+      "color": "#0f766e",
+      "can_do": "Cloisonne les donnees par entreprise et applique les roles et permissions a chaque perimetre. Le modele actuel est un tenant par entreprise : la consolidation multi-entites (groupe, entites juridiques, etablissements) est en chantier et n'est pas encore livree.",
+      "tier": "socle"
+    },
+    {
+      "slug": "i18n",
+      "name": "Multilingue & RTL",
+      "icon": "🌍",
+      "color": "#0f766e",
+      "can_do": "Traduit l'interface et les documents dans les langues de l'entreprise, avec prise en charge de l'arabe en ecriture de droite a gauche.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "connectors",
+      "name": "Connecteurs & integrations",
+      "icon": "🔌",
+      "color": "#0f766e",
+      "can_do": "Branche les services tiers (paiement, messagerie, comptabilite, stockage) sur l'entreprise et suit l'etat de sante de chaque integration. Une integration cassee est visible, pas silencieuse.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "accounting",
+      "name": "Comptabilite",
+      "icon": "🧾",
+      "color": "#0f766e",
+      "can_do": "Tient la comptabilite et recoit le journal de paie issu des runs valides, sans ressaisie. Utile quand le groupe veut un seul editeur pour la paie et la comptabilite ; sinon les exports suffisent.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "expense",
+      "name": "Notes de frais",
+      "icon": "🧾",
+      "color": "#0f766e",
+      "can_do": "Saisit, valide et rembourse les notes de frais, avec justificatifs et circuit d'approbation, puis les remonte en paie ou en comptabilite.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "planning",
+      "name": "Planning & taches",
+      "icon": "🗓️",
+      "color": "#0f766e",
+      "can_do": "Planifie les equipes, les shifts et les taches par site, et alimente le pointage et la paie en variables. Indispensable des que les horaires sont decales ou les equipes multiples.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "recruitment",
+      "name": "Recrutement",
+      "icon": "🎯",
+      "color": "#0f766e",
+      "can_do": "Publie les offres, suit les candidatures et transforme un candidat retenu en dossier employe sans ressaisie.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "communication",
+      "name": "Communication interne",
+      "icon": "📢",
+      "color": "#0f766e",
+      "can_do": "Diffuse les annonces internes et les messages cibles par site, entite ou role, avec accuse de lecture.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "notification",
+      "name": "Notifications",
+      "icon": "🔔",
+      "color": "#0f766e",
+      "can_do": "Envoie les alertes et rappels (paie a valider, contrat a renouveler, anomalie detectee) sur le canal choisi par l'utilisateur.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "onboarding",
+      "name": "Onboarding & provisioning",
+      "icon": "🚀",
+      "color": "#0f766e",
+      "can_do": "Automatise l'arrivee d'un collaborateur : creation du compte, du dossier, des acces et des etapes d'integration.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "catalog",
+      "name": "Catalogue produits & services",
+      "icon": "🗂️",
+      "color": "#0f766e",
+      "can_do": "Tient le catalogue des produits et services, avec prix, variantes et disponibilite, partage entre les points de vente.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "search",
+      "name": "Recherche & intelligence",
+      "icon": "🔎",
+      "color": "#0f766e",
+      "can_do": "Recherche dans les donnees de l'entreprise (employes, documents, clients) et remonte les resultats pertinents avec leurs droits d'acces.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "pages",
+      "name": "Pages & contenu",
+      "icon": "📄",
+      "color": "#0f766e",
+      "can_do": "Publie des pages de contenu (actualites, offres, informations) sur les surfaces publiques de l'entreprise.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "showcase",
+      "name": "Vitrine & bibliotheque",
+      "icon": "🖼️",
+      "color": "#0f766e",
+      "can_do": "Presente l'entreprise sur une vitrine publique : activites, sites, contacts, avec verification des informations publiees.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "library",
+      "name": "Bibliotheque",
+      "icon": "📚",
+      "color": "#0f766e",
+      "can_do": "Gere une bibliotheque de documents et de ressources partagees, avec droits de consultation par role.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "cameras",
+      "name": "Cameras & supervision",
+      "icon": "📷",
+      "color": "#0f766e",
+      "can_do": "Supervise les cameras des sites et rattache les evenements aux pointages et aux incidents. A manipuler avec un cadre clair : c'est de la surveillance, pas de la paie.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "fleet",
+      "name": "Flotte",
+      "icon": "🚗",
+      "color": "#0f766e",
+      "can_do": "Suit les vehicules, les affectations, les consommations et les echeances d'entretien d'une flotte.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "fuel",
+      "name": "Station-service",
+      "icon": "⛽",
+      "color": "#0f766e",
+      "can_do": "Gere une station-service : pompes, ventes, stocks et encaissements.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "vtc",
+      "name": "VTC",
+      "icon": "🚕",
+      "color": "#0f766e",
+      "can_do": "Gere une activite de transport avec chauffeur : courses, affectations, tarification et reversements.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "delivery",
+      "name": "Livraison",
+      "icon": "🚚",
+      "color": "#0f766e",
+      "can_do": "Organise les livraisons : tournees, affectations, preuves de livraison et suivi des incidents.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "restaurant",
+      "name": "Restauration & POS",
+      "icon": "🍽️",
+      "color": "#0f766e",
+      "can_do": "Gere un restaurant : salle, commandes, encaissement et stocks, avec rattachement aux equipes.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "retail",
+      "name": "Commerce de detail",
+      "icon": "🛍️",
+      "color": "#0f766e",
+      "can_do": "Gere un point de vente : caisse, stock, inventaire et ventes, avec consolidation multi-magasins.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "hospitality",
+      "name": "Hotellerie",
+      "icon": "🏨",
+      "color": "#0f766e",
+      "can_do": "Gere un etablissement hotelier : chambres, reservations, sejours et facturation.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "pharmacy",
+      "name": "Pharmacie",
+      "icon": "💊",
+      "color": "#0f766e",
+      "can_do": "Gere une pharmacie : stock, lots, peremptions, ventes et ordonnances.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "health",
+      "name": "Sante",
+      "icon": "🩺",
+      "color": "#0f766e",
+      "can_do": "Gere un etablissement de sante : patients, rendez-vous, consultations et facturation, avec gestion des gardes.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "edu",
+      "name": "Ecole & formation",
+      "icon": "🎓",
+      "color": "#0f766e",
+      "can_do": "Gere un etablissement scolaire : eleves, classes, notes, absences et frais de scolarite.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "farm",
+      "name": "Agriculture",
+      "icon": "🌾",
+      "color": "#0f766e",
+      "can_do": "Gere une exploitation agricole : parcelles, cultures, intrants et recoltes. Hors catalogue de lancement : l'environnement de demonstration n'existe pas encore.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "fundraising",
+      "name": "Cagnottes & collecte",
+      "icon": "💝",
+      "color": "#0f766e",
+      "can_do": "Organise une collecte de fonds : cagnottes, contributions et reversements, avec transparence sur les montants.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "cabinet",
+      "name": "Cabinet comptable",
+      "icon": "🧾",
+      "color": "#0f766e",
+      "can_do": "Donne a un cabinet comptable un espace multi-dossiers pour produire la paie de plusieurs entreprises sans ressaisie. Ce n'est plus le canal principal de la vente grands comptes : c'est un apporteur d'affaires occasionnel.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "trade",
+      "name": "Negoce & import-export",
+      "icon": "🌍",
+      "color": "#0f766e",
+      "can_do": "Gere le negoce et l'import-export : devis, commandes, douane et marges. Hors catalogue de lancement : l'environnement de demonstration n'existe pas encore.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "branding",
+      "name": "Marque & surfaces publiques",
+      "icon": "🎨",
+      "color": "#0f766e",
+      "can_do": "Definit l'identite visuelle et les surfaces publiques de l'entreprise (logo, couleurs, pages), appliquee de facon coherente.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "billing",
+      "name": "Abonnements & facturation",
+      "icon": "💳",
+      "color": "#0f766e",
+      "can_do": "Gere les abonnements, les factures et les relances des clients de l'entreprise. Utile aux activites qui facturent leurs propres clients.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "paiements",
+      "name": "Encaissements",
+      "icon": "💵",
+      "color": "#0f766e",
+      "can_do": "Encaisse les paiements (mobile, carte, especes) et rapproche les encaissements des factures.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "edge",
+      "name": "EdgeSync & hors-ligne",
+      "icon": "🔌",
+      "color": "#0f766e",
+      "can_do": "Fait fonctionner le pointage et les operations critiques en coupure reseau, puis resynchronise des que le lien revient. Concu pour les sites industriels, les chantiers et les zones a connectivite instable.",
+      "tier": "socle"
+    },
+    {
+      "slug": "geo",
+      "name": "Geolocalisation",
+      "icon": "📍",
+      "color": "#0f766e",
+      "can_do": "Localise les sites, les interventions et les pointages, avec zones autorisees et historique des positions.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "api",
+      "name": "API & integrations",
+      "icon": "🧩",
+      "color": "#0f766e",
+      "can_do": "Expose une API versionnee et documentee (OpenAPI) pour integrer Leopardo au SI existant : ERP, comptabilite, badgeuses, annuaire. C'est le point d'entree d'une revue technique avec une DSI.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "mobile",
+      "name": "Applications mobiles",
+      "icon": "📱",
+      "color": "#0f766e",
+      "can_do": "Fournit les applications mobiles des employes et des managers : pointage, conges, bulletins, validations. Le mobile est la surface principale pour le terrain ; le web reste le back-office des managers.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "desktop",
+      "name": "Poste de travail (desktop)",
+      "icon": "🖥️",
+      "color": "#0f766e",
+      "can_do": "Fournit un poste de travail pour les usages de back-office intensifs (paie, comptabilite, administration) la ou le navigateur ne suffit pas.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "ai",
+      "name": "Assistant IA",
+      "icon": "🤖",
+      "color": "#0f766e",
+      "can_do": "Fournit un assistant qui repond sur les donnees de l'entreprise et propose des actions, avec un journal d'audit de chaque appel. Volontairement gouverne : l'assistant propose, l'utilisateur confirme.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "contracts",
+      "name": "Contrats",
+      "icon": "📝",
+      "color": "#0f766e",
+      "can_do": "Gere les contrats de travail, leurs avenants et leurs echeances, avec alerte avant expiration. Le contrat alimente la paie et le dossier employe.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "audit",
+      "name": "Audit & conformite",
+      "icon": "🧾",
+      "color": "#0f766e",
+      "can_do": "Trace les actions sensibles avec l'auteur, la date et la valeur avant/apres, et produit les exports attendus lors d'un audit ou d'une revue de securite. La piste d'audit immuable generalisee est en cours de deploiement : aujourd'hui le journal couvre les actions IA et les operations d'administration.",
+      "tier": "socle"
+    },
+    {
+      "slug": "exports",
+      "name": "Exports & rapports",
+      "icon": "📤",
+      "color": "#0f766e",
+      "can_do": "Produit les exports comptables et les rapports attendus par un groupe : journal de paie, grand livre, masse salariale, headcount, turnover et absenteisme. Les rapports sont disponibles par entreprise ; la consolidation groupe suit le chantier multi-entites.",
+      "tier": "socle"
+    },
+    {
+      "slug": "growth",
+      "name": "Programme partenaires",
+      "icon": "🤝",
+      "color": "#0f766e",
+      "can_do": "Gere un programme de partenaires et d'apporteurs d'affaires, avec suivi des apports et des commissions.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "training",
+      "name": "Formation",
+      "icon": "🎓",
+      "color": "#0f766e",
+      "can_do": "Organise les formations, suit la progression et rattache les certifications aux dossiers employes.",
+      "tier": "catalogue"
+    },
+    {
+      "slug": "public",
+      "name": "Surfaces publiques",
+      "icon": "🌐",
+      "color": "#0f766e",
+      "can_do": "Expose les surfaces publiques de l'entreprise (vitrine, pages, formulaires) sans exposer les donnees internes.",
+      "tier": "catalogue"
+    }
   ]
 }
