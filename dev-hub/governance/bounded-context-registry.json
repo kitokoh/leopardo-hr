@@ -1260,7 +1260,7 @@
         },
         {
           "path": "front/mobile_apps/leopardo_public/lib/features/brand",
-          "status": "active"
+          "status": "planned"
         }
       ],
       "routes": [
