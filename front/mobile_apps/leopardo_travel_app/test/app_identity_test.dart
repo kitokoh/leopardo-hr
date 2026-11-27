@@ -68,9 +68,9 @@ void main() {
 
       final kts = gradle.readAsStringSync();
       final hasAppId =
-          kts.contains('applicationId = \"com.leopardo.travel\"');
+          kts.contains('applicationId = "com.leopardo.travel"');
       final hasNamespace =
-          kts.contains('namespace = \"com.leopardo.travel\"');
+          kts.contains('namespace = "com.leopardo.travel"');
 
       expect(hasAppId, isTrue, reason: 'applicationId incorrect');
       expect(hasNamespace, isTrue, reason: 'namespace incorrect');
