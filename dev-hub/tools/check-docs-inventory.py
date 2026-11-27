@@ -114,7 +114,7 @@ def stale_declared() -> set[str]:
 # le budget qu'il venait de geler). Un document généré n'est pas une décision
 # éditoriale : il est recalculé à chaque exécution.
 GENERATED_DOCS = {
-    "docs/DOCS_INVENTORY.md",
+    "docs/governance/DOCS_INVENTORY.md",
     "docs/infra/CI_WORKFLOW_INVENTORY.md",
 }
 
@@ -280,7 +280,7 @@ def self_test() -> int:
     # La liste déclarée ne doit pas contenir de faux positif de type
     # « placeholder » : c'est le défaut corrigé.
     expect("pas de marqueur de contenu", not hasattr(sys.modules[__name__], "STALE_MARKERS"))
-    expect("inventaire généré exclu du budget", "docs/DOCS_INVENTORY.md" in GENERATED_DOCS)
+    expect("inventaire généré exclu du budget", "docs/governance/DOCS_INVENTORY.md" in GENERATED_DOCS)
 
     # Détection d'affirmation machine-vérifiable.
     expect(

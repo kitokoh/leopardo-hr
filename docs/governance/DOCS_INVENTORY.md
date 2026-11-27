@@ -1,11 +1,11 @@
 # Inventaire documentaire
 
-Total `.md` : **1923**
+Total `.md` : **1921**
 
 | Catégorie | Nombre | Sens |
 |---|---:|---|
-| `verified` | 276 | vivant, couvert par une garde de parité |
-| `living` | 1488 | vivant, non vérifié |
+| `verified` | 275 | vivant, couvert par une garde de parité |
+| `living` | 1487 | vivant, non vérifié |
 | `archived` | 159 | historique, non maintenu |
 | `stale` | 0 | candidat à la suppression (décision PM) |
 
@@ -61,4 +61,4 @@ Sinon il dérive — c'est l'incident `BRANCH_PROTECTION_REQUIRED.md`.
 | `.specify/features/5289-legal-leaves-by-country/tasks.md` | modules |
 | `.specify/features/5325-departure-notice/spec.md` | modules |
 | `.specify/features/5353-geofence-unify/spec.md` | modules |
-| … | 344 autre(s) |
+| … | 343 autre(s) |

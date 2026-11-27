@@ -115,11 +115,36 @@ return new class extends Migration
                 continue;
             }
 
+            // Certaines tables n'ont PAS de colonne `company_id` : elles ne sont
+            // isolées que par jointure sur leur parent. `pay_slip_lines` est de
+            // celles-là — une table de détail de PAIE sans tenant propre. RLS ne
+            // peut pas s'appliquer sans la colonne : on l'ajoute, on backfille,
+            // puis on la rend NOT NULL.
+            //
+            // Mesuré en CI : la première version de cette migration échouait en
+            // `column child.company_id does not exist` — le backfill supposait
+            // la colonne présente. Le test d'intégration l'a attrapé avant la
+            // production, ce qui est exactement son rôle.
+            if (! $this->hasCompanyIdColumn($table)) {
+                $this->addCompanyIdColumn($table, $backfill);
+                $addedColumn = true;
+            } else {
+                $addedColumn = false;
+            }
+
             if ($backfill !== null) {
                 $this->backfillCompanyId($table, $backfill[0], $backfill[1]);
             }
 
             $this->assertNoNullCompanyId($table);
+
+            // Une colonne ajoutée par cette migration reste nullable : on la
+            // verrouille une fois le backfill prouvé. Sans cela, une insertion
+            // future pourrait écrire `NULL` et la ligne deviendrait invisible
+            // sous la politique — la panne silencieuse que #9897 a coûtée.
+            if ($addedColumn) {
+                DB::statement("ALTER TABLE {$table} ALTER COLUMN company_id SET NOT NULL");
+            }
 
             DB::statement("ALTER TABLE {$table} ENABLE ROW LEVEL SECURITY");
             DB::statement("ALTER TABLE {$table} FORCE ROW LEVEL SECURITY");
@@ -132,6 +157,48 @@ return new class extends Migration
                 WITH CHECK (company_id::text = current_setting('app.current_company_id', true))
                 SQL);
         }
+    }
+
+    /**
+     * La table porte-t-elle déjà `company_id` ?
+     */
+    private function hasCompanyIdColumn(string $table): bool
+    {
+        // `to_regclass` plutôt que `current_schema()` : la migration tourne avec
+        // `search_path = shared_tenants, public`, mais un `current_schema()` peut
+        // renvoyer `public` si le premier schéma n'existe pas encore — et la
+        // garde répondrait alors « colonne absente » sur une table qui l'a.
+        // `to_regclass` résout par le search_path réel, comme PostgreSQL.
+        $row = DB::selectOne(
+            'SELECT 1 AS present FROM pg_attribute '
+            .'WHERE attrelid = to_regclass(?) AND attname = ? AND NOT attisdropped',
+            [$table, 'company_id']
+        );
+
+        return $row !== null;
+    }
+
+    /**
+     * Ajoute `company_id` (nullable d'abord) puis la rend NOT NULL après backfill.
+     *
+     * Ajouter directement en NOT NULL échouerait sur une table non vide. La
+     * séquence nullable → backfill → NOT NULL est la seule qui fonctionne sans
+     * verrou exclusif long ni valeur par défaut inventée.
+     */
+    private function addCompanyIdColumn(string $table, ?array $backfill): void
+    {
+        if ($backfill === null) {
+            throw new RuntimeException(
+                "RLS #9975 : `{$table}` n'a pas de colonne company_id et aucune "
+                .'table parente n\'est déclarée pour la backfiller. Ajouter la '
+                .'colonne et son backfill dans la migration avant de poser la politique.'
+            );
+        }
+
+        DB::statement("ALTER TABLE {$table} ADD COLUMN company_id uuid NULL");
+        DB::statement("CREATE INDEX {$table}_company_id_index ON {$table} (company_id)");
+
+        logger()->info('RLS #9975 : colonne company_id ajoutée', ['table' => $table]);
     }
 
     /**

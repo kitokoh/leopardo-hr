@@ -52,6 +52,11 @@ final class RlsSensitiveTablesLot6Test extends TestCase
      * comportement voulu — un test qui lit la constante de la migration ne
      * testerait que lui-même.
      */
+    /**
+     * Tables du lot qui n'ont PAS de colonne `company_id` en production.
+     */
+    private const TABLES_WITHOUT_COMPANY_ID = ['pay_slip_lines'];
+
     private const TABLES = [
         'employee_loans' => null,
         'payment_batches' => null,
@@ -211,14 +216,24 @@ final class RlsSensitiveTablesLot6Test extends TestCase
                 continue;
             }
 
-            $nullable = $backfill !== null ? '' : ' NOT NULL';
-            $fk = $backfill !== null
-                ? ", {$backfill[1]} ".($backfill[0] === 'pay_slips' ? 'bigint' : 'int').' NOT NULL'
-                : '';
+            // `pay_slip_lines` n'a RÉELLEMENT pas de colonne company_id dans le
+            // schéma de production (mesuré : la première version de la migration
+            // échouait en `column child.company_id does not exist`). Le schéma de
+            // test le reproduit, sinon le test ne couvrirait pas le chemin
+            // « la migration doit AJOUTER la colonne ».
+            $hasCompanyColumn = $table !== 'pay_slip_lines';
+            $nullable = ($backfill !== null || ! $hasCompanyColumn) ? '' : ' NOT NULL';
+
+            $cols = $hasCompanyColumn ? "company_id uuid{$nullable}" : '';
+
+            if ($backfill !== null) {
+                $fkType = $backfill[0] === 'pay_slips' ? 'bigint' : 'int';
+                $cols .= ($cols === '' ? '' : ', ')."{$backfill[1]} {$fkType} NOT NULL";
+            }
 
             DB::statement(
                 "CREATE TABLE shared_tenants.{$table} ("
-                ."id serial PRIMARY KEY, company_id uuid{$nullable}{$fk})"
+                ."id serial PRIMARY KEY, {$cols})"
             );
         }
     }
@@ -254,9 +269,20 @@ final class RlsSensitiveTablesLot6Test extends TestCase
 
             if ($backfill !== null) {
                 // Ligne rattachée à la table parente : le backfill fera le reste.
+                // `pay_slip_lines` n'a pas la colonne — c'est la migration qui
+                // l'ajoute, donc on n'écrit que la FK.
+                $row = ['id' => 1, $backfill[1] => 1];
+                $row2 = ['id' => 2, $backfill[1] => 2];
+
+                if (in_array($table, self::TABLES_WITHOUT_COMPANY_ID, true)) {
+                    DB::table($table)->insert([$row, $row2]);
+
+                    continue;
+                }
+
                 DB::table($table)->insert([
-                    ['id' => 1, $backfill[1] => 1, 'company_id' => null],
-                    ['id' => 2, $backfill[1] => 2, 'company_id' => null],
+                    $row + ['company_id' => null],
+                    $row2 + ['company_id' => null],
                 ]);
 
                 continue;
@@ -276,6 +302,17 @@ final class RlsSensitiveTablesLot6Test extends TestCase
     private function runMigrationSql(): void
     {
         foreach (self::TABLES as $table => $backfill) {
+            $hasCompany = DB::selectOne(
+                'SELECT 1 AS present FROM information_schema.columns '
+                .'WHERE table_schema = current_schema() AND table_name = ? AND column_name = ?',
+                [$table, 'company_id']
+            ) !== null;
+
+            if (! $hasCompany) {
+                DB::statement("ALTER TABLE shared_tenants.{$table} ADD COLUMN company_id uuid NULL");
+                DB::statement("CREATE INDEX {$table}_company_id_index ON shared_tenants.{$table} (company_id)");
+            }
+
             if ($backfill !== null) {
                 DB::statement(
                     "UPDATE shared_tenants.{$table} AS child "
@@ -288,6 +325,12 @@ final class RlsSensitiveTablesLot6Test extends TestCase
 
             $nulls = DB::table($table)->whereNull('company_id')->count();
             expect($nulls)->toBe(0, "garde : {$table} ne doit plus avoir de company_id NULL.");
+
+            if (! $hasCompany) {
+                // La colonne ajoutée doit être verrouillée : sinon une insertion
+                // future pourrait écrire NULL et rendre la ligne invisible.
+                DB::statement("ALTER TABLE shared_tenants.{$table} ALTER COLUMN company_id SET NOT NULL");
+            }
 
             DB::statement("ALTER TABLE shared_tenants.{$table} ENABLE ROW LEVEL SECURITY");
             DB::statement("ALTER TABLE shared_tenants.{$table} FORCE ROW LEVEL SECURITY");
