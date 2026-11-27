@@ -200,7 +200,8 @@ fi
 
 app_count=0
 while read -r app; do
-  [[ "$app" == "leopardo_core" ]] && continue   # package partage, pas une app
+  # Packages partages : pas des apps, aucun binaire, aucune identite.
+  [[ "$app" == "leopardo_core" || "$app" == "leopardo_surface" ]] && continue
   app_count=$((app_count + 1))
   dir="$APPS_DIR/$app"
 

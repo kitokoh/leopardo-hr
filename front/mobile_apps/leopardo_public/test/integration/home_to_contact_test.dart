@@ -5,16 +5,15 @@ import 'package:flutter_localizations/flutter_localizations.dart'
     hide GlobalMaterialLocalizations, GlobalCupertinoLocalizations;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:leopardo_public/core/i18n/app_strings.dart';
-import 'package:leopardo_public/core/navigation/app_shell.dart';
-import 'package:leopardo_public/core/providers/app_providers.dart';
-import 'package:leopardo_public/features/business_profile/data/business_profile_repository.dart';
-import 'package:leopardo_public/features/business_profile/models/business_profile.dart';
-import 'package:leopardo_public/features/discovery/data/public_discovery_repository.dart';
-import 'package:leopardo_public/features/discovery/models/discovery_category.dart';
-import 'package:leopardo_public/features/discovery/models/discovery_item.dart';
-import 'package:leopardo_public/features/discovery/providers/discovery_providers.dart';
-import 'package:leopardo_public/features/discovery/widgets/discovery_tile.dart';
+import 'package:leopardo_surface/leopardo_surface.dart';
+import 'package:leopardo_public/app_router.dart';
+import 'package:leopardo_surface/src/features/business_profile/data/business_profile_repository.dart';
+import 'package:leopardo_surface/src/features/business_profile/models/business_profile.dart';
+import 'package:leopardo_surface/src/features/discovery/data/public_discovery_repository.dart';
+import 'package:leopardo_surface/src/features/discovery/models/discovery_category.dart';
+import 'package:leopardo_surface/src/features/discovery/models/discovery_item.dart';
+import 'package:leopardo_surface/src/features/discovery/providers/discovery_providers.dart';
+import 'package:leopardo_surface/src/features/discovery/widgets/discovery_tile.dart';
 
 /// COULOIR 16 — M1 · Parcours d'acceptation « Accueil → Fiche → Contact ».
 ///

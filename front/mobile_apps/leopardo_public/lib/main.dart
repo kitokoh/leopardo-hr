@@ -11,16 +11,28 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:leopardo_core/core/i18n/device_locale.dart';
 import 'package:leopardo_core/core/widgets/startup_gate.dart';
 import 'package:leopardo_core/l10n/l10n.dart';
+import 'package:leopardo_surface/leopardo_surface.dart';
 // Web uniquement : la stratégie d'URL « path ». Importée inconditionnellement
 // car `url_strategy` est un paquet multi-plateforme dont l'implémentation non
 // web est un no-op — `kIsWeb` garde l'appel, pas l'import.
 import 'package:url_strategy/url_strategy.dart';
 
-import 'core/navigation/app_shell.dart';
-import 'core/providers/app_providers.dart';
-import 'core/theme/public_theme.dart';
+import 'app_router.dart';
 
 /// Entrée de l'application grand public Leopardo (couloir 16).
+///
+/// ## Ce que cette app est devenue
+///
+/// Elle était l'unique app grand public : elle portait à la fois le MOTEUR
+/// (découverte, fiches, parcours des huit verticales) et l'ASSEMBLAGE. Le
+/// moteur vit désormais dans `leopardo_surface`, et chaque verticale a sa
+/// propre application dédiée.
+///
+/// `leopardo_public` reste l'app **multi-verticales** : celle qui sert un
+/// visiteur qui ne sait pas encore ce qu'il cherche, et qui doit pouvoir
+/// passer d'un restaurant à une pharmacie sans changer d'application. Les huit
+/// apps dédiées servent le visiteur qui sait déjà — celui qui arrive par
+/// `restaurants.leopardo.app` ou par un QR code de boutique.
 ///
 /// ## Le choix le plus important de ce fichier : aucun écran de connexion
 ///
@@ -35,18 +47,18 @@ import 'core/theme/public_theme.dart';
 /// ## Anti page noire
 ///
 /// `runApp` est appelé IMMÉDIATEMENT ; toute initialisation bloquante passe par
-/// `StartupGate`, qui applique un timeout et continue en mode dégradé plutôt que
-/// de laisser un écran noir. C'est le patron des autres apps du dépôt
+/// `StartupGate`, qui applique un timeout et continue en mode dégradé plutôt
+/// que de laisser un écran noir. C'est le patron des autres apps du dépôt
 /// (`leopardo_travel_agent/lib/main.dart:27-45`).
 ///
 /// ## Pourquoi la stratégie d'URL est posée AVANT `runApp`
 ///
 /// Par défaut, Flutter web rend chaque route en `/#/restaurants/le-bistrot` :
 /// le fragment n'est jamais envoyé au serveur, donc **aucun crawler** ne voit
-/// l'URL, et le lien n'est pas partageable de façon canonique. `usePathUrlStrategy`
-/// fait lire/écrire `/restaurants/le-bistrot` dans `location.pathname`, ce qui
-/// est la condition pour que la verticale restaurant soit indexable — la raison
-/// même de la cible web.
+/// l'URL, et le lien n'est pas partageable de façon canonique.
+/// `setPathUrlStrategy` fait lire/écrire `/restaurants/le-bistrot` dans
+/// `location.pathname`, ce qui est la condition pour que les verticales soient
+/// indexables — la raison même de la cible web.
 ///
 /// L'appel précède `runApp` : un `GoRouter` construit avec l'ancienne
 /// stratégie garderait des `#` même après le changement.

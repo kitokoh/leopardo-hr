@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowSplashScreenBackground">@color/leopardo_splash_background</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_transparent</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@drawable/launch_background</item>
+    </style>
+</resources>

@@ -1,0 +1,42 @@
+{
+    "name": "Leopardo Restaurants",
+    "short_name": "Restaurants",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#C2410C",
+    "theme_color": "#C2410C",
+    "description": "Trouvez votre table, découvrez la carte, commandez et suivez votre commande.",
+    "orientation": "portrait-primary",
+    "lang": "fr",
+    "dir": "auto",
+    "categories": [
+        "food",
+        "shopping",
+        "travel"
+    ],
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-maskable-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "icons/Icon-maskable-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ]
+}

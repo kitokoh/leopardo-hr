@@ -135,6 +135,54 @@ jobs:
             version_prefix: pos-restaurant
             firebase_secret: FIREBASE_POS_RESTAURANT_ANDROID_APP_ID
             android_package: com.leopardo.posrestaurant
+          - name: restaurant
+            project_path: front/mobile_apps/leopardo_restaurant_app
+            artifact_name: leopardo-restaurant
+            version_prefix: restaurant
+            firebase_secret: FIREBASE_RESTAURANT_ANDROID_APP_ID
+            android_package: com.leopardo.restaurant
+          - name: retail
+            project_path: front/mobile_apps/leopardo_retail_app
+            artifact_name: leopardo-retail
+            version_prefix: retail
+            firebase_secret: FIREBASE_RETAIL_ANDROID_APP_ID
+            android_package: com.leopardo.retail
+          - name: hospitality
+            project_path: front/mobile_apps/leopardo_hospitality_app
+            artifact_name: leopardo-hospitality
+            version_prefix: hospitality
+            firebase_secret: FIREBASE_HOSPITALITY_ANDROID_APP_ID
+            android_package: com.leopardo.hospitality
+          - name: trade
+            project_path: front/mobile_apps/leopardo_trade_app
+            artifact_name: leopardo-trade
+            version_prefix: trade
+            firebase_secret: FIREBASE_TRADE_ANDROID_APP_ID
+            android_package: com.leopardo.trade
+          - name: travel
+            project_path: front/mobile_apps/leopardo_travel_app
+            artifact_name: leopardo-travel
+            version_prefix: travel
+            firebase_secret: FIREBASE_TRAVEL_ANDROID_APP_ID
+            android_package: com.leopardo.travel
+          - name: pharmacy
+            project_path: front/mobile_apps/leopardo_pharmacy_app
+            artifact_name: leopardo-pharmacy
+            version_prefix: pharmacy
+            firebase_secret: FIREBASE_PHARMACY_ANDROID_APP_ID
+            android_package: com.leopardo.pharmacy
+          - name: mobility
+            project_path: front/mobile_apps/leopardo_mobility_app
+            artifact_name: leopardo-mobility
+            version_prefix: mobility
+            firebase_secret: FIREBASE_MOBILITY_ANDROID_APP_ID
+            android_package: com.leopardo.mobility
+          - name: careers
+            project_path: front/mobile_apps/leopardo_careers_app
+            artifact_name: leopardo-careers
+            version_prefix: careers
+            firebase_secret: FIREBASE_CAREERS_ANDROID_APP_ID
+            android_package: com.leopardo.careers
 
     steps:
       - name: Guard DEV_API_BASE_URL (#4524)
@@ -223,7 +271,7 @@ jobs:
           # absent de `gh secret list`) et son identite Firebase EST le secret
           # historique `FIREBASE_APP_ID` (com.leopardo.rh) — son repli est donc
           # explicite et borne, sinon le supprimer arreterait un canal vivant.
-          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && (secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID) || matrix.app.name == 'accounting' && secrets.FIREBASE_ACCOUNTING_ANDROID_APP_ID || matrix.app.name == 'marketing' && secrets.FIREBASE_MARKETING_ANDROID_APP_ID || matrix.app.name == 'travel_agent' && secrets.FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID || matrix.app.name == 'cameras' && secrets.FIREBASE_CAMERAS_ANDROID_APP_ID || matrix.app.name == 'public' && secrets.FIREBASE_PUBLIC_ANDROID_APP_ID || matrix.app.name == 'pos_retail' && secrets.FIREBASE_POS_RETAIL_ANDROID_APP_ID || matrix.app.name == 'pos_restaurant' && secrets.FIREBASE_POS_RESTAURANT_ANDROID_APP_ID || '' }}
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && (secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID) || matrix.app.name == 'accounting' && secrets.FIREBASE_ACCOUNTING_ANDROID_APP_ID || matrix.app.name == 'marketing' && secrets.FIREBASE_MARKETING_ANDROID_APP_ID || matrix.app.name == 'travel_agent' && secrets.FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID || matrix.app.name == 'cameras' && secrets.FIREBASE_CAMERAS_ANDROID_APP_ID || matrix.app.name == 'public' && secrets.FIREBASE_PUBLIC_ANDROID_APP_ID || matrix.app.name == 'pos_retail' && secrets.FIREBASE_POS_RETAIL_ANDROID_APP_ID || matrix.app.name == 'pos_restaurant' && secrets.FIREBASE_POS_RESTAURANT_ANDROID_APP_ID || matrix.app.name == 'restaurant' && secrets.FIREBASE_RESTAURANT_ANDROID_APP_ID || matrix.app.name == 'retail' && secrets.FIREBASE_RETAIL_ANDROID_APP_ID || matrix.app.name == 'hospitality' && secrets.FIREBASE_HOSPITALITY_ANDROID_APP_ID || matrix.app.name == 'trade' && secrets.FIREBASE_TRADE_ANDROID_APP_ID || matrix.app.name == 'travel' && secrets.FIREBASE_TRAVEL_ANDROID_APP_ID || matrix.app.name == 'pharmacy' && secrets.FIREBASE_PHARMACY_ANDROID_APP_ID || matrix.app.name == 'mobility' && secrets.FIREBASE_MOBILITY_ANDROID_APP_ID || matrix.app.name == 'careers' && secrets.FIREBASE_CAREERS_ANDROID_APP_ID || '' }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
         run: |
@@ -260,7 +308,7 @@ jobs:
           # absent de `gh secret list`) et son identite Firebase EST le secret
           # historique `FIREBASE_APP_ID` (com.leopardo.rh) — son repli est donc
           # explicite et borne, sinon le supprimer arreterait un canal vivant.
-          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && (secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID) || matrix.app.name == 'accounting' && secrets.FIREBASE_ACCOUNTING_ANDROID_APP_ID || matrix.app.name == 'marketing' && secrets.FIREBASE_MARKETING_ANDROID_APP_ID || matrix.app.name == 'travel_agent' && secrets.FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID || matrix.app.name == 'cameras' && secrets.FIREBASE_CAMERAS_ANDROID_APP_ID || matrix.app.name == 'public' && secrets.FIREBASE_PUBLIC_ANDROID_APP_ID || matrix.app.name == 'pos_retail' && secrets.FIREBASE_POS_RETAIL_ANDROID_APP_ID || matrix.app.name == 'pos_restaurant' && secrets.FIREBASE_POS_RESTAURANT_ANDROID_APP_ID || '' }}
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && (secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID) || matrix.app.name == 'accounting' && secrets.FIREBASE_ACCOUNTING_ANDROID_APP_ID || matrix.app.name == 'marketing' && secrets.FIREBASE_MARKETING_ANDROID_APP_ID || matrix.app.name == 'travel_agent' && secrets.FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID || matrix.app.name == 'cameras' && secrets.FIREBASE_CAMERAS_ANDROID_APP_ID || matrix.app.name == 'public' && secrets.FIREBASE_PUBLIC_ANDROID_APP_ID || matrix.app.name == 'pos_retail' && secrets.FIREBASE_POS_RETAIL_ANDROID_APP_ID || matrix.app.name == 'pos_restaurant' && secrets.FIREBASE_POS_RESTAURANT_ANDROID_APP_ID || matrix.app.name == 'restaurant' && secrets.FIREBASE_RESTAURANT_ANDROID_APP_ID || matrix.app.name == 'retail' && secrets.FIREBASE_RETAIL_ANDROID_APP_ID || matrix.app.name == 'hospitality' && secrets.FIREBASE_HOSPITALITY_ANDROID_APP_ID || matrix.app.name == 'trade' && secrets.FIREBASE_TRADE_ANDROID_APP_ID || matrix.app.name == 'travel' && secrets.FIREBASE_TRAVEL_ANDROID_APP_ID || matrix.app.name == 'pharmacy' && secrets.FIREBASE_PHARMACY_ANDROID_APP_ID || matrix.app.name == 'mobility' && secrets.FIREBASE_MOBILITY_ANDROID_APP_ID || matrix.app.name == 'careers' && secrets.FIREBASE_CAREERS_ANDROID_APP_ID || '' }}
           FIREBASE_APP_ID_SECRET_NAME: ${{ matrix.app.firebase_secret }}
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
@@ -401,7 +449,7 @@ jobs:
         with:
           # #9883 — meme ternaire que l'etape de validation : l'app id VERIFIE
           # et l'app id utilise pour l'upload ne peuvent pas diverger.
-          appId: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && (secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID) || matrix.app.name == 'accounting' && secrets.FIREBASE_ACCOUNTING_ANDROID_APP_ID || matrix.app.name == 'marketing' && secrets.FIREBASE_MARKETING_ANDROID_APP_ID || matrix.app.name == 'travel_agent' && secrets.FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID || matrix.app.name == 'cameras' && secrets.FIREBASE_CAMERAS_ANDROID_APP_ID || matrix.app.name == 'public' && secrets.FIREBASE_PUBLIC_ANDROID_APP_ID || matrix.app.name == 'pos_retail' && secrets.FIREBASE_POS_RETAIL_ANDROID_APP_ID || matrix.app.name == 'pos_restaurant' && secrets.FIREBASE_POS_RESTAURANT_ANDROID_APP_ID || '' }}
+          appId: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && (secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID) || matrix.app.name == 'accounting' && secrets.FIREBASE_ACCOUNTING_ANDROID_APP_ID || matrix.app.name == 'marketing' && secrets.FIREBASE_MARKETING_ANDROID_APP_ID || matrix.app.name == 'travel_agent' && secrets.FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID || matrix.app.name == 'cameras' && secrets.FIREBASE_CAMERAS_ANDROID_APP_ID || matrix.app.name == 'public' && secrets.FIREBASE_PUBLIC_ANDROID_APP_ID || matrix.app.name == 'pos_retail' && secrets.FIREBASE_POS_RETAIL_ANDROID_APP_ID || matrix.app.name == 'pos_restaurant' && secrets.FIREBASE_POS_RESTAURANT_ANDROID_APP_ID || matrix.app.name == 'restaurant' && secrets.FIREBASE_RESTAURANT_ANDROID_APP_ID || matrix.app.name == 'retail' && secrets.FIREBASE_RETAIL_ANDROID_APP_ID || matrix.app.name == 'hospitality' && secrets.FIREBASE_HOSPITALITY_ANDROID_APP_ID || matrix.app.name == 'trade' && secrets.FIREBASE_TRADE_ANDROID_APP_ID || matrix.app.name == 'travel' && secrets.FIREBASE_TRAVEL_ANDROID_APP_ID || matrix.app.name == 'pharmacy' && secrets.FIREBASE_PHARMACY_ANDROID_APP_ID || matrix.app.name == 'mobility' && secrets.FIREBASE_MOBILITY_ANDROID_APP_ID || matrix.app.name == 'careers' && secrets.FIREBASE_CAREERS_ANDROID_APP_ID || '' }}
           token: ${{ secrets.FIREBASE_TOKEN }}
           groups: testeurs-internes
           file: ${{ env.BUILD_FILE }}
@@ -424,7 +472,7 @@ jobs:
           # absent de `gh secret list`) et son identite Firebase EST le secret
           # historique `FIREBASE_APP_ID` (com.leopardo.rh) — son repli est donc
           # explicite et borne, sinon le supprimer arreterait un canal vivant.
-          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && (secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID) || matrix.app.name == 'accounting' && secrets.FIREBASE_ACCOUNTING_ANDROID_APP_ID || matrix.app.name == 'marketing' && secrets.FIREBASE_MARKETING_ANDROID_APP_ID || matrix.app.name == 'travel_agent' && secrets.FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID || matrix.app.name == 'cameras' && secrets.FIREBASE_CAMERAS_ANDROID_APP_ID || matrix.app.name == 'public' && secrets.FIREBASE_PUBLIC_ANDROID_APP_ID || matrix.app.name == 'pos_retail' && secrets.FIREBASE_POS_RETAIL_ANDROID_APP_ID || matrix.app.name == 'pos_restaurant' && secrets.FIREBASE_POS_RESTAURANT_ANDROID_APP_ID || '' }}
+          FIREBASE_APP_ID: ${{ matrix.app.name == 'employee' && secrets.FIREBASE_EMPLOYEE_ANDROID_APP_ID || matrix.app.name == 'manager' && secrets.FIREBASE_MANAGER_ANDROID_APP_ID || matrix.app.name == 'platform_admin' && secrets.FIREBASE_PLATFORM_ADMIN_ANDROID_APP_ID || matrix.app.name == 'hr' && (secrets.FIREBASE_APP_ID_HR || secrets.FIREBASE_APP_ID) || matrix.app.name == 'accounting' && secrets.FIREBASE_ACCOUNTING_ANDROID_APP_ID || matrix.app.name == 'marketing' && secrets.FIREBASE_MARKETING_ANDROID_APP_ID || matrix.app.name == 'travel_agent' && secrets.FIREBASE_TRAVEL_AGENT_ANDROID_APP_ID || matrix.app.name == 'cameras' && secrets.FIREBASE_CAMERAS_ANDROID_APP_ID || matrix.app.name == 'public' && secrets.FIREBASE_PUBLIC_ANDROID_APP_ID || matrix.app.name == 'pos_retail' && secrets.FIREBASE_POS_RETAIL_ANDROID_APP_ID || matrix.app.name == 'pos_restaurant' && secrets.FIREBASE_POS_RESTAURANT_ANDROID_APP_ID || matrix.app.name == 'restaurant' && secrets.FIREBASE_RESTAURANT_ANDROID_APP_ID || matrix.app.name == 'retail' && secrets.FIREBASE_RETAIL_ANDROID_APP_ID || matrix.app.name == 'hospitality' && secrets.FIREBASE_HOSPITALITY_ANDROID_APP_ID || matrix.app.name == 'trade' && secrets.FIREBASE_TRADE_ANDROID_APP_ID || matrix.app.name == 'travel' && secrets.FIREBASE_TRAVEL_ANDROID_APP_ID || matrix.app.name == 'pharmacy' && secrets.FIREBASE_PHARMACY_ANDROID_APP_ID || matrix.app.name == 'mobility' && secrets.FIREBASE_MOBILITY_ANDROID_APP_ID || matrix.app.name == 'careers' && secrets.FIREBASE_CAREERS_ANDROID_APP_ID || '' }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
           FIREBASE_READBACK_REQUIRED: ${{ secrets.FIREBASE_READBACK_REQUIRED }}

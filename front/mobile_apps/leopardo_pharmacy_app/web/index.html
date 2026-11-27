@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <!--
+    SEO de la cible web grand public.
+
+    Le placeholder Flutter par défaut titrait « Leopardo — Trouver près de toi »
+    et ne disait rien de la verticale restaurant : un lien `/restaurants/{slug}`
+    partagé sur WhatsApp ou indexé par Google arrivait sans titre, sans
+    description et sans carte sociale. Ces balises sont la version statique,
+    servie AVANT que Flutter ne démarre — donc la seule que voient les robots
+    qui n'exécutent pas JavaScript.
+
+    `restaurant_web_bootstrap.js` remplace ensuite `og:title` / `og:description`
+    / `document.title` par le nom réel de l'établissement quand la route porte
+    un slug (voir ce fichier pour le pourquoi).
+  -->
+  <meta name="description" content="Trouvez une officine, ses horaires et sa garde, près de chez vous.">
+  <meta name="theme-color" content="#047857">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Pharmacies">
+  <meta name="format-detection" content="telephone=no">
+
+  <!-- Open Graph : ce que montre WhatsApp / Facebook / LinkedIn sur un lien partagé -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Leopardo">
+  <meta property="og:title" content="Leopardo Pharmacies — Trouvez une officine, ses horaires et sa garde, près de chez vous.">
+  <meta property="og:description" content="Trouvez une officine, ses horaires et sa garde, près de chez vous.">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:url" content="https://pharmacies.leopardo.app">
+
+  <!-- Twitter card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Leopardo Pharmacies — Trouvez une officine, ses horaires et sa garde, près de chez vous.">
+  <meta name="twitter:description" content="Trouvez une officine, ses horaires et sa garde, près de chez vous.">
+
+  <!-- iOS meta tags & icons -->
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Leopardo Pharmacies</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!--
+    Enrichissement dynamique par verticale. Chargé en `defer` : il ne retarde
+    jamais le premier rendu de Flutter, et un échec de ce script laisse
+    simplement les balises statiques ci-dessus.
+
+    Couvre les quatre verticales servies par le build web :
+    /restaurants/{slug}, /boutiques/{slug}, /stay/{slug}, /billets/{id}.
+  -->
+  <script src="vertical_web_bootstrap.js" defer></script>
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
