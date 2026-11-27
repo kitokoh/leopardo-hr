@@ -37,6 +37,8 @@ docs/GOTO_MARKET/
 ├── 01_PRODUCT          # Vision, positionnement, fonctionnalités cœur
 ├── 2026_MARKET_LAUNCH_COMPANY_OS/  # Audit marché et positionnement actualisé (2026)
 ├── ASSETS_PRODUCTION/   # Specs et scripts pour assets marketing (landing, brochure, pitch deck, vidéos)
+├── PACK_LANCEMENT/      # Contenu du pack de lancement (concept, blogs, comparatif, page de vente)
+├── kits/                # Kits d'exécution prêts-à-coller (listings, social, cabinet comptable)
 └── REPOSITIONNEMENT_2026.md # Décision de périmètre et de lancement (2026-11-27)
 ```
 
@@ -72,6 +74,8 @@ Permettre à **n'importe quelle partie prenante** de comprendre en moins de 30 m
 | Fonctionnalités cœur | [`01_PRODUCT/CORE_FEATURES.md`](01_PRODUCT/CORE_FEATURES.md) |
 | Thèse de catégorie (historique « Company OS » → suite métier) | [`01_PRODUCT/COMPANY_OS_THESIS.md`](01_PRODUCT/COMPANY_OS_THESIS.md) |
 | Repositionnement et périmètre de lancement | [`REPOSITIONNEMENT_2026.md`](REPOSITIONNEMENT_2026.md) |
+| **Page de vente unique du lancement (Paie + Pointage DZ)** | [`PACK_LANCEMENT/04_PAGE_VENTE_PAIE_POINTAGE_DZ.md`](PACK_LANCEMENT/04_PAGE_VENTE_PAIE_POINTAGE_DZ.md) |
+| **Kit partenaire cabinet comptable** | [`kits/cabinet-comptable.md`](kits/cabinet-comptable.md) |
 | Specs assets marketing (landing, brochure, pitch deck, vidéos) | [`ASSETS_PRODUCTION/`](ASSETS_PRODUCTION/) |
 
 ---
