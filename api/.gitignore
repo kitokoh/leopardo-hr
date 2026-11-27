@@ -25,3 +25,8 @@ yarn-error.log
 /.zed
 /storage/fonts
 storage/junit/
+# Rapports JUnit de la campagne de recette (#9942) : ce sont des SORTIES de
+# `dev-tools/qa-junit-shards.sh`, pas des sources. Les committer faisait entrer
+# 14 XML de resultats dans le tree, regeneres a chaque run — exactement le
+# defaut que `repo-hygiene-guard.yml` (#7654) refuse par ailleurs.
+storage/qa/

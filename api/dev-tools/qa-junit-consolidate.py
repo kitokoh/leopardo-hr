@@ -14,7 +14,10 @@ import glob
 import xml.etree.ElementTree as ET
 from pathlib import Path
 
-QA = Path("/workspace/leopardo-hr/api/storage/qa")
+# Chemin RELATIF au script : `/workspace/leopardo-hr/...` n'existe que dans le
+# sandbox qui a produit la campagne. Sur un runner CI ou un poste de dev, le
+# depot est ailleurs — le script echouait alors sur un dossier inexistant.
+QA = Path(__file__).resolve().parent.parent / "storage" / "qa"
 SRC = QA / "junit"
 OUT = QA / "junit-feature-consolide.xml"
 
