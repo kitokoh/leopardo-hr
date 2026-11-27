@@ -2,7 +2,7 @@
 
 > **Statut** : document de décision · **Date** : 2026-11-27 · **Portée** : périmètre de lancement, go-to-market, séquence.
 > **Issues liées** : #10001 (étude & réduction de périmètre), #10002 (onglet marketing profils/modules), #10003 (mission & livraison).
-> **Sources internes** : `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`, `docs/GOTO_MARKET/2026_MARKET_LAUNCH_COMPANY_OS/01_AUDIT_MARCHE_ET_PRODUIT.md`, `03_DIRECTION_COMMERCIALE_ET_OFFRES.md`, `docs/REFERENTIEL_PRODUIT/APV.md`.
+> **Sources internes** : `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`, `docs/archive/01_AUDIT_MARCHE_ET_PRODUIT.md` (archivé le 2026-11-27), `03_DIRECTION_COMMERCIALE_ET_OFFRES.md`, `docs/REFERENTIEL_PRODUIT/APV.md`.
 > **Rappel de catégorie** : Leopardo est une **suite métier** (business suite). Jamais « logiciel RH », « HR SaaS » ni « Mobile-First Company OS » comme catégorie.
 
 ---
@@ -135,7 +135,7 @@ Le socle a été **démarré et testé** dans un environnement local reconstruit
 | Test | Résultat observé |
 |---|---|
 | `GET /api/v1/health` | **200** |
-| Login démo (`ahmed.benali@techcorp-algerie.dz`) | Token émis, contexte tenant DZ |
+| Login démo (compte seedé du tenant DZ) | Token émis, contexte tenant DZ |
 | `POST /api/v1/payroll-runs` + `/calculate` (DZ) | **9 bulletins**, 842 059,10 DZD brut, 626 085,54 DZD net, 1 060 994,47 DZD coût employeur |
 | `/validate` puis `/lock` | Statuts `validated` → `locked` |
 | `GET /api/v1/pay-slips/1/pdf` | **PDF de 879 730 octets** généré |

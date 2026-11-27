@@ -1,19 +1,33 @@
-# Leopardo HR - Market Launch 2026
+# Leopardo — Market Launch 2026
 
-Date: 2026-06-05  
-Objectif: positionner Leopardo HR pour un lancement marche en tant que **Mobile-First Company OS** pour PME terrain.
+> ⚠️ **Dossier historique.** La catégorie « Mobile-First Company OS » est **périmée**
+> depuis #7428 (2026-09-16) : Leopardo est une **suite métier** (business suite).
+> Références à jour : `docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`,
+> `docs/REFERENTIEL_PRODUIT/MESSAGE.md`, et surtout
+> **`docs/GOTO_MARKET/REPOSITIONNEMENT_2026.md`** (décision de périmètre et de
+> séquence de lancement, 2026-11-27).
 
 ## Contenu
 
-- `01_AUDIT_MARCHE_ET_PRODUIT.md` : audit croise produit/repo/marche 2026.
-- `02_POSITIONNEMENT_ET_MESSAGING.md` : categorie, promesse, segments, objections, pitchs.
-- `03_DIRECTION_COMMERCIALE_ET_OFFRES.md` : packaging, ICP, canaux, motion de vente.
+Les trois documents de ce dossier ont été **archivés le 2026-11-27** et fusionnés
+dans `docs/archive/AUDITS_GTM_2026.md` (budget documentaire #9981) :
 
-## Decision strategique
+- `01_AUDIT_MARCHE_ET_PRODUIT.md` — audit croisé produit/repo/marché 2026 ;
+- `02_POSITIONNEMENT_ET_MESSAGING.md` — catégorie, promesse, segments, objections ;
+- `03_DIRECTION_COMMERCIALE_ET_OFFRES.md` — packaging, ICP, canaux, motion de vente.
 
-Leopardo ne doit pas se vendre comme un simple logiciel RH. Le marche 2026 valorise les plateformes qui consolident les donnees employes, paie, presence, communication, analytics et automatisation. La categorie a pousser est:
+Leurs décisions sont reprises et **tranchées** dans
+`docs/GOTO_MARKET/REPOSITIONNEMENT_2026.md` : segment primaire (PME de terrain
+5-150 salariés, DZ/MA/TN), pack de lancement (Paie + Pointage), canal cabinet
+comptable, séquence 90 jours et critères d'arrêt.
 
-> **Mobile-First Company OS for field and growing SMEs**
+## Décision stratégique (à jour)
 
-Le produit doit promettre une chose simple: rendre l'entreprise visible, pilotable et actionnable depuis le telephone, meme quand les equipes sont sur le terrain.
+Leopardo ne se vend pas comme un « logiciel RH » ni comme un « Company OS ».
+C'est une **suite métier** dont le lancement se fait sur **un pack, un pays, un
+message** :
 
+> **« La paie et le pointage de vos équipes de terrain, dans une seule application. »**
+
+Le reste du périmètre (CRM, comptabilité, verticales, IA) reste dans le produit
+comme **catalogue activable**, hors du message d'entrée.
