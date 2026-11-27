@@ -183,3 +183,63 @@ fi
 N_CONTEXTS=$(echo "${CANON}" | jq '.contexts | length')
 echo "✅ Protection de ${BRANCH} conforme au canonique (strict + ${N_CONTEXTS} contexts + reviews + enforce_admins)."
 echo "✅ Aucun check tiers (quota/abonnement) n'est requis au merge (issue #7480)."
+
+# ── #9980 : le RULESET de revue obligatoire existe-t-il toujours ? ───────────
+# `/protection` ne voit PAS les rulesets, et un ruleset ne remplace pas les
+# required_status_checks : ce sont deux mécanismes distincts, et l'audit a
+# trouvé le premier absent (`required_pull_request_reviews: null`) alors que
+# la doc le décrivait comme « à activer ». Sans cette vérification, un ruleset
+# supprimé par un outil d'administration repasserait inaperçu — exactement
+# l'incident #2011 (protection vidée par un GET→PUT) sur l'autre mécanisme.
+#
+# Lecture : GET /repos/{repo}/rulesets puis GET /rulesets/{id}. Un token sans
+# droit `administration:read` reçoit 403/404 : on l'annonce comme NON VÉRIFIÉ
+# plutôt que de faire échouer la garde (leçon #3545 : un rouge permanent ne
+# signale plus rien).
+if [[ -n "${FIXTURE}" ]]; then
+  echo "::notice::Ruleset non vérifié en mode fixture (self-test hors API)."
+else
+  RULESET_NAME=$(jq -r '.ruleset.name // empty' "${CANONICAL_FILE}")
+  if [[ -n "${RULESET_NAME}" ]]; then
+    HTTP_RS=$(curl -s -o /tmp/bp-rulesets.json -w '%{http_code}' \
+      -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+      -H "Accept: application/vnd.github+json" \
+      "https://api.github.com/repos/${REPO}/rulesets" || true)
+
+    if [[ "${HTTP_RS}" != "200" ]]; then
+      echo "::notice::Ruleset NON VÉRIFIÉ (HTTP ${HTTP_RS} sur /rulesets) — poser BRANCH_PROTECTION_TOKEN (administration:read) pour le contrôler."
+    else
+      RS_ID=$(jq -r --arg n "${RULESET_NAME}" '.[] | select(.name == $n) | .id' /tmp/bp-rulesets.json | head -1)
+      if [[ -z "${RS_ID}" ]]; then
+        echo "::error::Le ruleset « ${RULESET_NAME} » est ABSENT (issue #9980) — la revue obligatoire n'est plus appliquée sur ${BRANCH}."
+        echo "  → recréer : voir .github/BRANCH_PROTECTION_REQUIRED.md §Ruleset."
+        exit 1
+      fi
+
+      curl -s -o /tmp/bp-ruleset.json \
+        -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+        -H "Accept: application/vnd.github+json" \
+        "https://api.github.com/repos/${REPO}/rulesets/${RS_ID}" || true
+
+      RS_ENFORCEMENT=$(jq -r '.enforcement // "unknown"' /tmp/bp-ruleset.json)
+      RS_APPROVALS=$(jq -r '[.rules[]? | select(.type == "pull_request") | .parameters.required_approving_review_count] | first // 0' /tmp/bp-ruleset.json)
+      RS_CODEOWNER=$(jq -r '[.rules[]? | select(.type == "pull_request") | .parameters.require_code_owner_review] | first // false' /tmp/bp-ruleset.json)
+      WANT_APPROVALS=$(jq -r '.ruleset.required_approving_review_count // 0' "${CANONICAL_FILE}")
+
+      if [[ "${RS_ENFORCEMENT}" != "active" ]]; then
+        echo "::error::Ruleset « ${RULESET_NAME} » n'est pas ACTIF (enforcement=${RS_ENFORCEMENT}) — la revue obligatoire est désactivée (issue #9980)."
+        exit 1
+      fi
+      if [[ "${RS_APPROVALS}" -lt "${WANT_APPROVALS}" ]]; then
+        echo "::error::Ruleset « ${RULESET_NAME} » exige ${RS_APPROVALS} approbation(s), le canonique en attend ${WANT_APPROVALS} (issue #9980)."
+        exit 1
+      fi
+      if [[ "${RS_CODEOWNER}" != "true" ]]; then
+        echo "::error::Ruleset « ${RULESET_NAME} » n'exige plus la revue des CODEOWNERS (issue #9980)."
+        exit 1
+      fi
+
+      echo "✅ Ruleset « ${RULESET_NAME} » actif : ${RS_APPROVALS} approbation(s) + revue CODEOWNERS (issue #9980)."
+    fi
+  fi
+fi

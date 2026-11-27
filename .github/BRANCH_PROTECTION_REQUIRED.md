@@ -29,10 +29,81 @@
 |---|---|
 | `enforce_admins` | **✅ true** (activé le 2026-08-26) |
 | `strict` (branche à jour avant merge) | ❌ false (désactivé — voir §Historique) |
-| `required_approving_review_count` | 0 (pas encore activé — voir §Roadmap) |
+| `required_approving_review_count` | 0 sur `/protection` — **la revue obligatoire est portée par le ruleset, voir §Ruleset** |
 | `dismiss_stale_reviews` | true |
 | `allow_force_pushes` | false |
 | `allow_deletions` | false |
+
+## Ruleset — revue obligatoire (issue #9980)
+
+> **Constat d'audit (2026-11-27)** : `required_pull_request_reviews` était `null`
+> sur `/protection`. Les entrées CODEOWNERS étaient donc **purement
+> documentaires** (`require_code_owner_reviews: false`), et le tableau
+> ci-dessus renvoyait la revue à une « Roadmap » jamais exécutée. Un dépôt qui
+> vend de la paie et de la facturation mergait sur `main` sans qu'aucune
+> relecture ne soit exigée — le token utilisé pour l'audit avait d'ailleurs les
+> droits `admin` complets.
+
+La revue obligatoire est désormais portée par un **ruleset de dépôt**, pas par
+`/protection` : ce sont deux mécanismes distincts, et `/protection` ne voit pas
+les rulesets.
+
+| Paramètre | Valeur |
+|---|---|
+| Nom | `main — revue obligatoire sur zones sensibles` |
+| Cible | `refs/heads/main` |
+| `enforcement` | `active` |
+| `required_approving_review_count` | **1** |
+| `require_code_owner_review` | **true** |
+| `required_review_thread_resolution` | true |
+| `dismiss_stale_reviews_on_push` | true |
+| `required_linear_history` | true |
+| `deletion` / `non_fast_forward` | interdits |
+| `bypass_actors` | RepositoryRole **admin**, mode `pull_request` |
+
+**Pourquoi un bypass admin, et pourquoi ce n'est pas un trou.** Le dépôt n'a
+qu'un mainteneur humain (`@kitokoh`). Sans bypass, il ne pourrait plus merger
+ses propres PR et le dépôt serait bloqué. Le mode `pull_request` est le point
+essentiel : le bypass ne permet **que** de fusionner une PR existante — jamais
+de pousser directement sur `main`, jamais de contourner les checks requis. Dès
+qu'un second mainteneur rejoint le projet, retirer ce bypass (voir §Roadmap).
+
+**Vérification.** `dev-hub/tools/check-branch-protection.sh` contrôle
+désormais le ruleset en plus de `/protection` : présence, `enforcement=active`,
+nombre d'approbations ≥ canonique, `require_code_owner_review=true`. Un token
+sans droit `administration:read` reçoit un `::notice::` « NON VÉRIFIÉ » plutôt
+qu'un échec — un rouge permanent ne signale plus rien (leçon #3545).
+
+**Recréer le ruleset** (si supprimé par un outil d'administration) :
+
+```bash
+curl -X POST -H "Authorization: token $ADMIN_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  https://api.github.com/repos/kitokoh/leopardo-hr/rulesets \
+  -d @- <<'JSON'
+{
+  "name": "main — revue obligatoire sur zones sensibles",
+  "target": "branch",
+  "enforcement": "active",
+  "conditions": { "ref_name": { "include": ["refs/heads/main"], "exclude": [] } },
+  "bypass_actors": [
+    { "actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "pull_request" }
+  ],
+  "rules": [
+    { "type": "deletion" },
+    { "type": "non_fast_forward" },
+    { "type": "required_linear_history" },
+    { "type": "pull_request", "parameters": {
+        "required_approving_review_count": 1,
+        "dismiss_stale_reviews_on_push": true,
+        "require_code_owner_review": true,
+        "require_last_push_approval": false,
+        "required_review_thread_resolution": true,
+        "allowed_merge_methods": ["squash", "merge"] } }
+  ]
+}
+JSON
+```
 
 ## Checks requis (bloquants sur toute PR → main)
 
@@ -139,8 +210,13 @@ Il mesure et affiche le ratio sans bloquer les PRs.
 
 ## Roadmap protection (décisions PM requises)
 
-- [ ] `required_approving_review_count: 1` — à activer quand l'équipe dépasse 2 développeurs actifs
-- [ ] `required_linear_history: true` — à valider (rebases obligatoires = historique propre)
+- [x] `required_approving_review_count: 1` — **fait le 2026-11-27 (#9980)** via
+      ruleset (voir §Ruleset). Le champ `/protection` reste à `null` : c'est le
+      ruleset qui porte la règle.
+- [x] `required_linear_history: true` — **fait le 2026-11-27 (#9980)** via ruleset.
+- [ ] **Retirer le bypass admin du ruleset** dès qu'un second mainteneur humain
+      rejoint le projet (`bypass_actors: []`). Tant qu'il n'y a qu'un
+      mainteneur, le retirer bloquerait tout merge.
 - [ ] Merge Queue GitHub — **non configurée** (vérifié 2026-09-05 : 0 ruleset) ; à activer quand >15 PRs/jour régulièrement
 
 ---
