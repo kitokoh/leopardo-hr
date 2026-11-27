@@ -17,9 +17,11 @@ import 'package:leopardo_surface/leopardo_surface.dart';
 /// Sur un domaine dédié (`entreprises.leopardo.app`), la racine EST l'accueil de la verticale.
 /// L'app multi-verticales conserve `/home` pour ne pas casser ses liens
 /// existants ; ici il n'y a rien à préserver.
-final appRouterProvider = Provider<GoRouter>((ref) {{
-  return buildSurfaceRouter(
-    vertical: SurfaceVertical.trade,
-    initialLocation: '/',
-  );
-}});
+final appRouterProvider = Provider<GoRouter>((ref) {
+  {
+    return buildSurfaceRouter(
+      vertical: SurfaceVertical.trade,
+      initialLocation: '/',
+    );
+  }
+});

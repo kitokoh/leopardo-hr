@@ -77,7 +77,8 @@ class SurfaceShell extends ConsumerWidget {
             NavigationDestination(
               icon: Icon(surfaceHomeIcon(vertical, selected: false)),
               selectedIcon: Icon(surfaceHomeIcon(vertical, selected: true)),
-              label: labelKey == null ? strings.t('tabHome') : strings.t(labelKey),
+              label:
+                  labelKey == null ? strings.t('tabHome') : strings.t(labelKey),
             ),
             NavigationDestination(
               icon: const Icon(Icons.forum_outlined),
@@ -117,7 +118,9 @@ IconData surfaceHomeIcon(SurfaceVertical vertical, {required bool selected}) {
     case SurfaceVertical.trade:
       return selected ? Icons.factory : Icons.factory_outlined;
     case SurfaceVertical.travel:
-      return selected ? Icons.confirmation_number : Icons.confirmation_number_outlined;
+      return selected
+          ? Icons.confirmation_number
+          : Icons.confirmation_number_outlined;
     case SurfaceVertical.pharmacy:
       return selected ? Icons.local_pharmacy : Icons.local_pharmacy_outlined;
     case SurfaceVertical.vtc:
@@ -281,7 +284,8 @@ List<RouteBase> surfaceDetailRoutes(SurfaceVertical vertical) {
         GoRoute(
           path: '/journey/travel',
           builder: (context, state) => TravelJourneyScreen(
-            initialTripId: int.tryParse(state.uri.queryParameters['trip'] ?? ''),
+            initialTripId:
+                int.tryParse(state.uri.queryParameters['trip'] ?? ''),
           ),
         ),
       ];

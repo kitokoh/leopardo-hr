@@ -489,6 +489,34 @@ def write(path: pathlib.Path, content: str) -> None:
     path.write_text(content, encoding="utf-8")
 
 
+def format_dart(target: pathlib.Path) -> None:
+    """Formate le Dart généré, pour ne pas produire un dépôt non conforme.
+
+    Les templates sont écrits à la main ; `dart format` a des regles precises
+    (retours a la ligne, virgules finales) qu'aucun template ne devine. Sans
+    cette etape, chaque generation recree un diff de format et fait echouer
+    `dart format --set-exit-if-changed` en CI. Le formateur est donc appele
+    ICI, une fois, plutot que corrige a la main dans huit templates.
+    """
+    import shutil
+    import subprocess
+
+    dart = shutil.which("dart") or shutil.which("flutter")
+    if dart is None:
+        print("   (dart introuvable : le Dart genere ne sera pas formate)")
+        return
+
+    for sub in ("lib", "test"):
+        directory = target / sub
+        if not directory.exists():
+            continue
+        subprocess.run(
+            [dart, "format", str(directory)],
+            check=False,
+            capture_output=True,
+        )
+
+
 def copy_platform_dirs(target: pathlib.Path) -> None:
     """Copie les dossiers plateforme depuis leopardo_public.
 
@@ -818,6 +846,8 @@ def main() -> None:
         rewrite_android(target, app)
         rewrite_ios(target, app)
         rewrite_web(target, app)
+
+        format_dart(target)
 
         print(f"✅ {app['package']} ({app['vertical']})")
 
