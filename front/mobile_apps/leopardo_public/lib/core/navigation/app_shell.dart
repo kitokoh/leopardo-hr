@@ -162,6 +162,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             RetailOrderScreen(sellerSlug: state.pathParameters['slug'] ?? ''),
       ),
+      // Verticale Boutique (#9997) — URL PUBLIQUE.
+      //
+      // Même raisonnement que `/restaurants/:slug` : `/boutiques/{slug}` est
+      // l'URL qu'on partage et qu'un crawler indexe, `/journey/order/:slug`
+      // reste la convention interne. Deux routes, un écran, zéro duplication.
+      GoRoute(
+        path: '/boutiques/:slug',
+        builder: (context, state) =>
+            RetailOrderScreen(sellerSlug: state.pathParameters['slug'] ?? ''),
+      ),
       // Verticale Restaurant (#9959 + mission parité web).
       //
       // DEUX chemins pour un écran, et c'est voulu :
@@ -189,6 +199,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) =>
             StayReservationScreen(slug: state.pathParameters['slug'] ?? ''),
       ),
+      // Verticale Séjour (#9998) — URL PUBLIQUE.
+      //
+      // `/stay/{slug}` est le chemin que la vitrine Next.js expose déjà
+      // (`front/web/src/app/stay/[slug]`) : le build Flutter web doit servir
+      // la MÊME URL, sinon un lien partagé depuis le web casse dans l'app.
+      GoRoute(
+        path: '/stay/:slug',
+        builder: (context, state) =>
+            StayReservationScreen(slug: state.pathParameters['slug'] ?? ''),
+      ),
       GoRoute(
         path: '/journey/contact/:type/:slug',
         builder: (context, state) => ContactRequestScreen(
@@ -204,6 +224,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => TravelJourneyScreen(
           initialTripId: int.tryParse(state.uri.queryParameters['trip'] ?? ''),
         ),
+      ),
+      // Verticale Billets (#9999) — URLs PUBLIQUES.
+      //
+      // Cette verticale n'a pas de slug d'établissement : la recherche est
+      // autonome. L'URL publique porte donc l'identifiant de trajet dans le
+      // CHEMIN (`/billets/42`) et non en query (`?trip=42`) : un paramètre de
+      // requête n'est pas une URL canonique partageable, et les crawlers le
+      // traitent comme la même page que `/billets`.
+      GoRoute(
+        path: '/billets',
+        builder: (context, state) => const TravelJourneyScreen(),
+        routes: [
+          GoRoute(
+            path: ':id',
+            builder: (context, state) => TravelJourneyScreen(
+              initialTripId: int.tryParse(state.pathParameters['id'] ?? ''),
+            ),
+          ),
+        ],
       ),
       // Verticale Emploi (#9944) : l'annuaire des portails est la porte
       // d'entrée ; `company` en query ouvre directement un portail.
