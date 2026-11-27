@@ -117,6 +117,30 @@ runs:
         echo "pdftotext=$(pdftotext -v 2>&1 | head -1)"
         echo "antiword=$(antiword -h 2>&1 | head -1 || true)"
 
+    # #9974 — `psql` est requis par `RlsAppRoleBootstrapTest`, qui exécute le
+    # script de bascule du rôle applicatif RLS tel qu'un opérateur l'exécutera
+    # (variables psql, `\gexec`, `\if`). Sans ce binaire, le test se sautait
+    # SILENCIEUSEMENT : la procédure de bascule n'était donc jamais vérifiée en
+    # CI, alors qu'elle est la condition d'effectivité de toutes les politiques
+    # RLS du dépôt. Le runner GitHub n'installe pas postgresql-client par
+    # défaut.
+    #
+    # Sonde NON tautologique : le binaire doit RÉPONDRE, pas seulement
+    # `apt-get` rendre 0.
+    - name: Install PostgreSQL client (psql) for RLS bootstrap test (#9974)
+      shell: bash
+      run: |
+        set -euo pipefail
+        if ! command -v psql >/dev/null 2>&1; then
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends postgresql-client
+        fi
+        if ! command -v psql >/dev/null 2>&1; then
+          echo "::error::psql introuvable — RlsAppRoleBootstrapTest ne peut pas s'exécuter"
+          exit 1
+        fi
+        echo "psql=$(psql --version)"
+
     - name: Resolve Composer cache directory
       id: composer-cache
       shell: bash

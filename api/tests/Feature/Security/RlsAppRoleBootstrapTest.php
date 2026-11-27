@@ -73,6 +73,25 @@ final class RlsAppRoleBootstrapTest extends TestCase
             $this->markTestSkipped('Le rôle de test ne peut pas créer de rôle.');
         }
 
+        // `psql` est le SEUL moyen d'exécuter le script tel qu'un opérateur
+        // l'exécutera (variables psql, `\gexec`, `\if`). Sans lui, le test se
+        // sautait SILENCIEUSEMENT en CI — mesuré : le runner GitHub n'installe
+        // pas postgresql-client, donc `RlsAppRoleBootstrapTest` n'a jamais
+        // tourné, et la procédure de bascule restait non vérifiée. C'est
+        // exactement le défaut que l'audit reproche au dépôt : une garantie
+        // annoncée, jamais mesurée.
+        //
+        // On ÉCHOUE au lieu de sauter : un test de sécurité qui ne s'exécute
+        // pas doit être visible. `postgresql-client` est installé par
+        // `.github/actions/setup-backend-db` (étape dédiée).
+        if (trim((string) shell_exec('command -v psql 2>/dev/null')) === '') {
+            $this->fail(
+                'psql introuvable : le script de bascule RLS ne peut pas être exécuté. '
+                .'Installer postgresql-client (voir .github/actions/setup-backend-db). '
+                .'Ce test ne doit PAS être sauté : il vérifie la procédure de bascule.'
+            );
+        }
+
         $this->role = $this->uniqueRoleName();
 
         $this->dropRole();

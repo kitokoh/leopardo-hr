@@ -129,7 +129,10 @@ final class RlsSensitiveTablesLot6Test extends TestCase
         DB::table($this->t('pay_slips'))->insert(['id' => 1, 'company_id' => self::TENANT_A]);
 
         // Deux lignes orphelines de tenant, comme en production avant #9975.
-        DB::table($this->t('pay_slip_lines'))->insert(['id' => 1, 'pay_slip_id' => 1, 'company_id' => null]);
+        // `pay_slip_lines` n'a PAS encore la colonne : c'est la migration qui
+        // l'ajoute. On n'écrit donc que la clé étrangère — c'est précisément le
+        // chemin « la migration doit AJOUTER la colonne puis backfiller ».
+        DB::table($this->t('pay_slip_lines'))->insert(['id' => 1, 'pay_slip_id' => 1]);
         DB::table($this->t('leave_balance_logs'))->insert([
             ['id' => 1, 'employee_id' => 1, 'company_id' => null],
             ['id' => 2, 'employee_id' => 2, 'company_id' => null],
