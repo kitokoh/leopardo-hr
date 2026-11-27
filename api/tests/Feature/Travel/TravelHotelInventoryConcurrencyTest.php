@@ -55,6 +55,47 @@ class TravelHotelInventoryConcurrencyTest extends TestCase
         // Volontairement vide — voir le commentaire de classe.
     }
 
+    /**
+     * Nettoyage OBLIGATOIRE : ce fichier est le seul de la suite à écrire
+     * HORS transaction (voir `beginDatabaseTransaction()` ci-dessus), donc
+     * ses lignes sont réellement COMMITÉES et survivent au test.
+     *
+     * Sans ce `tearDown`, l'entreprise `active` créée ici restait dans la
+     * base du worker et le fichier suivant qui compte les entreprises
+     * actives la voyait : `WeeklyManagerDigestTest` échouait en
+     * « job was pushed 4 times instead of 2 » (observé sur `main`,
+     * run 45896982919, 2026-11-26). Le test était donc vert isolément et
+     * rouge dans la suite — le pire des deux mondes.
+     *
+     * On supprime par `company_id` (le tenant créé ici), pas par TRUNCATE :
+     * les autres fichiers du worker ont pu commiter leurs propres lignes
+     * entre-temps et n'ont pas à être punis.
+     */
+    protected function tearDown(): void
+    {
+        if (isset($this->company)) {
+            $companyId = $this->company->id;
+
+            DB::statement('SET search_path TO shared_tenants,public');
+
+            foreach ([
+                'travel_hotel_bookings',
+                'travel_hotel_room_inventories',
+                'travel_hotel_rooms',
+                'travel_hotels',
+                'travel_cities',
+                'employees',
+            ] as $table) {
+                DB::table($table)->where('company_id', $companyId)->delete();
+            }
+
+            DB::statement('SET search_path TO public');
+            DB::table('companies')->where('id', $companyId)->delete();
+        }
+
+        parent::tearDown();
+    }
+
     private Company $company;
 
     private TravelHotel $hotel;

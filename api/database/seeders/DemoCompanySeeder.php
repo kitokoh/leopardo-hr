@@ -26,6 +26,20 @@ use Illuminate\Support\Str;
  */
 class DemoCompanySeeder extends Seeder
 {
+    /**
+     * `Seeder::$command` est déclaré `@var Command` (non-nullable) par le
+     * framework, mais il vaut RÉELLEMENT `null` quand le seeder est instancié
+     * et appelé par programme (`(new DemoCompanyOnceSeeder)->run()`, ou
+     * `$this->call()` depuis un seeder lui-même sans commande) — c'est le cas
+     * de `DemoSuperAdminSyncTest`. Sans cette redéclaration, PHPStan level 8
+     * signale chaque `$this->command?->` en `nullsafe.neverNull` et pousse à
+     * écrire `->`, ce qui reproduit le crash « Call to a member function
+     * error() on null » (main, run 45896982919).
+     *
+     * @var \Illuminate\Console\Command|null
+     */
+    protected $command;
+
     private const SHARED_SCHEMA = 'shared_tenants';
 
     private const PUBLIC_SCHEMA = 'public';
@@ -37,8 +51,8 @@ class DemoCompanySeeder extends Seeder
         $allowFromOnceSeeder = (bool) app()->bound('leopardo.demo_seed_once');
 
         if (! app()->environment('local', 'development', 'testing') && ! $allowOutsideLocal && ! $allowOnce && ! $allowFromOnceSeeder) {
-            $this->command->error('DemoCompanySeeder interdit hors environnement de dev.');
-            $this->command->warn('Definir ALLOW_DEMO_SEEDING=true ou DEMO_SEED_ONCE=true pour un seed exceptionnel.');
+            $this->command?->error('DemoCompanySeeder interdit hors environnement de dev.');
+            $this->command?->warn('Definir ALLOW_DEMO_SEEDING=true ou DEMO_SEED_ONCE=true pour un seed exceptionnel.');
 
             return;
         }
@@ -50,15 +64,15 @@ class DemoCompanySeeder extends Seeder
 
         $plans = $this->planMap();
         if ($plans->isEmpty()) {
-            $this->command->error('Plans introuvables. Executer DatabaseSeeder avant DemoCompanySeeder.');
+            $this->command?->error('Plans introuvables. Executer DatabaseSeeder avant DemoCompanySeeder.');
 
             return;
         }
 
         $companies = $this->demoCompanies();
 
-        $this->command->info('');
-        $this->command->info('Creation des companies de demo...');
+        $this->command?->info('');
+        $this->command?->info('Creation des companies de demo...');
 
         foreach ($companies as $companyConfig) {
             $this->seedCompany($companyConfig, $plans);
@@ -1631,17 +1645,17 @@ SQL);
 
     private function printSummary(array $companies): void
     {
-        $this->command->info('');
-        $this->command->info('Demo multi-company creee avec succes :');
+        $this->command?->info('');
+        $this->command?->info('Demo multi-company creee avec succes :');
 
         foreach ($companies as $company) {
-            $this->command->info("  - {$company['name']} ({$company['plan']}, {$company['country']}, shared)");
-            $this->command->info("    principal : {$company['principal_manager']['email']} / password123");
-            $this->command->info("    RH        : {$company['hr_manager']['email']} / password123");
+            $this->command?->info("  - {$company['name']} ({$company['plan']}, {$company['country']}, shared)");
+            $this->command?->info("    principal : {$company['principal_manager']['email']} / password123");
+            $this->command?->info("    RH        : {$company['hr_manager']['email']} / password123");
             foreach ($company['managers'] ?? [] as $key => $manager) {
-                $this->command->info("    {$key} : {$manager['email']} / password123");
+                $this->command?->info("    {$key} : {$manager['email']} / password123");
             }
-            $this->command->info("    employe   : {$company['employees'][0]['email']} / password123");
+            $this->command?->info("    employe   : {$company['employees'][0]['email']} / password123");
         }
     }
 
