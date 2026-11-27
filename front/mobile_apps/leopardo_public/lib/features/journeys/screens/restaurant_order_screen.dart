@@ -98,7 +98,8 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
   Timer? _trackTimer;
 
   // ── Paiement ──
-  RestaurantPaymentMethod _paymentMethod = RestaurantPaymentMethod.cashOnDelivery;
+  RestaurantPaymentMethod _paymentMethod =
+      RestaurantPaymentMethod.cashOnDelivery;
   bool _paying = false;
   Object? _payError;
   bool _paid = false;
@@ -462,7 +463,8 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
   /// Le filtrage est fait ici, pas dans le widget : il doit rester testable
   /// sans monter d'arbre, et il ne doit jamais toucher au panier (les
   /// quantités survivent à un changement de filtre).
-  List<RestaurantMenuCategory> _visibleCategories(RestaurantPublicProfile profile) {
+  List<RestaurantMenuCategory> _visibleCategories(
+      RestaurantPublicProfile profile) {
     final needle = _normalize(_menuQuery.text);
     final active = _activeCategory;
 
@@ -485,7 +487,8 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
           .toList();
 
       if (products.isNotEmpty) {
-        result.add(RestaurantMenuCategory(name: category.name, products: products));
+        result.add(
+            RestaurantMenuCategory(name: category.name, products: products));
       }
     }
 
@@ -629,8 +632,9 @@ class _RestaurantOrderScreenState extends ConsumerState<RestaurantOrderScreen> {
                     label: Text(category.name),
                     selected: _activeCategory == category.name,
                     onSelected: (_) => setState(
-                      () => _activeCategory =
-                          _activeCategory == category.name ? null : category.name,
+                      () => _activeCategory = _activeCategory == category.name
+                          ? null
+                          : category.name,
                     ),
                   ),
                 ),
@@ -1028,12 +1032,14 @@ class _ProfileHeader extends StatelessWidget {
           const SizedBox(height: 10),
         ],
 
-        if (profile.establishmentType != null || profile.cuisineTypes.isNotEmpty)
+        if (profile.establishmentType != null ||
+            profile.cuisineTypes.isNotEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 6),
             child: Text(
               [
-                if (profile.establishmentType != null) profile.establishmentType!,
+                if (profile.establishmentType != null)
+                  profile.establishmentType!,
                 if (profile.cuisineTypes.isNotEmpty)
                   '${strings.t('restaurantCuisinesLabel')} : '
                       '${profile.cuisineTypes.join(', ')}',
@@ -1177,7 +1183,6 @@ class _ReviewsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         JourneySectionTitle(text: strings.t('restaurantReviewsTitle')),
-
         if (loading && reviews.isEmpty)
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
@@ -1250,7 +1255,6 @@ class _ReviewsSection extends StatelessWidget {
                 ],
               ),
             ),
-
         if (page?.hasMore == true)
           OutlinedButton(
             onPressed: loading ? null : onLoadMore,

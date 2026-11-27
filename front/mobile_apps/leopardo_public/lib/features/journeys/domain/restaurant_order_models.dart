@@ -117,8 +117,7 @@ class RestaurantHour {
   final bool isClosed;
 
   /// Vrai si le jour est réellement servi (ouvert ET bornes présentes).
-  bool get isServed =>
-      !isClosed && opensAt != null && closesAt != null;
+  bool get isServed => !isClosed && opensAt != null && closesAt != null;
 
   /// Vrai si [now] tombe dans la plage de ce jour.
   ///

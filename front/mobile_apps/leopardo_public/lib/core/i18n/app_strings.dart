@@ -1377,8 +1377,7 @@ class AppStrings {
       'restaurantReviewYourRating': 'تقييمك',
       'restaurantReviewComment': 'تعليقك (اختياري)',
       'restaurantReviewSubmit': 'نشر تقييمي',
-      'restaurantReviewSent':
-          'شكرًا! سيظهر تقييمك بعد مراجعة المطعم له.',
+      'restaurantReviewSent': 'شكرًا! سيظهر تقييمك بعد مراجعة المطعم له.',
       'restaurantReviewAlready':
           'تم إرسال تقييم لهذا الطلب من قبل. يُقبل تقييم واحد لكل طلب.',
       'restaurantReviewNotEligible':
@@ -1390,8 +1389,7 @@ class AppStrings {
       'restaurantPayMobileMoney': 'المحفظة الإلكترونية',
       'restaurantPayAction': 'دفع الطلب',
       'restaurantPayDone': 'تم تسجيل الدفع.',
-      'restaurantPayCardUnavailable':
-          'الدفع بالبطاقة غير متاح بعد لهذا الطلب.',
+      'restaurantPayCardUnavailable': 'الدفع بالبطاقة غير متاح بعد لهذا الطلب.',
       'restaurantTrackAuto': 'يتحدّث التتبع تلقائيًا.',
       'restaurantTrackStopped': 'اكتمل الطلب: التتبع محدّث.',
       'journeyDayMonday': 'الاثنين',

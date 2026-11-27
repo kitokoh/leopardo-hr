@@ -229,13 +229,23 @@ void main() {
     });
 
     test('un corps sans data rend null plutôt qu’une page vide trompeuse', () {
-      expect(RestaurantReviewPage.tryParse({'meta': {'total': 0}}), isNull);
+      expect(
+          RestaurantReviewPage.tryParse({
+            'meta': {'total': 0}
+          }),
+          isNull);
     });
   });
 
   group('statuts terminaux — le suivi automatique s’arrête au bon moment', () {
     test('les statuts terminaux sont reconnus, casse comprise', () {
-      for (final status in ['served', 'paid', 'closed', 'cancelled', 'refunded']) {
+      for (final status in [
+        'served',
+        'paid',
+        'closed',
+        'cancelled',
+        'refunded'
+      ]) {
         expect(isRestaurantTerminalStatus(status), isTrue, reason: status);
         expect(isRestaurantTerminalStatus(status.toUpperCase()), isTrue);
       }
@@ -247,7 +257,8 @@ void main() {
       }
     });
 
-    test('un statut inconnu reste non terminal (une interrogation de trop)', () {
+    test('un statut inconnu reste non terminal (une interrogation de trop)',
+        () {
       expect(isRestaurantTerminalStatus(null), isFalse);
       expect(isRestaurantTerminalStatus('some_new_state'), isFalse);
     });
