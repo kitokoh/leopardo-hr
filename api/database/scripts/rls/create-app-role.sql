@@ -1,20 +1,29 @@
 -- =============================================================================
--- #9896 — ADR-9879, étape 2 : rôle applicatif NOSUPERUSER NOBYPASSRLS
+-- #9896 / #9974 — ADR-9879, étape 2 : rôle applicatif NOSUPERUSER NOBYPASSRLS
 -- =============================================================================
 --
 -- ## Pourquoi ce script existe
 --
 -- PostgreSQL fait TOUJOURS bypasser RLS aux rôles SUPERUSER et BYPASSRLS,
 -- MÊME avec `FORCE ROW LEVEL SECURITY`. Mesure dans ce dépôt : le rôle
--- applicatif (`leopardo`) est SUPERUSER. Les politiques posées par #9879 et
--- #9889 existent donc, mais elles ne protègent RIEN tant que l'application
--- se connecte avec ce rôle.
+-- applicatif (`leopardo`) est SUPERUSER. Les politiques posées par #9879,
+-- #9889, #9897 et #9924 existent donc, mais elles ne protègent RIEN tant que
+-- l'application se connecte avec ce rôle.
 --
 -- Vérifier l'état courant avant toute chose :
 --
 --     php artisan tenant:rls-status
 --
 -- Sortie 1 = « RLS annoncé mais bypassé ». C'est l'état à corriger ici.
+--
+-- ## Défaut corrigé par #9974 (important)
+--
+-- La version précédente écrivait `:'app_password'` À L'INTÉRIEUR d'un bloc
+-- `DO $$ … $$`. psql n'interpole PAS ses variables dans une chaîne
+-- dollar-quotée : le script échouait en `syntax error at or near ":"`.
+-- Autrement dit, la procédure de bascule documentée ne pouvait pas
+-- s'exécuter. La création passe désormais par `\gexec`, où `:'app_password'`
+-- est bien substitué (il est hors dollar-quotes).
 --
 -- ## Ce que ce script NE fait pas
 --
@@ -36,30 +45,49 @@
 \set ON_ERROR_STOP on
 
 -- -----------------------------------------------------------------------------
+-- 0) Garde : il faut un rôle capable de créer/altérer un rôle
+-- -----------------------------------------------------------------------------
+-- Sans ce garde, l'échec arrive au milieu du script, après des GRANT partiels.
+-- Un message clair vaut mieux qu'un `permission denied` sur `CREATE ROLE`.
+
+DO $$
+BEGIN
+    IF NOT (SELECT rolsuper OR rolcreaterole FROM pg_roles WHERE rolname = current_user) THEN
+        RAISE EXCEPTION
+            'create-app-role.sql : le rôle courant (%) n''a ni SUPERUSER ni CREATEROLE. '
+            'Exécuter ce script avec le rôle propriétaire des migrations (DB_USERNAME actuel).',
+            current_user;
+    END IF;
+END
+$$;
+
+-- -----------------------------------------------------------------------------
 -- 1) Le rôle applicatif
 -- -----------------------------------------------------------------------------
 -- NOSUPERUSER  : sans quoi RLS est bypassé (le point de tout ce script).
 -- NOBYPASSRLS  : idem — un rôle non-superuser peut quand même porter BYPASSRLS.
 -- NOCREATEDB / NOCREATEROLE : moindre privilège, l'application n'en a pas besoin.
--- NOINHERIT absent volontairement : le rôle n'est membre d'aucun autre rôle.
+--
+-- `\gexec` : la requête PRODUIT la commande, qui est ensuite exécutée. C'est
+-- ce qui permet à `:'app_password'` d'être substitué par psql (hors
+-- dollar-quotes) tout en gardant l'idempotence.
 
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'leopardo_app') THEN
-        EXECUTE format(
-            'CREATE ROLE leopardo_app LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE PASSWORD %L',
-            :'app_password'
-        );
-        RAISE NOTICE 'Rôle leopardo_app créé.';
-    ELSE
-        -- Réexécution : on réaffirme les attributs de sécurité. Un rôle créé
-        -- à la main puis promu SUPERUSER par erreur serait sinon laissé tel
-        -- quel, et RLS resterait bypassé sans que personne ne le voie.
-        ALTER ROLE leopardo_app NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE;
-        RAISE NOTICE 'Rôle leopardo_app existant : attributs de sécurité réaffirmés.';
-    END IF;
-END
-$$;
+SELECT format(
+    'CREATE ROLE leopardo_app LOGIN NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE PASSWORD %L',
+    :'app_password'
+)
+WHERE NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'leopardo_app')
+\gexec
+
+-- Réexécution : on RÉAFFIRME les attributs de sécurité. Un rôle créé à la main
+-- puis promu SUPERUSER par erreur serait sinon laissé tel quel, et RLS
+-- resterait bypassé sans que personne ne le voie.
+ALTER ROLE leopardo_app NOSUPERUSER NOBYPASSRLS NOCREATEDB NOCREATEROLE;
+
+-- Le mot de passe est réaffirmé aussi : une rotation se fait en rejouant ce
+-- script avec un nouveau `-v app_password=…`, sans commande ad hoc.
+SELECT format('ALTER ROLE leopardo_app PASSWORD %L', :'app_password')
+\gexec
 
 -- -----------------------------------------------------------------------------
 -- 2) Droits sur les schémas et les tables
@@ -96,7 +124,7 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public
 -- satisfait la comparaison. Corriger AVANT de changer DB_USERNAME.
 
 \echo ''
-\echo '== Vérification 1 : le rôle ne doit PAS bypasser RLS =='
+\echo '== Vérification 1 : le rôle ne doit PAS bypasser RLS (0 ligne attendue) =='
 SELECT rolname, rolsuper, rolbypassrls
   FROM pg_roles
  WHERE rolname = 'leopardo_app'
@@ -123,8 +151,13 @@ SELECT c.relname,
 --
 -- Vérification APRÈS bascule :
 --
---   php artisan tenant:rls-status          # doit sortir 0
+--   php artisan tenant:rls-status --strict   # doit sortir 0
 --   SELECT count(*) FROM shared_tenants.pay_slips;   -- sans tenant : 0
+--
+-- Le déploiement exécute désormais cette sonde automatiquement
+-- (`docker-entrypoint.sh`, gate `RLS_GATE_MODE`, #9974) : en `DEPLOY_TIER=prod`
+-- un rôle qui bypass RLS fait ÉCHOUER le déploiement. Render conserve alors la
+-- version précédente en ligne — c'est le comportement voulu.
 --
 -- -----------------------------------------------------------------------------
 -- Rollback

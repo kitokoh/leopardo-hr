@@ -200,6 +200,7 @@ jobs:
       config_keys: ${{ steps.filter.outputs.config_keys }}
       env_hygiene: ${{ steps.filter.outputs.env_hygiene }}
       rls_parity: ${{ steps.filter.outputs.rls_parity }}
+      rls_role_script: ${{ steps.filter.outputs.rls_role_script }}
       env_parity: ${{ steps.filter.outputs.env_parity }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -302,6 +303,10 @@ jobs:
               - "api/app/Console/Commands/TenantRlsStatusCommand.php"
               - "api/database/migrations/tenant/**"
               - "dev-hub/tools/check-rls-coverage-parity.py"
+              - ".github/workflows/guards-fast.yml"
+            rls_role_script:
+              - "api/database/scripts/rls/**"
+              - "dev-hub/tools/check-rls-role-script.py"
               - ".github/workflows/guards-fast.yml"
             env_parity:
               - "api/.env.example"
@@ -732,3 +737,39 @@ jobs:
       - name: Comparer .env.example aux env() de api/config/
         shell: bash
         run: python3 dev-hub/tools/check-env-example-parity.py --verbose
+
+  # ---------------------------------------------------------------------------
+  # 15/15 — Le script de bascule du rôle RLS est EXÉCUTABLE (#9974)
+  #
+  # `create-app-role.sql` est la procédure de l'ADR-9879 : sans elle, DB_USERNAME
+  # reste le rôle SUPERUSER et les politiques RLS ne filtrent rien.
+  #
+  # La version de #9896 écrivait `:'app_password'` DANS un bloc `DO $$ … $$`.
+  # psql n'interpole pas ses variables dans une chaîne dollar-quotée : le script
+  # échouait en `syntax error at or near ":"`. La procédure de sécurité
+  # documentée ne pouvait pas s'exécuter, et aucune CI ne la lançait.
+  #
+  # Cette garde vérifie le statique (interpolation, NOSUPERUSER/NOBYPASSRLS,
+  # idempotence, aucun secret en clair). L'exécution réelle et son effet sont
+  # prouvés par `RlsAppRoleBootstrapTest` (tests.yml, PostgreSQL réel).
+  # ---------------------------------------------------------------------------
+  rls-role-script:
+    name: Script de bascule RLS exécutable
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.rls_role_script == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Auto-test de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-rls-role-script.py --self-test
+      - name: Vérifier le script de bascule
+        shell: bash
+        run: python3 dev-hub/tools/check-rls-role-script.py --verbose
