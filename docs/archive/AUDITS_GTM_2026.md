@@ -627,3 +627,26 @@ Critere de conversion:
 5. Partenariats cabinets RH/comptables.
 6. Contenu SEO autour pointage, paie, absences, PME terrain.
 
+
+---
+
+# Dossier `2026_MARKET_LAUNCH_COMPANY_OS/` — fusionné le 2026-11-28
+
+> Fusionné ici pour tenir le budget documentaire (#9981). Le dossier ne contenait
+> plus qu'un README de renvoi : ses trois documents avaient déjà été archivés le
+> 2026-11-27. Ne pas recréer ce dossier.
+
+**Catégorie « Mobile-First Company OS » : périmée** depuis #7428 (2026-09-16).
+Leopardo est une **suite métier** (business suite).
+
+**Décision stratégique à jour (2026-11-28)** : cible **grands comptes** — groupe
+privé multi-entités de 500 à 5 000 salariés, DZ/MA/TN. Message de lancement :
+
+> « Une seule paie pour toutes vos entités, et la preuve des heures de chaque site. »
+
+Trio en avant : Paie multi-entités, Pointage, Contrôle. Le reste (CRM,
+comptabilité, verticales, IA) reste dans le produit comme **catalogue activable**,
+hors du message d'entrée.
+
+Références à jour : `docs/GOTO_MARKET/REPOSITIONNEMENT_2026.md` (v2) et
+`docs/GOTO_MARKET/ETUDE_MARCHE_GRAND_COMPTE_2026.md`.

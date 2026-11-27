@@ -147,7 +147,7 @@ Constats :
 ## 8. Gouvernance, spec-kit, docs, déploiement
 
 - **Spec-driven très avancé** : 248 specs `.specify/features/`, 10 commandes (specify → clarify → plan → tasks → analyze → implement…), constitution non négociable (spec-first, multi-tenant inviolable, golden tests paie), presets métiers, `taskstoissues`.
-- **Vision déjà documentée** : P03 « suite métier » (`docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`), « Company OS » (`docs/GOTO_MARKET/2026_MARKET_LAUNCH_COMPANY_OS/`), `PLAN_100PCT.md`, 25 ADR, registre de 23 Bounded Contexts gardé en CI. **La mission ne doit pas recréer cette documentation — elle s'y rattache.**
+- **Vision déjà documentée** : P03 « suite métier » (`docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md`), « Company OS » (archivé : `docs/archive/AUDITS_GTM_2026.md`), `PLAN_100PCT.md`, 25 ADR, registre de 23 Bounded Contexts gardé en CI. **La mission ne doit pas recréer cette documentation — elle s'y rattache.**
 - **Tension stratégique documentée** : FREEZE 60 jours (#5147) + ADR-0012 FOCUS (profondeur noyau paie DZ) **vs** absorption continue de nouvelles verticales. La gouvernance actuelle freine déjà l'usine à features — signal à respecter.
 - **CI** : ~75 workflows, gardes nombreuses, coverage gate 65 %, mono-owner `@kitokoh` (bus factor = 1).
 - **Déploiement** : Render free-tier — **queue + scheduler dans le conteneur web qui s'endort** (cron perdus, décision billing #7649 documentée non exécutée) ; DB Neon ; fronts Vercel/Cloudflare Pages ; prod déjà restée 2 jours derrière main sans alerte (#8092).

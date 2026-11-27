@@ -35,14 +35,13 @@ Ce dossier est la **source de vérité business** de Leopardo. Il est conçu pou
 ```
 docs/GOTO_MARKET/
 ├── 01_PRODUCT          # Vision, positionnement, fonctionnalités cœur
-├── 2026_MARKET_LAUNCH_COMPANY_OS/  # Audit marché et positionnement actualisé (2026)
 ├── ASSETS_PRODUCTION/   # Specs et scripts pour assets marketing (landing, brochure, pitch deck, vidéos)
 ├── PACK_LANCEMENT/      # Contenu du pack de lancement (concept, blogs, comparatif, page de vente)
 ├── kits/                # Kits d'exécution prêts-à-coller (listings, social, cabinet comptable)
 └── REPOSITIONNEMENT_2026.md # Décision de périmètre et de lancement (2026-11-27)
 ```
 
-> ⚠️ Seuls `01_PRODUCT/`, `2026_MARKET_LAUNCH_COMPANY_OS/` et `ASSETS_PRODUCTION/` existent
+> ⚠️ Seuls `01_PRODUCT/` et `ASSETS_PRODUCTION/` existent
 > réellement dans ce dossier aujourd'hui. Les sections numérotées 02 à 14 et 99 décrites
 > dans les versions antérieures de ce README (marché, ventes, pricing, technologie,
 > concurrence, croissance, investisseurs, sécurité, executive summary, etc.) ne sont pas
@@ -68,7 +67,6 @@ Permettre à **n'importe quelle partie prenante** de comprendre en moins de 30 m
 
 | Besoin | Fichier à lire |
 |--------|----------------|
-| Audit marché 2026 et positionnement actualisé | [`2026_MARKET_LAUNCH_COMPANY_OS/README.md`](2026_MARKET_LAUNCH_COMPANY_OS/README.md) |
 | Vision produit | [`01_PRODUCT/PRODUCT_VISION.md`](01_PRODUCT/PRODUCT_VISION.md) |
 | Positionnement | [`01_PRODUCT/POSITIONING.md`](01_PRODUCT/POSITIONING.md) |
 | Fonctionnalités cœur | [`01_PRODUCT/CORE_FEATURES.md`](01_PRODUCT/CORE_FEATURES.md) |
