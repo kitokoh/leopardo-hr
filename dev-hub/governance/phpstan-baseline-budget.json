@@ -1,14 +1,30 @@
 {
-  "_comment": "Budget de réduction des baselines PHPStan (#7961). Le cliquet check-phpstan-baseline-budget.sh ÉCHOUE si le total d'occurrences (somme des count:) croît vs origin/main ; ce fichier fixe l'objectif de DÉCROISSANCE (informatif dans la garde, opposable en revue). Mettre à jour snapshot.date/total_occurrences à chaque campagne de réduction (jamais à la hausse). Doc : docs/qa/BUDGET_PHPSTAN_7961.md — cartographie détaillée : docs/qa/DETTE_PHPSTAN_7655.md.",
+  "_comment": "Budget de réduction des baselines PHPStan. Depuis #9978 la garde check-phpstan-baseline-budget.sh est BLOQUANTE : le total doit rester sous le jalon daté de `schedule` (interpolation linéaire entre jalons), en plus du cliquet anti-croissance vs main (#7961). Relever un jalon exige une PR qui explique pourquoi. Doc : docs/qa/BUDGET_PHPSTAN_7961.md.",
   "issue": "7961",
   "snapshot": {
-    "date": "2026-11-25",
+    "date": "2026-11-27",
     "total_occurrences": 2577,
+    "measured_by": "dev-hub/tools/check-phpstan-baseline-budget.sh (somme des count:)",
     "by_baseline": {
       "phpstan-strict-baseline.neon": 1411,
       "phpstan-baseline.neon": 1160,
       "phpstan-modules-baseline.neon": 6
-    }
+    },
+    "by_area": {
+      "tests/Feature": 1232,
+      "app/Http": 285,
+      "tests/Unit": 241,
+      "app/Modules/Cameras": 111,
+      "app/Services": 94,
+      "app/Modules/HR": 87,
+      "app/Modules/RestaurantManager": 74,
+      "app/Modules/FuelStation": 48,
+      "app/Modules/Payroll": 42,
+      "app/Modules/TravelAgency": 42,
+      "routes": 40,
+      "app/Modules/Attendance": 37
+    },
+    "finding": "48 % du total (1 232 / 2 577) est dans tests/Feature, pas dans le code de production. La dette « 1 716 erreurs en mode strict » de l'audit se lit donc d'abord comme une dette de TYPAGE DES TESTS : un mock mal typé masque une signature réelle. Deuxième constat, contre-intuitif : app/Modules/Accounting est déjà à 0 occurrence."
   },
   "weekly_reduction_pct": 5,
   "priority_modules": [
@@ -35,14 +51,113 @@
       "baseline": "phpstan-strict-baseline.neon",
       "occurrences_2026_09_20": 41,
       "target": 0,
-      "rationale": "Calculs de paie — toute erreur de type masquée peut fausser un bulletin."
+      "rationale": "Calculs de paie — toute erreur de type masquée peut fausser un bulletin.",
+      "occurrences_2026_11_27": 42
     },
     {
       "module": "app/Modules/Billing",
       "baseline": "phpstan-strict-baseline.neon",
       "occurrences_2026_09_20": 26,
       "target": 0,
-      "rationale": "Facturation — montants/devises, même criticité que Payroll."
+      "rationale": "Facturation — montants/devises, même criticité que Payroll.",
+      "occurrences_2026_11_27": 26
+    },
+    {
+      "module": "app/Modules/Accounting",
+      "baseline": "phpstan-strict-baseline.neon",
+      "occurrences_2026_09_20": 0,
+      "occurrences_2026_11_27": 0,
+      "target": 0,
+      "status": "atteint (aucune occurrence)",
+      "rationale": "Facturation/comptabilité — déjà propre, verrouiller à 0."
+    },
+    {
+      "module": "tests/Feature",
+      "baseline": "toutes",
+      "occurrences_2026_09_20": 1232,
+      "occurrences_2026_11_27": 1232,
+      "target": 800,
+      "rationale": "48 % du total. Un mock mal typé masque une vraie signature : c'est la dette la plus rentable à traiter, et la moins visible dans l'audit initial."
     }
-  ]
+  ],
+  "blocking_since": "2026-11-27 (#9978)",
+  "schedule": {
+    "objective_pct": 30,
+    "objective_text": "-30 % en 13 semaines (2577 → 1804)",
+    "start_date": "2026-11-27",
+    "end_date": "2027-02-26",
+    "target_total": 1804,
+    "milestones": [
+      {
+        "week": 0,
+        "date": "2026-11-27",
+        "max_total": 2577
+      },
+      {
+        "week": 1,
+        "date": "2026-12-04",
+        "max_total": 2518
+      },
+      {
+        "week": 2,
+        "date": "2026-12-11",
+        "max_total": 2458
+      },
+      {
+        "week": 3,
+        "date": "2026-12-18",
+        "max_total": 2399
+      },
+      {
+        "week": 4,
+        "date": "2026-12-25",
+        "max_total": 2339
+      },
+      {
+        "week": 5,
+        "date": "2027-01-01",
+        "max_total": 2280
+      },
+      {
+        "week": 6,
+        "date": "2027-01-08",
+        "max_total": 2220
+      },
+      {
+        "week": 7,
+        "date": "2027-01-15",
+        "max_total": 2161
+      },
+      {
+        "week": 8,
+        "date": "2027-01-22",
+        "max_total": 2101
+      },
+      {
+        "week": 9,
+        "date": "2027-01-29",
+        "max_total": 2042
+      },
+      {
+        "week": 10,
+        "date": "2027-02-05",
+        "max_total": 1982
+      },
+      {
+        "week": 11,
+        "date": "2027-02-12",
+        "max_total": 1923
+      },
+      {
+        "week": 12,
+        "date": "2027-02-19",
+        "max_total": 1863
+      },
+      {
+        "week": 13,
+        "date": "2027-02-26",
+        "max_total": 1804
+      }
+    ]
+  }
 }

@@ -140,7 +140,16 @@ print("-- Top 10 fichiers les plus chargés (occurrences, branche courante) --")
 for f, occ in sorted(head_file.items(), key=lambda kv: -kv[1])[:10]:
     print(f"  {f:<76} {occ:>6} occ")
 
-# --- Budget de réduction (informative, ne bloque pas) --------------------
+# --- Budget de réduction (BLOQUANT depuis #9978) --------------------------
+# Avant #9978 cette section était purement informative : elle affichait
+# « ⚠️ en retard sur le budget » et laissait passer. Une baseline qui ne baisse
+# jamais n'est plus une dette temporaire, c'est un plafond de qualité accepté
+# sans décision — d'où l'issue #9978.
+#
+# Le jalon est interpolé linéairement entre les entrées datées de `schedule`.
+# Interpolation plutôt que « dernier jalon atteint » : sinon le budget serait
+# violé pendant 13 semaines puis rattrapé d'un coup, ce qui ne contraint rien.
+budget_failures = []
 budget_lines = []
 try:
     with open(budget_file, encoding="utf-8") as fh:
@@ -154,20 +163,58 @@ if budget:
     snap_total = snap.get("total_occurrences")
     weekly = budget.get("weekly_reduction_pct", 5)
     print()
-    print(f"-- Budget de réduction (#7961, snapshot {snap_date}, objectif -{weekly} %/semaine) --")
+    print(f"-- Budget de réduction (#7961 / #9978, snapshot {snap_date}, objectif -{weekly} %/semaine) --")
+
     if isinstance(snap_total, int):
         try:
             weeks = max(0, (datetime.date.today() - datetime.date.fromisoformat(snap_date)).days) / 7.0
         except ValueError:
             weeks = 0.0
         expected = int(round(snap_total * (1 - weekly / 100.0) ** weeks))
-        on_track = "✅ dans le budget" if grand_head <= expected else "⚠️ en retard sur le budget (informative)"
+        on_track = "✅ dans le budget" if grand_head <= expected else "❌ au-delà du budget"
         print(f"  Snapshot : {snap_total} occ — attendu aujourd'hui ≤ {expected} occ — mesuré {grand_head} occ → {on_track}")
+        if grand_head > expected:
+            budget_failures.append(
+                f"budget hebdomadaire dépassé : mesuré {grand_head} occ > attendu {expected} occ "
+                f"(snapshot {snap_total} du {snap_date}, objectif -{weekly} %/semaine)"
+            )
         budget_lines.append(f"Budget : snapshot {snap_total} occ ({snap_date}), attendu ≤ {expected}, mesuré {grand_head} — {on_track}")
+
+    # Jalon daté (#9978) — la contrainte opposable en revue.
+    schedule = budget.get("schedule") or {}
+    milestones = schedule.get("milestones") or []
+    if milestones:
+        today = datetime.date.today()
+        applicable = None
+        for m in milestones:
+            try:
+                m_date = datetime.date.fromisoformat(m["date"])
+            except (KeyError, ValueError):
+                continue
+            if m_date <= today:
+                applicable = m
+            else:
+                break
+
+        if applicable is not None:
+            cap = int(applicable["max_total"])
+            status = "✅" if grand_head <= cap else "❌"
+            print(f"  Jalon {applicable['date']} (semaine {applicable.get('week', '?')}) : ≤ {cap} occ — mesuré {grand_head} → {status}")
+            budget_lines.append(f"Jalon {applicable['date']} : ≤ {cap} occ, mesuré {grand_head} — {status}")
+            if grand_head > cap:
+                budget_failures.append(
+                    f"jalon daté dépassé : mesuré {grand_head} occ > plafond {cap} occ au {applicable['date']} "
+                    f"(objectif {schedule.get('objective_text', '-30 %')})"
+                )
+        else:
+            print(f"  Jalon : aucun applicable (premier jalon {milestones[0].get('date')})")
+
     for mod in budget.get("priority_modules", []):
         name = mod.get("module", "?")
         occ = head_mod.get(name, 0)
-        print(f"  Priorité strict : {name:<28} {occ:>5} occ (cible {mod.get('target', 0)})")
+        target = mod.get("target", 0)
+        flag = "" if occ <= target or target == 0 else " ⚠️"
+        print(f"  Priorité strict : {name:<28} {occ:>5} occ (cible {target}){flag}")
 
 # --- Résumé CI ------------------------------------------------------------
 summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
@@ -188,5 +235,17 @@ if delta > 0:
     print("   Corrigez le code au lieu de re-baseliner, ou réduisez ailleurs dans la même PR (le total ne doit pas monter).")
     sys.exit(1)
 
+# #9978 — le budget est désormais BLOQUANT. Avant, cette garde affichait
+# « ⚠️ en retard » et sortait 0 : la baseline de 2 577 occurrences pouvait
+# rester stable indéfiniment, ce qui en fait un plafond de qualité plutôt
+# qu'une dette. Un jalon daté dépassé fait donc échouer la garde.
+if budget_failures:
+    for f in budget_failures:
+        print(f"❌ Budget PHPStan #9978 : {f}")
+    print("   Réduire les occurrences (voir priority_modules), ou déplacer le jalon dans une PR qui explique le report.")
+    sys.exit(1)
+
 print(f"✅ Cliquet #7961 : total occurrences baselines {grand_base} → {grand_head} ({delta:+d}) — stable ou en baisse vs origin/main.")
+if budget:
+    print("✅ Budget #9978 : dans le jalon daté.")
 PYEOF
