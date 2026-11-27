@@ -624,6 +624,34 @@ jobs:
         # « pour passer » sans justification (même règle que l'allowlist #5584).
         run: dev-hub/tools/check-bounded-context-dependencies.sh .
 
+      - name: Context coupling budget (#9977)
+        # La garde précédente répond « cette arête est-elle déclarée ? ». Elle ne
+        # répond PAS « le graphe se dégrade-t-il ? » : une arête ajoutée à la
+        # matrice avec une note passait, et 155 arêtes entre 40 contextes — dont
+        # 23 paires qui se connaissent mutuellement — n'étaient bornées par rien.
+        #
+        # Ce budget gèle les trois métriques mesurées sur main au 2026-11-27 et
+        # interdit la dérive. Objectif #9977 : -20 % d'arêtes (155 → 124), à
+        # atteindre en réduisant, jamais en relevant le budget.
+        run: |
+          python3 dev-hub/tools/context-coupling-report.py --self-test
+          python3 dev-hub/tools/context-coupling-report.py --check
+
+      - name: Context coupling report (artefact)
+        if: always()
+        continue-on-error: true
+        # Produit le rapport lisible en artefact de run : le reviewer voit le
+        # graphe courant sans exécuter le script localement.
+        run: python3 dev-hub/tools/context-coupling-report.py > context-coupling-report.md
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        continue-on-error: true
+        with:
+          name: context-coupling-report
+          path: context-coupling-report.md
+          retention-days: 30
+
       - name: Absence facade guard (ARCH-003 / issue #7959)
         if: needs.detect-changes.outputs.api_changed == 'true'
         # Le module Absence est une FAÇADE de presentation (BC-06 LEAVE) dont le

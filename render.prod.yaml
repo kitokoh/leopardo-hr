@@ -48,6 +48,45 @@
 #     tournent en intérim dans le conteneur web — cf. « INTÉRIM ASSUMÉ »
 #     ci-dessus pour les limites (spin-down) et le plan de sortie.
 
+# ─────────────────────────────────────────────────────────────────────────────
+# QUEUE_DEGRADED: #9976 — DÉGRADATION DÉCLARÉE, PAS UN ÉTAT ACCEPTABLE
+#
+# Le service web tourne en `plan: free`. Render endort une instance free après
+# ~15 min d'inactivité. En conséquence, tant qu'aucun Background Worker n'est
+# provisionné (bloqué par le billing : 402 « Payment information is required »,
+# #7649), la queue ET le scheduler tournent DANS ce conteneur web
+# (`WEB_QUEUE_DRAIN` / `WEB_SCHEDULER_LOOP`, défaut on) et s'arrêtent avec lui.
+#
+# Ce que cela signifie concrètement, sans euphémisme :
+#   - un job de paie, d'export PDF ou de réconciliation mis en queue juste avant
+#     le spin-down ne tourne pas jusqu'au prochain réveil ;
+#   - les tâches planifiées (relances, facturation mensuelle, alertes carburant,
+#     acquisition de congés) ne se déclenchent pas pendant l'endormissement ;
+#   - `queue:work` partage le CPU et la mémoire avec les requêtes HTTP : un pic
+#     de jobs dégrade la latence API.
+#
+# Le produit vend de la PAIE et de la FACTURATION. Une paie non calculée n'est
+# pas une dégradation cosmétique : c'est un défaut fonctionnel silencieux,
+# découvert par le client.
+#
+# Depuis #9976 la panne est au moins DÉTECTÉE, plus silencieuse :
+#   - `checks.scheduler.last_slot_age_seconds` (/health) expose l'âge du dernier
+#     créneau ; `queue-supervision.yml` alerte au-delà de 20 min ;
+#   - `checks.queue` alerte sur le backlog et les jobs réservés trop longtemps.
+#
+# La topologie CIBLE (worker dédié) est conservée en blocs commentés plus bas.
+# BASCULE, le jour où un moyen de paiement est ajouté au workspace :
+#   1. décommenter le bloc `type: worker` (plan starter) ;
+#   2. poser WEB_QUEUE_DRAIN=false et WEB_SCHEDULER_LOOP=false sur le web ;
+#   3. redéployer le web, puis vérifier `checks.scheduler.status == observed` ;
+#   4. retirer ce marqueur — la garde `check-queue-strategy-coherence.sh`
+#      exige alors que les deux gates soient à false, et refuse le retour d'un
+#      drain web silencieux.
+#
+# La garde refuse un blueprint `plan: free` sans ce marqueur : la dégradation
+# doit rester DÉCLARÉE, jamais implicite.
+# ─────────────────────────────────────────────────────────────────────────────
+
 services:
   # ──────────────────────────────────────────────────────────────────────────
   # Web Service — Laravel API (PROD)

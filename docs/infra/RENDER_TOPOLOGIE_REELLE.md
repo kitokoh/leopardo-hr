@@ -89,3 +89,80 @@ minimum recommandé (étape 1 seule) : **~7 $/mois**.
 
 Aucun service orphelin constaté : tout ce qui existe est utilisé. Les
 suppressions de #7845 sont uniquement **déclaratives** (blueprints).
+
+## 7. #9976 — la dégradation est désormais DÉTECTÉE et DÉCLARÉE
+
+> État du code au 2026-11-27. La section 5 ci-dessus (« alerte si scheduler
+> silencieux > X min — 0 $, l'alerte constate la perte, ne l'empêche pas »)
+> est désormais **implémentée** : l'option 1bis est en place, l'option 1 (worker
+> payant) reste bloquée par le billing.
+
+### Ce qui a changé dans le code
+
+| Ajout | Où | Effet |
+|---|---|---|
+| `HealthProbeService::checkScheduler()` | `api/app/Modules/Platform/.../HealthProbeService.php` | `/health` expose `checks.scheduler.last_slot_age_seconds` — l'âge du dernier créneau de `scheduler_slot_runs` |
+| Exposition dans les deux endpoints | `HealthController` (`/health`, `/health/ready`) | la sonde externe n'a plus besoin d'un accès SQL |
+| Alerte sur scheduler mort | `queue-supervision.yml` (`SCHEDULER_MAX_STALE_MINUTES`, 20 min) | un scheduler arrêté déclenche `::error::` + Slack opt-in |
+| Marqueur `QUEUE_DEGRADED:` | `render.yaml`, `render.prod.yaml` | la dégradation est écrite dans le blueprint, pas seulement dans un ticket |
+| Gardes §7-8 | `check-queue-strategy-coherence.sh` | refuse un `plan: free` sans marqueur, et refuse un worker actif avec un gate encore `on` |
+
+**Pourquoi 20 minutes.** Le spin-down Render survient après ~15 min
+d'inactivité ; 20 min laisse la marge d'un redémarrage. En dessous, l'alerte
+crierait à chaque réveil normal.
+
+**Pourquoi `status: unknown` n'est pas une alerte.** Une base fraîchement
+migrée n'a aucune ligne dans `scheduler_slot_runs` : ce n'est pas une panne.
+La sonde renvoie `unknown` et n'échoue jamais — transformer une absence de
+mesure en incident est la façon la plus rapide de faire ignorer les alertes.
+
+### Ce qui reste impossible depuis le code
+
+Le worker dédié. `POST /v1/services` avec `type: background_worker` répond
+**402 « Payment information is required »** sur un workspace sans moyen de
+paiement, et les Background Workers ne sont pas éligibles au tier gratuit
+(#7649). **Décommenter le bloc worker sans carte produirait un échec de sync
+du blueprint** — et, pire, laisserait croire la topologie corrigée.
+
+C'est la seule action de cette mission qui exige un humain côté plateforme :
+ajouter un moyen de paiement au workspace Render, puis suivre la procédure de
+bascule ci-dessous.
+
+### Procédure de bascule (propriétaire du compte Render)
+
+1. Ajouter un moyen de paiement au workspace (prod prioritaire : ~7 $/mois).
+2. Décommenter `  - type: worker` dans `render.yaml` / `render.prod.yaml`
+   (plan `starter`). Le `dockerCommand` porte déjà `schedule:work` en
+   arrière-plan + `exec queue:work` : les deux processus meurent ensemble et
+   Render redémarre le conteneur.
+3. Poser sur le web service :
+   ```
+   WEB_QUEUE_DRAIN=false
+   WEB_SCHEDULER_LOOP=false
+   ```
+   **Sans ces deux lignes, le web continue de consommer la même file** — deux
+   consommateurs, jobs volés, ordre non garanti. La garde §7 échoue si elles
+   manquent : ce n'est pas une convention, c'est un contrôle CI.
+4. Redéployer le web, puis vérifier :
+   ```
+   curl -s "$APP_URL/api/v1/health" | jq '.checks.scheduler, .checks.queue'
+   ```
+   Attendu : `status == "observed"` et un âge qui **avance** (interroger deux
+   fois à 2 min d'intervalle ; un âge figé signifie que le ledger n'écrit plus).
+5. Retirer le marqueur `QUEUE_DEGRADED:` des blueprints. La garde exige alors
+   les deux gates à `false`.
+6. Laisser le web inactif 30 min et vérifier que `scheduler_slot_runs` a
+   **continué d'avancer** — c'est la seule preuve que le spin-down ne fait
+   plus mal.
+
+### Limite honnête de la supervision
+
+`queue-supervision.yml` sonde entre 05:00 et 23:00 UTC (18 h/jour). **Hors de
+cette fenêtre, personne ne sait si le scheduler tourne.** Élargir la fenêtre
+coûterait le quota : 750 h/mois ≈ 31 j × 24 h, et deux consommateurs
+permanents le dépassent *par construction* — c'est la cause mesurée de la
+suspension prod du 2026-09-28 au 2026-10-01 (#8674).
+
+C'est acceptable tant que la dégradation est assumée. Ça ne l'est plus dès
+qu'un client dépend d'une facture émise la nuit. La correction définitive est
+le worker dédié, pas un élargissement de la sonde.

@@ -3672,6 +3672,13 @@ trait CreatesMvpSchema
                 $table->id();
                 $table->unsignedBigInteger('pay_slip_id');
                 $table->unsignedBigInteger('salary_component_id')->nullable();
+                // #9975 — la migration lot 6 AJOUTE `company_id` a cette table
+                // (elle n'en avait pas : elle n'etait isolee que par jointure sur
+                // `pay_slips`). La fixture doit refleter le schema POST-migration,
+                // sinon tout test qui passe par `CreatesMvpSchema` insere une
+                // ligne de paie sans tenant et echoue en 42703 — meme famille
+                // d'ecart fixture <-> migration que #7935/#7975/#8004.
+                $table->uuid('company_id')->nullable()->index();
                 $table->string('name', 150);
                 $table->string('type', 30);
                 $table->decimal('base_amount', 14, 2)->default(0);

@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "title": "Budget de couplage inter-contextes (#9977)",
+    "description": "Bornes gelées sur l'état MESURÉ de main au 2026-11-27. Le budget ne peut que descendre : le relever exige une PR qui explique pourquoi. Objectif #9977 : -20 % d'arêtes.",
+    "guard": "dev-hub/tools/context-coupling-report.py --check",
+    "measured_on": "2026-11-27",
+    "target_edges": 124
+  },
+  "max_edges": 155,
+  "max_mutual_pairs": 23,
+  "max_big_files": 16,
+  "mutual_pairs": [
+    "BC-01⇄BC-02",
+    "BC-01⇄BC-04",
+    "BC-01⇄BC-13",
+    "BC-01⇄BC-21",
+    "BC-01⇄BC-23",
+    "BC-02⇄BC-03",
+    "BC-02⇄BC-05",
+    "BC-03⇄BC-04",
+    "BC-03⇄BC-05",
+    "BC-03⇄BC-13",
+    "BC-03⇄BC-20",
+    "BC-04⇄BC-05",
+    "BC-04⇄BC-10",
+    "BC-04⇄BC-23",
+    "BC-05⇄BC-13",
+    "BC-05⇄BC-18",
+    "BC-05⇄BC-23",
+    "BC-07⇄BC-13",
+    "BC-07⇄BC-21",
+    "BC-07⇄BC-23",
+    "BC-08⇄BC-12",
+    "BC-13⇄BC-23",
+    "BC-23⇄BC-29"
+  ]
+}

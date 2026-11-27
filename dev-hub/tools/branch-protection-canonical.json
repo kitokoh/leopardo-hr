@@ -19,6 +19,16 @@
     "dismiss_stale_reviews": true,
     "require_code_owner_reviews": false
   },
+  "_note_ruleset": "#9980 — La revue obligatoire n'est PAS portée par `required_pull_request_reviews` (API /protection, resté à null) mais par un RULESET de dépôt (`main — revue obligatoire sur zones sensibles`, id 28205753). Deux mécanismes distincts : /protection ne voit pas les rulesets, et un ruleset ne remplace pas les required_status_checks. Les deux doivent exister. Le ruleset exige 1 approbation, `require_code_owner_review`, résolution des conversations, historique linéaire, et interdit suppression + force-push. `bypass_actors` = RepositoryRole admin en mode `pull_request` : le propriétaire unique peut encore merger sa propre PR (sinon le dépôt serait bloqué à un contributeur), mais uniquement via une PR — jamais en poussant sur main.",
+  "ruleset": {
+    "name": "main — revue obligatoire sur zones sensibles",
+    "required_approving_review_count": 1,
+    "require_code_owner_review": true,
+    "required_review_thread_resolution": true,
+    "required_linear_history": true,
+    "forbid_deletion": true,
+    "forbid_force_push": true
+  },
   "required_merge_queue": {
     "enabled": false
   },

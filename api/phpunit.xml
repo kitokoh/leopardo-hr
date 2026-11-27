@@ -1058,6 +1058,7 @@
             <file>tests/Feature/Payroll/PaySlipCabinetArchiveTest.php</file>
             <file>tests/Feature/Payroll/PaySlipDzMentionsTest.php</file>
             <file>tests/Feature/Payroll/PaySlipLegalMentionsByCountryTest.php</file>
+            <file>tests/Feature/Payroll/PaySlipLineTenantInheritanceTest.php</file>
             <file>tests/Feature/Payroll/PayrollAccountingEntriesFlowTest.php</file>
             <file>tests/Feature/Payroll/PayrollAccountingExportJournalTest.php</file>
             <file>tests/Feature/Payroll/PayrollAnomalyServiceTest.php</file>
@@ -1317,7 +1318,10 @@
             <file>tests/Feature/Security/ResourceAccessLifecycleTest.php</file>
             <file>tests/Feature/Security/ResourceScopedRbacTest.php</file>
             <file>tests/Feature/Security/ResourceScopedVerticalPoliciesTest.php</file>
+            <file>tests/Feature/Security/RlsAppRoleBootstrapTest.php</file>
             <file>tests/Feature/Security/RlsHrTablesIsolationTest.php</file>
+            <file>tests/Feature/Security/RlsLot6CoverageTest.php</file>
+            <file>tests/Feature/Security/RlsSensitiveTablesLot6Test.php</file>
             <file>tests/Feature/Security/RlsTenantIsolationTest.php</file>
             <file>tests/Feature/Security/RouteCollisionGuardTest.php</file>
             <file>tests/Feature/Security/SalaryAdvanceSecurityTest.php</file>
@@ -1572,7 +1576,7 @@
           et detruit le marqueur `__mvp_fixture_ready`.
 
           FeatureMvpFixture : 242 fichiers.
-          FeatureRest       : 1122 fichiers.
+          FeatureRest       : 1126 fichiers.
         -->
         <testsuite name="FeatureMvpFixture">
             <file>tests/Feature/AI/AIActionProposalHttpTest.php</file>
@@ -2491,6 +2495,7 @@
             <file>tests/Feature/Payroll/PaySlipCabinetArchiveTest.php</file>
             <file>tests/Feature/Payroll/PaySlipDzMentionsTest.php</file>
             <file>tests/Feature/Payroll/PaySlipLegalMentionsByCountryTest.php</file>
+            <file>tests/Feature/Payroll/PaySlipLineTenantInheritanceTest.php</file>
             <file>tests/Feature/Payroll/PayrollAccountingEntriesFlowTest.php</file>
             <file>tests/Feature/Payroll/PayrollAccountingExportJournalTest.php</file>
             <file>tests/Feature/Payroll/PayrollAnomalyServiceTest.php</file>
@@ -2717,7 +2722,10 @@
             <file>tests/Feature/Security/PayrollTeamScopeTest.php</file>
             <file>tests/Feature/Security/PublicApplyResumeUrlGuardTest.php</file>
             <file>tests/Feature/Security/PublicShopCaptchaTest.php</file>
+            <file>tests/Feature/Security/RlsAppRoleBootstrapTest.php</file>
             <file>tests/Feature/Security/RlsHrTablesIsolationTest.php</file>
+            <file>tests/Feature/Security/RlsLot6CoverageTest.php</file>
+            <file>tests/Feature/Security/RlsSensitiveTablesLot6Test.php</file>
             <file>tests/Feature/Security/RlsTenantIsolationTest.php</file>
             <file>tests/Feature/Security/RouteCollisionGuardTest.php</file>
             <file>tests/Feature/Security/SalaryAdvanceSecurityTest.php</file>

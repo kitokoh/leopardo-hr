@@ -131,7 +131,10 @@ Un test qui laisse la base moins protégée qu'il ne l'a trouvée est un défaut
 php artisan tenant:rls-status
 
 # 2) Créer le rôle et poser les droits
-psql "$DATABASE_URL" -v app_password="'<secret>'" -f database/scripts/rls/create-app-role.sql
+#    ATTENTION : valeur BRUTE, non quotée. Le script applique `%L`, qui quote
+#    et échappe lui-même. Passer `"'<secret>'"` stockait un mot de passe
+#    contenant des quotes littérales → `password authentication failed`.
+psql "$DATABASE_URL" -v app_password='<secret>' -f database/scripts/rls/create-app-role.sql
 
 # 3) Vérifier AVANT bascule : les 2 requêtes du script doivent renvoyer 0 ligne / toutes les tables couvertes
 # 4) Basculer
@@ -142,6 +145,108 @@ php artisan tenant:rls-status --strict
 ```
 
 **Rollback** : `DB_USERNAME=leopardo` puis redéploiement. Aucune migration à défaire — les politiques restent en place et redeviennent inertes. Aucun risque de perte de données.
+
+### #9974 — la bascule est désormais outillée, pas seulement documentée
+
+**Le défaut trouvé à l'audit du 2026-11-27.** Le script de bascule ci-dessus
+**ne pouvait pas s'exécuter**. Il écrivait `:'app_password'` à l'intérieur d'un
+bloc `DO $$ … $$` ; psql n'interpole pas ses variables dans une chaîne
+dollar-quotée, et le script échouait en `syntax error at or near ":"`. La
+procédure de sécurité de cet ADR était donc une procédure **jamais exécutée**,
+et aucune CI ne la lançait — d'où l'absence de détection.
+
+Quatre corrections, toutes vérifiées :
+
+| Correction | Où | Preuve |
+|---|---|---|
+| Création via `\gexec` (interpolation correcte) | `create-app-role.sql` | exécuté contre PostgreSQL 16 réel |
+| Gate de déploiement `RLS_GATE_MODE` | `docker-entrypoint.sh` | `strict` par défaut en `DEPLOY_TIER=prod` |
+| Test d'exécution + effet | `RlsAppRoleBootstrapTest` | non-superuser, fail-closed, `WITH CHECK` |
+| Garde statique + auto-test | `check-rls-role-script.py` | `guards-fast.yml` 15/15 |
+
+**Le gate de déploiement.** `tenant:rls-status` existait depuis #9896 et n'était
+branché **nulle part**. Il l'est désormais au démarrage du conteneur :
+
+| `RLS_GATE_MODE` | Comportement |
+|---|---|
+| `strict` (défaut si `DEPLOY_TIER=prod`) | code 1 (rôle SUPERUSER/BYPASSRLS) → **déploiement refusé** |
+| `warn` (défaut ailleurs) | verdict journalisé, démarrage poursuivi |
+| `off` | sonde non exécutée (dépannage explicite) |
+
+Un déploiement refusé laisse la version précédente en ligne (Render) : c'est le
+comportement voulu — un déploiement qui annonce une isolation inexistante ne
+doit pas passer. `RLS_GATE_STRICT_COVERAGE=true` fait en plus échouer sur le
+code 2 (couverture incomplète) ; c'est **séparé** du mode, car couvrir les 523
+tables est un chantier par lots (#9975), pas un prérequis de bascule.
+
+**Ce que le gate ne fait pas.** Il ne bascule pas `DB_USERNAME` : c'est une
+décision d'exploitation, réversible en changeant une variable. Un script de
+migration ne doit pas pouvoir couper l'accès à la base d'un déploiement en
+cours.
+
+**Ordre d'exécution recommandé en production :**
+
+1. `php artisan tenant:rls-status` → attendu **1** (rôle superuser).
+2. Exécuter `create-app-role.sql` (idempotent, rejouable pour une rotation).
+3. Vérifier les deux requêtes de contrôle du script : **0 ligne** sur la
+   première, toutes les tables attendues couvertes sur la seconde.
+4. Poser `DB_USERNAME=leopardo_app` + `DB_PASSWORD`, redéployer.
+5. Le gate `strict` s'exécute au boot : s'il échoue, le déploiement est refusé
+   et l'ancienne version reste en ligne. Lire le message, corriger, redéployer.
+6. `php artisan tenant:rls-status --strict` → attendu **0**.
+
+**Point de vigilance non couvert par le code.** `ALTER DEFAULT PRIVILEGES` ne
+s'applique qu'aux objets créés par le rôle qui exécute le script. Si les
+migrations tournent sous un autre rôle que celui utilisé pour la bascule,
+rejouer la section 2 du script sous **ce** rôle — sinon la première migration
+suivante créera une table que `leopardo_app` ne peut pas lire (panne au
+déploiement suivant, pas au moment de la bascule).
+
+### Vérification fonctionnelle — l'isolation est-elle RÉELLE ?
+
+`tenant:rls-status` mesure le rôle et les politiques. Il ne prouve pas qu'une
+requête est réellement filtrée. Trois commandes le prouvent, à exécuter après
+la bascule :
+
+```bash
+# 1) Sans tenant publié : 0 ligne, et PAS d'erreur (fail-closed).
+psql "$DATABASE_URL" -c \
+  "SET ROLE leopardo_app; SELECT count(*) FROM shared_tenants.employees;"
+#   attendu : 0
+
+# 2) Avec un tenant publié : uniquement les lignes de CE tenant.
+psql "$DATABASE_URL" -c \
+  "SET ROLE leopardo_app; SET app.current_company_id = '<uuid-entreprise>'; \
+   SELECT count(*) FROM shared_tenants.employees;"
+#   attendu : le nombre d'employés de cette entreprise, pas le total
+
+# 3) Écriture hors tenant : refusée par le WITH CHECK.
+psql "$DATABASE_URL" -c \
+  "SET ROLE leopardo_app; SET app.current_company_id = '<uuid-A>'; \
+   INSERT INTO shared_tenants.employees (company_id, ...) VALUES ('<uuid-B>', ...);"
+#   attendu : ERROR new row violates row-level security policy
+```
+
+**Point d'arrêt** : si (1) renvoie autre chose que `0`, **rollback immédiat**.
+Une fuite inter-tenant est un incident RGPD, pas un bug à planifier.
+
+### Checklist de sortie
+
+- [ ] `tenant:rls-status --strict` renvoie `0`
+- [ ] `SELECT rolsuper, rolbypassrls FROM pg_roles WHERE rolname='leopardo_app'` → `f, f`
+- [ ] Requête sans tenant publié → `0` ligne, sans erreur
+- [ ] Écriture hors tenant → refusée par le `WITH CHECK`
+- [ ] Smoke test applicatif vert (connexion, liste employés, ouverture bulletin)
+- [ ] Logs de démarrage : « RLS effectif »
+- [ ] Mot de passe `leopardo_app` dans le gestionnaire de secrets, **pas** dans le dépôt
+
+### Worker dédié (queue + scheduler) — #9976
+
+La bascule RLS et la séparation du worker sont **indépendantes** : l'une ne
+bloque pas l'autre. La procédure du worker (bloc `type: worker` de
+`render.yaml`, gates `WEB_QUEUE_DRAIN` / `WEB_SCHEDULER_LOOP`, vérification
+`checks.scheduler`) est dans `docs/ops/QUEUE_TOPOLOGY.md` §Bascule. Elle est
+bloquée par le billing Render (402, #7649), pas par le code.
 
 ## Étape 4 — `employees` (#9897)
 

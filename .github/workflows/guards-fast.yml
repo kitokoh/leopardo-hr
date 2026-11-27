@@ -200,6 +200,10 @@ jobs:
       config_keys: ${{ steps.filter.outputs.config_keys }}
       env_hygiene: ${{ steps.filter.outputs.env_hygiene }}
       rls_parity: ${{ steps.filter.outputs.rls_parity }}
+      rls_role_script: ${{ steps.filter.outputs.rls_role_script }}
+      ci_workflows: ${{ steps.filter.outputs.ci_workflows }}
+      docs_budget: ${{ steps.filter.outputs.docs_budget }}
+      codeowners: ${{ steps.filter.outputs.codeowners }}
       env_parity: ${{ steps.filter.outputs.env_parity }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
@@ -303,6 +307,23 @@ jobs:
               - "api/database/migrations/tenant/**"
               - "dev-hub/tools/check-rls-coverage-parity.py"
               - ".github/workflows/guards-fast.yml"
+            rls_role_script:
+              - "api/database/scripts/rls/**"
+              - "dev-hub/tools/check-rls-role-script.py"
+              - ".github/workflows/guards-fast.yml"
+            codeowners:
+              - "CODEOWNERS"
+              - "dev-hub/tools/check-codeowners-coverage.py"
+            docs_budget:
+              - "**/*.md"
+              - "dev-hub/tools/check-docs-inventory.py"
+              - "dev-hub/governance/docs-budget.json"
+              - "dev-hub/governance/docs-stale-allowlist.txt"
+            ci_workflows:
+              - ".github/workflows/**"
+              - "dev-hub/tools/check-ci-workflow-budget.py"
+              - "dev-hub/governance/ci-workflow-budget.json"
+              - "dev-hub/tools/branch-protection-canonical.json"
             env_parity:
               - "api/.env.example"
               - "api/config/**"
@@ -732,3 +753,144 @@ jobs:
       - name: Comparer .env.example aux env() de api/config/
         shell: bash
         run: python3 dev-hub/tools/check-env-example-parity.py --verbose
+
+  # ---------------------------------------------------------------------------
+  # 15/15 — Le script de bascule du rôle RLS est EXÉCUTABLE (#9974)
+  #
+  # `create-app-role.sql` est la procédure de l'ADR-9879 : sans elle, DB_USERNAME
+  # reste le rôle SUPERUSER et les politiques RLS ne filtrent rien.
+  #
+  # La version de #9896 écrivait `:'app_password'` DANS un bloc `DO $$ … $$`.
+  # psql n'interpole pas ses variables dans une chaîne dollar-quotée : le script
+  # échouait en `syntax error at or near ":"`. La procédure de sécurité
+  # documentée ne pouvait pas s'exécuter, et aucune CI ne la lançait.
+  #
+  # Cette garde vérifie le statique (interpolation, NOSUPERUSER/NOBYPASSRLS,
+  # idempotence, aucun secret en clair). L'exécution réelle et son effet sont
+  # prouvés par `RlsAppRoleBootstrapTest` (tests.yml, PostgreSQL réel).
+  # ---------------------------------------------------------------------------
+  rls-role-script:
+    name: Script de bascule RLS exécutable
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.rls_role_script == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Auto-test de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-rls-role-script.py --self-test
+      - name: Vérifier le script de bascule
+        shell: bash
+        run: python3 dev-hub/tools/check-rls-role-script.py --verbose
+
+  # ---------------------------------------------------------------------------
+  # 16/16 — Budget de workflows CI + checks requis jamais orphelins (#9979)
+  #
+  # 89 workflows, dont 62 mono-job et 35 mono-job sur `pull_request`. Le dépôt
+  # documente l'incident réel : file `queued` 99 → 140 en 30 min, et les 3
+  # checks requis d'architecture-check.yml sortis `ABSENT` (pas `queued`, pas
+  # rouge) parce que leur amont `detect-changes` n'obtenait pas de runner. Avec
+  # `enforce_admins: true`, AUCUNE PR n'était mergeable.
+  #
+  # Un check requis ABSENT est indétectable par la garde de protection de
+  # branche : elle ne voit que la liste des contexts attendus, pas leur
+  # existence. Cette garde comble ce trou, et gèle le nombre de workflows.
+  # ---------------------------------------------------------------------------
+  ci-workflow-budget:
+    name: Budget CI + checks requis atteignables
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.ci_workflows == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Installer PyYAML
+        shell: bash
+        run: pip install --quiet pyyaml
+      - name: Auto-test de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-ci-workflow-budget.py --self-test
+      - name: Vérifier le budget et l'atteignabilité des checks requis
+        shell: bash
+        run: python3 dev-hub/tools/check-ci-workflow-budget.py
+
+  # ---------------------------------------------------------------------------
+  # 17/17 — Budget documentaire (#9981)
+  #
+  # 1 922 fichiers .md pour ~452 000 lignes de PHP : un document pour 235
+  # lignes de code. Le volume n'est pas le défaut — le défaut est que la doc
+  # devient une source de vérité CONCURRENTE. Preuve : le canonique machine et
+  # BRANCH_PROTECTION_REQUIRED.md déclaraient 4 checks requis quand la réalité
+  # en avait 6, et « rejouer le canonique » aurait supprimé deux checks
+  # délibérés.
+  #
+  # Cette garde gèle le compte et interdit la croissance. Elle ne supprime
+  # rien : la catégorie `stale` est une liste déclarée par un humain, parce
+  # qu'une heuristique de contenu flaggait SECURITY.md (où « placeholder »
+  # désigne <REDACTED>).
+  # ---------------------------------------------------------------------------
+  docs-budget:
+    name: Budget documentaire
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.docs_budget == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Auto-test de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-docs-inventory.py --self-test
+      - name: Vérifier le budget documentaire
+        shell: bash
+        run: python3 dev-hub/tools/check-docs-inventory.py --check
+
+  # ---------------------------------------------------------------------------
+  # 18/18 — CODEOWNERS couvre réellement les surfaces sensibles (#9980)
+  #
+  # Le ruleset exige `require_code_owner_review: true` : une entrée CODEOWNERS
+  # n'est plus documentaire, elle est OPPOSABLE. Mais GitHub applique la règle
+  # par ABSENCE : un chemin non listé retombe sur `*`, et `*` est satisfait par
+  # n'importe quel propriétaire — donc par l'auteur lui-même.
+  #
+  # Cette garde vérifie la sémantique réelle (le DERNIER motif gagne) et la
+  # spécificité : `/api/` ne « couvre » pas `/api/database/migrations/`.
+  # ---------------------------------------------------------------------------
+  codeowners:
+    name: CODEOWNERS — surfaces sensibles
+    needs: changes
+    if: github.event_name == 'workflow_dispatch' || needs.changes.outputs.codeowners == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          lfs: false
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.12"
+      - name: Auto-test de la garde
+        shell: bash
+        run: python3 dev-hub/tools/check-codeowners-coverage.py --self-test
+      - name: Vérifier la couverture CODEOWNERS
+        shell: bash
+        run: python3 dev-hub/tools/check-codeowners-coverage.py

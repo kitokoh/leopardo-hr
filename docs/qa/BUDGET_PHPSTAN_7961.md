@@ -1,5 +1,21 @@
 # Budget de réduction des baselines PHPStan — cliquet branche vs main (#7961)
 
+> **Mise à jour #9978 (2026-11-27).** Le budget n'est plus « opposable en
+> revue » : il est **bloquant**. Mesure du jour : **2 577 occurrences**,
+> réparties 1 411 / 1 160 / 6 sur les trois baselines. Deux constats que
+> l'audit initial n'avait pas vus :
+>
+> - **1 232 occurrences (48 %) sont dans `tests/Feature`**, pas dans le code
+>   de production. La dette « 1 716 erreurs en mode strict » est donc d'abord
+>   une dette de **typage des tests** — un mock mal typé masque une vraie
+>   signature ;
+> - **`app/Modules/Accounting` est déjà à 0 occurrence**, alors que l'issue le
+>   présentait comme prioritaire. `app/Core/Auth` et `app/Core/Tenant` aussi
+>   (atteints par #9922).
+>
+> Échéancier : **-30 % en 13 semaines** (2 577 → 1 804), jalons hebdomadaires
+> dans `dev-hub/governance/phpstan-baseline-budget.json` §`schedule`.
+
 > Complément de la cartographie `docs/qa/DETTE_PHPSTAN_7655.md` (analyse par
 > parsing neon, sans exécution de PHPStan). Snapshot du **2026-09-20** :
 > **2 719 occurrences** gelées (somme des `count:`) — 1 553 dans

@@ -397,6 +397,72 @@ if [ "$RUN_MIGRATIONS" = "true" ]; then
     # (SQLSTATE 42P01) sur toute migration tenant ALTÉRANT une table héritée.
     run_migrate_with_retry "database/migrations/tenant" "shared_tenants,public"
 
+    # ─── Gate RLS (#9974) ────────────────────────────────────────────────────
+    # `tenant:rls-status` existait depuis #9896 et n'était branché NULLE PART :
+    # la seule sonde capable de dire si RLS protège réellement n'était jamais
+    # exécutée. Une politique « posée mais inopérante » est le pire des états —
+    # elle donne l'impression d'une isolation qui n'existe pas.
+    #
+    # RLS_GATE_MODE :
+    #   strict (défaut en DEPLOY_TIER=prod) — code 1 (rôle SUPERUSER/BYPASSRLS)
+    #          fait ÉCHOUER le déploiement. Render garde alors la version
+    #          précédente en ligne : c'est le comportement voulu, un déploiement
+    #          qui annonce une isolation inexistante ne doit pas passer.
+    #   warn   (défaut ailleurs) — verdict journalisé, démarrage poursuivi.
+    #   off    — sonde non exécutée (dépannage explicite uniquement).
+    #
+    # RLS_GATE_STRICT_COVERAGE=true fait aussi échouer sur le code 2 (rôle
+    # conforme mais une table attendue non couverte). Séparé du mode : couvrir
+    # 523 tables est un chantier par lots (#9975), pas un prérequis de bascule.
+    #
+    # Le code 3 (driver non-PostgreSQL) n'est jamais un échec : la sonde ne
+    # s'applique pas.
+    rls_gate_mode="${RLS_GATE_MODE:-}"
+    if [ -z "$rls_gate_mode" ]; then
+        if [ "${DEPLOY_TIER:-}" = "prod" ]; then
+            rls_gate_mode="strict"
+        else
+            rls_gate_mode="warn"
+        fi
+    fi
+
+    if [ "$rls_gate_mode" != "off" ]; then
+        echo "[entrypoint] Sonde RLS (mode: $rls_gate_mode)..."
+        rls_status=0
+        php artisan tenant:rls-status || rls_status=$?
+
+        case "$rls_status" in
+            0)
+                echo "[entrypoint] RLS effectif : rôle non-bypass, tables attendues couvertes."
+                ;;
+            3)
+                echo "[entrypoint] Sonde RLS non applicable (driver non-PostgreSQL) — ignorée."
+                ;;
+            1)
+                if [ "$rls_gate_mode" = "strict" ]; then
+                    echo "::error::[entrypoint] RLS est BYPASSÉ par le rôle applicatif (SUPERUSER/BYPASSRLS)." >&2
+                    echo "  Les politiques existent mais ne filtrent RIEN. Déploiement refusé (#9974)." >&2
+                    echo "  Correctif : database/scripts/rls/create-app-role.sql puis DB_USERNAME=leopardo_app." >&2
+                    echo "  Procédure : docs/adr/ADR-9879-rls-tenant-isolation.md §Bascule." >&2
+                    exit 1
+                fi
+                echo "⚠️  [entrypoint] RLS est BYPASSÉ par le rôle applicatif — l'isolation repose sur le seul scope Eloquent (#9974)." >&2
+                ;;
+            2)
+                if [ "${RLS_GATE_STRICT_COVERAGE:-false}" = "true" ] && [ "$rls_gate_mode" = "strict" ]; then
+                    echo "::error::[entrypoint] RLS actif mais une table attendue n'est pas couverte (#9975)." >&2
+                    exit 1
+                fi
+                echo "⚠️  [entrypoint] RLS actif, mais au moins une table attendue n'est pas couverte (#9975)." >&2
+                ;;
+            *)
+                echo "⚠️  [entrypoint] Sonde RLS en erreur inattendue (code $rls_status) — démarrage poursuivi." >&2
+                ;;
+        esac
+    else
+        echo "[entrypoint] RLS_GATE_MODE=off : sonde RLS non exécutée (dépannage explicite)." >&2
+    fi
+
     # Warn operators when SUPER_ADMIN_PASSWORD is not set in production:
     # the seeder will generate a random password that is never displayed in
     # production logs → the admin dashboard will be inaccessible.

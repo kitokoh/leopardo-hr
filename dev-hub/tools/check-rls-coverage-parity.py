@@ -64,6 +64,31 @@ ENABLE_CALL_RE = re.compile(r"enableRls\(\s*'([a-z_]+)'")
 TABLES_CONST_RE = re.compile(r"private const TABLES = \[(.*?)\];", re.S)
 TABLES_MAP_RE = re.compile(r"private const TABLES = \[(.*?)\];", re.S)
 QUOTED_RE = re.compile(r"'([a-z_]+)'")
+# Clé d'une entrée `'table' => …` (tableau associatif).
+KEY_RE = re.compile(r"'([a-z_]+)'\s*=>")
+
+
+def tables_in_block(block: str) -> set[str]:
+    """Extrait les TABLES d'un bloc `private const TABLES = [...]`.
+
+    ## Le défaut que cette fonction corrige (#9975)
+
+    La version précédente prenait TOUTES les chaînes du bloc
+    (`QUOTED_RE.findall`). Tant que le bloc était plat (`'a' => true`), cela
+    revenait au même. Dès qu'une entrée porte une valeur structurée —
+    `'pay_slip_lines' => ['pay_slips', 'pay_slip_id']` pour déclarer le
+    backfill — les VALEURS étaient lues comme des tables : la garde exigeait
+    alors de sonder `pay_slip_id` et `employee_id`, qui ne sont pas des tables.
+
+    Une garde qui invente des tables est pire qu'aucune garde : elle produit un
+    rouge permanent qu'on finit par ignorer (leçon #3545). On ne retient donc
+    que les CLÉS quand le bloc est associatif, et toutes les chaînes seulement
+    quand il est une simple liste.
+    """
+    keys = KEY_RE.findall(block)
+    if keys:
+        return set(keys)
+    return set(QUOTED_RE.findall(block))
 
 
 def covered_by_migrations() -> set[str]:
@@ -73,9 +98,11 @@ def covered_by_migrations() -> set[str]:
         tables.update(ENABLE_RE.findall(text))
         tables.update(ENABLE_CALL_RE.findall(text))
         # Forme « lot » : private const TABLES = ['a' => true, 'b' => false];
+        # ou, depuis #9975, `'pay_slip_lines' => ['pay_slips', 'pay_slip_id']`
+        # (déclaration du backfill) — seules les CLÉS sont des tables.
         for block in TABLES_MAP_RE.findall(text):
             if "ENABLE ROW LEVEL SECURITY" in text or "enableRls(" in text:
-                tables.update(QUOTED_RE.findall(block))
+                tables.update(tables_in_block(block))
     return tables
 
 
@@ -132,7 +159,7 @@ def expected_in_command() -> set[str]:
     m = re.search(r"private const EXPECTED_TABLES = \[(.*?)\n    \];", text, re.S)
     if not m:
         raise RuntimeError("EXPECTED_TABLES introuvable dans TenantRlsStatusCommand.php")
-    return set(QUOTED_RE.findall(m.group(1)))
+    return tables_in_block(m.group(1))
 
 
 def compare(expected: set[str], covered: set[str]) -> list[str]:
@@ -198,10 +225,36 @@ def self_test() -> int:
     expect("les deux dérives", {"a", "x"}, {"a", "y"}, 2)
     expect("ensembles vides", set(), set(), 0)
 
+    # #9975 — un bloc `TABLES` à valeurs structurées ne doit PAS produire des
+    # pseudo-tables. Sans `tables_in_block`, `['pay_slips', 'pay_slip_id']`
+    # faisait exiger une sonde sur `pay_slip_id`.
+    block = "'pay_slip_lines' => ['pay_slips', 'pay_slip_id'], 'invoices' => null,"
+    extracted = tables_in_block(block)
+    if extracted != {"pay_slip_lines", "invoices"}:
+        failures += 1
+        print(
+            "::error::self-test 'valeurs structurées' : attendu "
+            f"{{'pay_slip_lines', 'invoices'}}, obtenu {sorted(extracted)}"
+        )
+
+    flat = "'a' => true, 'b' => false,"
+    if tables_in_block(flat) != {"a", "b"}:
+        failures += 1
+        print("::error::self-test 'bloc plat' : les clés doivent être extraites.")
+
+    simple = "'a', 'b',"
+    if tables_in_block(simple) != {"a", "b"}:
+        failures += 1
+        print("::error::self-test 'liste simple' : toutes les chaînes doivent être extraites.")
+
     if failures:
         print(f"❌ self-test : {failures} échec(s).")
         return 1
-    print("✅ self-test : 5/5.")
+    # 5 comparaisons + 3 cas d'extraction de bloc (#9975). Le compte est écrit
+    # en dur comme les autres gardes du dépôt : un « 5/5 » qui ne correspond
+    # plus au nombre de cas est exactement le genre de mensonge silencieux que
+    # ces gardes combattent.
+    print("✅ self-test : 8/8.")
     return 0
 
 
