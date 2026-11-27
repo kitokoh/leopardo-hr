@@ -143,6 +143,62 @@ php artisan tenant:rls-status --strict
 
 **Rollback** : `DB_USERNAME=leopardo` puis redéploiement. Aucune migration à défaire — les politiques restent en place et redeviennent inertes. Aucun risque de perte de données.
 
+### #9974 — la bascule est désormais outillée, pas seulement documentée
+
+**Le défaut trouvé à l'audit du 2026-11-27.** Le script de bascule ci-dessus
+**ne pouvait pas s'exécuter**. Il écrivait `:'app_password'` à l'intérieur d'un
+bloc `DO $$ … $$` ; psql n'interpole pas ses variables dans une chaîne
+dollar-quotée, et le script échouait en `syntax error at or near ":"`. La
+procédure de sécurité de cet ADR était donc une procédure **jamais exécutée**,
+et aucune CI ne la lançait — d'où l'absence de détection.
+
+Quatre corrections, toutes vérifiées :
+
+| Correction | Où | Preuve |
+|---|---|---|
+| Création via `\gexec` (interpolation correcte) | `create-app-role.sql` | exécuté contre PostgreSQL 16 réel |
+| Gate de déploiement `RLS_GATE_MODE` | `docker-entrypoint.sh` | `strict` par défaut en `DEPLOY_TIER=prod` |
+| Test d'exécution + effet | `RlsAppRoleBootstrapTest` | non-superuser, fail-closed, `WITH CHECK` |
+| Garde statique + auto-test | `check-rls-role-script.py` | `guards-fast.yml` 15/15 |
+
+**Le gate de déploiement.** `tenant:rls-status` existait depuis #9896 et n'était
+branché **nulle part**. Il l'est désormais au démarrage du conteneur :
+
+| `RLS_GATE_MODE` | Comportement |
+|---|---|
+| `strict` (défaut si `DEPLOY_TIER=prod`) | code 1 (rôle SUPERUSER/BYPASSRLS) → **déploiement refusé** |
+| `warn` (défaut ailleurs) | verdict journalisé, démarrage poursuivi |
+| `off` | sonde non exécutée (dépannage explicite) |
+
+Un déploiement refusé laisse la version précédente en ligne (Render) : c'est le
+comportement voulu — un déploiement qui annonce une isolation inexistante ne
+doit pas passer. `RLS_GATE_STRICT_COVERAGE=true` fait en plus échouer sur le
+code 2 (couverture incomplète) ; c'est **séparé** du mode, car couvrir les 523
+tables est un chantier par lots (#9975), pas un prérequis de bascule.
+
+**Ce que le gate ne fait pas.** Il ne bascule pas `DB_USERNAME` : c'est une
+décision d'exploitation, réversible en changeant une variable. Un script de
+migration ne doit pas pouvoir couper l'accès à la base d'un déploiement en
+cours.
+
+**Ordre d'exécution recommandé en production :**
+
+1. `php artisan tenant:rls-status` → attendu **1** (rôle superuser).
+2. Exécuter `create-app-role.sql` (idempotent, rejouable pour une rotation).
+3. Vérifier les deux requêtes de contrôle du script : **0 ligne** sur la
+   première, toutes les tables attendues couvertes sur la seconde.
+4. Poser `DB_USERNAME=leopardo_app` + `DB_PASSWORD`, redéployer.
+5. Le gate `strict` s'exécute au boot : s'il échoue, le déploiement est refusé
+   et l'ancienne version reste en ligne. Lire le message, corriger, redéployer.
+6. `php artisan tenant:rls-status --strict` → attendu **0**.
+
+**Point de vigilance non couvert par le code.** `ALTER DEFAULT PRIVILEGES` ne
+s'applique qu'aux objets créés par le rôle qui exécute le script. Si les
+migrations tournent sous un autre rôle que celui utilisé pour la bascule,
+rejouer la section 2 du script sous **ce** rôle — sinon la première migration
+suivante créera une table que `leopardo_app` ne peut pas lire (panne au
+déploiement suivant, pas au moment de la bascule).
+
 ## Étape 4 — `employees` (#9897)
 
 ### Inventaire des accès légitimes (exigé par l'ADR)
