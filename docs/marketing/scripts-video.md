@@ -12,7 +12,7 @@ Poser le message maitre et en extraire les formats payants. Tout le reste en dep
 
 | # | ID | Titre | Statut |
 |---|---|---|---|
-| 1 | VID-01 | Leopardo — la paie et le pointage de vos equipes de terrain (film pilier) | Redige |
+| 1 | VID-01 | Leopardo — une seule paie pour toutes vos entites (film pilier) | Redige |
 | 2 | VID-02 | Leopardo en 30 secondes (cut publicitaire) | Redige |
 | 3 | VID-03 | Bumper 15 secondes (pre-roll non skippable) | Redige |
 | 4 | VID-04 | Comment Leopardo remplace Excel, WhatsApp et le papier (explainer 3 min) | Redige |
@@ -96,61 +96,61 @@ Alimenter TikTok, Reels, Shorts et LinkedIn avec des formats verticaux.
 
 Films de marque : presenter Leopardo au grand public, du film pilier de 90 s aux formats publicitaires courts.
 
-### VID-01 — Leopardo — la paie et le pointage de vos equipes de terrain (film pilier)
+### VID-01 — Leopardo — une seule paie pour toutes vos entites (film pilier)
 
-- **Format :** 16:9 · **Duree :** 90 s · **Audience :** Dirigeants de PME de terrain et cabinets comptables, Algerie d'abord
+- **Format :** 16:9 · **Duree :** 90 s · **Audience :** Directions financieres et DSI de groupes multi-entites, 500 a 5 000 salaries, Algerie, Maroc, Tunisie
 - **Statut de production :** Redige
-- **Objectif :** Faire comprendre en 90 secondes que Leopardo regle un probleme precis : prouver les heures et payer juste. La suite metier apparait en seconde moitie, comme catalogue activable, jamais comme accroche. Film maitre dont derivent les cuts 30 s et 15 s.
-- **Hook :** « Vos pointages sur du papier. Votre paie sur un tableur. Et le soir, une contestation d'heures que personne ne peut trancher. »
+- **Objectif :** Faire comprendre en 90 secondes qu'un groupe n'a pas un probleme de logiciel RH mais un probleme de paie eclatee et d'heures non prouvees. Le trio paie multi-entites / pointage / controle occupe les 72 premieres secondes ; la suite metier n'apparait qu'au beat 6, en catalogue. Film maitre dont derivent les cuts 30 s et 15 s.
+- **Hook :** « Six societes. Trois pays. Et la paie consolidee se fait encore sur un tableur. »
 
 | Temps | Voix off | Plan | Texte a l'ecran |
 |---|---|---|---|
-| 0:00-0:10 | Chaque matin, vos equipes pointent sur du papier. Votre paie se calcule sur un tableur. Et quand un employe conteste ses heures, personne ne peut rien prouver. | Montage serre : carnet de pointage qui se remplit, tableur qui defile, deux personnes qui s'opposent devant un planning. | Le papier ne prouve rien. |
-| 0:10-0:22 | Leopardo reunit la paie et le pointage de vos equipes de terrain dans une seule application. | Les trois plans precedents se dissolvent dans une interface unique qui s'assemble. | Paie + pointage. Une application. |
-| 0:22-0:40 | Le pointage remonte du mobile, du GPS ou du kiosque biometrique ZKTeco. En cas de coupure reseau, la borne continue et resynchronise au retour du lien. | Employe qui badine sur un kiosque, telephone en mode hors-ligne, badge de synchronisation qui passe au vert. | Chaque heure est prouvee. |
-| 0:40-1:00 | La paie algerienne s'applique : IRG, CNAS, variables de pointage et de conges remontees, bulletin genere en PDF, run verrouille une fois valide. | Ecran de simulation de paie, puis bulletin PDF qui se genere, puis cadenas sur le run. | La paie se calcule, se valide, se verrouille. |
-| 1:00-1:12 | Le dossier employe, le contrat, les conges et les documents sont saisis une fois et servent partout. | Creation d'un employe, puis le meme employe visible dans paie, pointage et conges. | Le dossier employe alimente tout le reste. |
-| 1:12-1:24 | Et parce que votre entreprise ne s'arrete pas a la paie : comptabilite, CRM, et des packs metier activables quand vous en avez besoin. | Grille de modules qui s'allument un par un, hors du chemin principal. | Un socle. 38 modules activables. |
-| 1:24-1:30 | Quatorze jours d'essai, sans carte bancaire. Mise en route en moins de trente minutes. | Logo, URL, bouton d'essai. | 14 jours d'essai — sans carte |
+| 0:00-0:10 | Votre groupe a six societes et trois pays. Chaque entite a sa paie, son logiciel, son tableur. Le total consolide, personne ne l'a avant la fin du mois. | Montage : facades de sites differents, six ecrans de paie differents, un tableur de consolidation qui defile. | Six paies. Aucun total. |
+| 0:10-0:22 | Leopardo reunit la paie de toutes vos entites dans un seul moteur : une paie par societe, un total groupe. | Les six ecrans se dissolvent dans une interface unique ; une ligne de total se construit a droite. | Une paie. Toutes vos entites. |
+| 0:22-0:40 | Sur chaque site, les heures remontent du mobile, du GPS ou de la borne biometrique. En coupure reseau, la borne continue et resynchronise au retour du lien. | Ouvrier qui badine sur un kiosque, technicien sur chantier avec telephone hors-ligne, badge de synchronisation qui passe au vert. | Chaque heure est prouvee. |
+| 0:40-1:00 | La paie de chaque pays s'applique : IRG, CNAS, conventions locales. Le run se calcule, se valide, se verrouille. Le bulletin sort en PDF. | Ecran de simulation de paie, bulletin PDF qui se genere, cadenas sur le run. | Calculee, validee, verrouillee. |
+| 1:00-1:12 | Roles par entite, cloisonnement des donnees, exports d'audit, hebergement chez vous. Ce que votre DSI demande, documente. | Ecran de permissions par entite, journal d'audit qui se remplit, schema d'hebergement. | Controle, auditable, heberge chez vous. |
+| 1:12-1:24 | Et parce qu'un groupe ne s'arrete pas a la paie : comptabilite, CRM, et trente-neuf modules activables quand vous en avez besoin. | Grille de modules qui s'allument un par un, hors du chemin principal. | Un socle. 39 modules activables. |
+| 1:24-1:30 | Douze semaines, une entite, trois criteres ecrits. Demandez une demonstration sur vos donnees. | Logo, URL, bouton de demande de demonstration. | Pilote 12 semaines |
 
-**CTA :** Essayer gratuitement 14 jours sur kitokoh.github.io/leopardo-hr, ou demander une demo.
+**CTA :** Demander une demonstration sur vos donnees — kitokoh.github.io/leopardo-hr
 
 **Son :** Percussion organique montante, 100-110 BPM, silence d'une seconde avant le CTA.
 
-**Notes :** Accroche de lancement : paie + pointage, Algerie d'abord (repositionnement 2026). La suite metier n'apparait qu'au beat 6, en catalogue. Les referentiels de paie sont en statut pilot : ne jamais dire « conformite validee ». Le film doit rester comprehensible sans son : chaque plan porte son texte a l'ecran.
+**Notes :** Accroche de lancement v2 (2026-11-28) : cible grands comptes, groupe multi-entites. Le trio paie multi-entites / pointage / controle occupe 0:00-1:12 ; la suite metier n'apparait qu'au beat 6, en catalogue. Ne jamais dire « SSO SAML », « SCIM », « certifie » ni « conformite validee » : les referentiels de paie sont en statut pilot et seul OIDC est implemente. Le film doit rester comprehensible sans son : chaque plan porte son texte a l'ecran.
 
 ### VID-02 — Leopardo en 30 secondes (cut publicitaire)
 
-- **Format :** 16:9 · **Duree :** 30 s · **Audience :** Prospection froide, pre-roll YouTube, LinkedIn
+- **Format :** 16:9 · **Duree :** 30 s · **Audience :** Prospection ciblee DAF et DSI de groupes, LinkedIn, pre-roll
 - **Statut de production :** Redige
-- **Objectif :** Version publicitaire du film pilier : un seul message (paie + pointage), un seul CTA. Aucun plan nouveau, uniquement du montage dans VID-01.
-- **Hook :** « Vos pointages sur du papier. Votre paie sur un tableur. Ca peut s'arreter aujourd'hui. »
+- **Objectif :** Version publicitaire du film pilier : un seul message (une paie pour toutes les entites), un seul CTA. Aucun plan nouveau, uniquement du montage dans VID-01.
+- **Hook :** « Six societes. Trois pays. Et la paie consolidee sur un tableur. »
 
 | Temps | Voix off | Plan | Texte a l'ecran |
 |---|---|---|---|
-| 0:00-0:06 | Vos pointages sur du papier. Votre paie sur un tableur. | Reprises de VID-01 : carnet, tableur. | Ca peut s'arreter aujourd'hui. |
-| 0:06-0:16 | Leopardo reunit la paie et le pointage de vos equipes de terrain dans une seule application. | Interface unique qui s'assemble. | Paie + pointage |
-| 0:16-0:24 | Dossiers employes, conges, et 38 modules activables quand vous en avez besoin. | Dossier employe, puis grille de modules. | Un socle, 38 modules |
-| 0:24-0:30 | Quatorze jours d'essai, sans carte bancaire. | CTA plein ecran. | 14 jours — sans carte |
+| 0:00-0:06 | Six societes. Trois pays. La paie consolidee sur un tableur. | Reprises de VID-01 : facades, ecrans de paie, tableur. | Ca peut s'arreter. |
+| 0:06-0:16 | Leopardo reunit la paie de toutes vos entites et le pointage de chaque site dans un seul moteur. | Interface unique qui s'assemble, total groupe qui se construit. | Une paie. Toutes vos entites. |
+| 0:16-0:24 | Controle, audit, hebergement maitrise. Et trente-neuf modules activables. | Permissions par entite, journal d'audit, grille de modules. | Controle et auditable. |
+| 0:24-0:30 | Douze semaines, une entite, trois criteres. | CTA plein ecran. | Pilote 12 semaines |
 
-**CTA :** Bouton unique : Essayer gratuitement.
+**CTA :** Bouton unique : Demander une demonstration.
 
 **Son :** Meme theme que VID-01, coupe a 30 s, impact sur le CTA.
 
-**Notes :** Ne pas reecrire de voix off differente : reutiliser les prises de VID-01 pour garantir la coherence de marque.
+**Notes :** Ne pas reecrire de voix off differente : reutiliser les prises de VID-01 pour garantir la coherence de marque. Aucune promesse de delai de mise en route : un groupe ne se deploie pas en trente minutes.
 
 ### VID-03 — Bumper 15 secondes (pre-roll non skippable)
 
-- **Format :** 16:9 · **Duree :** 15 s · **Audience :** Pre-roll YouTube non skippable, display video
+- **Format :** 16:9 · **Duree :** 15 s · **Audience :** Pre-roll non skippable, display video
 - **Statut de production :** Redige
 - **Objectif :** Un seul mot retenu : le nom. Format contraint, aucune explication produit.
-- **Hook :** « Combien d'outils pour prouver une heure et payer juste ? »
+- **Hook :** « Combien de systemes pour payer six societes ? »
 
 | Temps | Voix off | Plan | Texte a l'ecran |
 |---|---|---|---|
-| 0:00-0:05 | Combien d'outils pour prouver une heure et payer juste ? | Icones qui s'empilent : tableur, carnet, messagerie, badgeuse. | Combien d'outils ? |
+| 0:00-0:05 | Combien de systemes pour payer six societes ? | Icones qui s'empilent : ERP, tableur, logiciel local, badgeuse. | Combien de systemes ? |
 | 0:05-0:10 | Un seul. | Toutes les icones aspirees dans un seul logo. | Un seul. |
-| 0:10-0:15 | Leopardo. La paie et le pointage de vos equipes de terrain. | Logo centre, baseline. | Leopardo |
+| 0:10-0:15 | Leopardo. Une seule paie pour toutes vos entites. | Logo centre, baseline. | Leopardo |
 
 **CTA :** Aucun bouton : le bumper installe le nom, la conversion se fait sur le film 30 s.
 

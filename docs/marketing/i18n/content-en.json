@@ -11,7 +11,7 @@
       "beats.vo",
       "beats.text"
     ],
-    "updated_at": "2026-11-27"
+    "updated_at": "2026-11-28"
   },
   "categories": {
     "presentation-solution": {
@@ -69,87 +69,87 @@
   },
   "scripts": {
     "VID-01": {
-      "title": "Leopardo — payroll and time tracking for your field teams (flagship film)",
-      "objective": "Make people understand in 90 seconds that Leopardo solves one precise problem: prove the hours and pay right. The business suite appears in the second half only, as an activatable catalogue, never as the hook. Master film from which the 30-second and 15-second cuts derive.",
-      "hook": "Your timesheets on paper. Your payroll on a spreadsheet. And by evening, an hours dispute nobody can settle.",
-      "cta": "Try free for 14 days on kitokoh.github.io/leopardo-hr, or book a demo.",
+      "title": "Leopardo — one payroll for all your entities (flagship film)",
+      "objective": "Make people understand in 90 seconds that a group does not have an HR software problem but a fragmented payroll and unproven hours problem. The trio multi-entity payroll / time tracking / control fills the first 72 seconds; the business suite appears only at beat 6, as a catalogue. Master film from which the 30-second and 15-second cuts derive.",
+      "hook": "Six companies. Three countries. And consolidated payroll still runs on a spreadsheet.",
+      "cta": "Ask for a demo on your own data — kitokoh.github.io/leopardo-hr",
       "beats": [
         {
-          "vo": "Every morning your teams clock in on paper. Your payroll is calculated on a spreadsheet. And when an employee contests his hours, nobody can prove anything.",
-          "text": "Paper proves nothing."
+          "vo": "Your group has six companies and three countries. Each entity has its own payroll, its own software, its own spreadsheet. Nobody has the consolidated total before the end of the month.",
+          "text": "Six payrolls. No total."
         },
         {
-          "vo": "Leopardo brings payroll and time tracking for your field teams into a single application.",
-          "text": "Payroll + time tracking. One app."
+          "vo": "Leopardo brings the payroll of all your entities into a single engine: one payroll per company, one group total.",
+          "text": "One payroll. All your entities."
         },
         {
-          "vo": "Clock-in comes from mobile, GPS or the ZKTeco biometric kiosk. When the network drops, the terminal keeps running and resyncs as soon as the link returns.",
+          "vo": "On every site, hours come from mobile, GPS or the biometric terminal. When the network drops, the terminal keeps running and resyncs as soon as the link returns.",
           "text": "Every hour is proven."
         },
         {
-          "vo": "Algerian payroll applies: IRG, CNAS, attendance and leave variables pulled in, payslip generated as PDF, run locked once validated.",
-          "text": "Payroll is calculated, validated, locked."
+          "vo": "Each country's payroll applies: IRG, CNAS, local agreements. The run is calculated, validated, locked. The payslip comes out as a PDF.",
+          "text": "Calculated, validated, locked."
         },
         {
-          "vo": "The employee record, the contract, leave and documents are entered once and used everywhere.",
-          "text": "The employee record feeds everything else."
+          "vo": "Roles per entity, data segregation, audit exports, hosting at your premises. What your CIO asks for, documented.",
+          "text": "Controlled, auditable, hosted by you."
         },
         {
-          "vo": "And because your business does not stop at payroll: accounting, CRM, and activatable business packs when you need them.",
-          "text": "One core. 38 activatable modules."
+          "vo": "And because a group does not stop at payroll: accounting, CRM, and thirty-nine modules you can activate when you need them.",
+          "text": "One core. 39 activatable modules."
         },
         {
-          "vo": "Fourteen days free, no credit card. Set up in under thirty minutes.",
-          "text": "14-day trial — no card"
+          "vo": "Twelve weeks, one entity, three written criteria. Ask for a demo on your own data.",
+          "text": "12-week pilot"
         }
       ],
-      "audience": "Hands-on SME owners and accounting firms, Algeria first"
+      "audience": "CFOs and CIOs of multi-entity groups, 500 to 5,000 employees, Algeria, Morocco, Tunisia"
     },
     "VID-02": {
-      "title": "Leopardo in 30 seconds (ad cut)",
-      "objective": "Advertising version of the flagship film: one message (payroll + time tracking), one CTA. No new shots, editing only from VID-01.",
-      "hook": "Your timesheets on paper. Your payroll on a spreadsheet. That can stop today.",
-      "cta": "Single button: Start free.",
+      "title": "Leopardo in 30 seconds (advertising cut)",
+      "objective": "Advertising version of the flagship film: one message (one payroll for all entities), one CTA. No new footage, only editing from VID-01.",
+      "hook": "Six companies. Three countries. And consolidated payroll on a spreadsheet.",
+      "cta": "Single button: Ask for a demo.",
       "beats": [
         {
-          "vo": "Your timesheets on paper. Your payroll on a spreadsheet.",
-          "text": "It can stop today."
+          "vo": "Six companies. Three countries. Consolidated payroll on a spreadsheet.",
+          "text": "That can stop."
         },
         {
-          "vo": "Leopardo brings payroll and time tracking for your field teams into one application.",
-          "text": "Payroll + time tracking"
+          "vo": "Leopardo brings the payroll of all your entities and the time tracking of every site into a single engine.",
+          "text": "One payroll. All your entities."
         },
         {
-          "vo": "Employee records, leave, and 38 activatable modules when you need them.",
-          "text": "One core, 38 modules"
+          "vo": "Control, audit, managed hosting. And thirty-nine activatable modules.",
+          "text": "Controlled and auditable."
         },
         {
-          "vo": "Fourteen days free, no credit card.",
-          "text": "14 days — no card"
+          "vo": "Twelve weeks, one entity, three criteria.",
+          "text": "12-week pilot"
         }
       ],
-      "audience": "Cold outreach, YouTube pre-roll, LinkedIn"
+      "audience": "Targeted outreach to group CFOs and CIOs, LinkedIn, pre-roll"
     },
     "VID-03": {
       "title": "15-second bumper (non-skippable pre-roll)",
       "objective": "One word remembered: the name. Constrained format, no product explanation.",
-      "hook": "How many tools to prove an hour and pay right?",
+      "hook": "How many systems to pay six companies?",
       "cta": "No button: the bumper installs the name, conversion happens on the 30-second film.",
       "beats": [
         {
-          "vo": "How many tools to prove an hour and pay right?",
-          "text": "How many tools?"
+          "vo": "How many systems to pay six companies?",
+          "text": "How many systems?"
         },
         {
           "vo": "One.",
           "text": "One."
         },
         {
-          "vo": "Leopardo. Payroll and time tracking for your field teams.",
+          "vo": "Leopardo. One payroll for all your entities.",
           "text": "Leopardo"
         }
       ],
-      "audience": "Non-skippable YouTube pre-roll, display video"
+      "audience": "Non-skippable pre-roll, video display"
     },
     "VID-04": {
       "title": "How Leopardo replaces Excel, WhatsApp and paper (3-minute explainer)",

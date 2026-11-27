@@ -1,11 +1,18 @@
 {
   "_meta": {
     "description": "Chaines d'interface de l'espace Scripts marketing, dans les 4 locales du produit (fr, en, tr, ar). Source de verite des libelles : build_marketing.py ne code aucun texte en dur. Les locales sont celles de shared/i18n/locales/ (fr, en, tr, ar) ; ar est en RTL.",
-    "locales": ["fr", "en", "tr", "ar"],
+    "locales": [
+      "fr",
+      "en",
+      "tr",
+      "ar"
+    ],
     "default": "fr",
-    "rtl": ["ar"],
+    "rtl": [
+      "ar"
+    ],
     "schema_version": 1,
-    "updated_at": "2026-11-26T13:50:00Z"
+    "updated_at": "2026-11-28T00:00:00Z"
   },
   "fr": {
     "brand": "Scripts marketing",
@@ -18,7 +25,7 @@
     "nav_portal": "Portail recette",
     "nav_profiles_modules": "Profils & modules",
     "pm_title": "Profils & modules",
-    "pm_lead": "Qui peut faire quoi, et ce que chaque module sait reellement faire. Une phrase ou deux par profil, une phrase ou deux par module : concret, sans jargon.",
+    "pm_lead": "Qui peut faire quoi, et ce que chaque module sait reellement faire. Une phrase ou deux par profil, une phrase ou deux par module : concret, sans jargon. Le badge « Socle » marque ce qui est mis en avant pour la vente grands comptes ; « Catalogue » ce qui reste activable, hors du message d'entree.",
     "pm_profiles_title": "Profils utilisateurs",
     "pm_profiles_sub": "Pour chaque profil, ce qu'il peut faire dans Leopardo.",
     "pm_modules_title": "Modules & logiciels",
@@ -99,7 +106,9 @@
     "st_publie_d": "Video publiee sur au moins un canal.",
     "fallback_note": "",
     "fallback_badge": "FR",
-    "fallback_legend": "Les champs marques FR sont les consignes de tournage, laissees en francais (langue de travail de l'equipe production)."
+    "fallback_legend": "Les champs marques FR sont les consignes de tournage, laissees en francais (langue de travail de l'equipe production).",
+    "pm_tier_socle": "Socle",
+    "pm_tier_catalogue": "Catalogue"
   },
   "en": {
     "brand": "Marketing scripts",
@@ -112,7 +121,7 @@
     "nav_portal": "QA portal",
     "nav_profiles_modules": "Profiles & modules",
     "pm_title": "Profiles & modules",
-    "pm_lead": "Who can do what, and what each module can really do. One or two sentences per profile, one or two per module: concrete, no jargon.",
+    "pm_lead": "Who can do what, and what each module can really do. One or two sentences per profile, one or two per module: concrete, no jargon. The « Core » badge marks what is put forward for enterprise sales; « Catalogue » what stays activatable, outside the entry message.",
     "pm_profiles_title": "User profiles",
     "pm_profiles_sub": "For each profile, what they can do in Leopardo.",
     "pm_modules_title": "Modules & software",
@@ -193,7 +202,9 @@
     "st_publie_d": "Video published on at least one channel.",
     "fallback_note": "",
     "fallback_badge": "FR",
-    "fallback_legend": "Fields marked FR are shooting instructions, left in French (the production team's working language)."
+    "fallback_legend": "Fields marked FR are shooting instructions, left in French (the production team's working language).",
+    "pm_tier_socle": "Core",
+    "pm_tier_catalogue": "Catalogue"
   },
   "tr": {
     "brand": "Pazarlama senaryolari",
@@ -206,7 +217,7 @@
     "nav_portal": "Test portali",
     "nav_profiles_modules": "Profiller ve moduller",
     "pm_title": "Profiller ve moduller",
-    "pm_lead": "Kim ne yapabilir ve her modul gercekte ne yapabilir. Profil basina bir-iki cumle, modul basina bir-iki cumle: somut, jargonsuz.",
+    "pm_lead": "Kim ne yapabilir ve her modul gercekte ne yapabilir. Profil basina bir-iki cumle, modul basina bir-iki cumle: somut, jargonsuz. « Cekirdek » rozeti kurumsal satista one cikarilani, « Katalog » giris mesajinin disinda kalani isaretler.",
     "pm_profiles_title": "Kullanici profilleri",
     "pm_profiles_sub": "Her profil icin Leopardo'da ne yapabilecegi.",
     "pm_modules_title": "Moduller ve yazilimlar",
@@ -287,7 +298,9 @@
     "st_publie_d": "Video en az bir kanalda yayinlandi.",
     "fallback_note": "",
     "fallback_badge": "FR",
-    "fallback_legend": "FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir."
+    "fallback_legend": "FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.",
+    "pm_tier_socle": "Cekirdek",
+    "pm_tier_catalogue": "Katalog"
   },
   "ar": {
     "brand": "نصوص التسويق",
@@ -300,7 +313,7 @@
     "nav_portal": "بوابة الاختبار",
     "nav_profiles_modules": "الملفات الشخصية والوحدات",
     "pm_title": "الملفات الشخصية والوحدات",
-    "pm_lead": "من يستطيع فعل ماذا، وما تستطيع كل وحدة فعله فعلا. جملة أو جملتان لكل ملف شخصي، وجملة أو جملتان لكل وحدة: ملموس وبلا مصطلحات.",
+    "pm_lead": "من يستطيع فعل ماذا، وما تستطيع كل وحدة فعله فعلا. جملة أو جملتان لكل ملف شخصي، وجملة أو جملتان لكل وحدة: ملموس وبلا مصطلحات. شارة « النواة » تشير إلى ما يُبرز في البيع للمؤسسات الكبرى، و« الكتالوج » إلى ما يبقى قابلا للتفعيل خارج رسالة الدخول.",
     "pm_profiles_title": "ملفات المستخدمين",
     "pm_profiles_sub": "لكل ملف شخصي، ما يستطيع فعله في ليوباردو.",
     "pm_modules_title": "الوحدات والبرامج",
@@ -381,6 +394,8 @@
     "st_publie_d": "نُشر الفيديو على قناة واحدة على الأقل.",
     "fallback_note": "",
     "fallback_badge": "FR",
-    "fallback_legend": "الحقول المعلَّمة بـ FR هي تعليمات تصوير، تُركت بالفرنسية (لغة عمل فريق الإنتاج)."
+    "fallback_legend": "الحقول المعلَّمة بـ FR هي تعليمات تصوير، تُركت بالفرنسية (لغة عمل فريق الإنتاج).",
+    "pm_tier_socle": "النواة",
+    "pm_tier_catalogue": "الكتالوج"
   }
 }
