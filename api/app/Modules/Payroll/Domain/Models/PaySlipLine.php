@@ -74,11 +74,16 @@ class PaySlipLine extends Model
                 return;
             }
 
-            // `withoutGlobalScopes()` est volontaire : hors contexte tenant, le
-            // scope `company` ne filtre rien mais lèverait sur la surface API
-            // si le marqueur est posé. On lit le parent par sa clé primaire,
-            // ce qui est sûr — c'est la ligne qu'on est en train de rattacher.
-            $companyId = PaySlip::withoutGlobalScopes()
+            // Wrapper documenté (#7960), pas un bypass brut du scope tenant : la
+            // garde `check-without-global-scope.sh` fait échouer tout nouvel
+            // usage non justifié, et elle a raison — un contournement non
+            // justifié au point d'appel est indistinguable d'une fuite. Ici la
+            // justification est réelle : on lit le parent par clé primaire pour
+            // rattacher la ligne qu'on est en train de créer, hors de tout
+            // parcours tenant.
+            $companyId = PaySlip::crossTenantForSystemTask(
+                'héritage du tenant du bulletin à la création d\'une ligne de paie (#9975)'
+            )
                 ->whereKey($paySlipId)
                 ->value('company_id');
 
