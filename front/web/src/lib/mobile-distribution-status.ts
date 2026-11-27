@@ -66,22 +66,18 @@ export const MOBILE_DISTRIBUTION_STATUS: Record<string, MobileChannelState> = {
   // `failed` mentirait sur la nature du problème. `unknown` reste
   // fail-closed : non publiable, exactement comme `failed`.
   'accounting-mobile': 'unknown',
-  // Observation du run `45984755280` (2026-11-27T10:45) : `hr` est en ÉCHEC
-  // à l'étape « Distribute hr to Firebase » (conclusion `failure` à 10:47:55),
-  // alors que les dix autres canaux sont verts. La table ne déclarait plus
-  // `hr` du tout, donc la garde le lisait comme `ok` (un slug absent vaut
-  // `ok`) et échouait : « hr-mobile : canal EN ÉCHEC en CI mais déclaré ok ».
-  // C'est la déclaration qui était fausse, pas le canal.
-  //
-  // Conséquence assumée : `isDistributionHealthy()` rend `false` pour
-  // `hr-mobile`, donc le catalogue requalifie l'app en `not_distributed` et
-  // n'affiche plus de bouton d'installation vers un build inexistant
-  // (règle d'honnêteté #6697). À retirer dès que le canal repasse au vert.
-  'hr-mobile': 'failed',
+  // `hr` : l'échec du run `45984755280` (2026-11-27T10:45, étape « Distribute
+  // hr to Firebase ») était transitoire — `Could not resolve
+  // org.jetbrains.kotlin:kotlin-stdlib:2.2.21`, une résolution de dépendance
+  // Gradle, pas un défaut du canal. Le run relancé le 2026-11-27T16:10 est
+  // VERT, et la garde `mobile-distribution-status-guard.yml` a confirmé le
+  // 2026-11-27T16:22 : « hr-mobile : canal VERT en CI mais déclaré failed ».
+  // La déclaration `failed` a donc été retirée, comme son commentaire
+  // l'exigeait. `hr-mobile` n'apparaît plus ici : un slug absent vaut `ok`.
 };
 
 /** Référence du run CI qui a produit l'état ci-dessus (traçabilité). */
-export const MOBILE_DISTRIBUTION_STATUS_SOURCE = 'mobile-distribute-main.yml@45984755280';
+export const MOBILE_DISTRIBUTION_STATUS_SOURCE = 'mobile-distribute-main.yml@46031962096';
 
 /**
  * Le canal de distribution de cette application est-il en échec connu ?
