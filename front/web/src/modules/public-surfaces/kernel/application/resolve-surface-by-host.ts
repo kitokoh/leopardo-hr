@@ -19,11 +19,9 @@
  *
  * ## Pourquoi la correspondance est exacte et non par suffixe
  *
- * Un `endsWith` naïf ferait correspondre `evil-restaurants.leopardo.app` à
- * `restaurants.leopardo.app` : un sous-domaine attaquant obtiendrait l'identité
- * d'une vitrine légitime (et son canonical, donc du contenu dupliqué pointant
- * vers lui). On compare donc des hôtes **normalisés et égaux**, avec une seule
- * tolérance explicite : le préfixe `www.`, qui est le même site.
+ * Un `endsWith` naïf ferait correspondre un sous-domaine attaquant
+ * (`evil-` + le domaine canonique) à la vitrine légitime : il obtiendrait son
+ * identité et son canonical.
  */
 
 import type { SurfaceIdentity, SurfaceVertical } from '../domain/surface-identity';

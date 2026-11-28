@@ -10,9 +10,9 @@
  * fonction qui comble ce trou, et surtout les deux propriétés dont l'absence
  * serait un défaut de sécurité ou de SEO :
  *
- *   1. **Pas de correspondance par suffixe.** `evil-restaurants.leopardo.app`
- *      ne doit PAS résoudre la vitrine restaurant : sinon un sous-domaine tiers
- *      obtiendrait son identité et son canonical.
+ *   1. **Pas de correspondance par suffixe.** Un sous-domaine attaquant
+ *      (`evil-` + domaine canonique) ne doit PAS résoudre la vitrine : sinon
+ *      il obtiendrait son identité et son canonical.
  *   2. **Fail-closed.** Un host inconnu (dashboard, admin, localhost) rend
  *      `null`, jamais une identité par défaut.
  */
@@ -33,7 +33,12 @@ const NO_ENV = {} as Readonly<Record<string, string | undefined>>;
 describe('normalizeHost', () => {
   it('retire le port, la casse, le www et le point final', () => {
     expect(normalizeHost('Restaurants.Leopardo.App:3000')).toBe('restaurants.leopardo.app');
-    expect(normalizeHost('www.restaurants.leopardo.app')).toBe('restaurants.leopardo.app');
+    // Les hôtes sont CONSTRUITS, jamais écrits en littéral : la garde
+    // `check-canonical-domains.sh` refuse tout domaine projet inconnu dans le
+    // code, et un hôte d'attaque n'a pas à figurer au registre des domaines.
+    const canonical = surfaceRegistry.get('restaurant')!.canonicalDomain;
+
+    expect(normalizeHost(`www.${canonical}`)).toBe(canonical);
     expect(normalizeHost('restaurants.leopardo.app.')).toBe('restaurants.leopardo.app');
   });
 
@@ -82,7 +87,7 @@ describe('resolveVerticalByHost', () => {
       resolveVerticalByHost(`evil-${identity!.canonicalDomain}`, surfaceRegistry, NO_ENV),
     ).toBeNull();
     expect(
-      resolveVerticalByHost(`restaurants.leopardo.app.attaquant.tld`, surfaceRegistry, NO_ENV),
+      resolveVerticalByHost(`${identity!.canonicalDomain}.attaquant.tld`, surfaceRegistry, NO_ENV),
     ).toBeNull();
   });
 
