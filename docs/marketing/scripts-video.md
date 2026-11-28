@@ -98,40 +98,40 @@ Films de marque : presenter Leopardo au grand public, du film pilier de 90 s aux
 
 ### VID-01 — Leopardo — une seule paie pour toutes vos entités (film pilier)
 
-- **Format :** 16:9 · **Duree :** 90 s · **Audience :** Directions financières et DSI de groupes multi-entités, 500 à 5 000 salariés, Algérie, Maroc, Tunisie
+- **Format :** 16:9 · **Duree :** 90 s · **Audience :** Toutes tailles d'entreprise et groupes multi-sites (TPE, PME, groupes multi-entités), en Algérie, au Maroc, en Tunisie et en Afrique francophone (Sénégal, Côte d'Ivoire, Cameroun, Mali, Burkina, Bénin, Togo, Niger, Tchad, RCA, Congo, Gabon, Guinée équatoriale) ; directions financières, DSI et dirigeants
 - **Statut de production :** Redige
-- **Objectif :** Faire comprendre en 90 secondes qu'un groupe n'a pas un problème d'outillage mais un problème de paie éclatée et d'heures non prouvées. Le trio paie multi-entités / pointage / contrôle occupe les 72 premières secondes ; la suite métier n'apparaît qu'au beat 6, en catalogue. Film maître dont dérivent les cuts 30 s et 15 s.
-- **Hook :** « Six sociétés. Trois pays. Et la paie consolidée se fait encore sur un tableur. »
+- **Objectif :** Faire comprendre en 90 secondes qu'une entreprise n'a pas un problème d'outillage mais un problème de triple saisie : paie éclatée, heures non prouvées, données ressaisies. Le trio paie / pointage / contrôle occupe les 72 premières secondes ; l'ampleur (packs métier, vitrine publique, pays) n'apparaît qu'au beat 6, en catalogue. Film maître dont dérivent les cuts 30 s et 15 s.
+- **Hook :** « Une entreprise, dix, ou six sociétés dans trois pays. Et la paie consolidée se fait encore sur un tableur. »
 
 | Temps | Voix off | Plan | Texte a l'ecran |
 |---|---|---|---|
-| 0:00-0:10 | Votre groupe a six sociétés et trois pays. Chaque entité a sa paie, son logiciel, son tableur. Le total consolidé, personne ne l'a avant la fin du mois. | Montage : façades de sites différents, six écrans de paie différents, un tableur de consolidation qui défile. | Six paies. Aucun total. |
-| 0:10-0:22 | Leopardo réunit la paie de toutes vos entités dans un seul moteur : une paie par société, un total groupe. | Les six écrans se dissolvent dans une interface unique ; une ligne de total se construit a droite. | Une paie. Toutes vos entités. |
-| 0:22-0:40 | Sur chaque site, les heures remontent du mobile, du GPS ou de la borne biometrique. En coupure réseau, la borne continue et resynchronise au retour du lien. | Ouvrier qui badine sur un kiosque, technicien sur chantier avec téléphone hors-ligne, badge de synchronisation qui passe au vert. | Chaque heure est prouvee. |
-| 0:40-1:00 | La paie de chaque pays s'applique : IRG, CNAS, conventions locales. Le run se calcule, se validé, se verrouille. Le bulletin sort en PDF. | Écran de simulation de paie, bulletin PDF qui se généré, cadenas sur le run. | Calculee, validée, verrouillee. |
-| 1:00-1:12 | Rôles par entité, cloisonnement des données, exports d'audit, hebergement chez vous. Ce que votre DSI demande, documenté. | Écran de permissions par entité, journal d'audit qui se remplit, schéma d'hebergement. | Contrôle, auditable, hébergé chez vous. |
-| 1:12-1:24 | Et parce qu'un groupe ne s'arrêté pas à la paie : comptabilité, CRM, et trente-neuf modules activables quand vous en avez besoin. | Grille de modules qui s'allument un par un, hors du chemin principal. | Un socle. 39 modules activables. |
-| 1:24-1:30 | Douze semaines, une entité, trois critères écrits. Demandez une démonstration sur vos données. | Logo, URL, bouton de demande de démonstration. | Pilote 12 semaines |
+| 0:00-0:10 | Une entreprise, dix, ou six sociétés dans trois pays : chaque équipe a sa paie, son logiciel, son tableur. Le total, personne ne l'a avant la fin du mois. | Montage : façades de sites différents, écrans de paie différents, un tableur de consolidation qui défile. | Des paies. Aucun total. |
+| 0:10-0:22 | Leopardo réunit la paie de toutes vos entités dans un seul moteur : une paie par société, un total groupe. Pour une entreprise seule, une seule paie, juste. | Les écrans se dissolvent dans une interface unique ; une ligne de total se construit à droite. | Une paie. Toutes vos entités. |
+| 0:22-0:40 | Sur chaque site, les heures remontent du mobile, du GPS ou de la borne biométrique. En coupure réseau, la borne continue et resynchronise au retour du lien. | Ouvrier qui badine sur un kiosque, technicien sur chantier avec téléphone hors-ligne, badge de synchronisation qui passe au vert. | Chaque heure est prouvée. |
+| 0:40-1:00 | La paie de chaque pays s'applique : IRG et CNAS au Maghreb, cotisations UEMOA et CEMAC en Afrique francophone, conventions locales. Le run se calcule, se valide, se verrouille. Le bulletin sort en PDF. | Écran de simulation de paie, bulletin PDF qui se génère, cadenas sur le run. | Calculée, validée, verrouillée. |
+| 1:00-1:12 | Rôles par entité, cloisonnement des données, exports d'audit, hébergement chez vous. Ce que votre DSI demande, documenté. | Écran de permissions par entité, journal d'audit qui se remplit, schéma d'hébergement. | Contrôle, auditable, hébergé chez vous. |
+| 1:12-1:24 | Et parce qu'une entreprise ne s'arrête pas à la paie : comptabilité, CRM, packs métier — restaurant, pharmacie, hôtellerie, école, VTC — et une vitrine publique qui vous fait trouver. Trente-neuf modules activables. | Grille de modules qui s'allument un par un, puis une fiche publique de professionnel consultée sur un téléphone. | Un socle. 39 modules activables. |
+| 1:24-1:30 | Douze semaines, une entité, trois critères écrits pour un groupe. Ou une démonstration sur vos données, dès aujourd'hui. | Logo, URL, bouton de demande de démonstration. | Démonstration sur vos données |
 
 **CTA :** Demander une démonstration sur vos données — leopardo-RH.com
 
 **Son :** Percussion organique montante, 100-110 BPM, silence d'une seconde avant le CTA.
 
-**Notes :** Accroche de lancement v2 (2026-11-28) : cible grands comptes, groupe multi-entités. Le trio paie multi-entités / pointage / contrôle occupe 0:00-1:12 ; la suite métier n'apparait qu'au beat 6, en catalogue. Ne jamais dire « SSO SAML », « SCIM », « certifié » ni « conformité validée » : les référentiels de paie sont en statut pilot et seul OIDC est implemente. Le film doit rester compréhensible sans son : chaque plan porte son texte à l'écran.
+**Notes :** Accroche de lancement v9 (2026-11-28) : cadrage élargi — entreprises de toute taille, groupes multi-sites et Afrique francophone. Le trio paie / pointage / contrôle occupe 0:00-1:12 ; l'ampleur (packs métier, vitrine publique, pays) n'apparait qu'au beat 6, en catalogue. Ne jamais employer le mot « tenant » à l'écran : il est ambigu (gestion locative ou multi-tenant) et reste un terme d'architecture. Ne jamais dire « SSO SAML », « SCIM », « certifié » ni « conformité validée » : les référentiels de paie sont en statut pilot et seul OIDC est implemente. Le film doit rester compréhensible sans son : chaque plan porte son texte à l'écran.
 
 ### VID-02 — Leopardo en 30 secondes (cut publicitaire)
 
-- **Format :** 16:9 · **Duree :** 30 s · **Audience :** Prospection ciblée DAF et DSI de groupes, LinkedIn, pré-roll
+- **Format :** 16:9 · **Duree :** 30 s · **Audience :** Prospection large : dirigeants, DAF et DSI d'entreprises de toute taille et de groupes multi-sites, Maghreb et Afrique francophone — LinkedIn, pré-roll
 - **Statut de production :** Redige
 - **Objectif :** Version publicitaire du film pilier : un seul message (une paie pour toutes les entités), un seul CTA. Aucun plan nouveau, uniquement du montage dans VID-01.
-- **Hook :** « Six sociétés. Trois pays. Et la paie consolidée sur un tableur. »
+- **Hook :** « Une entreprise, dix, ou six sociétés dans trois pays. Et la paie consolidée sur un tableur. »
 
 | Temps | Voix off | Plan | Texte a l'ecran |
 |---|---|---|---|
-| 0:00-0:06 | Six sociétés. Trois pays. La paie consolidée sur un tableur. | Reprises de VID-01 : façades, écrans de paie, tableur. | Ça peut s'arrêter. |
-| 0:06-0:16 | Leopardo réunit la paie de toutes vos entités et le pointage de chaque site dans un seul moteur. | Interface unique qui s'assemblé, total groupe qui se construit. | Une paie. Toutes vos entités. |
-| 0:16-0:24 | Contrôle, audit, hebergement maîtrise. Et trente-neuf modules activables. | Permissions par entité, journal d'audit, grille de modules. | Contrôle et auditable. |
-| 0:24-0:30 | Douze semaines, une entité, trois critères. | CTA plein écran. | Pilote 12 semaines |
+| 0:00-0:06 | Une entreprise, dix, ou six sociétés dans trois pays. La paie consolidée sur un tableur. | Reprises de VID-01 : façades, écrans de paie, tableur. | Ça peut s'arrêter. |
+| 0:06-0:16 | Leopardo réunit la paie de toutes vos entités et le pointage de chaque site dans un seul moteur. | Interface unique qui s'assemble, total groupe qui se construit. | Une paie. Toutes vos entités. |
+| 0:16-0:24 | Contrôle, audit, hébergement maîtrisé. Et trente-neuf modules activables. | Permissions par entité, journal d'audit, grille de modules. | Contrôle et auditable. |
+| 0:24-0:30 | Douze semaines pour un groupe. Une démonstration pour les autres. | CTA plein écran. | Démonstration sur vos données |
 
 **CTA :** Bouton unique : Demander une démonstration.
 
@@ -141,16 +141,16 @@ Films de marque : presenter Leopardo au grand public, du film pilier de 90 s aux
 
 ### VID-03 — Bumper 15 secondes (pré-roll non skippable)
 
-- **Format :** 16:9 · **Duree :** 15 s · **Audience :** Pré-roll non skippable, display vidéo
+- **Format :** 16:9 · **Duree :** 15 s · **Audience :** Pré-roll non skippable, display vidéo — notoriété large, entreprises et groupes, Maghreb et Afrique francophone
 - **Statut de production :** Redige
 - **Objectif :** Un seul mot retenu : le nom. Format contraint, aucune explication produit.
-- **Hook :** « Combien de systèmes pour payer six sociétés ? »
+- **Hook :** « Combien de systèmes pour payer vos équipes ? »
 
 | Temps | Voix off | Plan | Texte a l'ecran |
 |---|---|---|---|
-| 0:00-0:05 | Combien de systèmes pour payer six sociétés ? | Icones qui s'empilent : ERP, tableur, logiciel local, badgeuse. | Combien de systèmes ? |
+| 0:00-0:05 | Combien de systèmes pour payer vos équipes ? | Icônes qui s'empilent : ERP, tableur, logiciel local, badgeuse. | Combien de systèmes ? |
 | 0:05-0:10 | Un seul. | Toutes les icones aspirees dans un seul logo. | Un seul. |
-| 0:10-0:15 | Leopardo. Une seule paie pour toutes vos entités. | Logo centre, baseline. | Leopardo |
+| 0:10-0:15 | Leopardo. Une seule paie pour toutes vos entités. | Logo centré, baseline. | Leopardo |
 
 **CTA :** Aucun bouton : le bumper installé le nom, la conversion se fait sur le film 30 s.
 
@@ -160,19 +160,19 @@ Films de marque : presenter Leopardo au grand public, du film pilier de 90 s aux
 
 ### VID-04 — Comment Leopardo remplace Excel, WhatsApp et le papier (explainer 3 min)
 
-- **Format :** 16:9 · **Duree :** 3 min · **Audience :** Dirigeants en évaluation, page produit, démo asynchrone
+- **Format :** 16:9 · **Duree :** 3 min · **Audience :** Dirigeants et DAF en évaluation, de la TPE au groupe multi-sites, Maghreb et Afrique francophone — page produit, démo asynchrone
 - **Statut de production :** Redige
-- **Objectif :** Répondre aux objections avant l'appel commercial : migration, sécurité, multi-pays, prix. Format capture d'écran commentee.
+- **Objectif :** Répondre aux objections avant l'appel commercial : migration, sécurité, multi-pays, prix. Format capture d'écran commentee. Couvre explicitement l'Afrique francophone (pays nommés) et le plan Free/Pilot comme porte d'entrée TPE.
 - **Hook :** « On ne vous demande pas de changer votre façon de travailler. On vous demande d'arrêter de la documenter trois fois. »
 
 | Temps | Voix off | Plan | Texte a l'ecran |
 |---|---|---|---|
 | 0:00-0:15 | On ne vous demande pas de changer votre façon de travailler. On vous demande d'arrêter de la documenter trois fois. | Trois copies du même document sur trois outils. | Le problème n'est pas l'outil. C'est la triple saisie. |
 | 0:15-0:50 | Premier temps : le référentiel. Un employé, un dossier, un contrat, des documents. Saisi une fois, utilise partout. | Capture : création d'un employé, puis le même employé visible dans paie, pointage et congés. | Saisir une fois. |
-| 0:50-1:30 | Deuxième temps : le terrain. Le pointage remonte du mobile ou du kiosque. En cas de coupure réseau, la borne continue et resynchronise au retour du lien. | Capture kiosque, coupure simulée, file hors-ligne, resynchronisation. | Le terrain ne s'arrêté pas quand le réseau s'arrêté. |
-| 1:30-2:10 | Troisième temps : la paie. Les règles du pays s'appliquent, les variables de pointage et de congés remontent, le bulletin se généré et s'archive. | Capture simulation de paie, puis bulletin PDF. | 21 pays de règles de paie en pilote. |
+| 0:50-1:30 | Deuxième temps : le terrain. Le pointage remonte du mobile ou du kiosque. En cas de coupure réseau, la borne continue et resynchronise au retour du lien. | Capture kiosque, coupure simulée, file hors-ligne, resynchronisation. | Le terrain ne s'arrête pas quand le réseau s'arrête. |
+| 1:30-2:10 | Troisième temps : la paie. Les règles du pays s'appliquent — Maghreb, Sénégal, Côte d'Ivoire, Cameroun — les variables de pointage et de congés remontent, le bulletin se génère et s'archive. | Capture simulation de paie, puis bulletin PDF. | 21 pays de règles de paie en pilote. |
 | 2:10-2:40 | Quatrième temps : l'ouverture. 1 984 chemins d'API documentés, des webhooks, et des packs métier activables selon votre secteur. | Capture documentation OpenAPI, puis grille de packs. | 1 984 chemins d'API - packs activables |
-| 2:40-3:00 | Isolation multi-tenant, RBAC, journal d'audit. Vos données restent les votres, en cloud ou auto-hébergées. | Schéma d'isolation, écran de rôles. | Cloud ou auto-hébergé. |
+| 2:40-3:00 | Isolation multi-tenant, RBAC, journal d'audit. Vos données restent les vôtres, en cloud ou auto-hébergées. | Schéma d'isolation, écran de rôles. | Cloud ou auto-hébergé. |
 
 **CTA :** Télécharger la grille de comparaison, puis réserver 20 minutes de démo.
 
