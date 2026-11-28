@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 
 import { normalizeLocale } from '@/lib/i18n';
-import { SITE_URL } from '@/lib/site-url';
-import { CAREERS_SURFACE, TrackApplicationsForm } from '@/modules/public-surfaces';
+import { CAREERS_SURFACE, TrackApplicationsForm,
+  surfaceUrl,
+} from '@/modules/public-surfaces';
 import { SurfaceCard, SurfaceMeta, SurfaceShell } from '@/modules/public-surfaces';
 
 /**
@@ -27,7 +28,7 @@ import { SurfaceCard, SurfaceMeta, SurfaceShell } from '@/modules/public-surface
 export const metadata: Metadata = {
   title: `${CAREERS_SURFACE.displayName}`,
   description: CAREERS_SURFACE.tagline,
-  alternates: { canonical: `${SITE_URL}/emploi/suivi` },
+  alternates: { canonical: surfaceUrl(CAREERS_SURFACE, '/emploi/suivi') },
   robots: { index: false, follow: false },
 };
 

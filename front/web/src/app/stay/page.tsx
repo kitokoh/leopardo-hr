@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 import { normalizeLocale } from '@/lib/i18n';
-import { SITE_URL } from '@/lib/site-url';
 import {
   HOSPITALITY_SURFACE,
   PropertyDirectorySurface,
   loadPropertyDirectoryView,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /**
@@ -34,7 +34,7 @@ export async function generateMetadata({ searchParams }: StayPageProps): Promise
   return {
     title: HOSPITALITY_SURFACE.displayName,
     description: HOSPITALITY_SURFACE.tagline,
-    alternates: { canonical: `${SITE_URL}${HOSPITALITY_SURFACE.basePath}` },
+    alternates: { canonical: surfaceUrl(HOSPITALITY_SURFACE) },
     robots: { index: true, follow: true },
     openGraph: {
       title: HOSPITALITY_SURFACE.displayName,

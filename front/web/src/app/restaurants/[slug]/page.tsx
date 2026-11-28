@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { MapPin, Star } from 'lucide-react';
 import { normalizeLocale } from '@/lib/i18n';
 import { catalogDirection, t } from '@/lib/i18n/locale-catalog';
-import { SITE_URL } from '@/lib/site-url';
 import { JsonLd } from '@/components/JsonLd';
 import {
   getPublicRestaurant,
@@ -11,10 +10,12 @@ import {
   type PublicRestaurantProfile,
 } from '@/lib/restaurants-public-api';
 import {
+  RESTAURANT_SURFACE,
   RestaurantOrderPanel,
   dayOfWeekName,
   establishmentTypeLabel,
   formatRating,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /**
@@ -50,7 +51,7 @@ export async function generateMetadata({ params, searchParams }: RestaurantPageP
   return {
     title,
     description,
-    alternates: { canonical: `${SITE_URL}/restaurants/${restaurant.slug}` },
+    alternates: { canonical: surfaceUrl(RESTAURANT_SURFACE, `/restaurants/${restaurant.slug}`) },
     robots: { index: true, follow: true },
     openGraph: {
       title,
@@ -66,7 +67,7 @@ function restaurantJsonLd(restaurant: PublicRestaurantProfile): Record<string, u
     '@context': 'https://schema.org',
     '@type': 'Restaurant',
     name: restaurant.name,
-    url: `${SITE_URL}/restaurants/${restaurant.slug}`,
+    url: surfaceUrl(RESTAURANT_SURFACE, `/restaurants/${restaurant.slug}`),
   };
 
   if (restaurant.description) {

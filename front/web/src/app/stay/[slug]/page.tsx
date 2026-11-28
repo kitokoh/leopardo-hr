@@ -3,7 +3,6 @@ import { notFound } from 'next/navigation';
 import { MapPin, Phone, Star } from 'lucide-react';
 import { normalizeLocale } from '@/lib/i18n';
 import { catalogDirection, t } from '@/lib/i18n/locale-catalog';
-import { SITE_URL } from '@/lib/site-url';
 import { JsonLd } from '@/components/JsonLd';
 import {
   getPublicStayProperty,
@@ -19,6 +18,7 @@ import {
   formatStayMoney,
   paginateList,
   stayPropertyTypeLabel,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /** Types de chambre affichés par page sur la fiche d'un hébergement. */
@@ -61,7 +61,7 @@ export async function generateMetadata({ params, searchParams }: StayPageProps):
   return {
     title,
     description,
-    alternates: { canonical: `${SITE_URL}/stay/${property.slug}` },
+    alternates: { canonical: surfaceUrl(HOSPITALITY_SURFACE, `/stay/${property.slug}`) },
     robots: { index: true, follow: true },
     openGraph: { title, description, type: 'website' },
   };
@@ -80,7 +80,7 @@ function stayJsonLd(property: PublicStayProperty): Record<string, unknown> {
     '@context': 'https://schema.org',
     '@type': SCHEMA_TYPES[property.type] ?? 'LodgingBusiness',
     name: property.name,
-    url: `${SITE_URL}/stay/${property.slug}`,
+    url: surfaceUrl(HOSPITALITY_SURFACE, `/stay/${property.slug}`),
   };
 
   if (property.phone) {
