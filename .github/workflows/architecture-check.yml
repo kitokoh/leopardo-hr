@@ -132,6 +132,14 @@ jobs:
         # epinglee (sync: false) dans tous les blueprints.
         run: bash dev-hub/tools/check-render-app-key-pinned.sh .
 
+      - name: Dev stack registry coherence guard (issue #10043)
+        # Le registre deploy/dev-stacks.json declarait la stack B `active` avec
+        # une derniere verification vieille de 41 jours, alors que le service
+        # Render etait suspendu (503). Aucun garde ne comparait le registre a
+        # une date : le watchdog alertait, mais la cause (un registre qui ment)
+        # restait invisible. Deterministe, aucun appel reseau.
+        run: bash dev-hub/tools/check-dev-stack-registry.sh
+
       - name: Migration basename collision guard (issue #1962)
         run: bash dev-hub/tools/check-migration-basename-collisions.sh
 
