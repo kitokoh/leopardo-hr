@@ -231,7 +231,7 @@ jobs:
             | join("\n")' /tmp/stacks-alert.json 2>/dev/null || echo "- (registre illisible)")"
           active_stack="$(jq -r '.active_stack // "?"' /tmp/stacks-alert.json 2>/dev/null || echo '?')"
 
-          body="$(printf '%s\n\n%s\n\n%s\n\n%s\n\n%s' \
+          body="$(printf '%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n%s' \
             "Le watchdog dev-keepalive.yml a detecte 3 echecs consecutifs de sante sur la stack dev active (${{ vars.DEV_API_BASE_URL }}) le $(date -u '+%Y-%m-%d %H:%M UTC')." \
             "Aucune bascule automatique n'a ete effectuee : aucune stack au statut \`ready\` dans \`deploy/dev-stacks.json\` (ou cooldown 24 h actif)." \
             "**Etat du registre** (\`active_stack\` = \`${active_stack}\`) :" \
