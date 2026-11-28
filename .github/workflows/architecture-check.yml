@@ -132,6 +132,14 @@ jobs:
         # epinglee (sync: false) dans tous les blueprints.
         run: bash dev-hub/tools/check-render-app-key-pinned.sh .
 
+      - name: Mobile Expo doctrine guard (issue #10038)
+        # La doctrine « app non-Flutter » n'existait que sous forme de prose dans
+        # deux README : rien ne l'appliquait. Une app Expo ajoutee par erreur a
+        # melos.yaml ou a une matrice Flutter cassait la CI mobile sans qu'aucun
+        # garde ne nomme la cause, et une app Expo pouvait reutiliser un
+        # applicationId Flutter sans que la garde d'identites (Flutter only) le voie.
+        run: bash dev-hub/tools/check-mobile-expo-doctrine.sh
+
       - name: Dev stack registry coherence guard (issue #10043)
         # Le registre deploy/dev-stacks.json declarait la stack B `active` avec
         # une derniere verification vieille de 41 jours, alors que le service
