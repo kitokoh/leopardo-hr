@@ -143,6 +143,58 @@
     <p class="muted small">Source : <code>statuts-tournage.json</code></p>
   </div>
 
+  
+  <div class="panel prompt-panel">
+    <h3>Prompt pour agent IA de production</h3>
+    <p class="prompt-lead">A coller tel quel dans un agent de production video. Le script est deja ecrit : l&#x27;agent produit, il n&#x27;improvise pas.</p>
+    <pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-28 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-28 - &quot;Hotellerie : la chambre, le bail, la marge (9:16 TikTok)&quot;
+- Format 9:16, duree cible 35 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Beat discret, ambiance lounge, aucun effet de urgence ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Hoteliers, gestionnaires de residences et de locations longue duree - TikTok, Reels, Shorts
+OBJECTIF : Decliner la verticale Hotellerie en format vertical natif : l&#x27;inventaire reel et les baux, sans demonstration produit longue. Renvoi vers le film 16:9 VID-08 pour la version complete.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Une chambre libre ne coute rien. Une chambre comptee deux fois coute la saison.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:05 | Une chambre libre ne coute rien. Une chambre comptee deux fois coute la saison. | Travelling court dans un couloir d&#x27;hotel, portes fermees, lumiere chaude. Camera a l&#x27;epaule. | Comptee deux fois. |
+| 0:05-0:12 | Reservations sur un cahier, inventaire sur un tableur, baux dans un tiroir. | Cut rapide : cahier de reservations, ecran de tableur, chemise de baux ouverte. | 3 sources. 1 inventaire. |
+| 0:12-0:20 | Leopardo pose les reservations sur l&#x27;inventaire reel : chambres, equipements, etats. | Capture verticale : inventaire par etablissement avec etat de chaque chambre. | Sur l&#x27;inventaire reel |
+| 0:20-0:28 | Et la location longue duree suit baux et loyers dans le meme outil. | Capture verticale : echeancier de loyers et fiche de bail. | Baux &amp; loyers |
+| 0:28-0:35 | Hotellerie : de la chambre a la marge. Le film complet est en bio. | Retour sur le couloir, logo Leopardo, CTA en bas de cadre. | Film complet en bio |
+
+CTA FINAL : Film complet (16:9) en bio - activer le pack HospitalityManager, sans frais de pack.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Format vertical natif : sous-titres brules obligatoires, texte dans les 60 % centraux (zone sure TikTok), aucun chiffre invente. Derive du film 16:9 VID-08 : reutiliser les rushes de couloir et de chambre, ne pas re-tourner. Aucune donnee client reelle ni nom de client a l&#x27;ecran.
+
+SORTIES ATTENDUES :
+- leopardo_vid28_{lang}_9x16_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid28_{lang}_9x16_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 35 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre>
+  </div>
+
+
   <div class="uc-nav"><a class="btn-back" href="../scripts/vid-27.html">← VID-27</a><a class="btn-back" href="../categories/formats-courts.html">Toute la categorie</a><a class="btn-back" href="../scripts/vid-29.html">VID-29 →</a></div>
 
 </main>

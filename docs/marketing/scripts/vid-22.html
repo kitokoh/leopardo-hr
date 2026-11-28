@@ -137,6 +137,57 @@
     <p class="muted small">Source : <code>statuts-tournage.json</code></p>
   </div>
 
+  
+  <div class="panel prompt-panel">
+    <h3>Prompt pour agent IA de production</h3>
+    <p class="prompt-lead">A coller tel quel dans un agent de production video. Le script est deja ecrit : l&#x27;agent produit, il n&#x27;improvise pas.</p>
+    <pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-22 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-22 - &quot;Temoignage client : avant / apres (9:16)&quot;
+- Format 9:16, duree cible 30 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Aucune musique sur la voix ; nappe tres basse en fin ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Social, page temoignages, argumentaire commercial
+OBJECTIF : Structure de temoignage reutilisable : avant, declencheur, apres, conseil. A tourner avec un client reel.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Avant, je passais le vendredi a recoller des tableurs.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:06 | Avant, je passais le vendredi a recoller des tableurs. | Interview, plan poitrine, lumiere naturelle. | Avant |
+| 0:06-0:14 | On a commence par le pointage et la paie, parce que c&#x27;est la que les erreurs coutaient le plus. | B-roll : kiosque, bulletin. | Le declencheur |
+| 0:14-0:24 | Aujourd&#x27;hui, le vendredi sert a autre chose. | Interview, sourire, puis B-roll equipe. | Apres |
+| 0:24-0:30 | Mon conseil : commencez par un seul module, pas par tout. | CTA. | Un module a la fois |
+
+CTA FINAL : Voir l&#x27;etude de cas complete sur le site produit.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Gabarit a remplir avec un client reel et son accord ecrit. Ne jamais fabriquer un temoignage : si aucun client n&#x27;est disponible, ne pas produire ce film.
+
+SORTIES ATTENDUES :
+- leopardo_vid22_{lang}_9x16_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid22_{lang}_9x16_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 30 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre>
+  </div>
+
+
   <div class="uc-nav"><a class="btn-back" href="../scripts/vid-21.html">← VID-21</a><a class="btn-back" href="../categories/formats-courts.html">Toute la categorie</a><a class="btn-back" href="../scripts/vid-23.html">VID-23 →</a></div>
 
 </main>

@@ -137,6 +137,57 @@
     <p class="muted small">المصدر : <code>statuts-tournage.json</code></p>
   </div>
 
+  
+  <div class="panel prompt-panel">
+    <h3>موجّه لوكيل إنتاج بالذكاء الاصطناعي</h3>
+    <p class="prompt-lead">الصقه كما هو في وكيل إنتاج الفيديو. السيناريو مكتوب مسبقاً: الوكيل ينتج ولا يرتجل.</p>
+    <pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-21 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-21 - &quot;3 signes que votre entreprise a depasse Excel (hook 9:16)&quot;
+- Format 9:16, duree cible 20 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Beat court, 130 BPM, coupe nette ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : TikTok, Reels, Shorts, LinkedIn video
+OBJECTIF : Hook de decouverte : trois signaux reconnaissables, un seul CTA. Aucune demonstration produit.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Trois signes que votre entreprise a depasse Excel sans le savoir.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:04 | Trois signes que votre entreprise a depasse Excel sans le savoir. | Visage face camera, plan serre. | 3 signes |
+| 0:04-0:09 | Un : votre paie depend d&#x27;une seule personne. | Cut sur un tableur protege par mot de passe. | 1. Une seule personne |
+| 0:09-0:14 | Deux : vos pointages arrivent en photo sur WhatsApp. | Cut sur un fil de photos de badgeuse. | 2. Des photos |
+| 0:14-0:20 | Trois : vous ne savez pas combien coute une heure de travail. Leopardo, si. | Cut sur le logo et le CTA. | 3. Le cout reel |
+
+CTA FINAL : Lien en bio : essai 14 jours, sans carte.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Format vertical : sous-titres obligatoires, texte dans les 60 % centraux de l&#x27;ecran. Aucun chiffre invente.
+
+SORTIES ATTENDUES :
+- leopardo_vid21_{lang}_9x16_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid21_{lang}_9x16_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 20 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre>
+  </div>
+
+
   <div class="uc-nav"><a class="btn-back" href="../../ar/scripts/vid-20.html">← VID-20</a><a class="btn-back" href="../../ar/categories/formats-courts.html">كل الفئة</a><a class="btn-back" href="../../ar/scripts/vid-22.html">VID-22 →</a></div>
 
 </main>

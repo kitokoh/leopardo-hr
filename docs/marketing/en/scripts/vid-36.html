@@ -130,6 +130,58 @@
     <p class="muted small">Source : <code>statuts-tournage.json</code></p>
   </div>
 
+  
+  <div class="panel prompt-panel">
+    <h3>Prompt for an AI production agent</h3>
+    <p class="prompt-lead">Paste as-is into a video production agent. The script is already written: the agent produces, it does not improvise.</p>
+    <pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-36 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-36 - &quot;Retail : la caisse, le stock, la boutique en ligne&quot;
+- Format 16:9, duree cible 60 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Percussions seches, tempo de comptoir, 108 BPM. ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Commercants, boutiques, superettes, e-commercants, gerants de point de vente
+OBJECTIF : Montrer le module Retail (BC-17) : caisse POS avec session et cloture, stock tenu par mouvements traces, commandes en ligne et marketplace Leopardo Marche, rapports de vente.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;La caisse dit une chose, le stock une autre. A la fin du mois, personne ne sait qui a raison.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:08 | La caisse dit une chose, le stock une autre. A la fin du mois, personne ne sait qui a raison. | Comptoir de boutique : un ticket imprime d&#x27;un cote, un cahier de stock de l&#x27;autre, deux chiffres qui ne se parlent pas. | Deux chiffres. Aucun accord. |
+| 0:08-0:22 | La caisse ouvre une session, encaisse, imprime le ticket, et ferme sur un ecart calcule. Pas un ecart raconte. | Capture POS : ouverture de session, encaissement multi-moyens (especes, carte, mobile), ticket, ecran de cloture avec attendu / compte / ecart. | Session, encaissement, cloture |
+| 0:22-0:36 | Chaque vente decremente le stock. Chaque entree, chaque perte, chaque transfert laisse un mouvement trace : le stock ne peut pas devenir negatif. | Capture stock : niveau par emplacement, journal des mouvements (achat, vente, ajustement, retour, transfert, perte), valorisation au cout moyen pondere. | Stock tenu par mouvements |
+| 0:36-0:50 | La boutique en ligne vend le meme catalogue, et la marketplace Leopardo Marche n&#x27;expose que les vendeurs qui l&#x27;ont activee. | Capture commande en ligne (statut de preparation : en attente, confirmee, prete, expediee, livree), puis fiche produit publique sur la marketplace. | Boutique en ligne &amp; marketplace |
+| 0:50-1:00 | Ventes du jour, produits les plus vendus, ecart de caisse, valeur du stock : les rapports se calculent cote serveur. Retail est offert : vous payez la plateforme, pas le secteur. | Capture rapports (ventes, top produits, clotures de caisse, valorisation du stock), puis CTA et logo. | Rapports - module offert |
+
+CTA FINAL : Activer le pack Retail depuis le site produit, sans frais de pack.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Le module Retail est un moteur de commerce generique : caisse, stock, boutique en ligne et marketplace. Ne jamais afficher de chiffre de vente, de marge, de taux de demarque ni de nombre de clients : le produit ne les invente pas. La marketplace n&#x27;expose aucune quantite de stock, seulement une disponibilite (disponible / indisponible) : ne pas montrer de quantite sur la fiche publique.
+
+SORTIES ATTENDUES :
+- leopardo_vid36_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid36_{lang}_16x9_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 60 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre>
+  </div>
+
+
   <div class="uc-nav"><a class="btn-back" href="../../en/scripts/vid-35.html">← VID-35</a><a class="btn-back" href="../../en/categories/verticales.html">Whole category</a><a class="btn-back" href="../../en/scripts/vid-37.html">VID-37 →</a></div>
 
 </main>

@@ -143,6 +143,58 @@
     <p class="muted small">Source : <code>statuts-tournage.json</code></p>
   </div>
 
+  
+  <div class="panel prompt-panel">
+    <h3>Prompt for an AI production agent</h3>
+    <p class="prompt-lead">Paste as-is into a video production agent. The script is already written: the agent produces, it does not improvise.</p>
+    <pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-25 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-25 - &quot;International Trade OS : du RFQ au cout rendu&quot;
+- Format 16:9, duree cible 60 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Percussions seches et nappe synthetique, 105 BPM, tension commerciale ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Importateurs, exportateurs, grossistes B2B, transitaires
+OBJECTIF : Montrer le pack International Trade OS (BC-36) : sourcing et contreparties, RFQ multi-fournisseurs, offres, commandes, transport, cout rendu et aide documentaire.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Votre marge ne se perd pas a la vente. Elle se perd entre le devis et le conteneur.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:08 | Votre marge ne se perd pas au moment de la vente. Elle se perd entre le devis et le conteneur. | Bureau d&#x27;importateur : devis imprime, ecran de suivi de conteneur, facture. | Le devis dit oui. Le conteneur dit non. |
+| 0:08-0:22 | Trade OS tient vos contreparties et votre catalogue produits, cote achat comme cote vente. Une meme entreprise peut importer et exporter : aucun enfermement dans un role. | Capture contreparties, puis catalogue produits avec directions achat et vente. | Achat et vente, sans role fige |
+| 0:22-0:36 | Vous lancez une demande de prix a plusieurs fournisseurs, vous comparez les offres, puis vous transformez la meilleure en commande. | Capture RFQ multi-fournisseurs, tableau comparatif des offres, bouton de conversion en commande. | RFQ multi-fournisseurs |
+| 0:36-0:50 | Transport, documents et couts se rattachent a la commande. Le cout rendu se calcule sur des donnees reelles, pas sur une estimation de couloir. | Capture transport et documents, puis ecran cout rendu. | Cout rendu, pas estimation |
+| 0:50-1:00 | L&#x27;aide documentaire prepare vos pieces. Elle ne remplace ni le transitaire ni la douane : elle vous fait arriver prepare. | Capture checklist documentaire, puis CTA et logo. | Prepare, pas dedouane |
+
+CTA FINAL : Activer le pack International Trade OS depuis le site produit, sans frais de pack.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Chiffres verifies dans le depot au 2026-11-26 : 54 routes (api/routes/modules/trade.php), 29 chemins OpenAPI /trade/, 19 tables tenant (14 migrations). Garde anti-surpromesse (public-promises-guard.yml) : dire « aide a la preparation documentaire » et « estimation indicative », jamais « dedouanement automatique », « taux officiels » ni « fournisseurs verifies ». L&#x27;IA ne fixe ni taux ni prix.
+
+SORTIES ATTENDUES :
+- leopardo_vid25_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid25_{lang}_16x9_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 60 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre>
+  </div>
+
+
   <div class="uc-nav"><a class="btn-back" href="../../en/scripts/vid-24.html">← VID-24</a><a class="btn-back" href="../../en/categories/verticales.html">Whole category</a><a class="btn-back" href="../../en/scripts/vid-26.html">VID-26 →</a></div>
 
 </main>

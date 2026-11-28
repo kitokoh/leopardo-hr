@@ -1,0 +1,2555 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8">
+<title>Scripts video - suite metier Leopardo</title>
+<style>
+@page { size: A4; margin: 18mm 15mm 20mm 15mm;
+        @bottom-center { content: counter(page) " / " counter(pages);
+                         font: 8pt "DejaVu Sans"; color: #64748b; } }
+body { font-family: "DejaVu Sans", sans-serif; font-size: 9.2pt; line-height: 1.45;
+       color: #0f172a; }
+h1 { font-size: 20pt; color: #0b1220; border-bottom: 3px solid #2563eb;
+     padding-bottom: 6pt; margin: 0 0 14pt; }
+h2 { font-size: 14pt; color: #0b1220; margin: 20pt 0 8pt;
+     border-bottom: 1px solid #cbd5e1; padding-bottom: 3pt;
+     break-after: avoid; }
+h3 { font-size: 11.5pt; color: #1e3a8a; margin: 16pt 0 6pt; break-after: avoid; }
+h4 { font-size: 10pt; color: #334155; margin: 12pt 0 4pt; break-after: avoid; }
+p, li { orphans: 3; widows: 3; }
+table { width: 100%; border-collapse: collapse; margin: 8pt 0 12pt;
+        font-size: 8.2pt; break-inside: auto; }
+thead { display: table-header-group; }
+tr { break-inside: avoid; }
+th { background: #0b1220; color: #fff; text-align: left; padding: 4pt 5pt;
+     font-weight: 600; }
+td { border-bottom: 1px solid #e2e8f0; padding: 3.5pt 5pt; vertical-align: top; }
+tbody tr:nth-child(even) td { background: #f8fafc; }
+pre { background: #0b1220; color: #e2e8f0; padding: 8pt 10pt; border-radius: 4pt;
+      font-family: "DejaVu Sans Mono", monospace; font-size: 7.4pt; line-height: 1.35;
+      white-space: pre-wrap; word-wrap: break-word;
+      /* Un bloc de prompt fait 30 a 40 lignes : l'interdire de coupure repoussait
+         le bloc entier a la page suivante et laissait 35 % de blanc. On autorise
+         la coupure, mais jamais sur une seule ligne isolee en bas de page. */
+      break-inside: auto; orphans: 4; widows: 4;
+      border-left: 3px solid #2563eb; }
+code { font-family: "DejaVu Sans Mono", monospace; font-size: 8pt;
+       background: #f1f5f9; padding: 0.5pt 2pt; border-radius: 2pt; }
+pre code { background: none; padding: 0; font-size: inherit; color: inherit; }
+blockquote { border-left: 3px solid #94a3b8; margin: 8pt 0; padding: 4pt 10pt;
+             color: #334155; background: #f8fafc; break-inside: avoid; }
+hr { border: none; border-top: 1px solid #cbd5e1; margin: 14pt 0; }
+.cover { text-align: center; padding-top: 60mm; break-after: page; }
+.cover .kicker { font-size: 10pt; letter-spacing: 2pt; color: #2563eb;
+                 text-transform: uppercase; }
+.cover h1 { border: none; font-size: 26pt; margin: 10pt 0; }
+.cover .sub { font-size: 11pt; color: #475569; }
+.cover .meta { margin-top: 30mm; font-size: 9pt; color: #64748b; }
+</style></head>
+<body>
+<div class="cover">
+  <div class="kicker">Leopardo &middot; production vid&eacute;o</div>
+  <h1>Scripts vid&eacute;o &mdash; suite m&eacute;tier</h1>
+  <div class="sub">Programme complet : marque, d&eacute;monstration, vente,<br>
+  verticales, confiance, activation, partenaires</div>
+  <div class="meta">Document de production &middot; version du 2026-11-27<br>
+  Source : <code>SCRIPTS_VIDEOS_SUITE.md</code></div>
+</div>
+<h1>SCRIPTS VIDÉO — LEOPARDO, SUITE MÉTIER</h1>
+<p><strong>Programme vidéo complet : présenter, vendre et promouvoir la solution sur tous les projets.</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Statut</strong></td>
+<td>Spécification de production (v1)</td>
+</tr>
+<tr>
+<td><strong>Portée</strong></td>
+<td>Toutes les verticales et briques du monorepo <code>kitokoh/leopardo-hr</code></td>
+</tr>
+<tr>
+<td><strong>Complément</strong></td>
+<td><code>SCRIPTS_VIDEOS_COURTES.md</code> (8 formats sociaux 5 s) — conservé tel quel, ce document le prolonge</td>
+</tr>
+<tr>
+<td><strong>Référence de positionnement</strong></td>
+<td><code>docs/REFERENTIEL_PRODUIT/POSITIONNEMENT_SUITE_METIER.md</code> (décision P03)</td>
+</tr>
+<tr>
+<td><strong>Langues</strong></td>
+<td>FR (master), EN, AR, TR — voir §9</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ <strong>Règle de langage non négociable.</strong> Leopardo est une <strong>suite métier</strong> (<em>business suite</em>), jamais un « logiciel RH », jamais un « SaaS RH ». La brique RH &amp; paie reste nommable comme <strong>contenu</strong> d'une phrase, jamais comme <strong>catégorie</strong>. Toute voix off de ce programme respecte les phrases canoniques du référentiel P03.</p>
+</blockquote>
+<hr />
+<h2>1. Le problème que ce programme résout</h2>
+<p>Le dépôt porte <strong>42 modules métier DDD</strong>, <strong>11 applications mobiles Flutter</strong> plus le paquet partagé <code>leopardo_core</code>, un poste desktop, un kiosque, un pont Edge et des surfaces publiques. <em>(Mesure du 2026-11-27 : <code>ls -d api/app/Modules/*/</code>, <code>ls -d front/mobile_apps/leopardo_*/</code>.)</em> Une seule vidéo « produit » ne peut pas vendre cela : elle produit un catalogue illisible et ne convainc personne.</p>
+<p>Le programme est donc <strong>stratifié par intention d'achat</strong>, pas par fonctionnalité :</p>
+<table>
+<thead>
+<tr>
+<th>Étage</th>
+<th>Intention du spectateur</th>
+<th>Ce que la vidéo doit obtenir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Marque</strong></td>
+<td>« Qui êtes-vous ? »</td>
+<td>Mémorisation + crédibilité</td>
+</tr>
+<tr>
+<td><strong>B. Démonstration</strong></td>
+<td>« À quoi ça ressemble ? »</td>
+<td>Envie d'essayer</td>
+</tr>
+<tr>
+<td><strong>C. Vente</strong></td>
+<td>« Est-ce pour moi ? Combien ? »</td>
+<td>Prise de rendez-vous / essai</td>
+</tr>
+<tr>
+<td><strong>D. Verticales</strong></td>
+<td>« Vous connaissez mon métier ? »</td>
+<td>Reconnaissance immédiate</td>
+</tr>
+<tr>
+<td><strong>E. Confiance</strong></td>
+<td>« Est-ce sûr ? Et si je n'ai pas de réseau ? »</td>
+<td>Lever l'objection bloquante</td>
+</tr>
+<tr>
+<td><strong>F. Social</strong></td>
+<td>« Montrez-moi en 5 s »</td>
+<td>Portée et partage</td>
+</tr>
+<tr>
+<td><strong>G. Activation</strong></td>
+<td>« Je viens de m'inscrire, et maintenant ? »</td>
+<td>Time-to-value</td>
+</tr>
+<tr>
+<td><strong>H. Partenaires</strong></td>
+<td>« Puis-je le revendre / l'intégrer ? »</td>
+<td>Candidature partenaire</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Règle de production :</strong> une vidéo = <strong>une seule</strong> promesse. Si le script a besoin de deux phrases pour dire ce qu'elle vend, elle est mal découpée.</p>
+<hr />
+<h2>2. Spécifications techniques communes</h2>
+<table>
+<thead>
+<tr>
+<th>Paramètre</th>
+<th>Valeur</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Master</strong></td>
+<td>3840×2160 (UHD), 25 fps, H.264 High, AAC 320 kbps</td>
+</tr>
+<tr>
+<td><strong>Déclinaisons</strong></td>
+<td>1920×1080 (web), 1080×1920 (9:16 social), 1080×1080 (1:1 feed)</td>
+</tr>
+<tr>
+<td><strong>Sous-titres</strong></td>
+<td><code>.srt</code> + <code>.vtt</code> brûlés en version sociale, fichiers séparés en version web</td>
+</tr>
+<tr>
+<td><strong>Typographie</strong></td>
+<td>Inter (titres, Bold/SemiBold), Inter (corps, Regular) — jamais plus de 2 graisses par plan</td>
+</tr>
+<tr>
+<td><strong>Palette</strong></td>
+<td>Fond nuit <code>#0B1220</code>, accent principal <code>#2563EB</code>, validation <code>#16A34A</code>, alerte <code>#DC2626</code>, neutre <code>#94A3B8</code></td>
+</tr>
+<tr>
+<td><strong>Voix off</strong></td>
+<td>Voix féminine ou masculine, débit 150–165 mots/min, ton posé, jamais publicitaire criard</td>
+</tr>
+<tr>
+<td><strong>Musique</strong></td>
+<td>Lit d'ambiance électronique doux, −18 dB sous la voix ; montée à −12 dB sur le CTA</td>
+</tr>
+<tr>
+<td><strong>Captation produit</strong></td>
+<td><strong>Écran réel de l'application</strong>, jamais une maquette inventée. Si une fonction n'est pas livrée, elle ne figure pas au plan.</td>
+</tr>
+<tr>
+<td><strong>Données à l'écran</strong></td>
+<td>Données de démonstration explicitement fictives (noms d'entreprises inventés, jamais un client réel sans autorisation écrite)</td>
+</tr>
+<tr>
+<td><strong>CTA final</strong></td>
+<td>Logo Leopardo + <code>leopardo-rh.com</code> + « Essai gratuit 14 jours » + QR code. Le domaine est un identifiant technique figé (décision P03 §4) : il s'affiche comme URL, jamais comme nom de produit.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Interdits de production</strong> (garde anti-sur-promesse) :
+- aucune mention de certification, de conformité légale ou de label non obtenu ;
+- aucun chiffre de performance non mesuré (voir §8, règle des chiffres) ;
+- aucun logo client sans autorisation écrite ;
+- aucune promesse de « remplacement de votre comptable / DRH ».</p>
+<hr />
+<h2>3. A — Films de marque</h2>
+<h3>A1. « Le terrain ne s'arrête jamais » — film manifeste, 90 s</h3>
+<p><strong>Objectif :</strong> poser la catégorie (suite métier) et l'ancrage terrain.
+<strong>Cible :</strong> dirigeants de PME multi-sites, distributeurs, intégrateurs.
+<strong>Diffusion :</strong> page d'accueil, salons, LinkedIn, ouverture de webinaire.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Visuel</th>
+<th>Voix off</th>
+<th>Texte à l'écran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–6 s</td>
+<td>Boutique qui ouvre, rideau de fer, lumière rasante</td>
+<td>« 7 h 40. La ville se réveille. »</td>
+<td>—</td>
+</tr>
+<tr>
+<td>6–14 s</td>
+<td>Chantier, entrepôt, salle de restaurant, officine — montage rapide au même rythme</td>
+<td>« Une entreprise de terrain, ce n'est pas un organigramme. C'est du monde, des horaires, du stock, des camions. »</td>
+<td>—</td>
+</tr>
+<tr>
+<td>14–24 s</td>
+<td>Écran de téléphone : pointage, puis tableau de bord qui s'allume</td>
+<td>« Et pourtant, on demande encore à tout ça de tenir dans un tableur. »</td>
+<td><em>Un tableur ne tient pas une entreprise.</em></td>
+</tr>
+<tr>
+<td>24–38 s</td>
+<td>Enchaînement de 6 interfaces réelles : pointage, planning, caisse, stock, comptabilité, fiche publique</td>
+<td>« Leopardo réunit ce que votre entreprise fait vraiment : RH et paie, pointage, absences, comptabilité, ventes, opérations. »</td>
+<td><em>RH &amp; paie · Pointage · Compta · Ventes · Opérations</em></td>
+</tr>
+<tr>
+<td>38–52 s</td>
+<td>Plan large : gérant dans son bureau, employé sur le terrain, même écran</td>
+<td>« Sur le web, sur mobile, sur une borne. Et quand le réseau tombe, le travail continue. »</td>
+<td><em>Web · Mobile · Borne · Hors-ligne</em></td>
+</tr>
+<tr>
+<td>52–68 s</td>
+<td>Succession de métiers : restaurant, pharmacie, école, station, agence</td>
+<td>« Parce qu'un restaurant, une pharmacie et une école ne se gèrent pas avec le même outil. »</td>
+<td><em>Une suite. Des métiers.</em></td>
+</tr>
+<tr>
+<td>68–82 s</td>
+<td>Retour au plan d'ouverture, jour levé</td>
+<td>« Leopardo. La suite métier des entreprises de terrain. »</td>
+<td><strong>Leopardo</strong> — <em>La suite métier des entreprises de terrain</em></td>
+</tr>
+<tr>
+<td>82–90 s</td>
+<td>Logo + URL + QR</td>
+<td>« Essai gratuit, 14 jours, sans carte. »</td>
+<td><code>leopardo-rh.com</code> · Essai 14 j</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> le film ne montre <strong>aucun</strong> chiffre. Il vend une catégorie et une sensation de justesse, pas une performance.</p>
+<hr />
+<h4>Prompt pour agent IA de production — A1</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video A1 « Le terrain ne s'arrete jamais » (film manifeste 90 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Aucun chiffre a l'ecran. Le film vend une categorie et une sensation de justesse, pas une performance.
+
+SORTIES
+- leopardo_a1_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>A2. « Une suite, pas un patchwork » — spot 30 s</h3>
+<p><strong>Objectif :</strong> version courte de A1 pour pré-roll et LinkedIn.
+<strong>Structure :</strong> 0–8 s problème (tableur + 4 outils déconnectés) · 8–20 s les 6 interfaces s'assemblent en un seul écran · 20–30 s signature + CTA.</p>
+<p><strong>Voix off (30 s, 78 mots) :</strong></p>
+<blockquote>
+<p>« Quatre outils. Trois tableurs. Deux boîtes mail. Et toujours la même question : où est la vraie information ? Leopardo réunit RH et paie, pointage, comptabilité, ventes et opérations dans une seule suite. Sur le web, sur mobile, sur borne. Leopardo — la suite métier des entreprises de terrain. »</p>
+</blockquote>
+<hr />
+<h4>Prompt pour agent IA de production — A2</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video A2 « Une suite, pas un patchwork » (spot 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Montage dans les rushes de A1 uniquement, aucune prise nouvelle. 78 mots de voix off, pas un de plus.
+
+SORTIES
+- leopardo_a2_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h2>4. B — Démonstrations produit</h2>
+<h3>B1. « Une journée avec Leopardo » — 2 min 30</h3>
+<p><strong>Objectif :</strong> montrer la continuité entre les rôles sur une même journée. C'est la vidéo qui <strong>vend le mieux</strong> parce qu'elle ne parle pas de fonctionnalités mais d'enchaînements.
+<strong>Cible :</strong> dirigeant, DRH, gérant multi-sites.
+<strong>Décor :</strong> une entreprise fictive, <strong>TechCorp DZ</strong>, 3 établissements, 120 collaborateurs.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Rôle</th>
+<th>Visuel (écran réel)</th>
+<th>Voix off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–10 s</td>
+<td>—</td>
+<td>Horloge 06:55, ville</td>
+<td>« Une journée ordinaire. On suit une entreprise, pas un logiciel. »</td>
+</tr>
+<tr>
+<td>10–28 s</td>
+<td>Employé</td>
+<td>App mobile : pointage géolocalisé, confirmation</td>
+<td>« 7 h 02. Karim pointe depuis le site. Sa position est vérifiée, son heure est enregistrée. »</td>
+</tr>
+<tr>
+<td>28–46 s</td>
+<td>Manager</td>
+<td>Web : planning de la semaine, un conflit signalé en rouge</td>
+<td>« 7 h 30. Sa manager voit le planning du jour. Un conflit d'affectation est déjà signalé. »</td>
+</tr>
+<tr>
+<td>46–64 s</td>
+<td>Employé</td>
+<td>App : demande d'absence, envoi</td>
+<td>« 9 h 15. Karim demande deux jours. La demande part. »</td>
+</tr>
+<tr>
+<td>64–84 s</td>
+<td>Manager</td>
+<td>Web : notification, validation en un geste, mise à jour du planning</td>
+<td>« 9 h 17. Elle valide. Le planning se met à jour, le solde de congés aussi. »</td>
+</tr>
+<tr>
+<td>84–104 s</td>
+<td>Gérant</td>
+<td>POS : vente, ticket, stock décrémenté</td>
+<td>« 12 h 40. Au comptoir, une vente. Le stock bouge, le ticket est émis. »</td>
+</tr>
+<tr>
+<td>104–124 s</td>
+<td>Comptable</td>
+<td>Web : écritures du jour, balance</td>
+<td>« 17 h. La comptable retrouve les écritures du jour. Rien à ressaisir. »</td>
+</tr>
+<tr>
+<td>124–142 s</td>
+<td>Gérant</td>
+<td>Tableau de bord consolidé, 3 établissements</td>
+<td>« 18 h 30. Le gérant ouvre un seul écran. Trois établissements, une seule vérité. »</td>
+</tr>
+<tr>
+<td>142–150 s</td>
+<td>—</td>
+<td>Logo + CTA</td>
+<td>« Leopardo. La suite métier des entreprises de terrain. »</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Point de vente clé à ne pas rater :</strong> le plan 64–84 s. C'est le moment où le spectateur comprend que <strong>la donnée ne se ressaisit jamais</strong>. Le montage doit le rendre évident (même ligne, même identifiant, qui se déplace d'un écran à l'autre).</p>
+<blockquote>
+<p>📄 <strong>Storyboard détaillé :</strong> <a href="STORYBOARD_B1_JOURNEE_LEOPARDO.md"><code>STORYBOARD_B1_JOURNEE_LEOPARDO.md</code></a> — découpage plan par plan (24 plans), voix off complète avec timecodes, shot list de captation, notes de montage, déclinaisons et checklist de diffusion.</p>
+</blockquote>
+<hr />
+<h4>Prompt pour agent IA de production — B1</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video B1 « Une journee avec Leopardo » (demonstration 2 min 30, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Le plan 64-84 s est le point de vente : la meme ligne, le meme identifiant, qui se deplace d'un ecran a l'autre sans ressaisie. Le montage doit le rendre evident.
+
+SORTIES
+- leopardo_b1_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>B2. « Le tour complet » — 4 min, pour webinaire et page produit</h3>
+<p><strong>Objectif :</strong> vidéo de référence, chapitrée, à mettre en page produit et en ouverture de démo commerciale.
+<strong>Structure en 8 chapitres</strong> (chacun avec son timecode affiché, pour permettre le partage d'un chapitre) :</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Chapitre</th>
+<th>Durée</th>
+<th>Contenu à l'écran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Socle &amp; rôles</strong></td>
+<td>0:00–0:30</td>
+<td>Connexion, sélection d'établissement, permissions par rôle</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>RH &amp; paie</strong></td>
+<td>0:30–1:05</td>
+<td>Dossier employé, contrat, bulletin, avances sur salaire</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Temps &amp; présence</strong></td>
+<td>1:05–1:35</td>
+<td>Pointage mobile, kiosque, planning, absences, heures sup</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Comptabilité</strong></td>
+<td>1:35–2:05</td>
+<td>Journaux, écritures, balance, clôture, export cabinet</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Ventes &amp; opérations</strong></td>
+<td>2:05–2:45</td>
+<td>POS, stock, catalogue, tournées, réservations</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Surfaces publiques</strong></td>
+<td>2:45–3:10</td>
+<td>Fiche commerce, page carrières, boutique, SEO multilingue</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Hors-ligne &amp; Edge</strong></td>
+<td>3:10–3:35</td>
+<td>Coupure réseau, file locale, resynchronisation sans doublon</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Pilotage</strong></td>
+<td>3:35–4:00</td>
+<td>Tableau de bord consolidé, exports, API</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Voix off d'ouverture (chapitre 1) :</strong></p>
+<blockquote>
+<p>« Voici Leopardo, en quatre minutes. Pas fonctionnalité par fonctionnalité — par ce que vous faites, dans l'ordre où vous le faites. »</p>
+</blockquote>
+<p><strong>Voix off de clôture :</strong></p>
+<blockquote>
+<p>« Huit chapitres, une seule suite. Vous pouvez commencer par un module et ajouter les autres quand votre entreprise grandit. »</p>
+</blockquote>
+<hr />
+<h4>Prompt pour agent IA de production — B2</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video B2 « Le tour complet » (video de reference 4 min, 16:9, chapitree) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Huit chapitres avec timecodes affiches, chacun partageable. Chaque chapitre = une capture reelle, jamais une maquette.
+
+SORTIES
+- leopardo_b2_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>B3. « Un métier, un écran » — 60 s, multi-vertical</h3>
+<p><strong>Objectif :</strong> montrer l'étendue sans catalogue. Un plan par verticale, 3 s chacun, sur un rythme unique.
+<strong>Structure :</strong> 12 plans de 3 s (restauration, retail, hôtellerie, pharmacie, santé, école, station, VTC, livraison, voyage, agriculture, bibliothèque) + 12 s de signature.
+<strong>Voix off :</strong> une seule phrase, dite sur le premier plan puis laissée respirer :</p>
+<blockquote>
+<p>« Douze métiers. Une seule suite. »</p>
+</blockquote>
+<hr />
+<h4>Prompt pour agent IA de production — B3</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video B3 « Un metier, un ecran » (60 s, 16:9, 12 plans de 3 s) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Une seule phrase de voix off sur le premier plan, puis respiration. Rythme unique, aucune variation de tempo.
+
+SORTIES
+- leopardo_b3_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h2>5. C — Vidéos de vente</h2>
+<h3>C1. « Le coût du désordre » — 60 s, pour dirigeant</h3>
+<p><strong>Objectif :</strong> créer l'urgence économique sans inventer de chiffres.
+<strong>Cible :</strong> dirigeant de PME 20–300 salariés, multi-sites.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Visuel</th>
+<th>Voix off</th>
+<th>Texte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–8 s</td>
+<td>Bureau, 4 onglets ouverts, téléphone qui sonne</td>
+<td>« Combien de fois par semaine ressaisissez-vous la même information ? »</td>
+<td>—</td>
+</tr>
+<tr>
+<td>8–20 s</td>
+<td>Split : tableur RH / caisse / compta / messagerie</td>
+<td>« Le pointage dans un fichier. Les ventes dans la caisse. La paie dans un autre outil. Et personne ne sait quel chiffre est le bon. »</td>
+<td><em>4 sources. 0 vérité.</em></td>
+</tr>
+<tr>
+<td>20–36 s</td>
+<td>Un seul écran : la même donnée circule</td>
+<td>« Leopardo fait circuler la donnée une seule fois. Le pointage alimente la paie. La vente alimente le stock et la comptabilité. »</td>
+<td><em>Saisie unique</em></td>
+</tr>
+<tr>
+<td>36–48 s</td>
+<td>Gérant qui ferme son ordinateur à 18 h</td>
+<td>« Vous ne rachetez pas un logiciel. Vous arrêtez de payer en heures perdues. »</td>
+<td>—</td>
+</tr>
+<tr>
+<td>48–60 s</td>
+<td>Logo + CTA</td>
+<td>« Essai gratuit 14 jours. Sans carte, sans engagement. »</td>
+<td><code>leopardo-rh.com</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Règle des chiffres (§8) :</strong> aucun pourcentage, aucun « −30 % de temps ». Si un chiffre doit apparaître, il doit venir d'une mesure réelle documentée et datée, avec sa source affichée à l'écran.</p>
+</blockquote>
+<hr />
+<h4>Prompt pour agent IA de production — C1</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video C1 « Le cout du desordre » (60 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Aucun pourcentage, aucun gain de temps chiffre. Si un chiffre doit apparaitre, il vient d'une mesure datee et sourcee a l'ecran.
+
+SORTIES
+- leopardo_c1_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>C2. « Pour votre métier » — 45 s × 4 personas</h3>
+<p>Quatre variantes du <strong>même squelette</strong>, seuls les plans produit et deux phrases changent. C'est le format le plus rentable : un tournage, quatre vidéos.</p>
+<p><strong>Squelette commun :</strong></p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–6 s</td>
+<td>Accroche métier</td>
+<td>Un plan du lieu de travail réel du persona</td>
+</tr>
+<tr>
+<td>6–16 s</td>
+<td>Douleur spécifique</td>
+<td>2 phrases, une seule douleur</td>
+</tr>
+<tr>
+<td>16–34 s</td>
+<td>Preuve produit</td>
+<td>3 plans d'écran réels du module concerné</td>
+</tr>
+<tr>
+<td>34–40 s</td>
+<td>Bénéfice</td>
+<td>1 phrase, formulée du point de vue du persona</td>
+</tr>
+<tr>
+<td>40–45 s</td>
+<td>CTA</td>
+<td>Logo + essai</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variante 1 — Dirigeant multi-sites</strong></p>
+<blockquote>
+<p>Douleur : « Trois établissements, trois façons de compter. »
+Preuve : tableau de bord consolidé, comparaison d'établissements, export.
+Bénéfice : « Un seul écran pour savoir où vous en êtes, ce soir. »</p>
+</blockquote>
+<p><strong>Variante 2 — DRH / Responsable RH</strong></p>
+<blockquote>
+<p>Douleur : « La paie se prépare encore dans un tableur. »
+Preuve : dossier employé, cycle de paie, absences, documents à échéance.
+Bénéfice : « Le mois se clôture sans course aux justificatifs. »</p>
+</blockquote>
+<p><strong>Variante 3 — Gérant de commerce / restaurant</strong></p>
+<blockquote>
+<p>Douleur : « La caisse dit une chose, le stock une autre. »
+Preuve : POS, plan de salle, écran cuisine, stock, ticket.
+Bénéfice : « Vous savez ce que vous avez vendu, et ce qu'il vous reste. »</p>
+</blockquote>
+<p><strong>Variante 4 — Cabinet comptable</strong></p>
+<blockquote>
+<p>Douleur : « Chaque client a son format d'export. »
+Preuve : portefeuille de dossiers, écritures, clôture, export normalisé.
+Bénéfice : « Vos dossiers arrivent prêts, dans le même format. »</p>
+</blockquote>
+<hr />
+<h4>Prompt pour agent IA de production — C2</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video C2 « Pour votre metier » (45 s x 4 variantes, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Un seul tournage, quatre montages : seuls les plans produit et deux phrases changent. Le squelette temporel est identique au plan pres.
+
+SORTIES
+- leopardo_c2_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>C3. « Objections » — 6 × 30 s, format interview face caméra</h3>
+<p><strong>Objectif :</strong> traiter les six objections qui bloquent réellement la vente. Format volontairement <strong>non publicitaire</strong> : une personne réelle répond, sans musique, sans motion design. La sobriété est l'argument.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Objection</th>
+<th>Réponse (script, 30 s)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>« C'est trop compliqué pour mon équipe. »</td>
+<td>« Un employé n'utilise qu'un écran : pointer, demander une absence, voir son bulletin. Trois gestes. Le reste, c'est pour vous. »</td>
+</tr>
+<tr>
+<td>2</td>
+<td>« On n'a pas de réseau sur le terrain. »</td>
+<td>« C'est prévu. Le travail continue hors-ligne et se resynchronise au retour du réseau, sans doublon. »</td>
+</tr>
+<tr>
+<td>3</td>
+<td>« On a déjà un comptable / un outil de paie. »</td>
+<td>« On ne remplace personne. On arrête la ressaisie : ce que votre équipe saisit une fois arrive chez votre comptable dans le bon format. »</td>
+</tr>
+<tr>
+<td>4</td>
+<td>« Et nos données, elles sont où ? »</td>
+<td>« Chez vous ou chez nous, au choix. Chaque entreprise est isolée, chaque accès est tracé. »</td>
+</tr>
+<tr>
+<td>5</td>
+<td>« Combien de temps pour démarrer ? »</td>
+<td>« Vous créez votre espace, vous importez vos collaborateurs, vous pointez le lendemain. Les autres modules s'ajoutent quand vous voulez. »</td>
+</tr>
+<tr>
+<td>6</td>
+<td>« Pourquoi pas un outil par métier ? »</td>
+<td>« Parce qu'alors rien ne se parle. Ici, le pointage alimente la paie, la vente alimente le stock et la comptabilité. »</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>Prompt pour agent IA de production — C3</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video C3 « Objections » (6 x 30 s, 16:9, interview face camera) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Format volontairement non publicitaire : une personne reelle repond, sans musique, sans motion design. La sobriete est l'argument.
+
+SORTIES
+- leopardo_c3_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h2>6. D — Vidéos verticales (30 s chacune)</h2>
+<p><strong>Format identique pour les 15 verticales</strong>, ce qui permet une production industrialisée :</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–4 s</td>
+<td>Lieu</td>
+<td>Plan réel du lieu (comptoir, salle, officine, salle de classe…)</td>
+</tr>
+<tr>
+<td>4–10 s</td>
+<td>Situation</td>
+<td>1 phrase de contexte métier</td>
+</tr>
+<tr>
+<td>10–24 s</td>
+<td>3 plans produit</td>
+<td>Les 3 écrans qui comptent pour ce métier</td>
+</tr>
+<tr>
+<td>24–30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour [métier]. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Verticale</th>
+<th>3 écrans à montrer</th>
+<th>Phrase de contexte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td><strong>Restauration</strong></td>
+<td>Plan de salle · Écran cuisine · Ticket</td>
+<td>« Le service ne s'arrête pas pour une saisie. »</td>
+</tr>
+<tr>
+<td>D2</td>
+<td><strong>Commerce de détail</strong></td>
+<td>POS · Stock · Boutique en ligne</td>
+<td>« Ce qui est vendu est déduit. Ce qui reste est juste. »</td>
+</tr>
+<tr>
+<td>D3</td>
+<td><strong>Hôtellerie</strong></td>
+<td>Planning des unités · Arrivée/départ · État des unités</td>
+<td>« Une chambre ne se loue pas deux fois. »</td>
+</tr>
+<tr>
+<td>D4</td>
+<td><strong>Pharmacie</strong></td>
+<td>Vente sur ordonnance · Stock · Fiche publique</td>
+<td>« L'officine tient son stock et sa vitrine. »</td>
+</tr>
+<tr>
+<td>D5</td>
+<td><strong>Santé</strong></td>
+<td>Agenda · Dossier de soin · Ordonnance</td>
+<td>« Le dossier reste confidentiel, et il est là. »</td>
+</tr>
+<tr>
+<td>D6</td>
+<td><strong>École / Formation</strong></td>
+<td>Appel · Notes · Espace parents</td>
+<td>« Les notes arrivent aux parents le jour même. »</td>
+</tr>
+<tr>
+<td>D7</td>
+<td><strong>Station-service</strong></td>
+<td>Index pompes · Ventes carburant · Clôture</td>
+<td>« La journée se clôture sur des chiffres qui tombent juste. »</td>
+</tr>
+<tr>
+<td>D8</td>
+<td><strong>VTC</strong></td>
+<td>Course · Grille tarifaire · Suivi</td>
+<td>« Le tarif est connu avant de démarrer. »</td>
+</tr>
+<tr>
+<td>D9</td>
+<td><strong>Livraison</strong></td>
+<td>Tournée · Preuve de livraison · Suivi client</td>
+<td>« Chaque colis a une preuve, pas une promesse. »</td>
+</tr>
+<tr>
+<td>D10</td>
+<td><strong>Agence de voyage</strong></td>
+<td>Boutique publique · Réservation · Devis corporate</td>
+<td>« La vitrine vend, l'agence gère. »</td>
+</tr>
+<tr>
+<td>D11</td>
+<td><strong>Agriculture</strong></td>
+<td>Parcelle · Intrants · Récolte</td>
+<td>« La saison se lit dans un seul historique. »</td>
+</tr>
+<tr>
+<td>D12</td>
+<td><strong>Bibliothèque</strong></td>
+<td>Catalogue · Accès · Lecture</td>
+<td>« Un catalogue qui ne ment pas. »</td>
+</tr>
+<tr>
+<td>D13</td>
+<td><strong>Cagnottes / collecte</strong></td>
+<td>Cagnotte · Don · Reversement</td>
+<td>« La collecte se suit en direct, le solde se reverse au bénéficiaire. »</td>
+</tr>
+<tr>
+<td>D14</td>
+<td><strong>Flotte &amp; caméras</strong></td>
+<td>Véhicules · Échéances · Supervision</td>
+<td>« Ce qui doit rouler roule. Ce qui doit filmer filme. »</td>
+</tr>
+<tr>
+<td>D15</td>
+<td><strong>Cabinet comptable</strong></td>
+<td>Partage documentaire · Lettrage · Export FEC</td>
+<td>« Le dossier arrive prêt, dans le format attendu. »</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Les quinze verticales ont désormais leur script détaillé</strong> (§6.1 à §6.15 ci-dessous) : le gabarit de 30 s y est décliné plan par plan, avec son prompt de production propre. Aucune verticale ne reste au gabarit commun seul.</p>
+<p><strong>Deux corrections de véracité dans le gabarit ci-dessus</strong> : D12 ne parle plus de « prêt » ni de « rappels » (le module Bibliothèque gère des ressources <strong>numériques</strong>, pas des ouvrages papier) ; D13 ne promet plus que « les reçus partent seuls » (le reçu fiscal automatique n'est pas livré — le code le mentionne comme « reçu phase 2 »).</p>
+</blockquote>
+<hr />
+<h4>Prompt pour agent IA de production — D</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la serie D « Videos verticales » (15 x 30 s, 16:9, gabarit unique) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Gabarit identique pour les 15 verticales : lieu, situation, 3 plans produit, signature. Un seul jeu de donnees de demo, capte une fois, derive sur les 15 films.
+
+SORTIES
+- leopardo_d_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.1 D9. « Chaque colis a une preuve » — Livraison, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module Livraison (BC-26) sur les trois écrans qui comptent pour un métier de tournée.
+<strong>Cible :</strong> transporteurs, agences de livraison, e-commerçants, restaurants qui livrent.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–4 s</td>
+<td>Lieu</td>
+<td>Dépôt, colis empilés, livreur qui charge sa tournée</td>
+</tr>
+<tr>
+<td>4–10 s</td>
+<td>Situation</td>
+<td>« Un colis livré sans preuve, c'est une contestation qui commence. »</td>
+</tr>
+<tr>
+<td>10–24 s</td>
+<td>3 plans produit</td>
+<td>Tournée et arrêts (statut par arrêt) · Preuve de livraison (photo, signature, horodatage) · Suivi destinataire et opt-out</td>
+</tr>
+<tr>
+<td>24–30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour la livraison. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> le module Livraison est un moteur dernier-kilomètre <strong>générique</strong> — tout tenant qui livre (agence, restaurant, retail, e-commerce, pharmacie) active le même moteur. Ne pas montrer de carte temps réel si l'environnement de démonstration ne l'a pas activée.</p>
+<h4>Prompt pour agent IA de production — D9</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D9 « Chaque colis a une preuve » (verticale Livraison, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : percussions regulieres, tempo de tournee, 110 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Le module Livraison est un moteur dernier-kilometre generique : tout tenant qui livre active le meme moteur. Ne pas montrer de carte temps reel si l'environnement de demonstration ne l'a pas activee.
+
+SORTIES
+- leopardo_d9_livraison_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.2 D12. « Un catalogue qui ne ment pas » — Bibliothèque, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module Library sur les trois écrans qui comptent pour un catalogue de ressources.
+<strong>Cible :</strong> établissements de formation, entreprises, organisations qui diffusent des ressources.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–4 s</td>
+<td>Lieu</td>
+<td>Bureau, catalogues papier et tableur ouvert</td>
+</tr>
+<tr>
+<td>4–10 s</td>
+<td>Situation</td>
+<td>« Un catalogue de ressources qui vit dans un tableur finit toujours par mentir. »</td>
+</tr>
+<tr>
+<td>10–24 s</td>
+<td>3 plans produit</td>
+<td>Catalogue et collections (livres, ebooks, guides, manuels, rapports, articles) · Modèle d'accès par ressource (libre, lecture seule, achat, abonnement, privé) · Progression de lecture reprise</td>
+</tr>
+<tr>
+<td>24–30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour la bibliothèque. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> le module Bibliothèque gère des ressources <strong>numériques</strong>, pas des ouvrages papier. Ne jamais montrer de prêt physique, de gestion d'emprunteurs ni de rappels de retour : ce n'est pas ce que fait le module.</p>
+<h4>Prompt pour agent IA de production — D12</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D12 « Un catalogue qui ne ment pas » (verticale Bibliotheque, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : nappe douce, piano discret, 90 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Le module Bibliotheque gere des ressources NUMERIQUES (livres, ebooks, guides, manuels, rapports, articles) avec un modele d'acces par ressource. Ne jamais montrer de pret d'ouvrages papier, de gestion d'emprunteurs ni de rappels de retour.
+
+SORTIES
+- leopardo_d12_bibliotheque_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.3 D14. « Ce qui doit rouler roule » — Flotte &amp; caméras, 30 s</h3>
+<p><strong>Objectif :</strong> montrer les modules Fleet et Cameras sur les trois écrans qui comptent pour un parc et des sites à superviser.
+<strong>Cible :</strong> entreprises avec parc de véhicules, sites à superviser, gestionnaires de flotte.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–4 s</td>
+<td>Lieu</td>
+<td>Véhicule au bord de la route, puis écran de supervision avec une caméra hors ligne</td>
+</tr>
+<tr>
+<td>4–10 s</td>
+<td>Situation</td>
+<td>« Un véhicule qui tombe en panne, c'est une tournée qui s'arrête. Une caméra muette, c'est un doute qui reste. »</td>
+</tr>
+<tr>
+<td>10–24 s</td>
+<td>3 plans produit</td>
+<td>Véhicules et affectations (chauffeur, site) · Échéances (assurance, contrôle technique) et alertes · Caméras supervisées, accès à durée limitée et journalisé</td>
+</tr>
+<tr>
+<td>24–30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour la flotte et les caméras. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> ne jamais afficher de flux vidéo d'un site réel — utiliser un flux de démonstration. Les alertes caméra portent sur des <strong>types d'événement</strong> (mouvement, personne, véhicule, franchissement de ligne, sabotage), jamais sur l'identité d'une personne.</p>
+<h4>Prompt pour agent IA de production — D14</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D14 « Ce qui doit rouler roule » (verticale Flotte &amp; cameras, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : basse reguliere, nappe tendue, 100 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Ne jamais afficher de flux video d'un site reel : utiliser un flux de demonstration. Ne pas promettre de reconnaissance faciale ni d'identification de personnes : les alertes camera portent sur des types d'evenement (mouvement, personne, vehicule, franchissement de ligne, sabotage), pas sur l'identite.
+
+SORTIES
+- leopardo_d14_flotte-cameras_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.4 D2. « Ce qui est vendu est déduit » — Commerce de détail, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module Retail (BC-17) sur les trois écrans qui comptent pour une boutique.
+<strong>Cible :</strong> commerçants, boutiques, supérettes, e-commerçants, gérants de point de vente.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–4 s</td>
+<td>Lieu</td>
+<td>Comptoir de boutique, un ticket imprimé d'un côté, un cahier de stock de l'autre</td>
+</tr>
+<tr>
+<td>4–10 s</td>
+<td>Situation</td>
+<td>« La caisse dit une chose, le stock une autre. »</td>
+</tr>
+<tr>
+<td>10–24 s</td>
+<td>3 plans produit</td>
+<td>Caisse POS (session, encaissement, clôture avec écart) · Stock tenu par mouvements (achat, vente, ajustement, retour, transfert, perte) · Boutique en ligne et marketplace</td>
+</tr>
+<tr>
+<td>24–30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour le commerce de détail. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> le stock n'est jamais négatif et chaque mouvement est tracé ; la marketplace n'expose <strong>aucune quantité</strong>, seulement une disponibilité. Ne pas afficher de chiffre de vente, de marge ni de taux de démarque.</p>
+<h4>Prompt pour agent IA de production — D2</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D2 « Ce qui est vendu est deduit » (verticale Commerce de detail, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : percussions seches, tempo de comptoir, 108 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Le module Retail est un moteur de commerce generique : caisse, stock, boutique en ligne et marketplace. Ne jamais afficher de chiffre de vente, de marge, de taux de demarque ni de nombre de clients. La marketplace n'expose aucune quantite de stock, seulement une disponibilite (disponible / indisponible) : ne pas montrer de quantite sur la fiche publique.
+
+SORTIES
+- leopardo_d2_retail_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.5 D13. « La collecte se suit en direct » — Cagnottes solidaires, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module Fundraising sur les trois écrans qui comptent pour une collecte.
+<strong>Cible :</strong> associations, ONG, mutuelles, écoles, entreprises citoyennes, collectifs.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–4 s</td>
+<td>Lieu</td>
+<td>Table de collecte : carnet de dons manuscrit, téléphone qui sonne</td>
+</tr>
+<tr>
+<td>4–10 s</td>
+<td>Situation</td>
+<td>« Une collecte qui vit dans un carnet et un téléphone, personne ne peut la vérifier. »</td>
+</tr>
+<tr>
+<td>10–24 s</td>
+<td>3 plans produit</td>
+<td>Cagnotte publiée par lien court (page de don, montants suggérés) · Contributions carte et mobile money (montant borné, don anonyme possible) · Suivi de la collecte et reversement au bénéficiaire</td>
+</tr>
+<tr>
+<td>24–30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour les cagnottes solidaires. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> le reçu fiscal automatique <strong>n'est pas livré</strong> (le code le mentionne comme « reçu phase 2 ») — ne jamais montrer ni promettre un reçu qui partirait tout seul. Le reversement est traité par le responsable, pas instantané.</p>
+<h4>Prompt pour agent IA de production — D13</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D13 « La collecte se suit en direct » (verticale Cagnottes solidaires, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : nappe chaleureuse, cordes discretes, 92 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Le recu fiscal automatique n'existe PAS encore dans le produit (le code le mentionne comme « recu phase 2 ») : ne jamais montrer ni promettre un recu qui partirait tout seul au donateur. Ne pas afficher de montant collecte reel, de nom de beneficiaire reel ni de nombre de donateurs. Ne pas promettre de collecte sans frais ni de reversement instantane : le reversement est traite par le responsable.
+
+SORTIES
+- leopardo_d13_cagnottes_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- 0 occurrence de « recu automatique », « recu fiscal », « recu qui part seul »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.6 D15. « Le dossier, le partage, l'export » — Cabinet comptable, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le parcours du cabinet sur les trois écrans qui comptent : partage documentaire, lettrage, export FEC.
+<strong>Cible :</strong> experts-comptables, cabinets partenaires, DAF.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–4 s</td>
+<td>Lieu</td>
+<td>Bureau d'expert-comptable : dossiers papier empilés, boîte mail ouverte</td>
+</tr>
+<tr>
+<td>4–10 s</td>
+<td>Situation</td>
+<td>« Chaque client a son format d'export. »</td>
+</tr>
+<tr>
+<td>10–24 s</td>
+<td>3 plans produit</td>
+<td>Partage d'un document par lien à durée limitée · Écritures et lettrage avec trace · Export FEC de la période</td>
+</tr>
+<tr>
+<td>24–30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour le cabinet et son client. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> le parcours cabinet s'appuie sur le module <strong>comptable</strong> (documents, journaux, lettrage, export FEC, clôture d'exercice), <strong>pas</strong> sur le module <code>Cabinet</code> — ce dernier est un placard personnel de documents. Ne pas montrer de portefeuille multi-clients consolidé : le produit n'expose pas de vue agrégée de plusieurs entreprises.</p>
+<h4>Prompt pour agent IA de production — D15</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D15 « Le dossier, le partage, l'export » (parcours Cabinet comptable, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : neutre, precis, metronomique, 96 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Le parcours cabinet s'appuie sur le module comptable (documents, journaux, lettrage, export FEC, cloture d'exercice). Ne pas montrer de portefeuille multi-clients consolide ni de tableau de bord inter-dossiers : le produit n'expose pas de vue agregee de plusieurs entreprises. Ne pas afficher de montants reels ni de taux de cotisation : ils dependent du pays et de l'annee. Le FEC est un format francais : preciser le pays si le film est diffuse hors France.
+
+SORTIES
+- leopardo_d15_cabinet_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- 0 occurrence de « portefeuille de dossiers », « vue consolidee multi-clients »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.7 D1. « Le service ne s'arrete pas pour une saisie » — Restauration, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module RestaurantManager sur les trois ecrans qui comptent pendant le service : la salle, l'ecran cuisine, le ticket.
+<strong>Cible :</strong> restaurateurs, gerants de plusieurs etablissements, chaines de restauration rapide.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-4 s</td>
+<td>Lieu</td>
+<td>Salle pleine, service en cours, une commande prise debout sur un carnet</td>
+</tr>
+<tr>
+<td>4-10 s</td>
+<td>Situation</td>
+<td>« Pendant le coup de feu, chaque saisie retire une seconde au service. »</td>
+</tr>
+<tr>
+<td>10-24 s</td>
+<td>3 plans produit</td>
+<td>Plan de salle par zone et par table (session ouverte, fermee, annulee) · Ecran cuisine : la commande passe de « ouverte » a « en preparation » a « prete » a « servie » · Ticket : bon cuisine et recu client imprimes separement</td>
+</tr>
+<tr>
+<td>24-30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour la restauration. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> le module couvre les types de commande (sur place, a emporter, livraison) et les sources (caisse, web, telephone, application de livraison, en ligne, borne). L'ecran cuisine est un vrai ecran : il fait avancer la commande, il ne l'affiche pas seulement. Ne jamais montrer de chiffre d'affaires, de marge ni de nombre de couverts.</p>
+<h4>Prompt pour agent IA de production — D1</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D1 « Le service ne s'arrete pas pour une saisie » (verticale Restauration, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : Groove leger, ambiance service, 115 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. La salle se montre par zones et tables avec une session de table (ouverte, fermee, annulee). L'ecran cuisine est un poste de travail : la commande y change d'etat selon la machine a etats du module — brouillon, ouverte, en preparation, prete, servie, payee, cloturee, annulee, remboursee ; ne pas inventer d'autre etat. Ne jamais afficher de ticket portant un montant total reel ni de marge : le film montre le flux, pas le chiffre.
+
+SORTIES
+- leopardo_d1_restauration_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- 0 occurrence de « marge », « chiffre d'affaires », « benefice »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.8 D3. « Une chambre ne se loue pas deux fois » — Hotellerie, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module HospitalityManager sur les trois ecrans qui comptent pour un etablissement : le planning, l'arrivee et le depart, l'etat des unites.
+<strong>Cible :</strong> hoteliers, gestionnaires de residences, exploitants de locations courte et longue duree.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-4 s</td>
+<td>Lieu</td>
+<td>Reception d'hotel, deux clients arrives en meme temps, un planning papier surligne</td>
+</tr>
+<tr>
+<td>4-10 s</td>
+<td>Situation</td>
+<td>« Une chambre vendue deux fois, c'est une arrivee qui commence mal. »</td>
+</tr>
+<tr>
+<td>10-24 s</td>
+<td>3 plans produit</td>
+<td>Planning des unites : reservations posees sur l'inventaire reel · Arrivee et depart : en attente, confirmee, installee, partie, annulee, non presentee · Etat de chaque unite : disponible, occupee, en maintenance, hors service</td>
+</tr>
+<tr>
+<td>24-30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour l'hotellerie. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> le module HospitalityManager ne contient <strong>aucune gestion de menage ni de housekeeping</strong> (verifie dans api/app/Modules/HospitalityManager au 2026-11-27 : aucun modele, service ni route de menage). Ne jamais filmer de valet de chambre, de checklist de nettoyage ni de « chambre prete ». Les baux et loyers de location longue duree existent bien, mais appartiennent au film Hotellerie long format (VID-08), pas a ce format court.</p>
+<h4>Prompt pour agent IA de production — D3</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D3 « Une chambre ne se loue pas deux fois » (verticale Hotellerie, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : Nappe discrete, piano, 95 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Le module ne gere ni le menage ni le housekeeping : ne jamais montrer de checklist de nettoyage, de valet de chambre ni de statut « chambre prete ». Les etats d'unite sont exactement disponibles, occupee, en maintenance, hors service. Les etats de reservation sont en attente, confirmee, installee, partie, annulee, non presentee : ne pas en inventer d'autres.
+
+SORTIES
+- leopardo_d3_hotellerie_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- 0 occurrence de « housekeeping », « menage », « femme de chambre », « chambre prete »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.9 D4. « L'officine tient son stock et sa vitrine » — Pharmacie, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module Pharmacy sur les trois ecrans qui comptent au comptoir : la vente sur ordonnance, le stock par lot, la fiche publique.
+<strong>Cible :</strong> pharmacies d'officine, groupements officinaux, pharmacies de garde.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-4 s</td>
+<td>Lieu</td>
+<td>Comptoir d'officine, une boite posee sur le comptoir, numero de lot visible</td>
+</tr>
+<tr>
+<td>4-10 s</td>
+<td>Situation</td>
+<td>« Une erreur de lot n'est pas une erreur de stock. C'est une question de sante publique. »</td>
+</tr>
+<tr>
+<td>10-24 s</td>
+<td>3 plans produit</td>
+<td>Vente au comptoir, rattachee a une ordonnance quand il y en a une · Stock par lot : numero de lot, date de peremption, quantite, cout unitaire · Fiche publique : nom public, ville, pharmacie de garde, services</td>
+</tr>
+<tr>
+<td>24-30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour la pharmacie. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> la fiche publique est publique : elle n'expose <strong>ni stock ni prix</strong>, seulement le nom, la ville, la garde et les services. Ne jamais afficher de nom de medicament reel associe a une quantite reelle, ni suggerer une conformite reglementaire que le produit ne certifie pas.</p>
+<h4>Prompt pour agent IA de production — D4</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D4 « L'officine tient son stock et sa vitrine » (verticale Pharmacie, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : Neutre, precis, 100 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. La fiche publique n'expose ni stock ni prix : ne jamais montrer de quantite ni de tarif sur la page publique. Le stock se tient lot par lot (numero de lot, peremption, quantite, cout). Ne jamais afficher de nom de medicament reel avec une quantite reelle : utiliser des libelles de demonstration fictifs.
+
+SORTIES
+- leopardo_d4_pharmacie_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- 0 occurrence de « conforme », « certifie », « agree »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.10 D5. « Le dossier reste confidentiel, et il est la » — Sante, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module HealthManager sur les trois ecrans qui comptent pour un soin : l'agenda, le dossier de soin, l'ordonnance.
+<strong>Cible :</strong> cliniques privees, polycliniques, centres de soins, cabinets de groupe.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-4 s</td>
+<td>Lieu</td>
+<td>Couloir de clinique, un dossier papier qui circule entre trois mains</td>
+</tr>
+<tr>
+<td>4-10 s</td>
+<td>Situation</td>
+<td>« Le dossier patient est souvent le dernier endroit ou l'information arrive. »</td>
+</tr>
+<tr>
+<td>10-24 s</td>
+<td>3 plans produit</td>
+<td>Agenda : rendez-vous par praticien et par service · Dossier de soin : identite et donnees medicales, affichees masquees par defaut · Ordonnance : lignes rattachees a une consultation</td>
+</tr>
+<tr>
+<td>24-30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour la sante. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> toutes les donnees sensibles (identite, telephone, allergies, antecedents, assurance) sont stockees <strong>chiffrees</strong> et s'affichent masquees a l'ecran : c'est le point a montrer, pas un detail. L'acces est porte par les roles du module (administrateur, praticien, accueil, facturation). Ne jamais afficher un nom de patient lisible ni une donnee clinique reelle.</p>
+<h4>Prompt pour agent IA de production — D5</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D5 « Le dossier reste confidentiel, et il est la » (verticale Sante, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : Nappe calme, cordes discretes, 88 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Les donnees sensibles sont stockees chiffrees et s'affichent masquees : ne jamais montrer un nom de patient lisible, un numero de telephone, une allergie ni un antecedent reel. L'acces est borne par les roles du module (administrateur, praticien, accueil, facturation) : ne pas inventer de role supplementaire. Aucune allegation de conformite reglementaire.
+
+SORTIES
+- leopardo_d5_sante_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- 0 occurrence de « conforme RGPD », « certifie », « dossier medical legal »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.11 D6. « Le bulletin est publie, les parents le voient » — Ecole / Formation, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module EduManager sur les trois ecrans qui comptent pour un etablissement : l'appel, les notes, l'espace parents.
+<strong>Cible :</strong> ecoles privees, groupes scolaires, centres de formation.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-4 s</td>
+<td>Lieu</td>
+<td>Salle de classe, appel sur un cahier, un parent qui appelle l'accueil</td>
+</tr>
+<tr>
+<td>4-10 s</td>
+<td>Situation</td>
+<td>« L'absence est notee le matin. Le parent l'apprend la semaine suivante. »</td>
+</tr>
+<tr>
+<td>10-24 s</td>
+<td>3 plans produit</td>
+<td>Appel : present, absent, en retard, excuse · Notes : saisie par evaluation, bulletin construit puis valide puis publie · Espace parents : lien a duree limitee, journal des acces</td>
+</tr>
+<tr>
+<td>24-30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour l'ecole. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> le bulletin suit un cycle explicite : construit, valide, publie. C'est la publication qui rend la note visible au parent, pas la saisie. L'espace parents passe par un <strong>lien a duree limitee, revocable, avec journal d'acces</strong> : montrer le lien et sa date d'expiration, c'est ce qui rassure. Ne jamais promettre « le jour meme » (aucune mesure ne l'etablit) et ne jamais afficher de note d'eleve reelle.</p>
+<h4>Prompt pour agent IA de production — D6</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D6 « Le bulletin est publie, les parents le voient » (verticale Ecole / Formation, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : Leger, piano et clics, 105 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Le bulletin suit un cycle construit, valide, publie : ne jamais montrer une note visible du parent avant la publication. L'espace parents passe par un lien a duree limitee, revocable, avec journal d'acces : montrer l'expiration du lien. Ne jamais afficher de note d'eleve reelle ni de nom d'eleve lisible. Ne pas promettre de delai de publication chiffre.
+
+SORTIES
+- leopardo_d6_ecole_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- 0 occurrence de « le jour meme », « instantane », « temps reel »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.12 D7. « La journee se cloture sur des chiffres qui tombent juste » — Station-service, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module FuelStation sur les trois ecrans qui comptent pour une station : les pompes, les ventes, la cloture.
+<strong>Cible :</strong> reseaux de stations-service, gerants independants, stations de nuit.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-4 s</td>
+<td>Lieu</td>
+<td>Station de nuit, pompe eclairee, gerant seul dans la boutique</td>
+</tr>
+<tr>
+<td>4-10 s</td>
+<td>Situation</td>
+<td>« Une station ne ferme jamais. La cloture, elle, doit tomber juste. »</td>
+</tr>
+<tr>
+<td>10-24 s</td>
+<td>3 plans produit</td>
+<td>Index des pompes : pompe, produit, etat · Ventes carburant : poste, volume, montant, mode de paiement · Cloture : fond d'ouverture, attendu, compte, ecart ; puis reconciliation de stock ouverture plus livraisons moins ventes</td>
+</tr>
+<tr>
+<td>24-30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour la station-service. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> la cloture affiche un <strong>ecart</strong>, jamais une « marge ». La reconciliation de stock compare un theorique a un mesure, avec une tolerance : c'est ce qui rend la cloture verifiable. Ne jamais afficher de prix au litre reel : ils varient par pays et par jour.</p>
+<h4>Prompt pour agent IA de production — D7</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D7 « La journee se cloture sur des chiffres qui tombent juste » (verticale Station-service, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : Basse reguliere, nappe tendue, 100 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. La cloture montre un ecart entre un attendu et un compte, jamais une marge. La reconciliation de stock compare ouverture plus livraisons moins ventes a une jauge mesuree, avec une tolerance : ne pas inventer d'autre formule. Ne jamais afficher de prix au litre reel, ni de volume total reel : ils dependent du pays et du jour.
+
+SORTIES
+- leopardo_d7_station-service_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- 0 occurrence de « marge », « benefice », « prix au litre »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.13 D8. « Le tarif est connu avant de demarrer » — VTC, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module Vtc sur les trois ecrans qui comptent pour une course : la reservation, la grille tarifaire, le suivi.
+<strong>Cible :</strong> flottes VTC et taxi, plateformes locales de mobilite.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-4 s</td>
+<td>Lieu</td>
+<td>Standard telephonique, carte papier, trois chauffeurs appeles en meme temps</td>
+</tr>
+<tr>
+<td>4-10 s</td>
+<td>Situation</td>
+<td>« Le client appelle. On cherche qui est le plus proche. A la main. »</td>
+</tr>
+<tr>
+<td>10-24 s</td>
+<td>3 plans produit</td>
+<td>Course : demandee, en dispatch, acceptee, arrivee, en cours, terminee · Grille tarifaire : prise en charge, prix au kilometre, prix a la minute, minimum · Suivi : position du chauffeur et code de suivi partage au passager</td>
+</tr>
+<tr>
+<td>24-30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour le VTC. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> le module VTC ne calcule <strong>aucune distance lui-meme</strong> : il interroge le noyau geospatial, et la distance routiere est une estimation (vol d'oiseau multiplie par un facteur de route). Le prix affiche avant le depart est donc une <strong>estimation</strong>, pas un engagement : le dire a l'ecran si l'environnement de demonstration n'a pas de grille configuree. Ne pas promettre de dispatch temps reel si le noyau geospatial n'est pas active.</p>
+<h4>Prompt pour agent IA de production — D8</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D8 « Le tarif est connu avant de demarrer » (verticale VTC, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : Pulsation urbaine, 118 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Le module ne calcule aucune distance lui-meme : il interroge le noyau geospatial, et la distance routiere est une estimation (vol d'oiseau x facteur de route). Le prix affiche avant le depart est une estimation des lors que la grille tarifaire n'est pas configuree : ne jamais le presenter comme un prix garanti. Ne pas promettre de dispatch temps reel sans noyau geospatial active.
+
+SORTIES
+- leopardo_d8_vtc_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- 0 occurrence de « prix garanti », « tarif fixe », « dispatch temps reel »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.14 D10. « La vitrine vend, l'agence gere » — Agence de voyage, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module TravelAgency sur les trois ecrans qui comptent pour une agence : la boutique publique, la reservation, le devis corporate.
+<strong>Cible :</strong> agences de voyage, tour-operateurs, agences d'affaires.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-4 s</td>
+<td>Lieu</td>
+<td>Bureau d'agence, trois ecrans ouverts : messagerie, tableur, PDF d'un partenaire</td>
+</tr>
+<tr>
+<td>4-10 s</td>
+<td>Situation</td>
+<td>« Vos clients reservent sur WhatsApp. Vos dossiers vivent dans un cahier. »</td>
+</tr>
+<tr>
+<td>10-24 s</td>
+<td>3 plans produit</td>
+<td>Boutique publique : trajets et annonces en ligne · Reservation : un dossier unique (reference, passagers, paiement, consentement aux notifications) · Devis corporate rattache a un compte entreprise, puis converti en reservation</td>
+</tr>
+<tr>
+<td>24-30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour l'agence de voyage. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> la reservation enregistre le <strong>consentement aux notifications</strong> et sa date : c'est un point a montrer, pas a cacher. Le devis corporate est rattache a un compte entreprise et devient une reservation, il ne reste pas un document isole. Ne jamais afficher de tarif aerien reel ni de disponibilite « temps reel » de compagnies qui ne sont pas connectees.</p>
+<h4>Prompt pour agent IA de production — D10</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D10 « La vitrine vend, l'agence gere » (verticale Agence de voyage, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : Nappe ouverte, cordes, 108 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. La reservation enregistre le consentement aux notifications et sa date : montrer le consentement, ne jamais le passer sous silence. Le devis corporate est rattache a un compte entreprise puis converti en reservation : ne pas le presenter comme un simple document. Ne jamais afficher de tarif aerien reel ni de disponibilite temps reel d'une compagnie non connectee.
+
+SORTIES
+- leopardo_d10_agence-de-voyage_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- 0 occurrence de « temps reel », « disponibilite garantie »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>6.15 D11. « La saison se lit dans un seul historique » — Agriculture, 30 s</h3>
+<p><strong>Objectif :</strong> montrer le module FarmOs sur les trois ecrans qui comptent pour une exploitation : la parcelle, les intrants, la recolte.
+<strong>Cible :</strong> agriculteurs, eleveurs, exploitations et cooperatives agricoles.
+<strong>Diffusion :</strong> page pack, LinkedIn, YouTube.</p>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Bloc</th>
+<th>Contenu</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0-4 s</td>
+<td>Lieu</td>
+<td>Parcelle a l'aube, un carnet de travaux a la main</td>
+</tr>
+<tr>
+<td>4-10 s</td>
+<td>Situation</td>
+<td>« Vous savez ce que vous avez seme. Savez-vous ce que la parcelle a rapporte ? »</td>
+</tr>
+<tr>
+<td>10-24 s</td>
+<td>3 plans produit</td>
+<td>Parcelle : superficie, source de la superficie, culture et cycle cultural · Intrants : stock, seuil d'alerte, lots · Recolte : lot de recolte, quantite recoltee, qualite, destination de stockage</td>
+</tr>
+<tr>
+<td>24-30 s</td>
+<td>Signature</td>
+<td>« Leopardo, pour l'agriculture. » + CTA</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note de montage :</strong> Farm OS enregistre des rendements <strong>déclarés</strong> par l'exploitant (attendus et réels, portés par le cycle cultural), mais ne les <strong>estime jamais</strong> automatiquement — c'est la règle écrite dans <code>FarmProductionType</code> (« aucune estimation automatique de rendement »). Ne jamais montrer de rendement calculé par le système, ni de marge. Chaque superficie porte sa source (déclarée, mesurée, importée), conformément à <strong>ADR-FARM-0003</strong> (<code>docs/mission-farm-os/01_tad.md</code> §6) : c'est ce qui distingue un chiffre d'une estimation. Une récolte crée un seul lot de stock, et ce lot garde sa traçabilité jusqu'à la vente.</p>
+<h4>Prompt pour agent IA de production — D11</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video D11 « La saison se lit dans un seul historique » (verticale Agriculture, 30 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : Nappe organique, percussions discretes, 98 BPM ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Farm OS enregistre des rendements declares par l'exploitant (attendus et reels) mais ne les estime jamais automatiquement : ne jamais montrer de rendement calcule par le systeme, ni de marge. Chaque superficie porte sa source (declaree, mesuree, importee), conformement a ADR-FARM-0003 : ne jamais afficher une superficie sans sa source. Une recolte cree un seul lot de stock qui garde sa tracabilite jusqu'a la parcelle : ne pas montrer de lot sans lien vers la parcelle.
+
+SORTIES
+- leopardo_d11_agriculture_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- 0 occurrence de « rendement estime », « rendement calcule », « marge », « rentabilite garantie »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h2>7. E — Confiance, F — Social, G — Activation, H — Partenaires</h2>
+<h3>E1. « Vos données, votre choix » — 60 s (sécurité &amp; RGPD)</h3>
+<table>
+<thead>
+<tr>
+<th>Temps</th>
+<th>Visuel</th>
+<th>Voix off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0–10 s</td>
+<td>Écran de connexion, plusieurs rôles</td>
+<td>« Chaque personne voit ce que son rôle autorise. Rien de plus. »</td>
+</tr>
+<tr>
+<td>10–24 s</td>
+<td>Isolation entre établissements, journal d'audit</td>
+<td>« Chaque entreprise est isolée. Chaque accès est tracé, avec qui, quand, et sur quoi. »</td>
+</tr>
+<tr>
+<td>24–40 s</td>
+<td>Registre des traitements, export, suppression</td>
+<td>« Vous pouvez exporter les données d'une personne, ou les effacer. Le registre des traitements est tenu. »</td>
+</tr>
+<tr>
+<td>40–52 s</td>
+<td>Choix d'hébergement</td>
+<td>« Hébergé chez nous, ou chez vous. »</td>
+</tr>
+<tr>
+<td>52–60 s</td>
+<td>Logo + CTA</td>
+<td>« Leopardo. »</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Ne jamais dire « conforme RGPD » sans base juridique documentée. Dire ce qui est <strong>fait</strong> : registre tenu, export, effacement, journalisation.</p>
+</blockquote>
+<h4>Prompt pour agent IA de production — E1</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video E1 « Vos donnees, votre choix » (60 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Ne jamais dire « conforme RGPD » sans base juridique documentee. Decrire ce qui est fait : registre tenu, export, effacement, journalisation.
+
+SORTIES
+- leopardo_e1_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>E2. « Quand le réseau tombe » — 45 s (Edge / hors-ligne)</h3>
+<p><strong>Script :</strong> 0–8 s coupure réseau réelle filmée (câble, indicateur) · 8–20 s l'application continue de fonctionner, file locale visible · 20–34 s retour du réseau, resynchronisation, aucun doublon · 34–45 s signature.
+<strong>Voix off :</strong> « Une coupure n'est pas une panne. Le travail continue, la file se vide au retour, et rien n'est compté deux fois. »</p>
+<h4>Prompt pour agent IA de production — E2</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video E2 « Quand le reseau tombe » (45 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. La coupure reseau doit etre filmee en vrai (cable, indicateur), pas simulee en animation. La resynchronisation doit montrer l'absence de doublon.
+
+SORTIES
+- leopardo_e2_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>E3. « Ouvert » — 45 s (open-source, API, auto-hébergement)</h3>
+<p><strong>Cible :</strong> intégrateurs, DSI, partenaires techniques.
+<strong>Script :</strong> 0–10 s dépôt GitHub, contrat OpenAPI · 10–24 s clé d'API, appel, webhook · 24–36 s auto-hébergement · 36–45 s CTA « Documentation API ».</p>
+<h4>Prompt pour agent IA de production — E3</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la video E3 « Ouvert » (45 s, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Montrer le depot, le contrat OpenAPI, un appel d'API et un webhook reels. Aucun chiffre d'endpoint non mesure.
+
+SORTIES
+- leopardo_e3_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>F — Social (5 s)</h3>
+<p>Les <strong>8 formats existants</strong> de <code>SCRIPTS_VIDEOS_COURTES.md</code> restent la base. Six ajouts pour couvrir les nouveaux projets, sur le même gabarit (5 s, 9:16, 5 séquences) :</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Sujet</th>
+<th>Accroche</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F9</td>
+<td><strong>Caisse &amp; stock</strong></td>
+<td>« Vendu. Déduit. Juste. »</td>
+</tr>
+<tr>
+<td>F10</td>
+<td><strong>Fiche commerce publique</strong></td>
+<td>« Votre commerce, trouvable en 3 secondes. »</td>
+</tr>
+<tr>
+<td>F11</td>
+<td><strong>Hors-ligne</strong></td>
+<td>« Pas de réseau. Pas d'arrêt. »</td>
+</tr>
+<tr>
+<td>F12</td>
+<td><strong>Comptabilité</strong></td>
+<td>« La clôture, sans la course. »</td>
+</tr>
+<tr>
+<td>F13</td>
+<td><strong>École &amp; parents</strong></td>
+<td>« Les notes, le jour même. »</td>
+</tr>
+<tr>
+<td>F14</td>
+<td><strong>Multi-établissements</strong></td>
+<td>« Trois sites. Un écran. »</td>
+</tr>
+</tbody>
+</table>
+<h4>Prompt pour agent IA de production — F</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la serie F « Social » (6 x 5 s, 9:16) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Chaque format tient en 5 secondes exactes, sous-titres brules, texte dans les 60 % centraux de l'ecran. Aucun chiffre invente.
+
+SORTIES
+- leopardo_f_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>G — Activation (post-inscription)</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Vidéo</th>
+<th>Durée</th>
+<th>Objectif</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1</td>
+<td>« Votre espace en 3 minutes »</td>
+<td>3 min</td>
+<td>Inscription → premier collaborateur → premier pointage</td>
+</tr>
+<tr>
+<td>G2</td>
+<td>« Importer votre équipe »</td>
+<td>2 min</td>
+<td>Import CSV, vérification, rôles</td>
+</tr>
+<tr>
+<td>G3</td>
+<td>« Votre premier bulletin »</td>
+<td>4 min</td>
+<td>Cycle de paie de bout en bout</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Règle d'activation :</strong> chaque vidéo se termine par <strong>l'écran exact</strong> que l'utilisateur doit voir à la fin. Pas de « et voilà », mais le résultat à l'écran.</p>
+<h4>Prompt pour agent IA de production — G</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la serie G « Activation » (3 videos : 3 min, 2 min, 4 min) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Chaque video se termine par l'ecran exact que l'utilisateur doit voir a la fin. Pas de « et voila », le resultat a l'ecran.
+
+SORTIES
+- leopardo_g_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h3>H — Partenaires</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Vidéo</th>
+<th>Durée</th>
+<th>Cible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H1</td>
+<td>« Devenir partenaire »</td>
+<td>90 s</td>
+<td>Cabinets comptables, intégrateurs, revendeurs</td>
+</tr>
+<tr>
+<td>H2</td>
+<td>« Intégrer Leopardo »</td>
+<td>2 min</td>
+<td>Développeurs : API, webhooks, SDK</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h4>Prompt pour agent IA de production — H</h4>
+<pre><code class="language-text">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain.
+Tu produis la serie H « Partenaires » (90 s et 2 min, 16:9) a partir du script ci-dessus, sans rien inventer.
+
+LIVRABLE
+- Master 3840x2160, 25 fps, H.264 High, AAC 320 kbps ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, 150-165 mots/min, ton pose ; sous-titres .srt + .vtt (brules en social, separes en web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; Inter, 2 graisses max par plan
+- Musique : lit electronique doux a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+CONTRAINTES NON NEGOCIABLES
+1. Categorie = « suite metier des entreprises de terrain ». Jamais « logiciel RH », « SaaS RH », « HR software », ni « Business OS ».
+2. Chaque plan produit est une captation de l'application reellement livree, sur donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date : tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, logo ou temoignage sans autorisation ecrite. TechCorp DZ, Riad Atlas, Pharmacie Ennour sont fictifs et le restent a l'ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film reste comprehensible sans son : chaque plan porte son texte a l'ecran.
+7. Cible integrateurs et cabinets : montrer l'API, les webhooks, le SDK et le parcours de candidature partenaire, sans promesse de revenus.
+
+SORTIES
+- leopardo_h_{slug}_{lang}_{ratio}_v1.mp4 / .srt / .vtt
+- miniatures 1280x720 et 1080x1920 ; shot-list.csv (timecode, plan, source de capture, statut)
+
+AUTO-CONTROLE
+- duree conforme au script a +/- 2 %
+- 0 occurrence de « logiciel RH », « SaaS RH », « Business OS »
+- chaque chiffre a l'ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- CTA et URL testes sur deux telephones ; versions 16:9 / 9:16 / 1:1 exportees
+</code></pre>
+<h2>8. Règles de production et de véracité</h2>
+<ol>
+<li><strong>Règle des chiffres.</strong> Aucun chiffre de performance, de gain de temps ou d'économie n'apparaît sans mesure réelle, datée et sourcée à l'écran. En l'absence de mesure, on ne chiffre pas — on décrit.</li>
+<li><strong>Règle de l'écran réel.</strong> Chaque plan produit est une captation de l'application livrée. Une fonction non livrée ne figure pas au storyboard.</li>
+<li><strong>Règle du client.</strong> Aucun nom, logo ou donnée d'un client réel sans autorisation écrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour…) sont <strong>fictives</strong> et doivent le rester à l'écran.</li>
+<li><strong>Règle de la catégorie.</strong> « Suite métier » / « business suite ». Jamais « logiciel RH ».</li>
+<li><strong>Règle de la promesse unique.</strong> Une vidéo, une promesse. Au-delà, on découpe.</li>
+<li><strong>Règle de la langue.</strong> Le master est en français ; les versions EN/AR/TR sont des <strong>adaptations</strong>, pas des traductions littérales (voir §9).</li>
+</ol>
+<h3>8.1 Prompt pour agent IA de production</h3>
+<p>Chaque script de ce document est suivi d'un bloc <strong>« Prompt pour agent IA de production »</strong>. Ce bloc est le contrat d'exécution : il reprend le découpage du script et y ajoute ce qu'un agent doit savoir pour produire la vidéo sans supervision.</p>
+<table>
+<thead>
+<tr>
+<th>Ce que le prompt fixe</th>
+<th>Pourquoi</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Format, durée, fps, codec, déclinaisons 16:9 / 9:16 / 1:1</td>
+<td>Un agent ne devine pas les specs de livraison</td>
+</tr>
+<tr>
+<td>Palette, typographie, niveau de musique</td>
+<td>Cohérence visuelle entre les films</td>
+</tr>
+<tr>
+<td>Les 6 règles de véracité ci-dessus, en impératif, <strong>plus une 7ᵉ contrainte propre au script</strong></td>
+<td>Empêche l'invention de chiffres, de clients et de fonctions ; la 7ᵉ contrainte verrouille le point sensible du module montré</td>
+</tr>
+<tr>
+<td>Nommage des fichiers de sortie</td>
+<td>Livraison déterministe, pas de <code>final_v3(2).mp4</code></td>
+</tr>
+<tr>
+<td>Auto-contrôle avant livraison</td>
+<td>L'agent vérifie lui-même avant de rendre</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Usage</strong> : copier le bloc tel quel dans l'agent, avec le script au-dessus en contexte. Le prompt ne remplace pas le script — il l'exécute. Si un chiffre doit apparaître à l'écran, il doit d'abord exister dans <code>docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md</code> avec sa date de mesure ; sinon le plan se tourne sans chiffre.</p>
+<hr />
+<h2>9. Déclinaisons linguistiques</h2>
+<table>
+<thead>
+<tr>
+<th>Langue</th>
+<th>Statut</th>
+<th>Point d'attention</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>FR</strong></td>
+<td>Master</td>
+<td>Référence de ton</td>
+</tr>
+<tr>
+<td><strong>EN</strong></td>
+<td>Adaptation</td>
+<td>« business suite », jamais « HR software »</td>
+</tr>
+<tr>
+<td><strong>AR</strong></td>
+<td>Adaptation</td>
+<td>Rendu RTL des incrustations ; relecture par un locuteur natif <strong>obligatoire</strong> avant diffusion</td>
+</tr>
+<tr>
+<td><strong>TR</strong></td>
+<td>Adaptation</td>
+<td>« işletme yönetimi paketi », jamais « İK yazılımı » ; relecture native obligatoire</td>
+</tr>
+</tbody>
+</table>
+<p>Les phrases canoniques de positionnement (P03) sont reprises <strong>telles quelles</strong> dans les cartons de fin, sans reformulation.</p>
+<hr />
+<h2>10. Plan de production</h2>
+<table>
+<thead>
+<tr>
+<th>Vague</th>
+<th>Livrables</th>
+<th>Priorité</th>
+<th>Dépendance</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>V1 — Socle</strong></td>
+<td>A1, A2, B1, C1, C2 (×4)</td>
+<td>Critique</td>
+<td>Captations produit disponibles</td>
+</tr>
+<tr>
+<td><strong>V2 — Verticales</strong></td>
+<td>D1 → D15</td>
+<td>Haute</td>
+<td>Un jeu de données de démo par verticale</td>
+</tr>
+<tr>
+<td><strong>V3 — Confiance</strong></td>
+<td>E1, E2, E3, C3 (×6)</td>
+<td>Haute</td>
+<td>Validation juridique des formulations E1</td>
+</tr>
+<tr>
+<td><strong>V4 — Activation</strong></td>
+<td>G1, G2, G3</td>
+<td>Moyenne</td>
+<td>Parcours d'inscription stabilisé</td>
+</tr>
+<tr>
+<td><strong>V5 — Social</strong></td>
+<td>F9 → F14</td>
+<td>Moyenne</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>V6 — Partenaires</strong></td>
+<td>H1, H2</td>
+<td>Basse</td>
+<td>Programme partenaire défini</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ordre de tournage recommandé :</strong> capter <strong>une seule fois</strong> un jeu de données complet et cohérent (TechCorp DZ, 3 établissements, 120 collaborateurs, 1 mois d'activité), puis en dériver tous les plans produit. Cela garantit que les chiffres visibles d'une vidéo à l'autre ne se contredisent pas — un détail qui décrédibilise silencieusement une démonstration.</p>
+<h3>10.1 Couverture des verticales</h3>
+<p><em>Mesure du 2026-11-27.</em></p>
+<p>Les <strong>15 verticales</strong> du §6 ont leur ligne au gabarit <strong>et</strong> un script détaillé plan par plan avec son prompt de production propre. La couverture est complète : aucune verticale ne reste au gabarit commun seul.</p>
+<table>
+<thead>
+<tr>
+<th>Verticale</th>
+<th>Script détaillé</th>
+<th>Ce que la détaillation verrouille</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1 — Restauration</td>
+<td>§6.7</td>
+<td>Écran cuisine comme poste de travail, pas comme affichage</td>
+</tr>
+<tr>
+<td>D2 — Commerce de détail</td>
+<td>§6.4</td>
+<td>Marketplace sans quantité exposée</td>
+</tr>
+<tr>
+<td>D3 — Hôtellerie</td>
+<td>§6.8</td>
+<td><strong>Ni ménage ni housekeeping</strong> : le module n'en a pas</td>
+</tr>
+<tr>
+<td>D4 — Pharmacie</td>
+<td>§6.9</td>
+<td>Fiche publique sans stock ni prix</td>
+</tr>
+<tr>
+<td>D5 — Santé</td>
+<td>§6.10</td>
+<td>Données chiffrées, affichées masquées</td>
+</tr>
+<tr>
+<td>D6 — École / Formation</td>
+<td>§6.11</td>
+<td>Bulletin construit → validé → publié ; lien parents à durée limitée</td>
+</tr>
+<tr>
+<td>D7 — Station-service</td>
+<td>§6.12</td>
+<td>Clôture sur <strong>écart</strong>, jamais sur marge</td>
+</tr>
+<tr>
+<td>D8 — VTC</td>
+<td>§6.13</td>
+<td>Prix = estimation, distance calculée par le noyau géospatial</td>
+</tr>
+<tr>
+<td>D9 — Livraison</td>
+<td>§6.1</td>
+<td>Preuve de livraison, pas de promesse</td>
+</tr>
+<tr>
+<td>D10 — Agence de voyage</td>
+<td>§6.14</td>
+<td>Consentement aux notifications enregistré</td>
+</tr>
+<tr>
+<td>D11 — Agriculture</td>
+<td>§6.15</td>
+<td>Superficie toujours avec sa source ; rendement <strong>déclaré</strong>, jamais estimé par le système</td>
+</tr>
+<tr>
+<td>D12 — Bibliothèque</td>
+<td>§6.2</td>
+<td>Ressources numériques, pas de prêt papier</td>
+</tr>
+<tr>
+<td>D13 — Cagnottes solidaires</td>
+<td>§6.5</td>
+<td>Pas de reçu fiscal automatique</td>
+</tr>
+<tr>
+<td>D14 — Flotte &amp; caméras</td>
+<td>§6.3</td>
+<td>Alertes par type d'événement, jamais par identité</td>
+</tr>
+<tr>
+<td>D15 — Cabinet comptable</td>
+<td>§6.6</td>
+<td>Module comptable, pas le placard <code>Cabinet</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Trois corrections de véracité trouvées en détaillant ces neuf scripts</strong> (mesure du 2026-11-27) :
+- <strong>D3 Hôtellerie</strong> — le module <code>HospitalityManager</code> ne contient <strong>aucune</strong> gestion de ménage ni de housekeeping : ni modèle, ni service, ni route. Le gabarit promettait « Housekeeping » et le film long VID-08 disait « le ménage […] remonte dans le même système ». Les deux ont été corrigés : D3 montre le planning, l'arrivée/départ et l'état des unités.
+- <strong>D1 Restauration</strong> — « KDS cuisine » devient « écran cuisine » : c'est le même poste, mais nommé comme l'app l'affiche, et il fait avancer la commande au lieu de la montrer.
+- <strong>D8 VTC</strong> — le module ne calcule aucune distance : il interroge le noyau géospatial, et la distance routière est une estimation. Le prix affiché avant le départ est donc une estimation dès que la grille tarifaire n'est pas configurée — le script l'impose à l'écran.</p>
+<p><strong>Aucun environnement livré n'est annoncé sans film.</strong> Les trois solutions qui n'avaient aucun script (Retail, Cagnottes solidaires, Cabinet comptable) ont désormais le leur : VID-36, VID-37 et VID-38 dans <code>docs/marketing/scripts-video.json</code>.</p>
+</blockquote>
+<h4>10.1.1 Briefs de tournage des 15 verticales</h4>
+<p>Chaque verticale détaillée a un <strong>brief de tournage rempli</strong>, généré depuis son script §6.x — pas un gabarit vide :</p>
+<pre><code class="language-bash">python3 docs/DISTRIBUTION/scripts/generate-video-brief.py --vertical-all --cible youtube
+</code></pre>
+<p>Les 9 briefs sont dans <code>docs/DISTRIBUTION/VIDEOS/briefs/verticale__&lt;objet&gt;__&lt;cible&gt;.md</code>. Ils contiennent le plan minuté, la note de montage, les preuves à l'écran, les UTM et le <strong>prompt de production</strong> — les mêmes contraintes que le script, plus une contrainte propre au module. Seuls les <code>[A COMPLETER]</code> de tournage (lieu, date, <code>utm_content</code>) restent à renseigner : ce sont des données de plateau, pas des données produit.</p>
+<blockquote>
+<p><strong>Correction de véracité du 2026-11-28.</strong> Le brief D11 affirmait que Farm OS « n'affiche jamais de rendement chiffré ». C'est faux : <code>CropCycle</code> porte <code>expected_yield_value</code> / <code>actual_yield_value</code>. La règle réelle, écrite dans <code>FarmProductionType</code>, est que Farm OS <strong>n'estime jamais</strong> un rendement automatiquement — l'exploitant le <strong>déclare</strong>. Le brief et le script disent désormais cela, et interdisent seulement le rendement <em>calculé par le système</em>. La même imprécision existait dans <strong>VID-24</strong>, dont le titre promettait « la marge » alors que ses propres notes l'interdisent : titre et notes corrigés.</p>
+</blockquote>
+<hr />
+<h2>11. Checklist avant diffusion</h2>
+<ul>
+<li>[ ] La catégorie annoncée est « suite métier » (aucune occurrence de « logiciel RH »)</li>
+<li>[ ] Chaque plan produit correspond à une fonction <strong>livrée</strong></li>
+<li>[ ] Aucun chiffre non mesuré</li>
+<li>[ ] Aucun client réel identifiable sans autorisation</li>
+<li>[ ] Les données à l'écran sont cohérentes entre les plans</li>
+<li>[ ] Sous-titres relus (orthographe, terminologie produit)</li>
+<li>[ ] CTA et URL vérifiés (lien actif, QR testé sur deux téléphones)</li>
+<li>[ ] Versions 16:9 / 9:16 / 1:1 exportées</li>
+<li>[ ] Relecture native effectuée pour AR et TR</li>
+<li>[ ] Fichiers nommés selon la convention <code>leopardo_&lt;etage&gt;_&lt;slug&gt;_&lt;langue&gt;_&lt;ratio&gt;_v&lt;n&gt;</code></li>
+</ul>
+<hr />
+<h2>12. Convention de nommage des livrables</h2>
+<pre><code>leopardo_a1_manifeste_fr_16x9_v1.mp4
+leopardo_b1_journee_fr_16x9_v1.mp4
+leopardo_d3_hotellerie_fr_9x16_v1.mp4
+leopardo_c3_objection-reseau_fr_1x1_v1.mp4
+</code></pre>
+<p>Étage (<code>a</code>–<code>h</code>), slug en minuscules avec tirets, langue (<code>fr</code>/<code>en</code>/<code>ar</code>/<code>tr</code>), ratio, version. Aucune majuscule, aucun espace, aucun accent dans les noms de fichiers.</p></body></html>

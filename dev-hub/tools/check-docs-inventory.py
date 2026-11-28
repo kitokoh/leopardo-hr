@@ -118,6 +118,16 @@ GENERATED_DOCS = {
     "docs/infra/CI_WORKFLOW_INVENTORY.md",
 }
 
+# Repertoires entierement GENERES : chaque fichier y est ecrit par un script et
+# se regenere a l'identique. Les compter dans le budget reviendrait a interdire
+# d'ajouter une verticale au programme video, ce qui n'est pas une decision
+# editoriale mais une consequence mecanique de `generate-video-brief.py`.
+# Le prefixe est volontairement etroit : un .md ecrit a la main dans ces
+# repertoires ne doit pas echapper au budget.
+GENERATED_PREFIXES = (
+    "docs/DISTRIBUTION/VIDEOS/briefs/",
+)
+
 
 def all_docs() -> list[pathlib.Path]:
     out = []
@@ -126,6 +136,8 @@ def all_docs() -> list[pathlib.Path]:
         if rel.startswith(("node_modules/", ".git/", "vendor/")):
             continue
         if rel in GENERATED_DOCS:
+            continue
+        if rel.startswith(GENERATED_PREFIXES):
             continue
         out.append(p)
     return sorted(out)
