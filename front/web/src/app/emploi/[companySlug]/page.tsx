@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 import { normalizeLocale } from '@/lib/i18n';
-import { SITE_URL } from '@/lib/site-url';
 import {
   CAREERS_SURFACE,
   CompanyJobsSurface,
   loadCompanyJobsView,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /**
@@ -45,7 +45,7 @@ export async function generateMetadata({
   return {
     title: `${result.companyName} — ${CAREERS_SURFACE.displayName}`,
     description: CAREERS_SURFACE.tagline,
-    alternates: { canonical: `${SITE_URL}/emploi/${companySlug}` },
+    alternates: { canonical: surfaceUrl(CAREERS_SURFACE, `/emploi/${companySlug}`) },
     robots: { index: true, follow: true },
     openGraph: {
       title: `${result.companyName} — ${CAREERS_SURFACE.displayName}`,

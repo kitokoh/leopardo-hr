@@ -140,6 +140,16 @@ jobs:
         shell: bash
         run: 'bash ./dev-hub/tools/check-mobile-app-identity.sh'
 
+      - name: Validate mobile web build coverage (#10040)
+        # Le job `flutter-build-web` porte une matrice écrite à la main : rien
+        # ne la reliait au disque. Ajouter `front/mobile_apps/leopardo_<v>_app`
+        # sans sa ligne dans la matrice produisait une app dont la cible web
+        # n'était JAMAIS compilée — CI verte, silence total. Même mode de
+        # défaillance que #9381 côté distribution (accounting/marketing sans
+        # APK release). Cette garde ferme le trou AVANT qu'il ne se produise.
+        shell: bash
+        run: 'bash ./dev-hub/tools/check-mobile-web-build-coverage.sh'
+
       - name: Validate mobile stock web/mobile parity (#9275)
         # Règle produit : le mobile reste une OPTION. Tout endpoint de stock
         # appelé par un écran mobile doit avoir une surface web documentée

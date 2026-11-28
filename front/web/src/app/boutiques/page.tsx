@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 import { normalizeLocale } from '@/lib/i18n';
-import { SITE_URL } from '@/lib/site-url';
 import {
   RETAIL_SURFACE,
   ShopDirectorySurface,
   loadShopDirectoryView,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /**
@@ -36,7 +36,7 @@ export async function generateMetadata({ searchParams }: BoutiquesPageProps): Pr
   return {
     title: RETAIL_SURFACE.displayName,
     description: RETAIL_SURFACE.tagline,
-    alternates: { canonical: `${SITE_URL}${RETAIL_SURFACE.basePath}` },
+    alternates: { canonical: surfaceUrl(RETAIL_SURFACE) },
     robots: { index: true, follow: true },
     openGraph: {
       title: RETAIL_SURFACE.displayName,
