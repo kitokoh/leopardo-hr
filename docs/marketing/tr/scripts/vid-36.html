@@ -67,13 +67,13 @@
         <tr>
           <td class="nowrap"><strong>0:00-0:08</strong></td>
           <td>Kasa bir sey soyler, stok baska bir sey. Ay sonunda kimse hangisinin dogru oldugunu bilmez.</td>
-          <td>Comptoir de boutique : un ticket imprime d&#x27;un cote, un cahier de stock de l&#x27;autre, deux chiffres qui ne se parlent pas. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></td>
+          <td>Comptoir de boutique : un ticket imprimé d&#x27;un cote, un cahier de stock de l&#x27;autre, deux chiffres qui ne se parlent pas. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></td>
           <td><span class="ontext">Iki sayi. Hic anlasma yok.</span></td>
         </tr>
         <tr>
           <td class="nowrap"><strong>0:08-0:22</strong></td>
           <td>Kasa bir oturum acar, tahsil eder, fisi yazdirir ve hesaplanan bir farkla kapanir. Anlatilan bir fark degil.</td>
-          <td>Capture POS : ouverture de session, encaissement multi-moyens (especes, carte, mobile), ticket, ecran de cloture avec attendu / compte / ecart. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></td>
+          <td>Capture POS : ouverture de session, encaissement multi-moyens (especes, carte, mobile), ticket, écran de cloture avec attendu / compte / ecart. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></td>
           <td><span class="ontext">Oturum, tahsilat, kapanis</span></td>
         </tr>
         <tr>
@@ -85,7 +85,7 @@
         <tr>
           <td class="nowrap"><strong>0:36-0:50</strong></td>
           <td>Cevrimici magaza ayni katalogu satar ve Leopardo Marche pazar yeri yalnizca etkinlestiren saticilari gosterir.</td>
-          <td>Capture commande en ligne (statut de preparation : en attente, confirmee, prete, expediee, livree), puis fiche produit publique sur la marketplace. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></td>
+          <td>Capture commande en ligne (statut de préparation : en attente, confirmee, prete, expediee, livrée), puis fiche produit publique sur la marketplace. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></td>
           <td><span class="ontext">Cevrimici magaza &amp; pazar yeri</span></td>
         </tr>
         <tr>
@@ -105,14 +105,14 @@
     </div>
     <div class="panel">
       <h3>Ses ve muzik</h3>
-      <p>Percussions seches, tempo de comptoir, 108 BPM. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></p>
+      <p>Percussions sèches, tempo de comptoir, 108 BPM. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></p>
     </div>
   </div>
 
   <div class="panel">
     <h3>Yapim notlari</h3>
-    <p>Module Retail (BC-17, api/app/Modules/Retail). POS : RetailPosSession (statut open/closed, une seule session ouverte par emplacement), RetailOrder (source pos/online, statut draft/completed/cancelled), RetailPaymentMethod (cash, card, mobile, online), RetailPosRefund. Stock : RetailStockService est le point d&#x27;ecriture UNIQUE, chaque mouvement est un RetailInventoryMovement (reason_code purchase, sale, adjustment, return, transfer_in, transfer_out, loss) ; le stock n&#x27;est JAMAIS negatif ; cout moyen pondere (avg_cost_minor) alimente par les entrees. En ligne : RetailFulfillmentStatus (pending, confirmed, ready, shipped, delivered, cancelled), checkout invite avec cle d&#x27;idempotence. Marketplace : RetailMarketplaceService agrege uniquement les vendeurs opt-in (boutique activee + feature retail + company valide) ; aucune quantite de stock n&#x27;est exposee publiquement, seulement available: bool. Rapports : RetailReportService (ventes, top produits, clotures de caisse, valorisation du stock avec cost_source average|catalog). Ne pas afficher de chiffre de vente, de marge ni de taux : le produit ne les invente pas. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></p>
-    <div class="chips"><span class="chip">#retail</span><span class="chip">#commerce de detail</span><span class="chip">#pos</span><span class="chip">#stock</span><span class="chip">#marketplace</span><span class="chip">#verticale</span></div>
+    <p>Module Retail (BC-17, api/app/Modules/Retail). POS : RetailPosSession (statut open/closed, une seule session ouverte par emplacement), RetailOrder (source pos/online, statut draft/completed/cancelled), RetailPaymentMethod (cash, card, mobile, online), RetailPosRefund. Stock : RetailStockService est le point d&#x27;écriture UNIQUE, chaque mouvement est un RetailInventoryMovement (reason_code purchase, sale, adjustment, return, transfer_in, transfer_out, loss) ; le stock n&#x27;est JAMAIS negatif ; cout moyen pondere (avg_cost_minor) alimente par les entrées. En ligne : RetailFulfillmentStatus (pending, confirmed, ready, shipped, delivered, cancelled), checkout invite avec cle d&#x27;idempotence. Marketplace : RetailMarketplaceService agrege uniquement les vendeurs opt-in (boutique activee + feature retail + company validé) ; aucune quantite de stock n&#x27;est exposee publiquement, seulement available: bool. Rapports : RetailReportService (ventes, top produits, clotures de caisse, valorisation du stock avec cost_source average|catalog). Ne pas afficher de chiffre de vente, de marge ni de taux : le produit ne les inventé pas. <span class="fr-badge" title="FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.">FR</span></p>
+    <div class="chips"><span class="chip">#retail</span><span class="chip">#commerce de détail</span><span class="chip">#pos</span><span class="chip">#stock</span><span class="chip">#marketplace</span><span class="chip">#verticale</span></div>
   </div>
 
   

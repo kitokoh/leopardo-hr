@@ -28,6 +28,7 @@
 > « 11 apps »**, jamais 21 : c'est le nombre d'apps réellement distribuées.
 
 ## Mesures au 2026-09-18 (historique)
+| Modules activables (catalogue) | 39 | 2026-11-28 | `docs/GOTO_MARKET/PACK_LANCEMENT/04_PAGE_VENTE_PAIE_POINTAGE_DZ.md` §6 |
 
 | Métrique | Valeur | Mesuré le | Source / méthode de mesure |
 |---|---|---|---|

@@ -49,12 +49,12 @@
 
   <div class="panel">
     <h3>Objectif du film</h3>
-    <p>Montrer le module Delivery (BC-26) : tournees et arrets, preuve de livraison (POD), suivi destinataire, encaissements a la livraison (COD) reconcilies avec la comptabilite.</p>
+    <p>Montrer le module Delivery (BC-26) : tournees et arrêts, preuve de livraison (POD), suivi destinataire, encaissements à la livraison (COD) reconcilies avec la comptabilité.</p>
   </div>
 
   <div class="panel">
     <h3>Hook (3 premieres secondes)</h3>
-    <p class="hook">« Un colis livre sans preuve, c&#x27;est une contestation qui commence. »</p>
+    <p class="hook">« Un colis livré sans preuve, c&#x27;est une contestation qui commence. »</p>
   </div>
 
   <div class="panel">
@@ -66,19 +66,19 @@
         <tbody>
         <tr>
           <td class="nowrap"><strong>0:00-0:08</strong></td>
-          <td>Un colis livre sans preuve, c&#x27;est une contestation qui commence.</td>
-          <td>Livreur devant une porte close, un carton a la main, personne pour signer.</td>
-          <td><span class="ontext">Livre, ou pas livre ?</span></td>
+          <td>Un colis livré sans preuve, c&#x27;est une contestation qui commence.</td>
+          <td>Livreur devant une porte close, un carton à la main, personne pour signer.</td>
+          <td><span class="ontext">Livré, ou pas livré ?</span></td>
         </tr>
         <tr>
           <td class="nowrap"><strong>0:08-0:22</strong></td>
-          <td>Le module Livraison organise la tournee : enlevements, arrets, ordre de passage, et le statut de chaque arret.</td>
-          <td>Capture tournee : liste des arrets, statut par arret (en route, arrive, livre, echoue, saute).</td>
-          <td><span class="ontext">Tournee &amp; arrets</span></td>
+          <td>Le module Livraison organise la tournee : enlevements, arrêts, ordre de passage, et le statut de chaque arrêt.</td>
+          <td>Capture tournee : liste des arrêts, statut par arrêt (en route, arrive, livré, echoue, saute).</td>
+          <td><span class="ontext">Tournee &amp; arrêts</span></td>
         </tr>
         <tr>
           <td class="nowrap"><strong>0:22-0:36</strong></td>
-          <td>A chaque arret, une preuve de livraison : photo, signature, horodatage. Le colis a une trace, pas une promesse.</td>
+          <td>A chaque arrêt, une preuve de livraison : photo, signature, horodatage. Le colis à une trace, pas une promesse.</td>
           <td>Capture preuve de livraison : photo, signature du destinataire, horodatage.</td>
           <td><span class="ontext">Preuve de livraison (POD)</span></td>
         </tr>
@@ -90,7 +90,7 @@
         </tr>
         <tr>
           <td class="nowrap"><strong>0:50-1:00</strong></td>
-          <td>Les encaissements a la livraison se reconcilient avec la comptabilite. Le module Livraison est offert : vous payez la plateforme, pas le secteur.</td>
+          <td>Les encaissements à la livraison se reconcilient avec la comptabilité. Le module Livraison est offert : vous payez la plateforme, pas le secteur.</td>
           <td>Capture reconciliation des encaissements COD, puis CTA et logo.</td>
           <td><span class="ontext">Encaissements COD - module offert</span></td>
         </tr></tbody>
@@ -111,7 +111,7 @@
 
   <div class="panel">
     <h3>Notes de production</h3>
-    <p>Module Delivery (BC-26, api/app/Modules/Delivery) : cycle de vie verrouille par DeliveryStateMachine (created -&gt; assigned -&gt; picked_up -&gt; out_for_delivery -&gt; arrived -&gt; delivered | failed -&gt; returned | cancelled ; etats terminaux non rouvrables). Statuts d&#x27;arret : pending, en_route, arrived, delivered, failed, skipped. Preuve de livraison = documents ; encaissements COD = comptabilite. Ne pas afficher de delai ni de taux de reussite chiffre : le produit ne les invente pas.</p>
+    <p>Module Delivery (BC-26, api/app/Modules/Delivery) : cycle de vie verrouille par DeliveryStateMachine (created -&gt; assigned -&gt; picked_up -&gt; out_for_delivery -&gt; arrived -&gt; delivered | failed -&gt; returned | cancelled ; états terminaux non rouvrables). Statuts d&#x27;arrêt : pending, en_route, arrived, delivered, failed, skipped. Preuve de livraison = documents ; encaissements COD = comptabilité. Ne pas afficher de délai ni de taux de reussite chiffre : le produit ne les inventé pas.</p>
     <div class="chips"><span class="chip">#livraison</span><span class="chip">#tournee</span><span class="chip">#preuve de livraison</span><span class="chip">#cod</span><span class="chip">#verticale</span></div>
   </div>
 
