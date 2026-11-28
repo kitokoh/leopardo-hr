@@ -648,8 +648,29 @@ def page_script(loc: str, s: dict) -> str:
 
   {status_panel(loc, s)}
 
+  {ai_prompt_panel(loc, s)}
+
   <div class="uc-nav">{''.join(nav)}</div>
 """)
+
+
+def ai_prompt_panel(loc: str, s: dict) -> str:
+    """Panneau « Prompt pour agent IA de production ».
+
+    Le prompt vit dans `scripts-video.json` (champ `ai_agent_prompt`), ecrit une
+    fois avec le script. Il n'est pas traduit : c'est une consigne de production
+    destinee a un agent, pas un contenu editorial. Le panneau, lui, est traduit.
+    """
+    prompt = (s.get("ai_agent_prompt") or "").strip()
+    if not prompt:
+        return ""
+    return f"""
+  <div class="panel prompt-panel">
+    <h3>{esc(t(loc, "prompt_title"))}</h3>
+    <p class="prompt-lead">{esc(t(loc, "prompt_lead"))}</p>
+    <pre class="ai-prompt">{esc(prompt)}</pre>
+  </div>
+"""
 
 
 def status_panel(loc: str, s: dict) -> str:
@@ -911,6 +932,12 @@ def build_markdown() -> str:
             lines += ["", f"**CTA :** {s['cta']}", "",
                       f"**Son :** {s['music']}", "",
                       f"**Notes :** {s['notes']}", ""]
+            prompt = (s.get("ai_agent_prompt") or "").strip()
+            if prompt:
+                lines += ["#### Prompt pour agent IA de production", "",
+                          "A coller tel quel dans un agent de production video. "
+                          "Le script est deja ecrit : l'agent produit, il n'improvise pas.",
+                          "", "```text", prompt, "```", ""]
     return "\n".join(lines) + "\n"
 
 
@@ -1055,6 +1082,15 @@ main{padding:28px 20px 60px}
 .uc-title{margin:0 0 6px;font-size:24px;letter-spacing:-.01em}
 .hook{font-size:17px;font-style:italic;color:#0f172a;margin:0;padding-left:14px;border-left:3px solid var(--brand)}
 .ontext{display:inline-block;background:#0f172a;color:#fff;border-radius:6px;padding:2px 8px;font-size:12.5px}
+/* --- prompt de production (agent IA) --- */
+.prompt-panel{border-left:4px solid #2563eb}
+.prompt-lead{margin:0 0 12px;color:var(--muted);font-size:13.5px}
+pre.ai-prompt{background:#0b1220;color:#e2e8f0;border-radius:8px;padding:16px 18px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;
+  line-height:1.55;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;
+  max-height:none;overflow-x:auto;margin:0}
+body.loc-ar .prompt-panel{border-left:1px solid var(--line);border-right:4px solid #2563eb}
+body.loc-ar pre.ai-prompt{direction:ltr;text-align:left}
 .hist-count-badge{display:inline-block;min-width:24px;padding:1px 8px;border-radius:999px;
   background:#0d9488;color:#fff;font-size:12.5px;font-weight:700;vertical-align:middle}
 /* --- suivi de production --- */

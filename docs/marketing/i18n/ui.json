@@ -108,7 +108,10 @@
     "fallback_badge": "FR",
     "fallback_legend": "Les champs marques FR sont les consignes de tournage, laissees en francais (langue de travail de l'equipe production).",
     "pm_tier_socle": "Socle",
-    "pm_tier_catalogue": "Catalogue"
+    "pm_tier_catalogue": "Catalogue",
+    "prompt_title": "Prompt pour agent IA de production",
+    "prompt_lead": "A coller tel quel dans un agent de production video. Le script est deja ecrit : l'agent produit, il n'improvise pas.",
+    "prompt_copy": "Copier le prompt"
   },
   "en": {
     "brand": "Marketing scripts",
@@ -204,7 +207,10 @@
     "fallback_badge": "FR",
     "fallback_legend": "Fields marked FR are shooting instructions, left in French (the production team's working language).",
     "pm_tier_socle": "Core",
-    "pm_tier_catalogue": "Catalogue"
+    "pm_tier_catalogue": "Catalogue",
+    "prompt_title": "Prompt for an AI production agent",
+    "prompt_lead": "Paste as-is into a video production agent. The script is already written: the agent produces, it does not improvise.",
+    "prompt_copy": "Copy prompt"
   },
   "tr": {
     "brand": "Pazarlama senaryolari",
@@ -300,7 +306,10 @@
     "fallback_badge": "FR",
     "fallback_legend": "FR ile isaretli alanlar cekim talimatlaridir; yapim ekibinin calisma dili olan Fransizca birakilmistir.",
     "pm_tier_socle": "Cekirdek",
-    "pm_tier_catalogue": "Katalog"
+    "pm_tier_catalogue": "Katalog",
+    "prompt_title": "Yapay zeka prodüksiyon ajanı için istem",
+    "prompt_lead": "Video prodüksiyon ajanına olduğu gibi yapıştırın. Senaryo zaten yazılı: ajan üretir, doğaçlama yapmaz.",
+    "prompt_copy": "İstemi kopyala"
   },
   "ar": {
     "brand": "نصوص التسويق",
@@ -396,6 +405,9 @@
     "fallback_badge": "FR",
     "fallback_legend": "الحقول المعلَّمة بـ FR هي تعليمات تصوير، تُركت بالفرنسية (لغة عمل فريق الإنتاج).",
     "pm_tier_socle": "النواة",
-    "pm_tier_catalogue": "الكتالوج"
+    "pm_tier_catalogue": "الكتالوج",
+    "prompt_title": "موجّه لوكيل إنتاج بالذكاء الاصطناعي",
+    "prompt_lead": "الصقه كما هو في وكيل إنتاج الفيديو. السيناريو مكتوب مسبقاً: الوكيل ينتج ولا يرتجل.",
+    "prompt_copy": "نسخ الموجّه"
   }
 }

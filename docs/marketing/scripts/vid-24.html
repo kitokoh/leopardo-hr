@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VID-24 — Farm OS : la parcelle, le troupeau, la recolte, la marge — Scripts marketing Leopardo</title>
+<title>VID-24 — Farm OS : la parcelle, le troupeau, la recolte, la tracabilite — Scripts marketing Leopardo</title>
 <link rel="alternate" hreflang="fr" href="../scripts/vid-24.html">
 <link rel="alternate" hreflang="en" href="../en/scripts/vid-24.html">
 <link rel="alternate" hreflang="tr" href="../tr/scripts/vid-24.html">
@@ -33,14 +33,14 @@
   </div>
 </header>
 <main class="wrap">
-  <h1 class="page-title">VID-24 — Farm OS : la parcelle, le troupeau, la recolte, la marge</h1>
+  <h1 class="page-title">VID-24 — Farm OS : la parcelle, le troupeau, la recolte, la tracabilite</h1>
   
   
   <nav class="breadcrumb"><a href="../index.html">Scripts marketing</a> <span class="sep">›</span> <a href="../categories/index.html">Categories</a> <span class="sep">›</span> <a href="../categories/verticales.html">Verticales</a> <span class="sep">›</span> <span aria-current="page">VID-24</span></nav>
   <div class="uc-head">
     <div class="uc-id">VID-24</div>
     <div>
-      <h2 class="uc-title">Farm OS : la parcelle, le troupeau, la recolte, la marge</h2>
+      <h2 class="uc-title">Farm OS : la parcelle, le troupeau, la recolte, la tracabilite</h2>
       <div class="chips"><span class="badge" style="background:#7c3aed1a;color:#7c3aed;border-color:#7c3aed33">🏭 Verticales</span><span class="badge" style="background:#0f766e1a;color:#0f766e;border-color:#0f766e33">16:9</span>
         <span class="chip">⏱ 60 s</span>
         <span class="chip">🎯 Agriculteurs, eleveurs, exploitations et cooperatives agricoles</span></div>
@@ -111,7 +111,7 @@
 
   <div class="panel">
     <h3>Notes de production</h3>
-    <p>Chiffres verifies dans le depot au 2026-11-26 : 84 routes (api/routes/modules/farm_os.php), 73 chemins OpenAPI /farm/, 31 tables tenant (7 migrations), 13 capacites activables, 16 activites agricoles. Ne pas afficher de rendement ni de marge chiffree : le produit ne les invente pas (ADR-FARM-0003, honnetete des donnees). Afficher des libelles, jamais des valeurs.</p>
+    <p>Chiffres verifies dans le depot au 2026-11-26 : 84 routes (api/routes/modules/farm_os.php), 73 chemins OpenAPI /farm/, 31 tables tenant (7 migrations), 13 capacites activables, 16 activites agricoles. Ne pas afficher de rendement ni de marge chiffree : le produit ne les invente pas (ADR-FARM-0003, honnetete des donnees). Le rendement est DECLARE par l&#x27;exploitant (attendus et reels, sur le cycle cultural) et n&#x27;est jamais estime par le systeme : ne jamais montrer de rendement calcule. Afficher des libelles, jamais des valeurs.</p>
     <div class="chips"><span class="chip">#farm os</span><span class="chip">#agriculture</span><span class="chip">#verticale</span><span class="chip">#parcellaire</span><span class="chip">#hors-ligne</span></div>
   </div>
 
@@ -142,6 +142,58 @@
     </details>
     <p class="muted small">Source : <code>statuts-tournage.json</code></p>
   </div>
+
+  
+  <div class="panel prompt-panel">
+    <h3>Prompt pour agent IA de production</h3>
+    <p class="prompt-lead">A coller tel quel dans un agent de production video. Le script est deja ecrit : l&#x27;agent produit, il n&#x27;improvise pas.</p>
+    <pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-24 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-24 - &quot;Farm OS : la parcelle, le troupeau, la recolte, la marge&quot;
+- Format 16:9, duree cible 60 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Cordes basses et percussions organiques, 95 BPM, respiration lente ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Agriculteurs, eleveurs, exploitations et cooperatives agricoles
+OBJECTIF : Montrer le pack Farm OS (BC-37) : parcelles et cultures, calendrier des travaux, intrants et stock, materiel, cheptel, recoltes et tracabilite, achats et ventes, couts et rentabilite.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Vous savez ce que vous avez seme. Savez-vous ce que la parcelle a rapporte ?&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:08 | Vous savez ce que vous avez seme. Vous savez rarement ce que chaque parcelle a reellement rapporte. | Plan large d&#x27;une parcelle a l&#x27;aube, puis main qui tient un carnet de travaux. | Semer, c&#x27;est facile. Compter, non. |
+| 0:08-0:22 | Farm OS tient le parcellaire : chaque parcelle, sa culture, sa superficie declaree, son cycle cultural. | Capture carte des parcelles, puis fiche parcelle avec cycle cultural. | Parcelles &amp; cycles culturaux |
+| 0:22-0:36 | Le calendrier des travaux se remplit depuis le champ, meme sans reseau. Chaque saisie porte un identifiant unique : rien n&#x27;est compte deux fois. | Telephone en mode hors-ligne, saisie d&#x27;une intervention, badge de synchronisation qui passe au vert. | Travaux saisis au champ, hors-ligne |
+| 0:36-0:50 | Intrants et stock, materiel, cheptel, recoltes et tracabilite : une recolte cree un seul lot de stock, et chaque sortie est un mouvement type. | Capture stock d&#x27;intrants, puis fiche cheptel, puis lot de recolte cree. | Stock, cheptel, recoltes |
+| 0:50-1:00 | Achats, ventes, couts et rentabilite se calculent sur les memes donnees. Le pack Farm OS est offert : vous payez la plateforme, pas le secteur. | Capture couts et rentabilite par parcelle, puis CTA et logo. | Couts &amp; rentabilite - pack offert |
+
+CTA FINAL : Activer le pack Farm OS depuis le site produit, sans frais de pack.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Chiffres verifies dans le depot au 2026-11-26 : 84 routes (api/routes/modules/farm_os.php), 73 chemins OpenAPI /farm/, 31 tables tenant (7 migrations), 13 capacites activables, 16 activites agricoles. Ne pas afficher de rendement ni de marge chiffree : le produit ne les invente pas (ADR-FARM-0003, honnetete des donnees). Le rendement est DECLARE par l&#x27;exploitant (attendus et reels, sur le cycle cultural) et n&#x27;est jamais estime par le systeme : ne jamais montrer de rendement calcule. Afficher des libelles, jamais des valeurs.
+
+SORTIES ATTENDUES :
+- leopardo_vid24_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid24_{lang}_16x9_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 60 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre>
+  </div>
+
 
   <div class="uc-nav"><a class="btn-back" href="../scripts/vid-23.html">← VID-23</a><a class="btn-back" href="../categories/verticales.html">Toute la categorie</a><a class="btn-back" href="../scripts/vid-25.html">VID-25 →</a></div>
 

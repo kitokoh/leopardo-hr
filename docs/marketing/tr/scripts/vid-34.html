@@ -130,6 +130,58 @@
     <p class="muted small">Kaynak : <code>statuts-tournage.json</code></p>
   </div>
 
+  
+  <div class="panel prompt-panel">
+    <h3>Yapay zeka prodüksiyon ajanı için istem</h3>
+    <p class="prompt-lead">Video prodüksiyon ajanına olduğu gibi yapıştırın. Senaryo zaten yazılı: ajan üretir, doğaçlama yapmaz.</p>
+    <pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-34 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-34 - &quot;Bibliotheque : le catalogue, l&#x27;acces, la lecture&quot;
+- Format 16:9, duree cible 60 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Nappe douce, piano discret, 90 BPM. ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Etablissements de formation, entreprises, organisations qui diffusent des ressources
+OBJECTIF : Montrer le module Library : catalogue de ressources numeriques (livres, ebooks, guides, manuels, rapports, articles), modeles d&#x27;acces, achat a l&#x27;unite, progression de lecture et recherche par le sens.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Un catalogue de ressources qui vit dans un tableur finit toujours par mentir.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:08 | Un catalogue de ressources qui vit dans un tableur finit toujours par mentir. | Bureau encombre de catalogues papier et d&#x27;un tableur ouvert. | Le catalogue qui deraille. |
+| 0:08-0:22 | La Bibliotheque tient le catalogue : livres, ebooks, guides, manuels, rapports, articles, ranges par categorie et par collection. | Capture catalogue : liste des ressources, filtres par type et par categorie, fiche ressource. | Catalogue &amp; collections |
+| 0:22-0:36 | Chaque ressource a son modele d&#x27;acces : libre, lecture seule, achat a l&#x27;unite, inclus dans un abonnement, ou prive a votre organisation. | Capture fiche ressource : modele d&#x27;acces, prix, bouton de lecture ou d&#x27;achat. | Libre - lecture seule - achat - abonnement - prive |
+| 0:36-0:50 | Le lecteur reprend ou il s&#x27;est arrete : la progression de lecture est enregistree, ressource par ressource. | Capture lecteur en ligne, barre de progression reprise a la derniere page. | Reprendre ou on s&#x27;est arrete |
+| 0:50-1:00 | La recherche retrouve une ressource par son sens, pas seulement par son titre. La Bibliotheque est offerte : vous payez la plateforme, pas le secteur. | Capture recherche semantique, puis CTA et logo. | Recherche par le sens - module offert |
+
+CTA FINAL : Activer le module Bibliotheque depuis le site produit, sans frais de pack.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Le module Bibliotheque gere des ressources NUMERIQUES (livres, ebooks, guides, manuels, rapports, articles) avec un modele d&#x27;acces par ressource. Ne jamais montrer de pret d&#x27;ouvrages papier, de gestion d&#x27;emprunteurs ni de rappels de retour : ce n&#x27;est pas ce que fait le module.
+
+SORTIES ATTENDUES :
+- leopardo_vid34_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid34_{lang}_16x9_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 60 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre>
+  </div>
+
+
   <div class="uc-nav"><a class="btn-back" href="../../tr/scripts/vid-33.html">← VID-33</a><a class="btn-back" href="../../tr/categories/verticales.html">Tum kategori</a><a class="btn-back" href="../../tr/scripts/vid-35.html">VID-35 →</a></div>
 
 </main>

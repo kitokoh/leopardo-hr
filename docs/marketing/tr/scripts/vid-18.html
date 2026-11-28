@@ -143,6 +143,58 @@
     <p class="muted small">Kaynak : <code>statuts-tournage.json</code></p>
   </div>
 
+  
+  <div class="panel prompt-panel">
+    <h3>Yapay zeka prodüksiyon ajanı için istem</h3>
+    <p class="prompt-lead">Video prodüksiyon ajanına olduğu gibi yapıştırın. Senaryo zaten yazılı: ajan üretir, doğaçlama yapmaz.</p>
+    <pre class="ai-prompt">ROLE : tu es realisateur-monteur video IA pour Leopardo, la suite metier des entreprises de terrain. Tu produis la video VID-18 a partir du script ci-dessous, sans rien inventer.
+
+LIVRABLE : VID-18 - &quot;Pointage, kiosque et mode hors-ligne&quot;
+- Format 16:9, duree cible 60 s, 25 fps, master 3840x2160 ; declinaisons 1920x1080, 1080x1920 (9:16), 1080x1080 (1:1)
+- Voix off FR, debit 150-165 mots/min, ton pose, jamais publicitaire criard
+- Sous-titres .srt + .vtt (brules en version sociale, fichiers separes en version web)
+- Palette : fond nuit #0B1220, accent #2563EB, validation #16A34A, alerte #DC2626, neutre #94A3B8 ; typographie Inter, 2 graisses maximum par plan
+- Musique : Tension legere puis resolution ; lit a -18 dB sous la voix, montee a -12 dB sur le CTA
+
+PUBLIC : Directeurs d&#x27;exploitation, responsables de site
+OBJECTIF : Montrer les trois chemins de pointage (mobile, kiosque biometrique, mode secours) et la resynchronisation Edge.
+ACCROCHE (0-3 s, doit tenir sans son) : &quot;Le reseau tombe. Les equipes pointent quand meme.&quot;
+
+DECOUPAGE A PRODUIRE (respecte les timecodes a la seconde) :
+| Temps | Voix off | Plan | Texte a l&#x27;ecran |
+|---|---|---|---|
+| 0:00-0:08 | Le reseau tombe. Les equipes pointent quand meme. | Ecran de kiosque qui passe en mode degrade, sans erreur. | Le reseau tombe. |
+| 0:08-0:24 | Trois chemins : le mobile du collaborateur, le kiosque biometrique ZKTeco, et le mode secours par matricule. | Trois captures successives. | Mobile - Kiosque - Matricule |
+| 0:24-0:40 | Hors-ligne, les pointages se mettent en file localement, puis se synchronisent au retour du lien. | Capture file hors-ligne, puis badge de synchronisation. | File locale, puis sync |
+| 0:40-0:52 | Chaque pointage garde son horodatage d&#x27;origine, pas celui de la synchronisation. | Capture detail d&#x27;un pointage, deux horodatages. | Horodatage d&#x27;origine conserve |
+| 0:52-1:00 | Et ces donnees alimentent directement la paie. | CTA. | Du pointage a la paie |
+
+CTA FINAL : Demander une demo terrain avec simulation de coupure reseau.
+
+CONTRAINTES NON NEGOCIABLES :
+1. Categorie = &quot;suite metier des entreprises de terrain&quot;. Jamais &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;HR software&quot;, ni &quot;Business OS&quot;.
+2. Chaque plan produit est une captation de l&#x27;application reellement livree, sur des donnees de demonstration fictives. Aucune maquette inventee, aucune fonction non livree.
+3. Aucun chiffre non mesure et non date. Tout chiffre affiche doit exister dans docs/REFERENTIEL_PRODUIT/METRIQUES_VITRINE.md avec sa date de mesure.
+4. Aucun client reel, aucun logo, aucun temoignage sans autorisation ecrite. Les entreprises des scripts (TechCorp DZ, Riad Atlas, Pharmacie Ennour...) sont fictives et le restent a l&#x27;ecran.
+5. Aucune allegation de conformite legale, de certification ou de label non obtenu.
+6. Le film doit rester comprehensible sans son : chaque plan porte son texte a l&#x27;ecran.
+7. Consignes de tournage du script : Le mode hors-ligne est un argument fort : le montrer en coupure simulee, pas en animation. Documentation : docs/kiosk/README.md et docs/kiosk/punch-methods-config.md.
+
+SORTIES ATTENDUES :
+- leopardo_vid18_{lang}_16x9_v1.mp4 (H.264 High, AAC 320 kbps)
+- leopardo_vid18_{lang}_16x9_v1.srt et .vtt
+- miniature 1280x720 et 1080x1920
+- shot-list.csv (timecode, plan, source de la capture, statut)
+
+AUTO-CONTROLE AVANT LIVRAISON :
+- duree reelle = 60 s a +/- 2 %
+- 0 occurrence de &quot;logiciel RH&quot;, &quot;SaaS RH&quot;, &quot;Business OS&quot;
+- chaque chiffre a l&#x27;ecran retrouve dans METRIQUES_VITRINE.md avec sa date
+- sous-titres relus, CTA et URL testes sur deux telephones
+- versions 16:9 / 9:16 / 1:1 exportees</pre>
+  </div>
+
+
   <div class="uc-nav"><a class="btn-back" href="../../tr/scripts/vid-17.html">← VID-17</a><a class="btn-back" href="../../tr/categories/fonctionnalites.html">Tum kategori</a><a class="btn-back" href="../../tr/scripts/vid-19.html">VID-19 →</a></div>
 
 </main>
