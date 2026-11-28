@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 import { MapPin, Star } from 'lucide-react';
 import { normalizeLocale } from '@/lib/i18n';
 import { catalogDirection, t } from '@/lib/i18n/locale-catalog';
-import { SITE_URL } from '@/lib/site-url';
 import { JsonLd } from '@/components/JsonLd';
 import { getPublicShop, type PublicShopProfile } from '@/lib/retail-public-api';
 import PublicContactCta from '@/app/decouvrir/public-contact-cta';
@@ -15,6 +14,7 @@ import {
   SurfaceSearchBar,
   filterByQuery,
   paginateList,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /** Catégories affichées par page sur la fiche d'une boutique. */
@@ -61,7 +61,7 @@ export async function generateMetadata({ params, searchParams }: ShopPageProps):
   return {
     title,
     description,
-    alternates: { canonical: `${SITE_URL}/boutiques/${shop.slug}` },
+    alternates: { canonical: surfaceUrl(RETAIL_SURFACE, `/boutiques/${shop.slug}`) },
     robots: { index: true, follow: true },
     openGraph: { title, description, type: 'website' },
   };
@@ -72,7 +72,7 @@ function shopJsonLd(shop: PublicShopProfile): Record<string, unknown> {
     '@context': 'https://schema.org',
     '@type': 'Store',
     name: shop.name,
-    url: `${SITE_URL}/boutiques/${shop.slug}`,
+    url: surfaceUrl(RETAIL_SURFACE, `/boutiques/${shop.slug}`),
   };
 
   if (shop.description) {

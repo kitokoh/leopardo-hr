@@ -54,6 +54,14 @@ export {
   surfaceUrl,
 } from './application/resolve-surface-domain';
 
+export {
+  isSurfaceHost,
+  normalizeHost,
+  resolveVerticalByHost,
+  surfacePathForHost,
+  verticalsForHosts,
+} from './application/resolve-surface-by-host';
+
 export { SurfaceHero } from './components/SurfaceHero';
 export { SurfacePagination } from './components/SurfacePagination';
 export { SurfaceSearchBar } from './components/SurfaceSearchBar';

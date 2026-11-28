@@ -166,19 +166,38 @@ if budget:
     print(f"-- Budget de réduction (#7961 / #9978, snapshot {snap_date}, objectif -{weekly} %/semaine) --")
 
     if isinstance(snap_total, int):
+        # #10042 — la contrainte opposable est le JALON DATÉ, pas une
+        # interpolation au jour.
+        #
+        # Défaut constaté le 2026-11-28 : le snapshot est daté du 2026-11-27
+        # avec 2577 occurrences, et la table `schedule` autorise 2577 jusqu'au
+        # 2026-12-04 (semaine 0). Mais l'interpolation `(1 - 5%)^(jours/7)`
+        # réclamait déjà 2558 le LENDEMAIN du snapshot — soit 19 occurrences de
+        # moins en 24 h. Résultat : la garde échouait sur `main` PUR, sans
+        # qu'aucune PR n'ait rien ajouté, et le check étant REQUIS, plus aucune
+        # PR n'était mergeable. C'est exactement l'incident que #9979 documente
+        # (checks requis rouges en permanence ⇒ merge impossible).
+        #
+        # Les deux mécanismes se contredisaient : `schedule` est la contrainte
+        # revue et datée, l'interpolation en était une seconde, plus stricte et
+        # invisible. On garde la première — elle est explicite, négociable en
+        # revue, et c'est elle que le commentaire de #9978 décrit comme « la
+        # contrainte opposable en revue ».
+        #
+        # L'interpolation reste affichée à titre INDICATIF (rythme théorique),
+        # sans faire échouer la garde.
         try:
             weeks = max(0, (datetime.date.today() - datetime.date.fromisoformat(snap_date)).days) / 7.0
         except ValueError:
             weeks = 0.0
         expected = int(round(snap_total * (1 - weekly / 100.0) ** weeks))
-        on_track = "✅ dans le budget" if grand_head <= expected else "❌ au-delà du budget"
-        print(f"  Snapshot : {snap_total} occ — attendu aujourd'hui ≤ {expected} occ — mesuré {grand_head} occ → {on_track}")
-        if grand_head > expected:
-            budget_failures.append(
-                f"budget hebdomadaire dépassé : mesuré {grand_head} occ > attendu {expected} occ "
-                f"(snapshot {snap_total} du {snap_date}, objectif -{weekly} %/semaine)"
-            )
-        budget_lines.append(f"Budget : snapshot {snap_total} occ ({snap_date}), attendu ≤ {expected}, mesuré {grand_head} — {on_track}")
+        print(
+            f"  Rythme théorique : {snap_total} occ \u2192 {expected} occ attendu aujourd'hui "
+            f"(-{weekly} %/semaine, indicatif \u2014 la contrainte opposable est le jalon daté)"
+        )
+        budget_lines.append(
+            f"Rythme théorique : snapshot {snap_total} occ ({snap_date}), indicatif \u2264 {expected}, mesur\u00e9 {grand_head}"
+        )
 
     # Jalon daté (#9978) — la contrainte opposable en revue.
     schedule = budget.get("schedule") or {}

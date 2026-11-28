@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { normalizeLocale } from '@/lib/i18n';
-import { SITE_URL } from '@/lib/site-url';
 import { JsonLd } from '@/components/JsonLd';
-import { TRAVEL_SURFACE, TripDetailSurface, loadTripDetailView } from '@/modules/public-surfaces';
+import { TRAVEL_SURFACE, TripDetailSurface, loadTripDetailView,
+  surfaceUrl,
+} from '@/modules/public-surfaces';
 
 /**
  * Fiche trajet publique (`/billets/{id}`) — #9628.
@@ -40,7 +41,7 @@ export async function generateMetadata({ params, searchParams }: TripPageProps):
   return {
     title,
     description: TRAVEL_SURFACE.tagline,
-    alternates: { canonical: `${SITE_URL}/billets/${id}` },
+    alternates: { canonical: surfaceUrl(TRAVEL_SURFACE, `/billets/${id}`) },
     robots: { index: true, follow: true },
     openGraph: { title, description: TRAVEL_SURFACE.tagline, type: 'website' },
   };
@@ -61,7 +62,7 @@ export default async function TripPage({ params, searchParams }: TripPageProps) 
     '@context': 'https://schema.org',
     '@type': 'BusTrip',
     name: view.route,
-    url: `${SITE_URL}/billets/${id}`,
+    url: surfaceUrl(TRAVEL_SURFACE, `/billets/${id}`),
     ...(view.trip.departureAt ? { departureTime: view.trip.departureAt } : {}),
     ...(view.trip.arrivalAt ? { arrivalTime: view.trip.arrivalAt } : {}),
     provider: { '@type': 'Organization', name: TRAVEL_SURFACE.displayName },
