@@ -81,14 +81,34 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/contents/deploy/dev-stacks.json" \
             -o /tmp/dev-stacks.json
 
+          # #10044 — le rapport confondait « suspendue par le fournisseur » et
+          # « en erreur ». Le 2026-11-28 il affichait « dev b : 503 EN ERREUR »
+          # alors que le registre declarait cette stack `suspended` depuis la
+          # mesure du jour : un 503 « Service Suspended » n'est pas une panne
+          # inattendue, c'est un etat connu et documente. Confondre les deux
+          # envoie chercher un bug applicatif la ou il n'y a qu'un quota epuise.
+          # On lit donc le statut du registre et on le fait primer sur le code
+          # HTTP quand il explique deja la reponse.
           probe() {
-            local tier="$1" registry="$2" id url code latency
+            local tier="$1" registry="$2" id url code latency status
             for id in $(jq -r '.stacks | keys[]' "$registry"); do
               url="$(jq -r --arg s "$id" '.stacks[$s].api.health_url // empty' "$registry")"
+              status="$(jq -r --arg s "$id" '.stacks[$s].status // "?"' "$registry")"
               [[ -n "$url" ]] || { echo "| ${tier} | ${id} | — | — | non provisionnée |"; continue; }
               latency="$(curl -s -o /dev/null -w '%{time_total}' --max-time 60 "$url" || echo 0)"
               code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 60 "$url" || echo 000)"
-              echo "| ${tier} | ${id} | ${code} | $(awk -v t="$latency" 'BEGIN{printf "%.0f", t*1000}') ms | $( [[ "$code" == "200" ]] && echo OK || echo **EN ERREUR** ) |"
+              local etat
+              if [[ "$code" == "200" ]]; then
+                etat="OK"
+              elif [[ "$status" == "suspended" ]]; then
+                # Etat connu et documente : ce n'est pas une panne a diagnostiquer.
+                etat="**SUSPENDUE** (registre : \`suspended\`)"
+              elif [[ "$status" == "planned" ]]; then
+                etat="non provisionnée (registre : \`planned\`)"
+              else
+                etat="**EN ERREUR** (registre : \`${status}\`)"
+              fi
+              echo "| ${tier} | ${id} | ${code} | $(awk -v t="$latency" 'BEGIN{printf "%.0f", t*1000}') ms | ${etat} |"
             done
           }
 
