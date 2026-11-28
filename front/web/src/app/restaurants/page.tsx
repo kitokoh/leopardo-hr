@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { normalizeLocale } from '@/lib/i18n';
 import { t } from '@/lib/i18n/locale-catalog';
-import { SITE_URL } from '@/lib/site-url';
 import { searchPublicRestaurants } from '@/lib/restaurants-public-api';
 import {
   RESTAURANT_SURFACE,
@@ -10,6 +9,7 @@ import {
   SurfaceHero,
   SurfaceShell,
   loadRestaurantSurface,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 import { getSurfaceCopy } from '@/modules/public-surfaces/copy/surfaces-copy';
 
@@ -60,7 +60,7 @@ export async function generateMetadata({ searchParams }: RestaurantsPageProps): 
   return {
     title: t(locale, 'restaurant.public.directoryTitle'),
     description: t(locale, 'restaurant.public.directoryDescription'),
-    alternates: { canonical: `${SITE_URL}${RESTAURANT_SURFACE.basePath}` },
+    alternates: { canonical: surfaceUrl(RESTAURANT_SURFACE) },
     robots: { index: true, follow: true },
     openGraph: {
       title: t(locale, 'restaurant.public.directoryTitle'),

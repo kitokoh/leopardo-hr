@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 import { normalizeLocale } from '@/lib/i18n';
-import { SITE_URL } from '@/lib/site-url';
 import {
   CompanyDirectorySurface,
   TRADE_SURFACE,
   loadCompanyDirectoryView,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /**
@@ -35,7 +35,7 @@ export async function generateMetadata({ searchParams }: EntreprisesPageProps): 
   return {
     title: TRADE_SURFACE.displayName,
     description: TRADE_SURFACE.tagline,
-    alternates: { canonical: `${SITE_URL}${TRADE_SURFACE.basePath}` },
+    alternates: { canonical: surfaceUrl(TRADE_SURFACE) },
     robots: { index: true, follow: true },
     openGraph: {
       title: TRADE_SURFACE.displayName,

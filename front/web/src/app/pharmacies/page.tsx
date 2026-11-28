@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 import { normalizeLocale } from '@/lib/i18n';
-import { SITE_URL } from '@/lib/site-url';
 import {
   PHARMACY_SURFACE,
   PharmacySurface,
   loadPharmacySurface,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /**
@@ -40,7 +40,7 @@ export async function generateMetadata({ searchParams }: PharmaciesPageProps): P
   return {
     title: PHARMACY_SURFACE.displayName,
     description: PHARMACY_SURFACE.tagline,
-    alternates: { canonical: `${SITE_URL}${PHARMACY_SURFACE.basePath}` },
+    alternates: { canonical: surfaceUrl(PHARMACY_SURFACE) },
     robots: { index: true, follow: true },
     openGraph: {
       title: PHARMACY_SURFACE.displayName,

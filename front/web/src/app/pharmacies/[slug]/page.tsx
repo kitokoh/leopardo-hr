@@ -6,7 +6,6 @@ import { MapPin, Phone } from 'lucide-react';
 import { JsonLd } from '@/components/JsonLd';
 import { normalizeLocale } from '@/lib/i18n';
 import { catalogDirection, t } from '@/lib/i18n/locale-catalog';
-import { SITE_URL } from '@/lib/site-url';
 import {
   PHARMACY_SURFACE,
   SurfaceNotice,
@@ -17,6 +16,7 @@ import {
   loadPharmacy,
   paginateList,
   type Pharmacy,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /** Services affichés par page sur la fiche d'une officine. */
@@ -61,7 +61,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: `${SITE_URL}/pharmacies/${pharmacy.slug}` },
+    alternates: { canonical: surfaceUrl(PHARMACY_SURFACE, `/pharmacies/${pharmacy.slug}`) },
     robots: { index: true, follow: true },
     openGraph: { title, description, type: 'website' },
   };
@@ -72,7 +72,7 @@ function pharmacyJsonLd(pharmacy: Pharmacy): Record<string, unknown> {
     '@context': 'https://schema.org',
     '@type': 'Pharmacy',
     name: pharmacy.name,
-    url: `${SITE_URL}/pharmacies/${pharmacy.slug}`,
+    url: surfaceUrl(PHARMACY_SURFACE, `/pharmacies/${pharmacy.slug}`),
   };
 
   if (pharmacy.description) {

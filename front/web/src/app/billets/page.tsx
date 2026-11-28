@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
 
 import { normalizeLocale } from '@/lib/i18n';
-import { SITE_URL } from '@/lib/site-url';
-import { TRAVEL_SURFACE, TravelSurface, loadTravelSurface } from '@/modules/public-surfaces';
+import { TRAVEL_SURFACE, TravelSurface, loadTravelSurface,
+  surfaceUrl,
+} from '@/modules/public-surfaces';
 
 /**
  * Vitrine publique Billets — annuaire des trajets (`/billets`), #9593.
@@ -35,7 +36,7 @@ export async function generateMetadata({ searchParams }: TravelPageProps): Promi
   return {
     title: TRAVEL_SURFACE.displayName,
     description: TRAVEL_SURFACE.tagline,
-    alternates: { canonical: `${SITE_URL}${TRAVEL_SURFACE.basePath}` },
+    alternates: { canonical: surfaceUrl(TRAVEL_SURFACE) },
     robots: { index: true, follow: true },
     openGraph: {
       title: TRAVEL_SURFACE.displayName,

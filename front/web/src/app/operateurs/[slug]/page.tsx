@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import { MapPin } from 'lucide-react';
 import { normalizeLocale } from '@/lib/i18n';
 import { catalogDirection, t } from '@/lib/i18n/locale-catalog';
-import { SITE_URL } from '@/lib/site-url';
+import { MOBILITY_SURFACE, surfaceUrl } from '@/modules/public-surfaces';
 import { JsonLd } from '@/components/JsonLd';
 import { getPublicVtcOperator, type PublicVtcOperatorProfile } from '@/lib/vtc-public-api';
 import PublicContactCta from '@/app/decouvrir/public-contact-cta';
@@ -53,7 +53,7 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: `${SITE_URL}/operateurs/${operator.slug}` },
+    alternates: { canonical: surfaceUrl(MOBILITY_SURFACE, `/operateurs/${operator.slug}`) },
     robots: { index: true, follow: true },
     openGraph: { title, description, type: 'website' },
   };
@@ -64,7 +64,7 @@ function operatorJsonLd(operator: PublicVtcOperatorProfile): Record<string, unkn
     '@context': 'https://schema.org',
     '@type': 'TaxiService',
     name: operator.name,
-    url: `${SITE_URL}/operateurs/${operator.slug}`,
+    url: surfaceUrl(MOBILITY_SURFACE, `/operateurs/${operator.slug}`),
   };
 
   if (operator.city || operator.country) {

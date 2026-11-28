@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 import { normalizeLocale } from '@/lib/i18n';
-import { SITE_URL } from '@/lib/site-url';
 import {
   CAREERS_SURFACE,
   CareersDirectorySurface,
   loadHiringDirectory,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /**
@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: CAREERS_SURFACE.displayName,
     description: CAREERS_SURFACE.tagline,
-    alternates: { canonical: `${SITE_URL}${CAREERS_SURFACE.basePath}` },
+    alternates: { canonical: surfaceUrl(CAREERS_SURFACE) },
     robots: { index: true, follow: true },
     openGraph: {
       title: CAREERS_SURFACE.displayName,
