@@ -4,7 +4,7 @@
   "tier": "dev",
   "description": "Registre des stacks du tier DEV (épic #8659). Une stack = un ensemble complet {API Render + DB Neon + KV + front Vercel + admin Pages} hébergé sur UN jeu de comptes distinct. La PROD est hors de ce registre (render.prod.yaml, deploy-prod.yml — inchangée). Source de vérité humaine ; les pointeurs runtime vivent dans les variables du dépôt (DEV_ACTIVE_STACK, DEV_API_BASE_URL...) synchronisées par scripts/dev-stack-switch.sh.",
   "active_stack": "b",
-  "updated_at": "2026-10-18",
+  "updated_at": "2026-11-28",
   "stacks": {
     "a": {
       "status": "suspended",
@@ -51,8 +51,8 @@
       }
     },
     "b": {
-      "status": "active",
-      "status_note": "PROVISIONNÉE ET EN LIGNE le 2026-10-18 : service Render créé via API sur le workspace ibrahim.ali (tea-db9tcsbncjis73ajl2p0), deploy dep-dba688uq1p3s73afu5cg status=live, base Neon créée dans l'org nour (org-spring-pond-49296155). Health 200 mesuré. Stack pointée par DEV_ACTIVE_STACK.",
+      "status": "suspended",
+      "status_note": "SUSPENDUE constatée le 2026-11-28 : GET https://leopardo-dev-b.onrender.com/api/v1/health → HTTP 503 « Service Suspended » (page Render). Le quota 750 h/mois du workspace est épuisé — même cause que la stack A. Le registre la déclarait `active` depuis le 2026-10-18 sans re-mesure (41 jours) : c'est la dérive que l'issue #10043 a révélée et que dev-hub/tools/check-dev-stack-registry.sh (R4) interdit désormais. NE PAS basculer dessus tant que le service n'est pas réactivé côté Render.",
       "accounts": {
         "render": "ibrahim.ali (tea-db9tcsbncjis73ajl2p0)",
         "neon": "nour (org-spring-pond-49296155 → projet leopardo-dev-b)",
@@ -93,11 +93,11 @@
       },
       "provisioned_at": "2026-10-18",
       "last_verified": {
-        "health_http": 200,
-        "version": "02b9bf5",
-        "checked_at": "2026-10-18T06:50Z",
-        "platform_login_http": 200,
-        "note": "main@02b9bf5 déployé manuellement (le secret RENDER_DEPLOY_HOOK_URL pointe encore la stack A suspendue) ; base seedée, login superadmin 200."
+        "health_http": 503,
+        "version": null,
+        "checked_at": "2026-11-28T19:20Z",
+        "platform_login_http": null,
+        "note": "Mesure du 2026-11-28 : 503 Service Suspended sur /api/v1/health. Aucune version servie."
       }
     },
     "c": {

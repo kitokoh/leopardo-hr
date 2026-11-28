@@ -215,11 +215,29 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          body="$(printf '%s\n\n%s\n\n%s\n\n%s' \
-            "Le watchdog dev-keepalive.yml a détecté 3 échecs consécutifs de santé sur la stack dev active (${{ vars.DEV_API_BASE_URL }}) le $(date -u '+%Y-%m-%d %H:%M UTC')." \
-            "Aucune bascule automatique n'a été effectuée (cooldown 24 h actif ou aucune stack au statut ready dans deploy/dev-stacks.json)." \
-            "**Actions manuelles** : scripts/dev-stack-health.sh, runbook docs/ops/DEV_STACK_ROTATION.md § Dépannage, bascule manuelle via le workflow dev-stack-switch.yml ou scripts/dev-stack-switch.sh <stack>." \
-            "_Référence : épic #8659._")"
+          # #10043 — l'alerte doit porter le DIAGNOSTIC, pas seulement le symptome.
+          # Le 2026-11-28 elle disait « aucune stack ready » sans dire pourquoi :
+          # les trois stacks etaient suspended/planned, et le registre declarait
+          # pourtant la stack active `active` avec une verification vieille de
+          # 41 jours. On joint donc l'etat reel du registre a chaque alerte.
+          curl --silent --show-error --max-time 20 \
+            "https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/deploy/dev-stacks.json" \
+            -o /tmp/stacks-alert.json || echo '{}' > /tmp/stacks-alert.json
+          registry_state="$(jq -r '
+            (.stacks // {}) | to_entries
+            | map("- `\(.key)` : **\(.value.status // "?")**" +
+                  (if (.value.last_verified.checked_at // "") != ""
+                   then " (verifie le \(.value.last_verified.checked_at))" else "" end))
+            | join("\n")' /tmp/stacks-alert.json 2>/dev/null || echo "- (registre illisible)")"
+          active_stack="$(jq -r '.active_stack // "?"' /tmp/stacks-alert.json 2>/dev/null || echo '?')"
+
+          body="$(printf '%s\n\n%s\n\n%s\n\n%s\n\n%s' \
+            "Le watchdog dev-keepalive.yml a detecte 3 echecs consecutifs de sante sur la stack dev active (${{ vars.DEV_API_BASE_URL }}) le $(date -u '+%Y-%m-%d %H:%M UTC')." \
+            "Aucune bascule automatique n'a ete effectuee : aucune stack au statut \`ready\` dans \`deploy/dev-stacks.json\` (ou cooldown 24 h actif)." \
+            "**Etat du registre** (\`active_stack\` = \`${active_stack}\`) :" \
+            "${registry_state}" \
+            "**Actions manuelles** : scripts/dev-stack-health.sh, runbook docs/ops/DEV_STACK_ROTATION.md § Depannage, bascule manuelle via le workflow dev-stack-switch.yml ou scripts/dev-stack-switch.sh <stack>. Si toutes les stacks sont \`suspended\`, la cause est cote fournisseur (quota Render) : reactiver le service avant toute bascule." \
+            "_Reference : epic #8659, issue #10043._")"
 
           # Ticket d'alerte deja ouvert ? On le rafraichit, on n'en cree pas un autre.
           existing="$(gh issue list --repo "${{ github.repository }}" --state open --limit 200 \
