@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "Leopardo",
+    "slug": "leopardo-public",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "leopardo",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B1220"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.leopardo.public",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "La position sert a trouver les commerces proches de vous."
+      }
+    },
+    "android": {
+      "package": "com.leopardo.public",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#0B1220"
+      },
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ],
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "La position sert a trouver les commerces proches de vous."
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "REMPLACER_PAR_VOTRE_PROJECT_ID"
+      }
+    }
+  }
+}
