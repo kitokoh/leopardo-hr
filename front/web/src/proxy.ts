@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { buildCspDirectives, cspHeaderName, generateCspNonce } from '@/lib/csp';
 import { isSupportedLocale, resolveSsrVitrineLang } from '@/lib/i18n';
+import { resolveVerticalByHost, surfacePathForHost } from '@/modules/public-surfaces/kernel';
+import { surfaceRegistry } from '@/modules/public-surfaces/registry';
 
 /**
  * Proxy (ex-`middleware`) : protection serveur de la zone dashboard (QA wave
@@ -119,6 +121,58 @@ const DASHBOARD_PREFIXES = [  '/dashboard',
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
+  // #10041 — ROUTAGE PAR DOMAINE des vitrines verticales.
+  //
+  // ## Le défaut que ce bloc ferme
+  //
+  // L'architecture déclarée est « une vitrine par verticale, chacune avec son
+  // propre domaine » (`docs/ops/DOMAINS.md`, `identity/*-identity.ts`). Les
+  // identités, les palettes et les domaines canoniques existaient, et un
+  // endpoint API `GET /public/brands/by-host` aussi — mais **rien ne reliait le
+  // host de la requête à une verticale**. Les huit vitrines étaient donc
+  // servies par chemin, sur un seul domaine : le modèle décrivait huit
+  // vitrines, le routage en servait une.
+  //
+  // ## Ce que fait ce bloc, et ce qu'il ne fait pas
+  //
+  // Il RÉÉCRIT le chemin, il ne redirige pas. Sur
+  // `restaurants.leopardo.app/chez-marcel`, le visiteur voit `/chez-marcel` et
+  // l'application sert `/restaurants/chez-marcel` : le domaine EST la
+  // verticale, donc le préfixe est redondant dans la barre d'adresse. Une
+  // redirection 308 aurait exposé le préfixe interne et cassé les liens
+  // partagés qui pointent déjà `/restaurants/x`.
+  //
+  // Il ne touche à RIEN quand le host n'est pas un domaine de vitrine
+  // (`resolveVerticalByHost` rend `null`) : dashboard, admin, vitrine
+  // commerciale et `localhost` gardent leur routage par chemin. C'est la règle
+  // fail-closed du registre — jamais d'identité par défaut.
+  //
+  // ## Pourquoi la réécriture précède la garde de session
+  //
+  // Un domaine de vitrine ne sert QUE des pages publiques. Réécrire d'abord
+  // garantit que la garde de session ci-dessous s'évalue sur le chemin réel
+  // (`/restaurants/...`), et non sur le chemin nu du domaine — sinon
+  // `restaurants.leopardo.app/dashboard` contournerait la garde en arrivant
+  // comme `/dashboard` sur un host qui n'est pas censé le servir.
+  const surfaceIdentity = resolveVerticalByHost(
+    request.headers.get('host'),
+    surfaceRegistry,
+  );
+
+  let effectivePathname = pathname;
+  let rewrittenUrl: URL | null = null;
+
+  if (surfaceIdentity) {
+    const rewritten = surfacePathForHost(surfaceIdentity, pathname);
+
+    if (rewritten !== null) {
+      const url = request.nextUrl.clone();
+      url.pathname = rewritten;
+      effectivePathname = rewritten;
+      rewrittenUrl = url;
+    }
+  }
+
   // #7488 (décision #7487) — fin du choix de plan à l'inscription : `/signup`
   // est accessible SANS `?plan=`. Le paramètre reste accepté (campagnes qui
   // ciblent une offre : le formulaire affiche alors le rappel de l'offre),
@@ -136,7 +190,7 @@ export function proxy(request: NextRequest) {
   // C'est la règle déjà appliquée par `protected-prefixes.test.ts` : le proxy
   // et son test de garde partagent désormais la même sémantique.
   const isDashboard = DASHBOARD_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+    (prefix) => effectivePathname === prefix || effectivePathname.startsWith(`${prefix}/`),
   );
 
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;
@@ -166,7 +220,7 @@ export function proxy(request: NextRequest) {
   // Visiteur sans session sur `/restaurant` (exact) → page vitrine ; session
   // valide → hub applicatif. Les sous-routes `/restaurant/*` restent protégées
   // comme le reste de la zone dashboard (gate ci-dessous).
-  if (pathname === '/restaurant' && !isValidToken) {
+  if (effectivePathname === '/restaurant' && !isValidToken) {
     const marketingUrl = new URL('/restaurateur', request.url);
     return NextResponse.redirect(marketingUrl);
   }
@@ -186,7 +240,7 @@ export function proxy(request: NextRequest) {
   // `/auth/login` reste volontairement NON gardé : rediriger un visiteur
   // authentifié hors de la page de connexion crée une boucle dès que le cookie
   // est périmé, le proxy ne pouvant pas valider la session (cf. #3522).
-  if (pathname === '/signup' && isValidToken) {
+  if (effectivePathname === '/signup' && isValidToken) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
@@ -198,7 +252,7 @@ export function proxy(request: NextRequest) {
   // appellera l'API, recevra 401 et renverra vers /auth/login — pas de
   // boucle, `/auth/login` n'étant pas gardé par ce proxy (vérification de la
   // session côté client sur la page de connexion).
-  if (pathname === '/business' && isValidToken) {
+  if (effectivePathname === '/business' && isValidToken) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
@@ -222,7 +276,9 @@ export function proxy(request: NextRequest) {
   requestHeaders.set('x-nonce', nonce);
   requestHeaders.set('content-security-policy', csp);
 
-  const response = NextResponse.next({ request: { headers: requestHeaders } });
+  const response = rewrittenUrl
+    ? NextResponse.rewrite(rewrittenUrl, { request: { headers: requestHeaders } })
+    : NextResponse.next({ request: { headers: requestHeaders } });
   // Enforce par défaut ; `CSP_REPORT_ONLY=true` = levier de rollback (#7650).
   response.headers.set(cspHeaderName(), csp);
   response.headers.set('x-vitrine-lang', lang);

@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 
 import { normalizeLocale } from '@/lib/i18n';
-import { SITE_URL } from '@/lib/site-url';
 import {
   MOBILITY_SURFACE,
   MobilitySurface,
   loadMobilitySurface,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /**
@@ -45,7 +45,7 @@ export async function generateMetadata({ searchParams }: OperateursPageProps): P
   return {
     title: MOBILITY_SURFACE.displayName,
     description: MOBILITY_SURFACE.tagline,
-    alternates: { canonical: `${SITE_URL}${MOBILITY_SURFACE.basePath}` },
+    alternates: { canonical: surfaceUrl(MOBILITY_SURFACE) },
     robots: { index: true, follow: true },
     openGraph: {
       title: MOBILITY_SURFACE.displayName,

@@ -4,7 +4,6 @@ import { notFound } from 'next/navigation';
 import { Globe2, MapPin } from 'lucide-react';
 import { normalizeLocale } from '@/lib/i18n';
 import { catalogDirection, t } from '@/lib/i18n/locale-catalog';
-import { SITE_URL } from '@/lib/site-url';
 import { JsonLd } from '@/components/JsonLd';
 import { getPublicTradeCompany, getPublicTradeCompanyProducts, type PublicTradeCompanyProfile, type PublicTradeProduct } from '@/lib/trade-public-api';
 import PublicContactCta from '@/app/decouvrir/public-contact-cta';
@@ -15,6 +14,7 @@ import {
   SurfaceSearchBar,
   filterByQuery,
   paginateList,
+  surfaceUrl,
 } from '@/modules/public-surfaces';
 
 /** Catégories de produits affichées par page sur la fiche d'une entreprise. */
@@ -64,7 +64,7 @@ export async function generateMetadata({ params, searchParams }: CompanyPageProp
   return {
     title,
     description,
-    alternates: { canonical: `${SITE_URL}/entreprises/${company.slug}` },
+    alternates: { canonical: surfaceUrl(TRADE_SURFACE, `/entreprises/${company.slug}`) },
     robots: { index: true, follow: true },
     openGraph: { title, description, type: 'website' },
   };
@@ -75,7 +75,7 @@ function companyJsonLd(company: PublicTradeCompanyProfile): Record<string, unkno
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: company.name,
-    url: `${SITE_URL}/entreprises/${company.slug}`,
+    url: surfaceUrl(TRADE_SURFACE, `/entreprises/${company.slug}`),
   };
 
   if (company.description) {
